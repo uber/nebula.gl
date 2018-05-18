@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`test TextsLayer 1`] = `
+<div
+  style={
+    Object {
+      "bottom": 0,
+      "left": 0,
+      "pointerEvents": "none",
+      "position": "absolute",
+      "right": 0,
+      "top": 0,
+    }
+  }
+>
+  <div
+    id="deckgl-wrapper"
+  >
+    <canvas
+      id="deckgl-overlay"
+      style={
+        Object {
+          "left": 0,
+          "position": "absolute",
+          "top": 0,
+        }
+      }
+    />
+  </div>
+</div>
+`;

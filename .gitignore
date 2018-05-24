@@ -11,6 +11,10 @@ npm-debug.log
 */**/yarn.lock
 yarn-error.log
 
+website/dist/
+website/node_modules/
+website/yarn-errror.log
+
 # editor files
 .project
 .DS_Store

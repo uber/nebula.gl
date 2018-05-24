@@ -11,6 +11,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "babel-plugin-version-inline": "^1.0.0",
     "@uber/nebula.gl": "^0.0.10",
     "ocular": "0.5.1",
     "react-map-gl": "^3.2.7"

@@ -30,7 +30,6 @@ function makeLocalDevConfig(EXAMPLE_DIR = LIB_DIR) {
         'nebula.gl/dist': SRC_DIR,
         // Imports the nebula.gl library from the src directory in this repo
         'nebula.gl': SRC_DIR,
-        '@uber/nebula.gl': SRC_DIR,
 
         'deck.gl': resolve(LIB_DIR, './node_modules/deck.gl'),
         'deck.gl-layers': resolve(LIB_DIR, './node_modules/deck.gl-layers'),

@@ -4,7 +4,7 @@
     "start-local": "webpack-dev-server --env.local --progress --hot --port 3000 --open"
   },
   "dependencies": {
-    "@uber/nebula.gl": "^0.0.9",
+    "nebula.gl": "^0.1.0",
     "mapbox-gl": "0.43",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",

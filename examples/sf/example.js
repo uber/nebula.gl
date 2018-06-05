@@ -12,7 +12,7 @@ import {
   Nebula,
   SegmentsLayer,
   SELECTION_TYPE
-} from '@uber/nebula.gl';
+} from 'nebula.gl';
 
 const initialViewport = {
   bearing: 0,

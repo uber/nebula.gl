@@ -32,6 +32,7 @@ module.exports = {
     'import/extensions': 'error',
     'import/order': 'error',
     'import/newline-after-import': 'error',
+    'import/extensions': 'off',
 
     /* Ignore rules conflicting with prettier */
     'react/jsx-wrap-multilines': 'off',

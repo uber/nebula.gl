@@ -3,8 +3,8 @@ import { point, lineString } from '@turf/helpers';
 
 import LayerMouseEvent from '../layer-mouse-event';
 import Feature from '../feature';
+import LinesLayer from './lines-layer';
 
-import PolygonsLayer from './polygons-layer';
 import EditableJunctionsLayer from './editable-junctions-layer';
 
 function deepCopyCoords(c) {
@@ -46,10 +46,7 @@ export default class EditableLinesLayer extends LinesLayer {
           });
         },
         editUpdate: (nebulaMouseEvent: LayerMouseEvent, { original }) => {
-          const {
-            selectedLineId,
-            junctionIndex
-          } = original.editInfo;
+          const { selectedLineId, junctionIndex } = original.editInfo;
           const feature = this.deckCache.getDeckObjectById(selectedLineId);
           if (feature) {
             let lineStringCoords = feature.geoJson.geometry.coordinates;
@@ -92,9 +89,9 @@ export default class EditableLinesLayer extends LinesLayer {
     // only show edit handles for selectedLineId/selectedSubLineIndex
     const selLine = this.deckCache.getDeckObjectById(selectedLineId);
     if (selLine) {
-      const { coordinates, type } = selLine.geoJson.geometry;
+      const { coordinates } = selLine.geoJson.geometry;
 
-      let editCoords = coordinates;
+      const editCoords = coordinates;
 
       editCoords.forEach((coords, junctionIndex) => {
         result.push({

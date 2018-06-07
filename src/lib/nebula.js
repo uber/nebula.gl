@@ -1,62 +1,22 @@
 // @flow
 import EventEmitter from 'events';
-import DeckGL, { WebMercatorViewport } from 'deck.gl';
 import document from 'global/document';
 import window from 'global/window';
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-
-import type { Viewport } from '../types';
+import { WebMercatorViewport } from 'deck.gl';
 
 import DeckDrawer from './deck-renderer/deck-drawer';
 import LayerMouseEvent from './layer-mouse-event';
 import Projector from './projector';
 import NebulaLayer from './nebula-layer';
 
-type Props = {
-  layers: Object[],
-  onSelection?: (selectedFeatures: Object[]) => void,
-  selectionType?: number,
-  onMapMouseEvent?: Function,
-  viewport: Viewport,
-  logger?: Object,
-  children?: any
-};
-
-const styles = {
-  canvasContainer: {
-    pointerEvents: 'none',
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0
-  }
-};
-
 const LOGGER_PREFIX = 'Nebula: ';
 
-export default class Nebula extends Component<Props> {
-  static childContextTypes = {
-    viewport: PropTypes.object,
-    wmViewport: PropTypes.object,
-    nebula: PropTypes.object
-  };
-
-  constructor(props: Props) {
-    super(props);
-  }
-
-  getChildContext() {
-    const { viewport } = this.props;
-    return { viewport, wmViewport: this._wmViewport, nebula: this };
-  }
-
-  componentWillMount() {
+export default class Nebula {
+  init(props: Object) {
+    this.props = props;
     this.projector = new Projector(this.props.viewport);
-  }
+    this.wmViewport = new WebMercatorViewport(this.props.viewport);
 
-  componentDidMount() {
     // TODO: Properly use pointer events
     // ['click', 'dblclick', 'mousemove', 'mouseup', 'mousedown'].forEach(name =>
     ['click', 'dblclick', 'pointermove', 'pointerup', 'pointerdown'].forEach(name =>
@@ -64,22 +24,27 @@ export default class Nebula extends Component<Props> {
     );
   }
 
-  componentWillReceiveProps({ viewport }: Props) {
+  updateProps(newProps: Object) {
+    this.props = newProps;
+    const { viewport } = this.props;
     const { projector } = this;
 
     if (projector.shouldChangeCenter(viewport)) {
       this.log(`Changing center to [${viewport.longitude}, ${viewport.latitude}]`);
       projector.setCenterFromViewport(viewport);
     }
+
+    this.wmViewport = new WebMercatorViewport(viewport);
   }
 
+  props: Object;
   projector: Projector;
   deckgl: Object | null;
   mainContainer: Object | null;
   deckglMouseOverInfo: ?Object;
   _deckDrawer: DeckDrawer;
   _mouseWasDown: boolean;
-  _wmViewport: WebMercatorViewport;
+  wmViewport: WebMercatorViewport;
   queryObjectEvents: EventEmitter = new EventEmitter();
 
   log(message: string) {
@@ -188,7 +153,7 @@ export default class Nebula extends Component<Props> {
   }
 
   _getMouseGroundPosition(event: Object) {
-    return this._wmViewport.unproject([event.offsetX, event.offsetY]);
+    return this.wmViewport.unproject([event.offsetX, event.offsetY]);
   }
 
   _handleDeckGLEvent(event: Object) {
@@ -302,23 +267,27 @@ export default class Nebula extends Component<Props> {
     return result.filter(Boolean);
   }
 
-  render() {
-    const { viewport, children } = this.props;
-    const { width, height } = viewport;
+  getRenderedLayers() {
+    return [...this.renderDeckLayers(), ...this.getExtraDeckLayers()];
+  }
 
-    this._wmViewport = new WebMercatorViewport(viewport);
+  updateAndGetRenderedLayers(layers, viewport, container) {
+    if (this.inited) {
+      this.updateProps({ layers, viewport });
+      this.forceUpdate = () => container.forceUpdate();
+    } else {
+      this.inited = true;
+      this.init({ layers, viewport });
+      this.forceUpdate = () => container.forceUpdate();
+      this.updateAllDeckObjects();
+    }
 
-    return (
-      <div style={styles.canvasContainer} ref={div => (this.mainContainer = div)}>
-        <DeckGL
-          ref={deckgl => (this.deckgl = deckgl)}
-          width={width}
-          height={height}
-          viewports={[this._wmViewport]}
-          layers={[...this.renderDeckLayers(), ...this.getExtraDeckLayers()]}
-        />
-        {children}
-      </div>
-    );
+    return this.getRenderedLayers();
+  }
+
+  setDeck(deckgl: Object | null) {
+    if (deckgl) {
+      this.deckgl = deckgl;
+    }
   }
 }

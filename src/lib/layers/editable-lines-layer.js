@@ -49,7 +49,7 @@ export default class EditableLinesLayer extends LinesLayer {
           const { selectedLineId, junctionIndex } = original.editInfo;
           const feature = this.deckCache.getDeckObjectById(selectedLineId);
           if (feature) {
-            let lineStringCoords = feature.geoJson.geometry.coordinates;
+            const lineStringCoords = feature.geoJson.geometry.coordinates;
             lineStringCoords[junctionIndex] = nebulaMouseEvent.groundPoint;
 
             this.emit('editUpdate', nebulaMouseEvent, {

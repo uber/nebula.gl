@@ -4,16 +4,16 @@ import React, { Component } from 'react';
 import DeckGL, { WebMercatorViewport } from 'deck.gl';
 import MapGL from 'react-map-gl';
 
-import { EditableJunctionsLayer, Feature, NebulaCore } from 'nebula.gl';
+import { EditablePolygonsLayer } from 'nebula.gl';
 
 const initialViewport = {
   bearing: 0,
   height: 0,
-  latitude: 40.78,
-  longitude: -73.97,
+  latitude: 70,
+  longitude: 25,
   pitch: 0,
   width: 0,
-  zoom: 14
+  zoom: 6
 };
 
 const styles = {
@@ -42,27 +42,41 @@ export default class Example extends Component<
     super();
 
     this.state = {
-      viewport: initialViewport
-    };
-
-    this.testJunctions = [
-      { id: 1, position: [-73.978, 40.781] },
-      { id: 2, position: [-73.972, 40.789] }
-    ];
-    this.editableJunctionsLayer = new EditableJunctionsLayer({
-      getData: () => this.testJunctions,
-      toNebulaFeature: data => this._toNebulaFeatureJunc(data),
-      on: {
-        editEnd: (event, info) => {
-          const original = this.testJunctions.find(j => j.id === info.id);
-          if (original) {
-            original.position = info.feature.geoJson.geometry.coordinates;
-          }
+      viewport: initialViewport,
+      testFeature: {
+        type: 'Feature',
+        geometry: {
+          type: 'MultiPolygon',
+          coordinates: [
+            [
+              [
+                [20.5659, 69.4614],
+                [22.7197, 70.088],
+                [21.7199, 70.1851],
+                [21.9616, 70.8049],
+                [25.0378, 70.776],
+                [25.4113, 70.1478],
+                [24.3237, 70.0505],
+                [25.7429, 69.7336],
+                [25.9716, 70.0018],
+                [26.9604, 69.7485],
+                [26.9384, 69.2561],
+                [25.3125, 69.2288],
+                [24.1249, 69.4766],
+                [20.5659, 69.4614]
+              ],
+              [[22.8295, 70.6053], [23.4887, 70.3372], [24.1699, 70.6672], [22.8295, 70.6053]]
+            ],
+            [[[20.4125, 69.5306], [21.4013, 70.144], [22.2912, 70.058], [20.4125, 69.5306]]]
+          ]
         }
       }
-    });
+    };
 
-    this.nebulaCore = new NebulaCore();
+    this.editablePolygonsLayer = new EditablePolygonsLayer({
+      data: this.state.testFeature,
+      onEditing: feature => this.setState({ testFeature: feature })
+    });
   }
 
   componentDidMount() {
@@ -72,8 +86,6 @@ export default class Example extends Component<
   componentWillUnmount() {
     window.removeEventListener('resize', this._resize);
   }
-
-  editableJunctionsLayer: EditableJunctionsLayer;
 
   _onChangeViewport = (viewport: Object) => {
     this.setState({
@@ -85,26 +97,26 @@ export default class Example extends Component<
     this.forceUpdate();
   };
 
-  _toNebulaFeatureJunc(junc: Object) {
-    const geojson = {
-      type: 'Feature',
-      geometry: {
-        type: 'Point',
-        coordinates: junc.position
-      },
-      properties: null
-    };
-    const style = {
-      pointRadiusMeters: 20,
-      outlineRadiusMeters: 20,
-      fillColor: [1, 0, 0, 1],
-      outlineColor: [0, 0, 1, 1]
-    };
-    return new Feature(geojson, style);
-  }
+  // _toNebulaFeatureJunc(junc: Object) {
+  //   const geojson = {
+  //     type: 'Feature',
+  //     geometry: {
+  //       type: 'Point',
+  //       coordinates: junc.position
+  //     },
+  //     properties: null
+  //   };
+  //   const style = {
+  //     pointRadiusMeters: 20,
+  //     outlineRadiusMeters: 20,
+  //     fillColor: [1, 0, 0, 1],
+  //     outlineColor: [0, 0, 1, 1]
+  //   };
+  //   return new Feature(geojson, style);
+  // }
 
   render() {
-    const { editableJunctionsLayer, state } = this;
+    const { state } = this;
     let { viewport } = state;
 
     const { innerHeight: height, innerWidth: width } = window;
@@ -112,19 +124,16 @@ export default class Example extends Component<
 
     const wmViewport = new WebMercatorViewport(viewport);
 
+    const editablePolygonsLayer = new EditablePolygonsLayer({
+      data: this.state.testFeature,
+      onEditing: ({ feature }) => this.setState({ testFeature: feature })
+    });
+
     return (
       <div style={styles.mapContainer}>
         <link href="https://api.mapbox.com/mapbox-gl-js/v0.44.0/mapbox-gl.css" rel="stylesheet" />
         <MapGL {...viewport} onChangeViewport={this._onChangeViewport}>
-          <DeckGL
-            ref={deckgl => this.nebulaCore.setDeck(deckgl)}
-            layers={this.nebulaCore.updateAndGetRenderedLayers(
-              [editableJunctionsLayer],
-              viewport,
-              this
-            )}
-            viewports={[wmViewport]}
-          />
+          <DeckGL layers={[editablePolygonsLayer]} viewports={[wmViewport]} />
         </MapGL>
       </div>
     );

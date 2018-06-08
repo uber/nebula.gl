@@ -1,3 +1,15 @@
+<p align="right">
+  <a href="https://npmjs.org/package/nebula.gl">
+    <img src="https://img.shields.io/npm/v/nebula.gl.svg" alt="version" />
+  </a>
+  <a href="https://travis-ci.org/uber/nebula.gl">
+    <img src="https://img.shields.io/travis/uber/nebula.gl/master.svg" alt="build" />
+  </a>
+  <a href="https://npmjs.org/package/nebula.gl">
+    <img src="https://img.shields.io/npm/dm/nebula.gl.svg" alt="downloads" />
+  </a>
+</p>
+
 # Nebula.gl
 
 A suite of 3D-enabled data editing overlays, suitable for deck.gl.

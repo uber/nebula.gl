@@ -125,6 +125,10 @@ export default [
             markdown: require('../../docs/api-reference/layers/editable-polygons-layer.md')
           },
           {
+            name: 'EditableLinesLayer',
+            markdown: require('../../docs/api-reference/layers/editable-lines-layer.md')
+          },
+          {
             name: 'SegmentLayer',
             markdown: require('../../docs/api-reference/layers/segment-layer.md')
           },

@@ -9,7 +9,7 @@ import {
   HtmlClusterOverlay,
   EditableJunctionsLayer,
   EditablePolygonsLayer
-} from '@uber/nebula.gl';
+} from 'nebula.gl';
 
 class Example extends Component {
   constructor() {

@@ -14,6 +14,7 @@ export { default as PolygonsLayer } from './lib/layers/polygons-layer';
 export { default as LinesLayer } from './lib/layers/lines-layer';
 export { default as EditablePolygonsLayer } from './lib/layers/editable-polygons-layer';
 export { default as TextsLayer } from './lib/layers/texts-layer';
+export { default as EditableLinesLayer } from './lib/layers/editable-lines-layer';
 
 export { default as NebulaOverlay } from './lib/overlays/nebula-overlay';
 export { default as HtmlOverlay } from './lib/overlays/html-overlay';

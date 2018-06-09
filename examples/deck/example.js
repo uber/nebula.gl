@@ -128,10 +128,10 @@ export default class Example extends Component<
       getLineColor: () => [0x00, 0x20, 0x70, 0xc0],
       getLineWidth: () => 30,
       lineWidthMinPixels: 2,
-      lineWidthMaxPixels: 70,
+      lineWidthMaxPixels: 10,
 
       // As well as point layer props
-      getPointColor: () => [0x20, 0x60, 0xc0, 0xff],
+      getPointColor: () => [0x00, 0x20, 0x70, 0xff],
       pointHighlightColor: [0xff, 0xff, 0xff, 0xff]
     });
 

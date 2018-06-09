@@ -56,8 +56,8 @@ export default class EditablePolygonsLayer extends CompositeLayer {
       info.isPoint = true;
       // Get polygon index and ring index from layer id `${this.props.id}-points-${polygonIndex}-${ringIndex}`
       const coordinateIndexes = sourceLayer.id
-        .substring(`${this.props.id}-points-`.length)
-        .split('-');
+        .substring(`${this.props.id}-points|`.length)
+        .split('|');
       const polygonIndex = parseInt(coordinateIndexes[0], 10);
       const ringIndex = parseInt(coordinateIndexes[1], 10);
       if (this.props.data.geometry.type === 'MultiPolygon') {
@@ -94,17 +94,17 @@ export default class EditablePolygonsLayer extends CompositeLayer {
         const layer = new ScatterplotLayer({
           ...this.props,
           data: ring,
-          pickable: true,
           getPosition: data => data,
-          getRadius: () => 1,
-          radiusScale: 2,
-          radiusMinPixels: 5,
-          radiusMaxPixels: 10,
-          opacity: 1.0,
+          pickable: true,
           autoHighlight: true,
+          getRadius: this.props.getPointRadius || (() => 1),
+          radiusScale: this.props.pointRadiusScale || 20,
+          radiusMinPixels: this.props.pointRadiusMinPixels || 4,
+          radiusMaxPixels: this.props.pointRadiusMaxPixels || 10,
+          opacity: this.props.pointOpacity || 1.0,
           highlightColor: this.props.pointHighlightColor || [0xff, 0xff, 0xff, 0xff],
           getColor: this.props.getPointColor || (() => [0x80, 0x80, 0x80, 0xff]),
-          id: `${this.props.id}-points-${polygonIndex}-${ringIndex}`
+          id: `${this.props.id}-points|${polygonIndex}|${ringIndex}`
         });
         layers.push(layer);
       }

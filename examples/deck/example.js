@@ -1,8 +1,8 @@
 // @flow
 import window from 'global/window';
 import React, { Component } from 'react';
-import DeckGL, { WebMercatorViewport } from 'deck.gl';
-import MapGL from 'react-map-gl';
+import DeckGL, { MapController } from 'deck.gl';
+import { StaticMap } from 'react-map-gl';
 
 import { EditablePolygonsLayer } from 'nebula.gl';
 
@@ -103,25 +103,21 @@ export default class Example extends Component<
   };
 
   render() {
-    const { state } = this;
-    let { viewport } = state;
+    const { testFeature } = this.state;
 
-    const { innerHeight: height, innerWidth: width } = window;
-    viewport = Object.assign(viewport, { height, width });
-
-    const wmViewport = new WebMercatorViewport(viewport);
+    const viewport = {
+      ...this.state.viewport,
+      height: window.innerHeight,
+      width: window.innerWidth
+    };
 
     const editablePolygonsLayer = new EditablePolygonsLayer({
-      data: this.state.testFeature,
+      data: testFeature,
       onStartDraggingPoint: ({ coordinateIndexes }) => {
         // eslint-disable-next-line no-console, no-undef
         console.log(`Start dragging point`, coordinateIndexes);
       },
-      onDraggingPoint: ({ feature, coordinateIndexes }) => {
-        // eslint-disable-next-line no-console, no-undef
-        console.log(`Dragging point`, coordinateIndexes);
-        this.setState({ testFeature: feature });
-      },
+      onDraggingPoint: ({ feature, coordinateIndexes }) => this.setState({ testFeature: feature }),
       onStopDraggingPoint: ({ coordinateIndexes }) => {
         // eslint-disable-next-line no-console, no-undef
         console.log(`Stop dragging point`, coordinateIndexes);
@@ -142,9 +138,14 @@ export default class Example extends Component<
     return (
       <div style={styles.mapContainer}>
         <link href="https://api.mapbox.com/mapbox-gl-js/v0.44.0/mapbox-gl.css" rel="stylesheet" />
-        <MapGL {...viewport} onChangeViewport={this._onChangeViewport}>
-          <DeckGL layers={[editablePolygonsLayer]} viewports={[wmViewport]} />
-        </MapGL>
+        <StaticMap {...viewport}>
+          <DeckGL
+            {...viewport}
+            layers={[editablePolygonsLayer]}
+            controller={MapController}
+            onViewStateChange={({ viewState }) => this.setState({ viewport: viewState })}
+          />
+        </StaticMap>
       </div>
     );
   }

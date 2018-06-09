@@ -52,13 +52,19 @@ export default class EditablePolygonsLayer extends CompositeLayer {
 
   getPickingInfo({ info, sourceLayer }) {
     if (sourceLayer.id.startsWith(`${this.props.id}-points`)) {
+      // If user is picking a point, add additional data to the info
       info.isPoint = true;
-      // `${this.props.id}-points-${polygonIndex}-${ringIndex}`
-      const coordinateIndices = sourceLayer.id
+      // Get polygon index and ring index from layer id `${this.props.id}-points-${polygonIndex}-${ringIndex}`
+      const coordinateIndexes = sourceLayer.id
         .substring(`${this.props.id}-points-`.length)
         .split('-');
-      info.polygonIndex = parseInt(coordinateIndices[0], 10);
-      info.ringIndex = parseInt(coordinateIndices[1], 10);
+      const polygonIndex = parseInt(coordinateIndexes[0], 10);
+      const ringIndex = parseInt(coordinateIndexes[1], 10);
+      if (this.props.data.geometry.type === 'MultiPolygon') {
+        info.coordinateIndexes = [polygonIndex, ringIndex, info.index];
+      } else if (this.props.data.geometry.type === 'Polygon') {
+        info.coordinateIndexes = [ringIndex, info.index];
+      }
     }
 
     return info;
@@ -96,8 +102,8 @@ export default class EditablePolygonsLayer extends CompositeLayer {
           radiusMaxPixels: 10,
           opacity: 1.0,
           autoHighlight: true,
-          highlightColor: [255, 255, 255, 255],
-          getColor: () => [128, 128, 128, 255],
+          highlightColor: this.props.pointHighlightColor || [0xff, 0xff, 0xff, 0xff],
+          getColor: this.props.getPointColor || (() => [0x80, 0x80, 0x80, 0xff]),
           id: `${this.props.id}-points-${polygonIndex}-${ringIndex}`
         });
         layers.push(layer);
@@ -147,25 +153,30 @@ export default class EditablePolygonsLayer extends CompositeLayer {
       // stop propagation to prevent map panning
       event.stopPropagation();
 
-      if (this.props.onEditing) {
+      if (this.props.onDraggingPoint) {
         const pointerCoords = this.getPointerCoords(event);
         const groundCoords = this.context.layerManager.viewports[0].unproject([
           pointerCoords.x,
           pointerCoords.y
         ]);
 
-        const { polygonIndex, ringIndex, index } = this.state.draggingPoint;
-        let coordinateIndices;
+        const { coordinateIndexes } = this.state.draggingPoint;
+        let polygonIndex;
+        let ringIndex;
+        let pointIndex;
 
         // Immutably set coordinates
         let affectedPolygon;
         let affectedRing;
         if (this.props.data.geometry.type === 'MultiPolygon') {
+          polygonIndex = coordinateIndexes[0];
+          ringIndex = coordinateIndexes[1];
+          pointIndex = coordinateIndexes[2];
           affectedPolygon = this.props.data.geometry.coordinates[polygonIndex];
-          coordinateIndices = [polygonIndex, ringIndex, index];
         } else if (this.props.data.geometry.type === 'Polygon') {
+          ringIndex = coordinateIndexes[0];
+          pointIndex = coordinateIndexes[1];
           affectedPolygon = this.props.data.geometry.coordinates;
-          coordinateIndices = [ringIndex, index];
         } else {
           throw Error(`Unsupported geometry type ${this.props.data.geometry.type}`);
         }
@@ -173,14 +184,14 @@ export default class EditablePolygonsLayer extends CompositeLayer {
         // Immutably update affected ring (with the actual point that was changed)
         affectedRing = affectedPolygon[ringIndex];
         affectedRing = [
-          ...affectedRing.slice(0, index),
+          ...affectedRing.slice(0, pointIndex),
           groundCoords,
-          ...affectedRing.slice(index + 1)
+          ...affectedRing.slice(pointIndex + 1)
         ];
 
         // The first and last point are repeated, so update both if necessary
         const lastIndexInRing = affectedRing.length - 1;
-        if (index === 0 || index === lastIndexInRing) {
+        if (pointIndex === 0 || pointIndex === lastIndexInRing) {
           affectedRing[0] = groundCoords;
           affectedRing[lastIndexInRing] = groundCoords;
         }
@@ -206,13 +217,13 @@ export default class EditablePolygonsLayer extends CompositeLayer {
         // Mutably set coordinates
         // let coordinates = this.props.data.geometry.coordinates;
         // if (this.props.data.geometry.type === 'MultiPolygon') {
-        //   coordinates[polygonIndex][ringIndex][index] = groundCoords;
+        //   coordinates[polygonIndex][ringIndex][pointIndex] = groundCoords;
         // } else if (this.props.data.geometry.type === 'Polygon') {
-        //   coordinates[ringIndex][index] = groundCoords;
+        //   coordinates[ringIndex][pointIndex] = groundCoords;
         // }
         // // The first and last point are repeated, so update both if necessary
         // const lastIndexInRing = affectedRing.length - 1;
-        // if (index === 0 || index === lastIndexInRing) {
+        // if (pointIndex === 0 || pointIndex === lastIndexInRing) {
         //   affectedRing[0] = groundCoords;
         //   affectedRing[lastIndexInRing] = groundCoords;
         // }
@@ -225,9 +236,9 @@ export default class EditablePolygonsLayer extends CompositeLayer {
           }
         };
 
-        this.props.onEditing({
+        this.props.onDraggingPoint({
           feature: updatedFeature,
-          coordinateIndices
+          coordinateIndexes: this.state.draggingPoint.coordinateIndexes
         });
       }
     }
@@ -245,8 +256,10 @@ export default class EditablePolygonsLayer extends CompositeLayer {
     const pickedPoint = allPicked.find(picked => picked.isPoint);
     if (pickedPoint) {
       this.setState({ draggingPoint: pickedPoint });
-      if (this.props.onEditStart) {
-        this.props.onEditStart(pickedPoint);
+      if (this.props.onStartDraggingPoint) {
+        this.props.onStartDraggingPoint({
+          coordinateIndexes: pickedPoint.coordinateIndexes
+        });
       }
     }
   }

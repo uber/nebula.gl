@@ -9,11 +9,11 @@ import { EditablePolygonsLayer } from 'nebula.gl';
 const initialViewport = {
   bearing: 0,
   height: 0,
-  latitude: 70,
-  longitude: 25,
+  latitude: 37.75,
+  longitude: -122.4,
   pitch: 0,
   width: 0,
-  zoom: 6
+  zoom: 10
 };
 
 const styles = {
@@ -45,38 +45,43 @@ export default class Example extends Component<
       viewport: initialViewport,
       testFeature: {
         type: 'Feature',
+        properties: {},
         geometry: {
           type: 'MultiPolygon',
           coordinates: [
             [
               [
-                [20.5659, 69.4614],
-                [22.7197, 70.088],
-                [21.7199, 70.1851],
-                [21.9616, 70.8049],
-                [25.0378, 70.776],
-                [25.4113, 70.1478],
-                [24.3237, 70.0505],
-                [25.7429, 69.7336],
-                [25.9716, 70.0018],
-                [26.9604, 69.7485],
-                [26.9384, 69.2561],
-                [25.3125, 69.2288],
-                [24.1249, 69.4766],
-                [20.5659, 69.4614]
+                [-122.518844, 37.788081],
+                [-122.487602, 37.793778],
+                [-122.479362, 37.812225],
+                [-122.405891, 37.816564],
+                [-122.378768, 37.796763],
+                [-122.350616, 37.722121],
+                [-122.381858, 37.696046],
+                [-122.504768, 37.685722],
+                [-122.518844, 37.788081]
               ],
-              [[22.8295, 70.6053], [23.4887, 70.3372], [24.1699, 70.6672], [22.8295, 70.6053]]
+              [
+                [-122.4816947, 37.7351084],
+                [-122.4665643, 37.7132991],
+                [-122.4450611, 37.7237229],
+                [-122.4391468, 37.7420784],
+                [-122.4816947, 37.7351084]
+              ]
             ],
-            [[[20.4125, 69.5306], [21.4013, 70.144], [22.2912, 70.058], [20.4125, 69.5306]]]
+            [
+              [
+                [-122.383918, 37.831208],
+                [-122.367095, 37.837716],
+                [-122.355766, 37.806801],
+                [-122.373275, 37.804087],
+                [-122.383918, 37.831208]
+              ]
+            ]
           ]
         }
       }
     };
-
-    this.editablePolygonsLayer = new EditablePolygonsLayer({
-      data: this.state.testFeature,
-      onEditing: feature => this.setState({ testFeature: feature })
-    });
   }
 
   componentDidMount() {
@@ -97,24 +102,6 @@ export default class Example extends Component<
     this.forceUpdate();
   };
 
-  // _toNebulaFeatureJunc(junc: Object) {
-  //   const geojson = {
-  //     type: 'Feature',
-  //     geometry: {
-  //       type: 'Point',
-  //       coordinates: junc.position
-  //     },
-  //     properties: null
-  //   };
-  //   const style = {
-  //     pointRadiusMeters: 20,
-  //     outlineRadiusMeters: 20,
-  //     fillColor: [1, 0, 0, 1],
-  //     outlineColor: [0, 0, 1, 1]
-  //   };
-  //   return new Feature(geojson, style);
-  // }
-
   render() {
     const { state } = this;
     let { viewport } = state;
@@ -126,7 +113,30 @@ export default class Example extends Component<
 
     const editablePolygonsLayer = new EditablePolygonsLayer({
       data: this.state.testFeature,
-      onEditing: ({ feature }) => this.setState({ testFeature: feature })
+      onStartDraggingPoint: ({ coordinateIndexes }) => {
+        // eslint-disable-next-line no-console, no-undef
+        console.log(`Start dragging point`, coordinateIndexes);
+      },
+      onDraggingPoint: ({ feature, coordinateIndexes }) => {
+        // eslint-disable-next-line no-console, no-undef
+        console.log(`Dragging point`, coordinateIndexes);
+        this.setState({ testFeature: feature });
+      },
+      onStopDraggingPoint: ({ coordinateIndexes }) => {
+        // eslint-disable-next-line no-console, no-undef
+        console.log(`Stop dragging point`, coordinateIndexes);
+      },
+
+      // Can specify GeoJsonLayer props
+      getFillColor: () => [0x00, 0x20, 0x70, 0x30],
+      getLineColor: () => [0x00, 0x20, 0x70, 0xc0],
+      getLineWidth: () => 30,
+      lineWidthMinPixels: 2,
+      lineWidthMaxPixels: 70,
+
+      // As well as point layer props
+      getPointColor: () => [0x20, 0x60, 0xc0, 0xff],
+      pointHighlightColor: [0xff, 0xff, 0xff, 0xff]
     });
 
     return (

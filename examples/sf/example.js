@@ -1,7 +1,7 @@
 // @flow
 import window from 'global/window';
 import React, { Component } from 'react';
-import { TextLayer } from 'deck.gl';
+import DeckGL, { TextLayer } from 'deck.gl';
 import MapGL from 'react-map-gl';
 
 import {
@@ -17,11 +17,11 @@ import {
 const initialViewport = {
   bearing: 0,
   height: 0,
-  latitude: 37.75,
-  longitude: -122.445,
+  latitude: 37.88600082874687,
+  longitude: -122.48824690896957,
   pitch: 0,
   width: 0,
-  zoom: 17
+  zoom: 14.6
 };
 
 const styles = {
@@ -45,7 +45,8 @@ export default class Example extends Component<
   {
     viewport: Object,
     allowEdit: boolean,
-    selectionType?: number
+    selectionType?: number,
+    testPolygons: Array<Object>
   }
 > {
   constructor() {
@@ -53,7 +54,8 @@ export default class Example extends Component<
 
     this.state = {
       viewport: initialViewport,
-      allowEdit: true
+      allowEdit: true,
+      testPolygons: []
     };
 
     this.testSegments = [];
@@ -72,49 +74,17 @@ export default class Example extends Component<
         editStart: (event, info) => console.log('Junctions editStart', event, info),
         editEnd: (event, info) => {
           console.log('Junctions editEnd', event, info);
-          /* eslint-enable */
+        /* eslint-enable */
 
           if (this.state.allowEdit) {
             const original = this.testJunctions.find(j => j.id === info.id);
             if (original) {
               original.position = info.feature.geoJson.geometry.coordinates;
-            }
+      }
           }
         }
       }
     });
-
-    this.testPolygons = [];
-    this.editablePolygonsLayer = new EditablePolygonsLayer({
-      getData: () => this.testPolygons,
-      toNebulaFeature: data =>
-        new Feature(data, {
-          fillColor: [0, 0, 0, 0.4],
-          outlineColor: [0.5, 0.5, 0.5, 1],
-          lineWidthMeters: 10
-        }),
-      on: {
-        mousedown: event => {
-          this.editablePolygonsLayer.selectedPolygonId = event.data.id;
-          this.editablePolygonsLayer.selectedSubPolygonIndex = event.metadata.index;
-          this.nebula.updateAllDeckObjects();
-        },
-        /* eslint-disable no-console, no-undef */
-        editStart: (event, info) => console.log('Polygon editStart', event, info),
-        editEnd: (event, info) => {
-          console.log('Polygon editEnd', event, info);
-          /* eslint-enable */
-
-          if (this.state.allowEdit) {
-            const original = this.testPolygons.find(p => p.id === info.id);
-            if (original) {
-              original.geometry.coordinates = info.feature.geoJson.geometry.coordinates;
-            }
-          }
-        }
-      }
-    });
-    this.editablePolygonsLayer.supportMultiPolygon = true;
 
     this._loadData(
       'https://raw.githubusercontent.com/uber-common/deck.gl-data/master/examples/layer-browser/sfmta.routes.json'
@@ -132,7 +102,6 @@ export default class Example extends Component<
 
   nebula: Nebula;
   testSegments: Object[];
-  testPolygons: Object[];
   segmentsLayer: SegmentsLayer;
   editableJunctionsLayer: EditableJunctionsLayer;
 
@@ -161,8 +130,7 @@ export default class Example extends Component<
   _loadPolyData(path: string) {
     window.fetch(path).then(response => {
       response.text().then(json => {
-        this.testPolygons = JSON.parse(json);
-        this.nebula.updateAllDeckObjects();
+        this.setState({ testPolygons: JSON.parse(json) });
       });
     });
   }
@@ -241,7 +209,7 @@ export default class Example extends Component<
           </button>
         </div>
         <div>
-          Road Count: {this.testSegments.length} Poly Count: {this.testPolygons.length}
+          Road Count: {this.testSegments.length} Poly Count: {this.state.testPolygons.length}
         </div>
         <div>
           <button onClick={() => this.setState({ allowEdit: !this.state.allowEdit })}>
@@ -254,12 +222,62 @@ export default class Example extends Component<
   }
 
   render() {
-    const { editableJunctionsLayer, editablePolygonsLayer, segmentsLayer, state } = this;
+    const { editableJunctionsLayer, segmentsLayer, state } = this;
     let { viewport } = state;
     const { selectionType } = state;
 
     const { innerHeight: height, innerWidth: width } = window;
     viewport = Object.assign(viewport, { height, width });
+
+    const editablePolygonsLayer = new EditablePolygonsLayer({
+      data: this.state.testPolygons.length ? this.state.testPolygons[0] : null,
+
+      onStartDraggingPoint: ({ coordinateIndexes }) => {
+        // eslint-disable-next-line no-console, no-undef
+        console.log(`Start dragging point`, coordinateIndexes);
+      },
+      onDraggingPoint: ({ feature, coordinateIndexes }) => {
+        if (this.state.allowEdit) {
+          this.setState({ testPolygons: [feature] });
+        }
+      },
+      onStopDraggingPoint: ({ coordinateIndexes }) => {
+        // eslint-disable-next-line no-console, no-undef
+        console.log(`Stop dragging point`, coordinateIndexes);
+      },
+
+      // Can specify GeoJsonLayer props
+      getFillColor: () => [0x00, 0x20, 0x70, 0x30],
+      getLineColor: () => [0x00, 0x20, 0x70, 0xc0],
+      getLineWidth: () => 30,
+      lineWidthMinPixels: 2,
+      lineWidthMaxPixels: 10,
+
+      // As well as point layer props
+      getPointColor: () => [0x00, 0x20, 0x70, 0xff],
+      pointHighlightColor: [0xff, 0xff, 0xff, 0xff]
+
+      // on: {
+      //   mousedown: event => {
+      //     this.editablePolygonsLayer.selectedPolygonId = event.data.id;
+      //     this.editablePolygonsLayer.selectedSubPolygonIndex = event.metadata.index;
+      //     this.nebula.updateAllDeckObjects();
+      //   },
+      //   /* eslint-disable no-console, no-undef */
+      //   editStart: (event, info) => console.log('Polygon editStart', event, info),
+      //   editEnd: (event, info) => {
+      //     console.log('Polygon editEnd', event, info);
+      //     /* eslint-enable */
+
+      //     if (this.state.allowEdit) {
+      //       const original = this.state.testPolygons.find(p => p.id === info.id);
+      //       if (original) {
+      //         original.geometry.coordinates = info.feature.geoJson.geometry.coordinates;
+      //       }
+      //     }
+      //   }
+      // }
+    });
 
     const textLayer = new TextLayer({
       id: 'text-layer',
@@ -270,7 +288,8 @@ export default class Example extends Component<
         }
       ]
     });
-    const layers = [segmentsLayer, editableJunctionsLayer, editablePolygonsLayer, textLayer];
+    const nebulaLayers = [segmentsLayer, editableJunctionsLayer, textLayer];
+    const deckLayers = [editablePolygonsLayer];
 
     return (
       <div style={styles.mapContainer}>
@@ -278,13 +297,15 @@ export default class Example extends Component<
         <MapGL {...viewport} onChangeViewport={this._onChangeViewport}>
           <Nebula
             ref={nebula => (this.nebula = nebula || this.nebula)}
-            {...{ layers, viewport }}
+            viewport={viewport}
+            layers={nebulaLayers}
             onSelection={this._onSelect}
             selectionType={selectionType}
             onMapMouseEvent={() => this.forceUpdate()}
           >
             <HtmlTooltipOverlay />
           </Nebula>
+          <DeckGL {...viewport} layers={deckLayers} />
         </MapGL>
 
         {this._renderToolBox()}

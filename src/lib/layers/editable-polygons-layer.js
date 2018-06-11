@@ -33,28 +33,13 @@ export default class EditablePolygonsLayer extends CompositeLayer {
     this.removePointerHandlers();
     // and re-subscribe to this instance
     this.addPointerHandlers();
-
-    if (changeFlags.dataChanged) {
-      const feature = props.data;
-
-      let coordinates;
-      if (feature.geometry && feature.geometry.type === 'Polygon') {
-        coordinates = feature.geometry.coordinates[0];
-      } else if (feature.geometry && feature.geometry.type === 'MultiPolygon') {
-        coordinates = feature.geometry.coordinates[0][0];
-      } else {
-        throw Error(`Unsupported geometry type: ${feature.geometry.type}`);
-      }
-
-      this.state.points = coordinates;
-    }
   }
 
   getPickingInfo({ info, sourceLayer }) {
     if (sourceLayer.id.startsWith(`${this.props.id}-points`)) {
       // If user is picking a point, add additional data to the info
       info.isPoint = true;
-      // Get polygon index and ring index from layer id `${this.props.id}-points-${polygonIndex}-${ringIndex}`
+      // Get polygon index and ring index from layer id `${this.props.id}-points|${polygonIndex}|${ringIndex}`
       const coordinateIndexes = sourceLayer.id
         .substring(`${this.props.id}-points|`.length)
         .split('|');

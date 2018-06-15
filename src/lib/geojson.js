@@ -36,6 +36,17 @@ export function expandMultiGeometry(
   return { result, rejected };
 }
 
+/**
+ * Updates a coordinate deeply nested in a GeoJSON geometry coordinates.
+ * Works with MultiPoint, LineString, MultiLineString, Polygon, and MultiPolygon.
+ *
+ * @param coordinates A GeoJSON geometry coordinates array
+ * @param indexes An array containing the indexes of the coordinates to replace
+ * @param updatedCoordinate The updated coordinate to place in the result (i.e. [lng, lat])
+ * @param isPolygonal `true` if `coordinates` is a Polygon or MultiPolygon
+ *
+ * @returns A new array with the coordinates at the given index replaced. Does not modify `coordinates`.
+ */
 export function immutablyReplaceCoordinate(
   coordinates: Array<mixed>,
   indexes: Array<number>,

@@ -43,43 +43,71 @@ export default class Example extends Component<
 
     this.state = {
       viewport: initialViewport,
-      testFeature: {
-        type: 'Feature',
-        properties: {},
-        geometry: {
-          type: 'MultiPolygon',
-          coordinates: [
-            [
-              [
-                [-122.518844, 37.788081],
-                [-122.487602, 37.793778],
-                [-122.479362, 37.812225],
-                [-122.405891, 37.816564],
-                [-122.378768, 37.796763],
-                [-122.350616, 37.722121],
-                [-122.381858, 37.696046],
-                [-122.504768, 37.685722],
-                [-122.518844, 37.788081]
-              ],
-              [
-                [-122.4816947, 37.7351084],
-                [-122.4665643, 37.7132991],
-                [-122.4450611, 37.7237229],
-                [-122.4391468, 37.7420784],
-                [-122.4816947, 37.7351084]
+      testFeatures: {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            geometry: {
+              type: 'Polygon',
+              coordinates: [
+                [
+                  [-122.518844, 37.788081],
+                  [-122.487602, 37.793778],
+                  [-122.479362, 37.812225],
+                  [-122.405891, 37.816564],
+                  [-122.378768, 37.796763],
+                  [-122.350616, 37.722121],
+                  [-122.381858, 37.696046],
+                  [-122.504768, 37.685722],
+                  [-122.518844, 37.788081]
+                ],
+                [
+                  [-122.4816947, 37.7351084],
+                  [-122.4665643, 37.7132991],
+                  [-122.4450611, 37.7237229],
+                  [-122.4391468, 37.7420784],
+                  [-122.4816947, 37.7351084]
+                ]
               ]
-            ],
-            [
-              [
-                [-122.383918, 37.831208],
-                [-122.367095, 37.837716],
-                [-122.355766, 37.806801],
-                [-122.373275, 37.804087],
-                [-122.383918, 37.831208]
-              ]
-            ]
-          ]
-        }
+            }
+            // uncomment once https://github.com/uber/deck.gl/pull/1918 lands
+            // {
+            //   type: 'MultiPolygon',
+            //   coordinates: [
+            //     [
+            //       [
+            //         [-122.518844, 37.788081],
+            //         [-122.487602, 37.793778],
+            //         [-122.479362, 37.812225],
+            //         [-122.405891, 37.816564],
+            //         [-122.378768, 37.796763],
+            //         [-122.350616, 37.722121],
+            //         [-122.381858, 37.696046],
+            //         [-122.504768, 37.685722],
+            //         [-122.518844, 37.788081]
+            //       ],
+            //       [
+            //         [-122.4816947, 37.7351084],
+            //         [-122.4665643, 37.7132991],
+            //         [-122.4450611, 37.7237229],
+            //         [-122.4391468, 37.7420784],
+            //         [-122.4816947, 37.7351084]
+            //       ]
+            //     ],
+            //     [
+            //       [
+            //         [-122.383918, 37.831208],
+            //         [-122.367095, 37.837716],
+            //         [-122.355766, 37.806801],
+            //         [-122.373275, 37.804087],
+            //         [-122.383918, 37.831208]
+            //       ]
+            //     ]
+            //   ]
+            // }
+          }
+        ]
       }
     };
   }
@@ -98,12 +126,24 @@ export default class Example extends Component<
     });
   };
 
+  _onLayerClick = info => {
+    if (info) {
+      console.log(`select editing feature ${info.index}`); // eslint-disable-line
+      // a polygon was clicked
+      this.setState({ editingFeatureIndex: info.index });
+    } else {
+      console.log('deselect editing feature'); // eslint-disable-line
+      // open space was clicked, so stop editing
+      this.setState({ editingFeatureIndex: null });
+    }
+  };
+
   _resize = () => {
     this.forceUpdate();
   };
 
   render() {
-    const { testFeature } = this.state;
+    const { testFeatures } = this.state;
 
     const viewport = {
       ...this.state.viewport,
@@ -112,12 +152,27 @@ export default class Example extends Component<
     };
 
     const editablePolygonsLayer = new EditablePolygonsLayer({
-      data: testFeature,
+      data: testFeatures,
+      editingFeatureIndex: this.state.editingFeatureIndex,
+      pickable: true,
+
       onStartDraggingPoint: ({ coordinateIndexes }) => {
         // eslint-disable-next-line no-console, no-undef
         console.log(`Start dragging point`, coordinateIndexes);
       },
-      onDraggingPoint: ({ feature, coordinateIndexes }) => this.setState({ testFeature: feature }),
+      onDraggingPoint: ({ feature, featureIndex, coordinateIndexes }) => {
+        // Immutably replace the feature being edited in the featureCollection
+        this.setState({
+          testFeatures: {
+            ...this.state.testFeatures,
+            features: [
+              ...this.state.testFeatures.features.slice(0, featureIndex),
+              feature,
+              ...this.state.testFeatures.features.slice(featureIndex + 1)
+            ]
+          }
+        });
+      },
       onStopDraggingPoint: ({ coordinateIndexes }) => {
         // eslint-disable-next-line no-console, no-undef
         console.log(`Stop dragging point`, coordinateIndexes);
@@ -143,6 +198,7 @@ export default class Example extends Component<
             {...viewport}
             layers={[editablePolygonsLayer]}
             controller={MapController}
+            onLayerClick={this._onLayerClick}
             onViewStateChange={({ viewState }) => this.setState({ viewport: viewState })}
           />
         </StaticMap>

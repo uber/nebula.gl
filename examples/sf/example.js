@@ -128,7 +128,7 @@ export default class Example extends Component<
   _loadPolyData(path: string) {
     window.fetch(path).then(response => {
       response.json().then(featureCollection => {
-        // until https://github.com/uber/deck.gl/pull/1918 lands, we'll eliminate MultiPolygons
+        // TODO: once https://github.com/uber/deck.gl/pull/1918 lands, remove this filter since it'll work with MultiPolygons
         featureCollection = featureCollection.filter(
           feature => feature.geometry.type === 'Polygon'
         );

@@ -70,17 +70,15 @@ export default class Example extends Component<
       getData: () => this.testJunctions,
       toNebulaFeature: data => this._toNebulaFeatureJunc(data),
       on: {
-        /* eslint-disable no-console, no-undef */
-        editStart: (event, info) => console.log('Junctions editStart', event, info),
+        editStart: (event, info) => console.log('Junctions editStart', event, info), // eslint-disable-line
         editEnd: (event, info) => {
-          console.log('Junctions editEnd', event, info);
-        /* eslint-enable */
+          console.log('Junctions editEnd', event, info); // eslint-disable-line
 
           if (this.state.allowEdit) {
             const original = this.testJunctions.find(j => j.id === info.id);
             if (original) {
               original.position = info.feature.geoJson.geometry.coordinates;
-      }
+            }
           }
         }
       }
@@ -129,8 +127,13 @@ export default class Example extends Component<
 
   _loadPolyData(path: string) {
     window.fetch(path).then(response => {
-      response.text().then(json => {
-        this.setState({ testPolygons: JSON.parse(json) });
+      response.json().then(featureCollection => {
+        // until https://github.com/uber/deck.gl/pull/1918 lands, we'll eliminate MultiPolygons
+        featureCollection = featureCollection.filter(
+          feature => feature.geometry.type === 'Polygon'
+        );
+
+        this.setState({ testPolygons: featureCollection });
       });
     });
   }
@@ -146,10 +149,20 @@ export default class Example extends Component<
   };
 
   _onSelect = (features: Object[]) => {
-    /* eslint-disable no-console, no-undef */
-    console.log('selected', features);
+    console.log('selected', features); // eslint-disable-line
     this._enableSelection(SELECTION_TYPE.NONE);
-    /* eslint-enable */
+  };
+
+  _onLayerClick = info => {
+    if (info) {
+      console.log(`select editing feature ${info.index}`); // eslint-disable-line
+      // a polygon was clicked
+      this.setState({ editingFeatureIndex: info.index });
+    } else {
+      console.log('deselect editing feature'); // eslint-disable-line
+      // open space was clicked, so stop editing
+      this.setState({ editingFeatureIndex: null });
+    }
   };
 
   _enableSelection(type: number) {
@@ -230,20 +243,27 @@ export default class Example extends Component<
     viewport = Object.assign(viewport, { height, width });
 
     const editablePolygonsLayer = new EditablePolygonsLayer({
-      data: this.state.testPolygons.length ? this.state.testPolygons[0] : null,
+      data: this.state.testPolygons,
+      editingFeatureIndex: this.state.editingFeatureIndex,
+      pickable: true,
 
       onStartDraggingPoint: ({ coordinateIndexes }) => {
-        // eslint-disable-next-line no-console, no-undef
-        console.log(`Start dragging point`, coordinateIndexes);
+        console.log(`Start dragging point`, coordinateIndexes); // eslint-disable-line
       },
-      onDraggingPoint: ({ feature, coordinateIndexes }) => {
+      onDraggingPoint: ({ feature, featureIndex, coordinateIndexes }) => {
         if (this.state.allowEdit) {
-          this.setState({ testPolygons: [feature] });
+          // replace the feature being edited
+          this.setState({
+            testPolygons: [
+              ...this.state.testPolygons.slice(0, featureIndex),
+              feature,
+              ...this.state.testPolygons.slice(featureIndex + 1)
+            ]
+          });
         }
       },
       onStopDraggingPoint: ({ coordinateIndexes }) => {
-        // eslint-disable-next-line no-console, no-undef
-        console.log(`Stop dragging point`, coordinateIndexes);
+        console.log(`Stop dragging point`, coordinateIndexes); // eslint-disable-line
       },
 
       // Can specify GeoJsonLayer props
@@ -256,27 +276,6 @@ export default class Example extends Component<
       // As well as point layer props
       getPointColor: () => [0x00, 0x20, 0x70, 0xff],
       pointHighlightColor: [0xff, 0xff, 0xff, 0xff]
-
-      // on: {
-      //   mousedown: event => {
-      //     this.editablePolygonsLayer.selectedPolygonId = event.data.id;
-      //     this.editablePolygonsLayer.selectedSubPolygonIndex = event.metadata.index;
-      //     this.nebula.updateAllDeckObjects();
-      //   },
-      //   /* eslint-disable no-console, no-undef */
-      //   editStart: (event, info) => console.log('Polygon editStart', event, info),
-      //   editEnd: (event, info) => {
-      //     console.log('Polygon editEnd', event, info);
-      //     /* eslint-enable */
-
-      //     if (this.state.allowEdit) {
-      //       const original = this.state.testPolygons.find(p => p.id === info.id);
-      //       if (original) {
-      //         original.geometry.coordinates = info.feature.geoJson.geometry.coordinates;
-      //       }
-      //     }
-      //   }
-      // }
     });
 
     const textLayer = new TextLayer({
@@ -305,7 +304,7 @@ export default class Example extends Component<
           >
             <HtmlTooltipOverlay />
           </Nebula>
-          <DeckGL {...viewport} layers={deckLayers} />
+          <DeckGL {...viewport} onLayerClick={this._onLayerClick} layers={deckLayers} />
         </MapGL>
 
         {this._renderToolBox()}

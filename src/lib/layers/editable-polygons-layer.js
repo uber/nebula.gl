@@ -1,6 +1,7 @@
 /* eslint-env browser */
 
 import { CompositeLayer, GeoJsonLayer, ScatterplotLayer } from 'deck.gl';
+import { immutablyReplaceCoordinate } from '../geojson';
 
 export default class EditablePolygonsLayer extends CompositeLayer {
   static layerName = 'EditablePolygonsLayer';
@@ -45,9 +46,9 @@ export default class EditablePolygonsLayer extends CompositeLayer {
         .split('|');
       const polygonIndex = parseInt(coordinateIndexes[0], 10);
       const ringIndex = parseInt(coordinateIndexes[1], 10);
-      if (this.props.data.geometry.type === 'MultiPolygon') {
+      if (this.getEditingFeature().geometry.type === 'MultiPolygon') {
         info.coordinateIndexes = [polygonIndex, ringIndex, info.index];
-      } else if (this.props.data.geometry.type === 'Polygon') {
+      } else if (this.getEditingFeature().geometry.type === 'Polygon') {
         info.coordinateIndexes = [ringIndex, info.index];
       }
     }
@@ -56,13 +57,16 @@ export default class EditablePolygonsLayer extends CompositeLayer {
   }
 
   createPointLayers() {
-    if (!this.props.data || !this.props.data.geometry) {
+    if (!this.props.data) {
+      return [];
+    }
+    if (typeof this.props.editingFeatureIndex !== 'number') {
       return [];
     }
 
     const layers = [];
 
-    const geometry = this.props.data.geometry;
+    const geometry = this.getEditingFeature().geometry;
     let polygons = [];
     if (geometry.type === 'MultiPolygon') {
       polygons = geometry.coordinates;
@@ -133,6 +137,15 @@ export default class EditablePolygonsLayer extends CompositeLayer {
     this.context.gl.canvas.addEventListener('pointerup', this.state.pointerHandlers.onPointerUp);
   }
 
+  getEditingFeature() {
+    if (Array.isArray(this.props.data)) {
+      return this.props.data[this.props.editingFeatureIndex];
+    } else if (this.props.data.type === 'FeatureCollection') {
+      return this.props.data.features[this.props.editingFeatureIndex];
+    }
+    throw Error('Unhandled data type');
+  }
+
   onPointerMove(event) {
     if (this.state.draggingPoint) {
       // stop propagation to prevent map panning
@@ -146,83 +159,26 @@ export default class EditablePolygonsLayer extends CompositeLayer {
         ]);
 
         const { coordinateIndexes } = this.state.draggingPoint;
-        let polygonIndex;
-        let ringIndex;
-        let pointIndex;
+        const editingFeature = this.getEditingFeature();
 
-        // Immutably set coordinates
-        let affectedPolygon;
-        let affectedRing;
-        if (this.props.data.geometry.type === 'MultiPolygon') {
-          polygonIndex = coordinateIndexes[0];
-          ringIndex = coordinateIndexes[1];
-          pointIndex = coordinateIndexes[2];
-          affectedPolygon = this.props.data.geometry.coordinates[polygonIndex];
-        } else if (this.props.data.geometry.type === 'Polygon') {
-          ringIndex = coordinateIndexes[0];
-          pointIndex = coordinateIndexes[1];
-          affectedPolygon = this.props.data.geometry.coordinates;
-        } else {
-          throw Error(`Unsupported geometry type ${this.props.data.geometry.type}`);
-        }
-
-        // Immutably update affected ring (with the actual point that was changed)
-        affectedRing = affectedPolygon[ringIndex];
-        affectedRing = [
-          ...affectedRing.slice(0, pointIndex),
+        const coordinates = immutablyReplaceCoordinate(
+          editingFeature.geometry.coordinates,
+          coordinateIndexes,
           groundCoords,
-          ...affectedRing.slice(pointIndex + 1)
-        ];
-
-        // The first and last point are repeated, so update both if necessary
-        const lastIndexInRing = affectedRing.length - 1;
-        if (pointIndex === 0 || pointIndex === lastIndexInRing) {
-          affectedRing[0] = groundCoords;
-          affectedRing[lastIndexInRing] = groundCoords;
-        }
-
-        // Immutably update polygon containing affected ring
-        affectedPolygon = [
-          ...affectedPolygon.slice(0, ringIndex),
-          affectedRing,
-          ...affectedPolygon.slice(ringIndex + 1)
-        ];
-
-        let coordinates;
-        if (this.props.data.geometry.type === 'MultiPolygon') {
-          coordinates = [
-            ...this.props.data.geometry.coordinates.slice(0, polygonIndex),
-            affectedPolygon,
-            ...this.props.data.geometry.coordinates.slice(polygonIndex + 1)
-          ];
-        } else if (this.props.data.geometry.type === 'Polygon') {
-          coordinates = affectedPolygon;
-        }
-
-        // Mutably set coordinates
-        // let coordinates = this.props.data.geometry.coordinates;
-        // if (this.props.data.geometry.type === 'MultiPolygon') {
-        //   coordinates[polygonIndex][ringIndex][pointIndex] = groundCoords;
-        // } else if (this.props.data.geometry.type === 'Polygon') {
-        //   coordinates[ringIndex][pointIndex] = groundCoords;
-        // }
-        // // The first and last point are repeated, so update both if necessary
-        // const lastIndexInRing = affectedRing.length - 1;
-        // if (pointIndex === 0 || pointIndex === lastIndexInRing) {
-        //   affectedRing[0] = groundCoords;
-        //   affectedRing[lastIndexInRing] = groundCoords;
-        // }
+          true
+        );
 
         const updatedFeature = {
-          ...this.props.data,
+          ...editingFeature,
           geometry: {
-            ...this.props.data.geometry,
+            ...editingFeature.geometry,
             coordinates
           }
         };
 
         this.props.onDraggingPoint({
           feature: updatedFeature,
+          featureIndex: this.props.editingFeatureIndex,
           coordinateIndexes: this.state.draggingPoint.coordinateIndexes
         });
       }
@@ -243,6 +199,7 @@ export default class EditablePolygonsLayer extends CompositeLayer {
       this.setState({ draggingPoint: pickedPoint });
       if (this.props.onStartDraggingPoint) {
         this.props.onStartDraggingPoint({
+          featureIndex: this.props.editingFeatureIndex,
           coordinateIndexes: pickedPoint.coordinateIndexes
         });
       }
@@ -250,6 +207,12 @@ export default class EditablePolygonsLayer extends CompositeLayer {
   }
 
   onPointerUp() {
+    if (this.state.draggingPoint && this.props.onStopDraggingPoint) {
+      this.props.onStopDraggingPoint({
+        featureIndex: this.props.editingFeatureIndex,
+        coordinateIndexes: this.state.draggingPoint.coordinateIndexes
+      });
+    }
     this.setState({ draggingPoint: null });
   }
 

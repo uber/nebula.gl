@@ -35,3 +35,41 @@ export function expandMultiGeometry(
 
   return { result, rejected };
 }
+
+export function immutablyReplaceCoordinate(
+  coordinates: Array<mixed>,
+  indexes: Array<number>,
+  updatedCoordinate: Array<number>,
+  isPolygonal: boolean = false
+): Array<mixed> {
+  if (!indexes || indexes.length === 0) {
+    return coordinates;
+  }
+  if (indexes.length === 1) {
+    const updated = [
+      ...coordinates.slice(0, indexes[0]),
+      updatedCoordinate,
+      ...coordinates.slice(indexes[0] + 1)
+    ];
+
+    if (isPolygonal && (indexes[0] === 0 || indexes[0] === coordinates.length - 1)) {
+      // for polygons, the first point is repeated at the end of the array
+      // so, update it on both ends of the array
+      updated[0] = updatedCoordinate;
+      updated[coordinates.length - 1] = updatedCoordinate;
+    }
+    return updated;
+  }
+
+  // recursively update inner array
+  return [
+    ...coordinates.slice(0, indexes[0]),
+    immutablyReplaceCoordinate(
+      coordinates[indexes[0]],
+      indexes.slice(1, indexes.length),
+      updatedCoordinate,
+      isPolygonal
+    ),
+    ...coordinates.slice(indexes[0] + 1)
+  ];
+}

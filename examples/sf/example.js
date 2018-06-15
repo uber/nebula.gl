@@ -14,14 +14,16 @@ import {
   SELECTION_TYPE
 } from 'nebula.gl';
 
+import testPolygons from '../data/sf-polygons';
+
 const initialViewport = {
   bearing: 0,
   height: 0,
-  latitude: 37.88600082874687,
-  longitude: -122.48824690896957,
+  latitude: 37.75,
+  longitude: -122.445,
   pitch: 0,
   width: 0,
-  zoom: 14.6
+  zoom: 17
 };
 
 const styles = {
@@ -52,10 +54,15 @@ export default class Example extends Component<
   constructor() {
     super();
 
+    // TODO: once https://github.com/uber/deck.gl/pull/1918 lands, remove this filter since it'll work with MultiPolygons
+    const testPolygonsWithoutMultiPolygons = testPolygons.filter(
+      feature => feature.geometry.type === 'Polygon'
+    );
+
     this.state = {
       viewport: initialViewport,
       allowEdit: true,
-      testPolygons: []
+      testPolygons: testPolygonsWithoutMultiPolygons
     };
 
     this.testSegments = [];
@@ -87,7 +94,6 @@ export default class Example extends Component<
     this._loadData(
       'https://raw.githubusercontent.com/uber-common/deck.gl-data/master/examples/layer-browser/sfmta.routes.json'
     );
-    this._loadPolyData('/static/sf-poly.json');
   }
 
   componentDidMount() {
@@ -121,19 +127,6 @@ export default class Example extends Component<
         });
 
         this.nebula.updateAllDeckObjects();
-      });
-    });
-  }
-
-  _loadPolyData(path: string) {
-    window.fetch(path).then(response => {
-      response.json().then(featureCollection => {
-        // TODO: once https://github.com/uber/deck.gl/pull/1918 lands, remove this filter since it'll work with MultiPolygons
-        featureCollection = featureCollection.filter(
-          feature => feature.geometry.type === 'Polygon'
-        );
-
-        this.setState({ testPolygons: featureCollection });
       });
     });
   }

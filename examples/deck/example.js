@@ -6,6 +6,8 @@ import { StaticMap } from 'react-map-gl';
 
 import { EditablePolygonsLayer } from 'nebula.gl';
 
+import testPolygons from '../data/sf-polygons';
+
 const initialViewport = {
   bearing: 0,
   height: 0,
@@ -41,73 +43,16 @@ export default class Example extends Component<
   constructor() {
     super();
 
+    // TODO: once https://github.com/uber/deck.gl/pull/1918 lands, remove this filter since it'll work with MultiPolygons
+    const testPolygonsWithoutMultiPolygons = testPolygons.filter(
+      feature => feature.geometry.type === 'Polygon'
+    );
+
     this.state = {
       viewport: initialViewport,
       testFeatures: {
         type: 'FeatureCollection',
-        features: [
-          {
-            type: 'Feature',
-            geometry: {
-              type: 'Polygon',
-              coordinates: [
-                [
-                  [-122.518844, 37.788081],
-                  [-122.487602, 37.793778],
-                  [-122.479362, 37.812225],
-                  [-122.405891, 37.816564],
-                  [-122.378768, 37.796763],
-                  [-122.350616, 37.722121],
-                  [-122.381858, 37.696046],
-                  [-122.504768, 37.685722],
-                  [-122.518844, 37.788081]
-                ],
-                [
-                  [-122.4816947, 37.7351084],
-                  [-122.4665643, 37.7132991],
-                  [-122.4450611, 37.7237229],
-                  [-122.4391468, 37.7420784],
-                  [-122.4816947, 37.7351084]
-                ]
-              ]
-            }
-            // uncomment once https://github.com/uber/deck.gl/pull/1918 lands
-            // {
-            //   type: 'MultiPolygon',
-            //   coordinates: [
-            //     [
-            //       [
-            //         [-122.518844, 37.788081],
-            //         [-122.487602, 37.793778],
-            //         [-122.479362, 37.812225],
-            //         [-122.405891, 37.816564],
-            //         [-122.378768, 37.796763],
-            //         [-122.350616, 37.722121],
-            //         [-122.381858, 37.696046],
-            //         [-122.504768, 37.685722],
-            //         [-122.518844, 37.788081]
-            //       ],
-            //       [
-            //         [-122.4816947, 37.7351084],
-            //         [-122.4665643, 37.7132991],
-            //         [-122.4450611, 37.7237229],
-            //         [-122.4391468, 37.7420784],
-            //         [-122.4816947, 37.7351084]
-            //       ]
-            //     ],
-            //     [
-            //       [
-            //         [-122.383918, 37.831208],
-            //         [-122.367095, 37.837716],
-            //         [-122.355766, 37.806801],
-            //         [-122.373275, 37.804087],
-            //         [-122.383918, 37.831208]
-            //       ]
-            //     ]
-            //   ]
-            // }
-          }
-        ]
+        features: testPolygonsWithoutMultiPolygons
       }
     };
   }

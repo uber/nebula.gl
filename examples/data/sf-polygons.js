@@ -1,10 +1,9 @@
-[
+const polygons = [
   {
-    "type": "Feature",
-    "id": "one",
-    "geometry": {
-      "type": "Polygon",
-      "coordinates": [
+    type: 'Feature',
+    geometry: {
+      type: 'Polygon',
+      coordinates: [
         [
           [-122.36354616888889, 37.833480408633655],
           [-122.3728158832443, 37.83673419913565],
@@ -15,15 +14,13 @@
           [-122.36354616888889, 37.833480408633655]
         ]
       ]
-    },
-    "properties": {}
+    }
   },
   {
-    "type": "Feature",
-    "id": "two",
-    "geometry": {
-      "type": "Polygon",
-      "coordinates": [
+    type: 'Feature',
+    geometry: {
+      type: 'Polygon',
+      coordinates: [
         [
           [-122.42654589423063, 37.82876893681027],
           [-122.4231555820358, 37.82470123714457],
@@ -32,15 +29,13 @@
           [-122.42654589423063, 37.82876893681027]
         ]
       ]
-    },
-    "properties": {}
+    }
   },
   {
-    "type": "Feature",
-    "id": "three",
-    "geometry": {
-      "type": "Polygon",
-      "coordinates": [
+    type: 'Feature',
+    geometry: {
+      type: 'Polygon',
+      coordinates: [
         [
           [-122.44065057089426, 37.86997264051048],
           [-122.45034943869211, 37.85716578496087],
@@ -58,15 +53,13 @@
           [-122.43309691521875, 37.863841448225706]
         ]
       ]
-    },
-    "properties": {}
+    }
   },
   {
-    "type": "Feature",
-    "id": "m",
-    "geometry": {
-      "type": "MultiPolygon",
-      "coordinates": [
+    type: 'Feature',
+    geometry: {
+      type: 'MultiPolygon',
+      coordinates: [
         [
           [
             [-122.4960994720459, 37.88474434096118],
@@ -86,7 +79,8 @@
           ]
         ]
       ]
-    },
-    "properties": {}
+    }
   }
-]
+];
+
+export default polygons;

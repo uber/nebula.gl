@@ -75,11 +75,11 @@ export default class Example extends Component<
     if (info) {
       console.log(`select editing feature ${info.index}`); // eslint-disable-line
       // a polygon was clicked
-      this.setState({ editingFeatureIndex: info.index });
+      this.setState({ selectedFeatureIndex: info.index });
     } else {
       console.log('deselect editing feature'); // eslint-disable-line
       // open space was clicked, so stop editing
-      this.setState({ editingFeatureIndex: null });
+      this.setState({ selectedFeatureIndex: null });
     }
   };
 
@@ -88,7 +88,7 @@ export default class Example extends Component<
   };
 
   render() {
-    const { testFeatures } = this.state;
+    const { testFeatures, selectedFeatureIndex } = this.state;
 
     const viewport = {
       ...this.state.viewport,
@@ -98,8 +98,9 @@ export default class Example extends Component<
 
     const editablePolygonsLayer = new EditablePolygonsLayer({
       data: testFeatures,
-      editingFeatureIndex: this.state.editingFeatureIndex,
+      selectedFeatureIndex,
       pickable: true,
+      isEditing: true,
 
       onStartDraggingPoint: ({ coordinateIndexes }) => {
         // eslint-disable-next-line no-console, no-undef

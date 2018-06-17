@@ -9,10 +9,18 @@ export default class EditablePolygonsLayer extends CompositeLayer {
   renderLayers() {
     let layers = [
       new GeoJsonLayer({
+        // forward all props to geojson layer
         ...this.props,
         id: `${this.props.id}-polygons`
       })
     ];
+    // TODO: get this working
+    // let layers = [
+    //   new GeoJsonLayer(this.getSubLayerProps({ id: 'polygons' }), {
+    //     // forward all props to geojson layer
+    //     ...this.props
+    //   })
+    // ];
 
     layers = layers.concat(this.createPointLayers());
 
@@ -57,12 +65,40 @@ export default class EditablePolygonsLayer extends CompositeLayer {
   }
 
   createPointLayers() {
-    if (!this.props.data) {
+    if (!this.getEditingFeature()) {
       return [];
     }
-    if (typeof this.props.editingFeatureIndex !== 'number') {
-      return [];
-    }
+
+    // TODO: implment custom styling for selected vs. not selected
+    // Point rendering props
+    // const {
+    //   stroked,
+    //   filled,
+    //   extruded,
+    //   lineWidthScale,
+    //   lineWidthMinPixels,
+    //   lineWidthMaxPixels,
+    //   lineJointRounded,
+    //   lineMiterLimit,
+    //   pointRadiusScale,
+    //   pointRadiusMinPixels,
+    //   pointRadiusMaxPixels,
+    //   elevationScale,
+    //   lineDashJustified,
+    //   fp64
+    // } = this.props;
+
+    // // Accessor props for underlying layers
+    // const {
+    //   data,
+    //   getLineColor,
+    //   getFillColor,
+    //   getRadius,
+    //   getLineWidth,
+    //   getLineDashArray,
+    //   getElevation,
+    //   updateTriggers
+    // } = this.props;
 
     const layers = [];
 
@@ -138,12 +174,17 @@ export default class EditablePolygonsLayer extends CompositeLayer {
   }
 
   getEditingFeature() {
-    if (Array.isArray(this.props.data)) {
-      return this.props.data[this.props.editingFeatureIndex];
-    } else if (this.props.data.type === 'FeatureCollection') {
-      return this.props.data.features[this.props.editingFeatureIndex];
+    if (!this.props.isEditing) {
+      return null;
     }
-    throw Error('Unhandled data type');
+    if (Array.isArray(this.props.data)) {
+      return this.props.data[this.props.selectedFeatureIndex];
+    }
+    if (this.props.data.type === 'FeatureCollection') {
+      return this.props.data.features[this.props.selectedFeatureIndex];
+    }
+    // Assume it is a single feature
+    return this.props.data;
   }
 
   onPointerMove(event) {
@@ -178,7 +219,7 @@ export default class EditablePolygonsLayer extends CompositeLayer {
 
         this.props.onDraggingPoint({
           feature: updatedFeature,
-          featureIndex: this.props.editingFeatureIndex,
+          featureIndex: this.props.selectedFeatureIndex,
           coordinateIndexes: this.state.draggingPoint.coordinateIndexes
         });
       }
@@ -199,7 +240,7 @@ export default class EditablePolygonsLayer extends CompositeLayer {
       this.setState({ draggingPoint: pickedPoint });
       if (this.props.onStartDraggingPoint) {
         this.props.onStartDraggingPoint({
-          featureIndex: this.props.editingFeatureIndex,
+          featureIndex: this.props.selectedFeatureIndex,
           coordinateIndexes: pickedPoint.coordinateIndexes
         });
       }
@@ -209,7 +250,7 @@ export default class EditablePolygonsLayer extends CompositeLayer {
   onPointerUp() {
     if (this.state.draggingPoint && this.props.onStopDraggingPoint) {
       this.props.onStopDraggingPoint({
-        featureIndex: this.props.editingFeatureIndex,
+        featureIndex: this.props.selectedFeatureIndex,
         coordinateIndexes: this.state.draggingPoint.coordinateIndexes
       });
     }

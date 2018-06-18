@@ -40,8 +40,10 @@ export default class EditablePolygonsLayer extends CompositeLayer {
   updateState({ props, changeFlags }) {
     // unsubscribe previous layer instance's handlers
     this.removePointerHandlers();
-    // and re-subscribe to this instance
-    this.addPointerHandlers();
+    if (props.isEditing) {
+      // and re-subscribe to this instance
+      this.addPointerHandlers();
+    }
   }
 
   getPickingInfo({ info, sourceLayer }) {

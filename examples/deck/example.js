@@ -1,19 +1,21 @@
 // @flow
 import window from 'global/window';
 import React, { Component } from 'react';
-import DeckGL, { WebMercatorViewport } from 'deck.gl';
-import MapGL from 'react-map-gl';
+import DeckGL, { MapController } from 'deck.gl';
+import { StaticMap } from 'react-map-gl';
 
-import { EditableJunctionsLayer, Feature, NebulaCore } from 'nebula.gl';
+import { EditablePolygonsLayer } from 'nebula.gl';
+
+import testPolygons from '../data/sf-polygons';
 
 const initialViewport = {
   bearing: 0,
   height: 0,
-  latitude: 40.78,
-  longitude: -73.97,
+  latitude: 37.75,
+  longitude: -122.4,
   pitch: 0,
   width: 0,
-  zoom: 14
+  zoom: 10
 };
 
 const styles = {
@@ -41,28 +43,18 @@ export default class Example extends Component<
   constructor() {
     super();
 
+    // TODO: once https://github.com/uber/deck.gl/pull/1918 lands, remove this filter since it'll work with MultiPolygons
+    const testPolygonsWithoutMultiPolygons = testPolygons.filter(
+      feature => feature.geometry.type === 'Polygon'
+    );
+
     this.state = {
-      viewport: initialViewport
-    };
-
-    this.testJunctions = [
-      { id: 1, position: [-73.978, 40.781] },
-      { id: 2, position: [-73.972, 40.789] }
-    ];
-    this.editableJunctionsLayer = new EditableJunctionsLayer({
-      getData: () => this.testJunctions,
-      toNebulaFeature: data => this._toNebulaFeatureJunc(data),
-      on: {
-        editEnd: (event, info) => {
-          const original = this.testJunctions.find(j => j.id === info.id);
-          if (original) {
-            original.position = info.feature.geoJson.geometry.coordinates;
-          }
-        }
+      viewport: initialViewport,
+      testFeatures: {
+        type: 'FeatureCollection',
+        features: testPolygonsWithoutMultiPolygons
       }
-    });
-
-    this.nebulaCore = new NebulaCore();
+    };
   }
 
   componentDidMount() {
@@ -73,59 +65,89 @@ export default class Example extends Component<
     window.removeEventListener('resize', this._resize);
   }
 
-  editableJunctionsLayer: EditableJunctionsLayer;
-
   _onChangeViewport = (viewport: Object) => {
     this.setState({
       viewport: { ...this.state.viewport, ...viewport }
     });
   };
 
+  _onLayerClick = info => {
+    if (info) {
+      console.log(`select editing feature ${info.index}`); // eslint-disable-line
+      // a polygon was clicked
+      this.setState({ selectedFeatureIndex: info.index });
+    } else {
+      console.log('deselect editing feature'); // eslint-disable-line
+      // open space was clicked, so stop editing
+      this.setState({ selectedFeatureIndex: null });
+    }
+  };
+
   _resize = () => {
     this.forceUpdate();
   };
 
-  _toNebulaFeatureJunc(junc: Object) {
-    const geojson = {
-      type: 'Feature',
-      geometry: {
-        type: 'Point',
-        coordinates: junc.position
-      },
-      properties: null
-    };
-    const style = {
-      pointRadiusMeters: 20,
-      outlineRadiusMeters: 20,
-      fillColor: [1, 0, 0, 1],
-      outlineColor: [0, 0, 1, 1]
-    };
-    return new Feature(geojson, style);
-  }
-
   render() {
-    const { editableJunctionsLayer, state } = this;
-    let { viewport } = state;
+    const { testFeatures, selectedFeatureIndex } = this.state;
 
-    const { innerHeight: height, innerWidth: width } = window;
-    viewport = Object.assign(viewport, { height, width });
+    const viewport = {
+      ...this.state.viewport,
+      height: window.innerHeight,
+      width: window.innerWidth
+    };
 
-    const wmViewport = new WebMercatorViewport(viewport);
+    const editablePolygonsLayer = new EditablePolygonsLayer({
+      data: testFeatures,
+      selectedFeatureIndex,
+      pickable: true,
+      isEditing: true,
+
+      onStartDraggingPoint: ({ coordinateIndexes }) => {
+        // eslint-disable-next-line no-console, no-undef
+        console.log(`Start dragging point`, coordinateIndexes);
+      },
+      onDraggingPoint: ({ feature, featureIndex, coordinateIndexes }) => {
+        // Immutably replace the feature being edited in the featureCollection
+        this.setState({
+          testFeatures: {
+            ...this.state.testFeatures,
+            features: [
+              ...this.state.testFeatures.features.slice(0, featureIndex),
+              feature,
+              ...this.state.testFeatures.features.slice(featureIndex + 1)
+            ]
+          }
+        });
+      },
+      onStopDraggingPoint: ({ coordinateIndexes }) => {
+        // eslint-disable-next-line no-console, no-undef
+        console.log(`Stop dragging point`, coordinateIndexes);
+      },
+
+      // Can specify GeoJsonLayer props
+      getFillColor: () => [0x00, 0x20, 0x70, 0x30],
+      getLineColor: () => [0x00, 0x20, 0x70, 0xc0],
+      getLineWidth: () => 30,
+      lineWidthMinPixels: 2,
+      lineWidthMaxPixels: 10,
+
+      // As well as point layer props
+      getPointColor: () => [0x00, 0x20, 0x70, 0xff],
+      pointHighlightColor: [0xff, 0xff, 0xff, 0xff]
+    });
 
     return (
       <div style={styles.mapContainer}>
         <link href="https://api.mapbox.com/mapbox-gl-js/v0.44.0/mapbox-gl.css" rel="stylesheet" />
-        <MapGL {...viewport} onChangeViewport={this._onChangeViewport}>
+        <StaticMap {...viewport}>
           <DeckGL
-            ref={deckgl => this.nebulaCore.setDeck(deckgl)}
-            layers={this.nebulaCore.updateAndGetRenderedLayers(
-              [editableJunctionsLayer],
-              viewport,
-              this
-            )}
-            viewports={[wmViewport]}
+            {...viewport}
+            layers={[editablePolygonsLayer]}
+            controller={MapController}
+            onLayerClick={this._onLayerClick}
+            onViewStateChange={({ viewState }) => this.setState({ viewport: viewState })}
           />
-        </MapGL>
+        </StaticMap>
       </div>
     );
   }

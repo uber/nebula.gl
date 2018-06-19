@@ -1,7 +1,7 @@
 // @flow
 import window from 'global/window';
 import React, { Component } from 'react';
-import { TextLayer } from 'deck.gl';
+import DeckGL, { TextLayer } from 'deck.gl';
 import MapGL from 'react-map-gl';
 
 import {
@@ -13,6 +13,8 @@ import {
   SegmentsLayer,
   SELECTION_TYPE
 } from 'nebula.gl';
+
+import testPolygons from '../data/sf-polygons';
 
 const initialViewport = {
   bearing: 0,
@@ -45,15 +47,22 @@ export default class Example extends Component<
   {
     viewport: Object,
     allowEdit: boolean,
-    selectionType?: number
+    selectionType?: number,
+    testPolygons: Array<Object>
   }
 > {
   constructor() {
     super();
 
+    // TODO: once https://github.com/uber/deck.gl/pull/1918 lands, remove this filter since it'll work with MultiPolygons
+    const testPolygonsWithoutMultiPolygons = testPolygons.filter(
+      feature => feature.geometry.type === 'Polygon'
+    );
+
     this.state = {
       viewport: initialViewport,
-      allowEdit: true
+      allowEdit: true,
+      testPolygons: testPolygonsWithoutMultiPolygons
     };
 
     this.testSegments = [];
@@ -68,11 +77,9 @@ export default class Example extends Component<
       getData: () => this.testJunctions,
       toNebulaFeature: data => this._toNebulaFeatureJunc(data),
       on: {
-        /* eslint-disable no-console, no-undef */
-        editStart: (event, info) => console.log('Junctions editStart', event, info),
+        editStart: (event, info) => console.log('Junctions editStart', event, info), // eslint-disable-line
         editEnd: (event, info) => {
-          console.log('Junctions editEnd', event, info);
-          /* eslint-enable */
+          console.log('Junctions editEnd', event, info); // eslint-disable-line
 
           if (this.state.allowEdit) {
             const original = this.testJunctions.find(j => j.id === info.id);
@@ -84,42 +91,9 @@ export default class Example extends Component<
       }
     });
 
-    this.testPolygons = [];
-    this.editablePolygonsLayer = new EditablePolygonsLayer({
-      getData: () => this.testPolygons,
-      toNebulaFeature: data =>
-        new Feature(data, {
-          fillColor: [0, 0, 0, 0.4],
-          outlineColor: [0.5, 0.5, 0.5, 1],
-          lineWidthMeters: 10
-        }),
-      on: {
-        mousedown: event => {
-          this.editablePolygonsLayer.selectedPolygonId = event.data.id;
-          this.editablePolygonsLayer.selectedSubPolygonIndex = event.metadata.index;
-          this.nebula.updateAllDeckObjects();
-        },
-        /* eslint-disable no-console, no-undef */
-        editStart: (event, info) => console.log('Polygon editStart', event, info),
-        editEnd: (event, info) => {
-          console.log('Polygon editEnd', event, info);
-          /* eslint-enable */
-
-          if (this.state.allowEdit) {
-            const original = this.testPolygons.find(p => p.id === info.id);
-            if (original) {
-              original.geometry.coordinates = info.feature.geoJson.geometry.coordinates;
-            }
-          }
-        }
-      }
-    });
-    this.editablePolygonsLayer.supportMultiPolygon = true;
-
     this._loadData(
       'https://raw.githubusercontent.com/uber-common/deck.gl-data/master/examples/layer-browser/sfmta.routes.json'
     );
-    this._loadPolyData('/static/sf-poly.json');
   }
 
   componentDidMount() {
@@ -132,7 +106,6 @@ export default class Example extends Component<
 
   nebula: Nebula;
   testSegments: Object[];
-  testPolygons: Object[];
   segmentsLayer: SegmentsLayer;
   editableJunctionsLayer: EditableJunctionsLayer;
 
@@ -158,15 +131,6 @@ export default class Example extends Component<
     });
   }
 
-  _loadPolyData(path: string) {
-    window.fetch(path).then(response => {
-      response.text().then(json => {
-        this.testPolygons = JSON.parse(json);
-        this.nebula.updateAllDeckObjects();
-      });
-    });
-  }
-
   _onChangeViewport = (viewport: Object) => {
     this.setState({
       viewport: { ...this.state.viewport, ...viewport }
@@ -178,10 +142,20 @@ export default class Example extends Component<
   };
 
   _onSelect = (features: Object[]) => {
-    /* eslint-disable no-console, no-undef */
-    console.log('selected', features);
+    console.log('selected', features); // eslint-disable-line
     this._enableSelection(SELECTION_TYPE.NONE);
-    /* eslint-enable */
+  };
+
+  _onLayerClick = info => {
+    if (info) {
+      console.log(`select editing feature ${info.index}`); // eslint-disable-line
+      // a polygon was clicked
+      this.setState({ selectedFeatureIndex: info.index });
+    } else {
+      console.log('deselect editing feature'); // eslint-disable-line
+      // open space was clicked, so stop editing
+      this.setState({ selectedFeatureIndex: null });
+    }
   };
 
   _enableSelection(type: number) {
@@ -241,7 +215,7 @@ export default class Example extends Component<
           </button>
         </div>
         <div>
-          Road Count: {this.testSegments.length} Poly Count: {this.testPolygons.length}
+          Road Count: {this.testSegments.length} Poly Count: {this.state.testPolygons.length}
         </div>
         <div>
           <button onClick={() => this.setState({ allowEdit: !this.state.allowEdit })}>
@@ -254,12 +228,49 @@ export default class Example extends Component<
   }
 
   render() {
-    const { editableJunctionsLayer, editablePolygonsLayer, segmentsLayer, state } = this;
+    const { editableJunctionsLayer, segmentsLayer, state } = this;
     let { viewport } = state;
     const { selectionType } = state;
 
     const { innerHeight: height, innerWidth: width } = window;
     viewport = Object.assign(viewport, { height, width });
+
+    const editablePolygonsLayer = new EditablePolygonsLayer({
+      data: this.state.testPolygons,
+      selectedFeatureIndex: this.state.selectedFeatureIndex,
+      pickable: true,
+      isEditing: this.state.allowEdit,
+
+      onStartDraggingPoint: ({ coordinateIndexes }) => {
+        console.log(`Start dragging point`, coordinateIndexes); // eslint-disable-line
+      },
+      onDraggingPoint: ({ feature, featureIndex, coordinateIndexes }) => {
+        if (this.state.allowEdit) {
+          // replace the feature being edited
+          this.setState({
+            testPolygons: [
+              ...this.state.testPolygons.slice(0, featureIndex),
+              feature,
+              ...this.state.testPolygons.slice(featureIndex + 1)
+            ]
+          });
+        }
+      },
+      onStopDraggingPoint: ({ coordinateIndexes }) => {
+        console.log(`Stop dragging point`, coordinateIndexes); // eslint-disable-line
+      },
+
+      // Can specify GeoJsonLayer props
+      getFillColor: () => [0x00, 0x20, 0x70, 0x30],
+      getLineColor: () => [0x00, 0x20, 0x70, 0xc0],
+      getLineWidth: () => 30,
+      lineWidthMinPixels: 2,
+      lineWidthMaxPixels: 10,
+
+      // As well as point layer props
+      getPointColor: () => [0x00, 0x20, 0x70, 0xff],
+      pointHighlightColor: [0xff, 0xff, 0xff, 0xff]
+    });
 
     const textLayer = new TextLayer({
       id: 'text-layer',
@@ -270,7 +281,8 @@ export default class Example extends Component<
         }
       ]
     });
-    const layers = [segmentsLayer, editableJunctionsLayer, editablePolygonsLayer, textLayer];
+    const nebulaLayers = [segmentsLayer, editableJunctionsLayer, textLayer];
+    const deckLayers = [editablePolygonsLayer];
 
     return (
       <div style={styles.mapContainer}>
@@ -278,13 +290,15 @@ export default class Example extends Component<
         <MapGL {...viewport} onChangeViewport={this._onChangeViewport}>
           <Nebula
             ref={nebula => (this.nebula = nebula || this.nebula)}
-            {...{ layers, viewport }}
+            viewport={viewport}
+            layers={nebulaLayers}
             onSelection={this._onSelect}
             selectionType={selectionType}
             onMapMouseEvent={() => this.forceUpdate()}
           >
             <HtmlTooltipOverlay />
           </Nebula>
+          <DeckGL {...viewport} onLayerClick={this._onLayerClick} layers={deckLayers} />
         </MapGL>
 
         {this._renderToolBox()}

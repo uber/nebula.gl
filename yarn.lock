@@ -172,6 +172,10 @@
   version "5.1.5"
   resolved "https://registry.yarnpkg.com/@turf%2fhelpers/-/helpers-5.1.5.tgz#153405227ab933d004a5bb9641a9ed999fcbe0cf"
 
+"@turf/helpers@^6.1.4":
+  version "6.1.4"
+  resolved "https://registry.yarnpkg.com/@turf/helpers/-/helpers-6.1.4.tgz#d6fd7ebe6782dd9c87dca5559bda5c48ae4c3836"
+
 "@turf/inside@^5.0.0":
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/@turf%2finside/-/inside-5.0.0.tgz#31193c7f1429469bfaa16c6685f54234e59131a0"
@@ -1902,6 +1906,10 @@ cssom@0.3.x, "cssom@>= 0.3.2 < 0.4.0":
   resolved "https://registry.yarnpkg.com/cssstyle/-/cssstyle-0.2.37.tgz#541097234cb2513c83ceed3acddc27ff27987d54"
   dependencies:
     cssom "0.3.x"
+
+cubic-hermite-spline@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/cubic-hermite-spline/-/cubic-hermite-spline-1.0.1.tgz#48fb0a4153aa6a1ce3aa1e7e8c545afe8c624bac"
 
 currently-unhandled@^0.4.1:
   version "0.4.1"

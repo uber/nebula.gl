@@ -13,11 +13,13 @@ export default class JunctionScatterplotLayer extends CompositeLayer {
   renderLayers() {
     const { id, getFillColor, getStrokeColor, getInnerRadius, updateTriggers } = this.props;
 
+    // data needs to be passed explicitly after deck.gl 5.3
     return [
       // the full circles
       new ScatterplotLayer({
         ...this.props,
         id: `${id}-full`,
+        data: this.props.data,
         getColor: getStrokeColor,
         updateTriggers: {
           ...updateTriggers,
@@ -28,6 +30,7 @@ export default class JunctionScatterplotLayer extends CompositeLayer {
       new ScatterplotLayer({
         ...this.props,
         id: `${id}-inner`,
+        data: this.props.data,
         getColor: getFillColor,
         getRadius: getInnerRadius,
         pickable: false,

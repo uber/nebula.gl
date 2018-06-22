@@ -32,14 +32,16 @@ function makeLocalDevConfig(EXAMPLE_DIR = LIB_DIR) {
         'nebula.gl': SRC_DIR,
 
         'deck.gl': resolve(LIB_DIR, './node_modules/deck.gl'),
-        'deck.gl-layers': resolve(LIB_DIR, './node_modules/deck.gl-layers'),
+        '@deck.gl/experimental-layers': resolve(
+          LIB_DIR,
+          './node_modules/@deck.gl/experimental-layers'
+        ),
 
         // Use luma.gl specified by root package.json
         'luma.gl': resolve(LIB_DIR, './node_modules/luma.gl'),
         // Important: ensure shared dependencies come from the main node_modules dir
         // Versions will be controlled by the deck.gl top level package.json
         'math.gl': resolve(LIB_DIR, './node_modules/math.gl'),
-        'viewport-mercator-project': resolve(LIB_DIR, './node_modules/viewport-mercator-project'),
         seer: resolve(LIB_DIR, './node_modules/seer'),
         react: resolve(LIB_DIR, './node_modules/react')
       }

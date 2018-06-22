@@ -78,25 +78,37 @@
     lodash "^4.2.0"
     to-fast-properties "^2.0.0"
 
-"@deck.gl/core@^5.2.1":
-  version "5.2.1"
-  resolved "https://registry.yarnpkg.com/@deck.gl%2fcore/-/core-5.2.1.tgz#cb1d67b3557ec4df2fe571cadbcf2f6c863b1211"
+"@deck.gl/core@^5.3.1":
+  version "5.3.1"
+  resolved "https://registry.yarnpkg.com/@deck.gl/core/-/core-5.3.1.tgz#acfc1e5fefd3b12e9142419b0aeb77c07885626c"
   dependencies:
-    d3-hexbin "^0.2.1"
-    earcut "^2.0.6"
-    lodash.flattendeep "^4.4.0"
-    luma.gl "^5.2.0"
-    math.gl "^1.1.3"
+    luma.gl "^5.3.0"
+    math.gl "^1.2.1"
     mjolnir.js "^1.0.0"
     probe.gl "^1.0.0"
     seer "^0.2.4"
     viewport-mercator-project "^5.1.0"
 
-"@deck.gl/react@^5.2.1":
-  version "5.2.1"
-  resolved "https://registry.yarnpkg.com/@deck.gl%2freact/-/react-5.2.1.tgz#e0c36f516aae7cf38ef70f157cc84e9d5ec60980"
+"@deck.gl/experimental-layers@5.X.X":
+  version "5.3.2"
+  resolved "https://registry.yarnpkg.com/@deck.gl/experimental-layers/-/experimental-layers-5.3.2.tgz#8869a95804fddc79f72a3489c9911a663f8da774"
   dependencies:
-    "@deck.gl/core" "^5.2.1"
+    "@deck.gl/core" "^5.3.1"
+    "@deck.gl/layers" "^5.3.2"
+
+"@deck.gl/layers@^5.3.2":
+  version "5.3.2"
+  resolved "https://registry.yarnpkg.com/@deck.gl/layers/-/layers-5.3.2.tgz#c76b9a7890305a5d6a0fdd56bd0d0d68d4046f6f"
+  dependencies:
+    "@deck.gl/core" "^5.3.1"
+    d3-hexbin "^0.2.1"
+    earcut "^2.0.6"
+
+"@deck.gl/react@^5.3.1":
+  version "5.3.1"
+  resolved "https://registry.yarnpkg.com/@deck.gl/react/-/react-5.3.1.tgz#0c16fac59061924eb3509dea06c837bcef8044f2"
+  dependencies:
+    "@deck.gl/core" "^5.3.1"
     prop-types "^15.6.0"
 
 "@turf/area@^5.1.5":
@@ -1809,7 +1821,11 @@ core-js@^1.0.0:
   version "1.2.7"
   resolved "https://registry.yarnpkg.com/core-js/-/core-js-1.2.7.tgz#652294c14651db28fa93bd2d5ff2983a4f08c636"
 
-core-js@^2.4.0, core-js@^2.5.0:
+core-js@^2.4.0:
+  version "2.5.7"
+  resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.5.7.tgz#f972608ff0cead68b841a16a932d0b183791814e"
+
+core-js@^2.5.0:
   version "2.5.3"
   resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.5.3.tgz#8acc38345824f16d8365b7c9b4259168e8ed603e"
 
@@ -1965,16 +1981,13 @@ decamelize@^1.0.0, decamelize@^1.1.1, decamelize@^1.1.2:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/decamelize/-/decamelize-1.2.0.tgz#f6534d15148269b20352e7bee26f501f9a191290"
 
-deck.gl-layers@0.X.X:
-  version "0.0.25"
-  resolved "https://registry.yarnpkg.com/deck.gl-layers/-/deck.gl-layers-0.0.25.tgz#870a6a94c512e5e019c7044012bcc3f95f8ac126"
-
 deck.gl@5.X.X:
-  version "5.2.1"
-  resolved "https://registry.yarnpkg.com/deck.gl/-/deck.gl-5.2.1.tgz#a8eaa0cf5499805dbaabe4e1ab78cfbc9ddae1ce"
+  version "5.3.2"
+  resolved "https://registry.yarnpkg.com/deck.gl/-/deck.gl-5.3.2.tgz#2297d820fb8fb02eab95ac6a03261a689500bc11"
   dependencies:
-    "@deck.gl/core" "^5.2.1"
-    "@deck.gl/react" "^5.2.1"
+    "@deck.gl/core" "^5.3.1"
+    "@deck.gl/layers" "^5.3.2"
+    "@deck.gl/react" "^5.3.1"
 
 decode-uri-component@^0.2.0:
   version "0.2.0"
@@ -2647,8 +2660,8 @@ fb-watchman@^2.0.0:
     bser "^2.0.0"
 
 fbjs@^0.8.16:
-  version "0.8.16"
-  resolved "https://registry.yarnpkg.com/fbjs/-/fbjs-0.8.16.tgz#5e67432f550dc41b572bf55847b8aca64e5337db"
+  version "0.8.17"
+  resolved "https://registry.yarnpkg.com/fbjs/-/fbjs-0.8.17.tgz#c4d598ead6949112653d6588b01a5cdcd9f90fdd"
   dependencies:
     core-js "^1.0.0"
     isomorphic-fetch "^2.1.1"
@@ -2656,7 +2669,7 @@ fbjs@^0.8.16:
     object-assign "^4.1.0"
     promise "^7.1.1"
     setimmediate "^1.0.5"
-    ua-parser-js "^0.7.9"
+    ua-parser-js "^0.7.18"
 
 figures@^2.0.0:
   version "2.0.0"
@@ -3250,10 +3263,10 @@ iconv-lite@0.4.19, iconv-lite@^0.4.17:
   resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.4.19.tgz#f7468f60135f5e5dad3399c0a81be9a1603a082b"
 
 iconv-lite@~0.4.13:
-  version "0.4.21"
-  resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.4.21.tgz#c47f8733d02171189ebc4a400f3218d348094798"
+  version "0.4.23"
+  resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.4.23.tgz#297871f63be507adcfbfca715d0cd0eed84e9a63"
   dependencies:
-    safer-buffer "^2.1.0"
+    safer-buffer ">= 2.1.2 < 3"
 
 ieee754@^1.1.4:
   version "1.1.10"
@@ -4245,10 +4258,6 @@ locate-path@^2.0.0:
     p-locate "^2.0.0"
     path-exists "^3.0.0"
 
-lodash.flattendeep@^4.4.0:
-  version "4.4.0"
-  resolved "https://registry.yarnpkg.com/lodash.flattendeep/-/lodash.flattendeep-4.4.0.tgz#fb030917f86a3134e5bc9bec0d69e0013ddfedb2"
-
 lodash.sortby@^4.7.0:
   version "4.7.0"
   resolved "https://registry.yarnpkg.com/lodash.sortby/-/lodash.sortby-4.7.0.tgz#edd14c824e2cc9c1e0b0a1b42bb5210516a42438"
@@ -4289,9 +4298,9 @@ lru-cache@^4.0.1:
     pseudomap "^1.0.2"
     yallist "^2.1.2"
 
-luma.gl@^5.2.0:
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/luma.gl/-/luma.gl-5.2.0.tgz#337e93626423a9e850378a26c9d84de5dcb2513b"
+luma.gl@^5.3.0:
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/luma.gl/-/luma.gl-5.3.0.tgz#a93b2f34489d8230eb6d8c871335800d9b83ee67"
   dependencies:
     math.gl "^1.1.0"
     probe.gl "^1.0.0"
@@ -4324,9 +4333,20 @@ map-visit@^1.0.0:
   dependencies:
     object-visit "^1.0.0"
 
-math.gl@^1.0.0, math.gl@^1.1.0, math.gl@^1.1.3:
+math.gl@^1.0.0:
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/math.gl/-/math.gl-1.1.3.tgz#360fe48d221e6cb1c648ae7007d405381d0f4fe6"
+  dependencies:
+    gl-mat3 "^1.0.0"
+    gl-mat4 "^1.1.4"
+    gl-quat "^1.0.0"
+    gl-vec2 "^1.0.0"
+    gl-vec3 "^1.0.3"
+    gl-vec4 "^1.0.1"
+
+math.gl@^1.1.0, math.gl@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/math.gl/-/math.gl-1.2.1.tgz#3c7da0ae4f3383116c24bc183533cc4d7b8065a9"
   dependencies:
     gl-mat3 "^1.0.0"
     gl-mat4 "^1.1.4"
@@ -4513,8 +4533,8 @@ mixin-deep@^1.2.0:
     is-extendable "^1.0.1"
 
 mjolnir.js@^1.0.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/mjolnir.js/-/mjolnir.js-1.1.0.tgz#16361c5fc5a5eea47f5f9083e0cc0d540c37932f"
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/mjolnir.js/-/mjolnir.js-1.2.1.tgz#ab3237afc5fbbc8aa4bafc965b10735c4bf8328c"
   dependencies:
     hammerjs "^2.0.8"
 
@@ -5119,8 +5139,8 @@ probe.gl@^0.0.3:
     d3-format "^1.2.0"
 
 probe.gl@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/probe.gl/-/probe.gl-1.0.0.tgz#b4dea632ffc8393d633e0980cb5026b5b7821400"
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/probe.gl/-/probe.gl-1.0.2.tgz#3b0bdf015ff07dba6582badc6993890cfa5219e6"
   dependencies:
     babel-runtime "^6.11.6"
 
@@ -5147,10 +5167,9 @@ promise@^7.1.1:
     asap "~2.0.3"
 
 prop-types@^15.6.0:
-  version "15.6.1"
-  resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.6.1.tgz#36644453564255ddda391191fb3a125cbdf654ca"
+  version "15.6.2"
+  resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.6.2.tgz#05d5ca77b4453e985d60fc7ff8c859094a497102"
   dependencies:
-    fbjs "^0.8.16"
     loose-envify "^1.3.1"
     object-assign "^4.1.1"
 
@@ -5541,10 +5560,6 @@ requires-port@1.0.x, requires-port@1.x.x, requires-port@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/requires-port/-/requires-port-1.0.0.tgz#925d2601d39ac485e091cf0da5c6e694dc3dcaff"
 
-reselect@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/reselect/-/reselect-3.0.1.tgz#efdaa98ea7451324d092b2b2163a6a1d7a9a2147"
-
 resolve-cwd@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/resolve-cwd/-/resolve-cwd-2.0.0.tgz#00a9f7387556e27038eae232caa372a6a59b665a"
@@ -5645,7 +5660,7 @@ safe-regex@^1.1.0:
   dependencies:
     ret "~0.1.10"
 
-safer-buffer@^2.1.0:
+"safer-buffer@>= 2.1.2 < 3":
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/safer-buffer/-/safer-buffer-2.1.2.tgz#44fa161b0187b9549dd84bb91802f9bd8385cd6a"
 
@@ -6358,9 +6373,9 @@ typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
 
-ua-parser-js@^0.7.9:
-  version "0.7.17"
-  resolved "https://registry.yarnpkg.com/ua-parser-js/-/ua-parser-js-0.7.17.tgz#e9ec5f9498b9ec910e7ae3ac626a805c4d09ecac"
+ua-parser-js@^0.7.18:
+  version "0.7.18"
+  resolved "https://registry.yarnpkg.com/ua-parser-js/-/ua-parser-js-0.7.18.tgz#a7bfd92f56edfb117083b69e31d2aa8882d4b1ed"
 
 uglify-js@^2.6, uglify-js@^2.8.27:
   version "2.8.29"

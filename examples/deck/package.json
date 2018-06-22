@@ -4,8 +4,10 @@
     "start-local": "webpack-dev-server --env.local --progress --hot --port 3000 --open"
   },
   "dependencies": {
-    "nebula.gl": "^0.1.0",
+    "@deck.gl/experimental-layers": "5.X.X",
+    "deck.gl": "5.X.X",
     "mapbox-gl": "0.43",
+    "nebula.gl": "^0.1.0",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
     "react-map-gl": "^3.2.7"

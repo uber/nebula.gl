@@ -11,6 +11,7 @@ export default class EditablePolygonsLayer extends CompositeLayer {
       new GeoJsonLayer({
         // forward all props to geojson layer
         ...this.props,
+        data: this.props.data,
         id: `${this.props.id}-polygons`
       })
     ];

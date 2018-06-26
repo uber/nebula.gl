@@ -281,8 +281,8 @@ export default class Example extends Component<
         }
       ]
     });
-    const nebulaLayers = [segmentsLayer, editableJunctionsLayer, textLayer];
-    const deckLayers = [editablePolygonsLayer];
+    const nebulaLayers = [segmentsLayer, editableJunctionsLayer];
+    const deckLayers = [editablePolygonsLayer, textLayer];
 
     return (
       <div style={styles.mapContainer}>

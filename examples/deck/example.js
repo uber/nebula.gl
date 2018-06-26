@@ -15,12 +15,11 @@ const initialViewport = {
   height: 0,
   // latitude: 70.13,
   // longitude: 23.04,
-  latitude: 37.77,
-  longitude: -122.48,
+  latitude: 37.76,
+  longitude: -122.44,
   pitch: 0,
   width: 0,
-  zoom: 14
-  // zoom: 6
+  zoom: 11
 };
 
 const styles = {
@@ -48,25 +47,11 @@ export default class Example extends Component<
   constructor() {
     super();
 
-    // TODO: once https://github.com/uber/deck.gl/pull/1918 lands, remove this filter since it'll work with MultiPolygons
-    // const testPolygonsWithoutMultiPolygons = sampleGeoJson.features.filter(
-    //   feature => feature.geometry.type === 'Polygon'
-    // );
-
     this.state = {
       viewport: initialViewport,
       testFeatures: sampleGeoJson,
-      // testFeatures: {
-      //   type: 'FeatureCollection',
-      //   features: testPolygonsWithoutMultiPolygons
-      // },
-      // selectedFeatureIndex: 0 // Point
-      // selectedFeatureIndex: 1 // Point
-      // selectedFeatureIndex: 2 // MultiPoint
-      // selectedFeatureIndex: 3 // LineString
-      // selectedFeatureIndex: 4 // MultiLineString
-      // selectedFeatureIndex: 5 // Polygon
-      selectedFeatureIndex: 6 // MultiPolygon
+      isEditing: true,
+      selectedFeatureIndex: null
     };
   }
 
@@ -84,11 +69,35 @@ export default class Example extends Component<
     });
   };
 
+  _incrementSelectedFeature() {
+    if (this.state.selectedFeatureIndex === null) {
+      this.setState({ selectedFeatureIndex: 0 });
+    } else {
+      this.setState({
+        selectedFeatureIndex:
+          (this.state.selectedFeatureIndex + 1) % this.state.testFeatures.features.length
+      });
+    }
+  }
+
+  _decrementSelectedFeature() {
+    if (this.state.selectedFeatureIndex === null) {
+      this.setState({ selectedFeatureIndex: 0 });
+    } else {
+      this.setState({
+        selectedFeatureIndex:
+          (this.state.selectedFeatureIndex + this.state.testFeatures.features.length - 1) %
+          this.state.testFeatures.features.length
+      });
+    }
+  }
+
   _onLayerClick = info => {
     if (info) {
       console.log(`select editing feature ${info.index}`); // eslint-disable-line
       // a feature was clicked
-      this.setState({ selectedFeatureIndex: info.index });
+      // TODO: once https://github.com/uber/deck.gl/pull/1918 lands, this will work since it'll work with Multi* geometry types
+      // this.setState({ selectedFeatureIndex: info.index });
     } else {
       console.log('deselect editing feature'); // eslint-disable-line
       // open space was clicked, so stop editing
@@ -99,6 +108,29 @@ export default class Example extends Component<
   _resize = () => {
     this.forceUpdate();
   };
+
+  _renderToolBox() {
+    return (
+      <div style={styles.toolbox}>
+        <div>Loaded Features: {this.state.testFeatures.features.length}</div>
+        <div>
+          Selected Feature Index: {this.state.selectedFeatureIndex}{' '}
+          <button onClick={() => this._decrementSelectedFeature()}>-</button>
+          <button onClick={() => this._incrementSelectedFeature()}>+</button>
+        </div>
+        <div>
+          <label>
+            Allow edit:{' '}
+            <input
+              type="checkbox"
+              checked={this.state.isEditing}
+              onChange={() => this.setState({ isEditing: !this.state.isEditing })}
+            />
+          </label>
+        </div>
+      </div>
+    );
+  }
 
   render() {
     const { testFeatures, selectedFeatureIndex } = this.state;
@@ -113,11 +145,11 @@ export default class Example extends Component<
       data: testFeatures,
       selectedFeatureIndex,
       pickable: true,
-      isEditing: true,
+      isEditing: this.state.isEditing,
 
-      onStartDraggingPoint: ({ coordinateIndexes }) => {
+      onStartDraggingPoint: ({ featureIndex, coordinateIndexes }) => {
         // eslint-disable-next-line no-console, no-undef
-        console.log(`Start dragging point`, coordinateIndexes);
+        console.log(`Start dragging point`, featureIndex, coordinateIndexes);
       },
       onDraggingPoint: ({ feature, featureIndex, coordinateIndexes }) => {
         // Immutably replace the feature being edited in the featureCollection
@@ -132,9 +164,9 @@ export default class Example extends Component<
           }
         });
       },
-      onStopDraggingPoint: ({ coordinateIndexes }) => {
+      onStopDraggingPoint: ({ featureIndex, coordinateIndexes }) => {
         // eslint-disable-next-line no-console, no-undef
-        console.log(`Stop dragging point`, coordinateIndexes);
+        console.log(`Stop dragging point`, featureIndex, coordinateIndexes);
       },
 
       // Can specify GeoJsonLayer props
@@ -158,10 +190,11 @@ export default class Example extends Component<
             {...viewport}
             layers={[editableGeoJsonLayer]}
             controller={MapController}
-            // onLayerClick={this._onLayerClick}
+            onLayerClick={this._onLayerClick}
             onViewStateChange={({ viewState }) => this.setState({ viewport: viewState })}
           />
         </StaticMap>
+        {this._renderToolBox()}
       </div>
     );
   }

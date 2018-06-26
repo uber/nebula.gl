@@ -53,7 +53,6 @@
     "@turf/flatten": "^5.1.5",
     "@turf/helpers": "^6.1.4",
     "@turf/inside": "^5.0.0",
-    "@turf/meta": "^6.0.2",
     "cubic-hermite-spline": "^1.0.1",
     "deck.gl": "5.X.X",
     "geojson-types": "^2.0.1",

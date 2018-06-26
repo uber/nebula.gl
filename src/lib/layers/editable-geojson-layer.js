@@ -1,7 +1,6 @@
 /* eslint-env browser */
 
 import { CompositeLayer, GeoJsonLayer, ScatterplotLayer } from 'deck.gl';
-// import { coordEach } from '@turf/meta';
 import { immutablyReplaceCoordinate, flattenPositions } from '../geojson';
 
 export default class EditableGeoJsonLayer extends CompositeLayer {

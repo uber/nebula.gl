@@ -6,7 +6,7 @@ import MapGL from 'react-map-gl';
 
 import {
   EditableJunctionsLayer,
-  EditablePolygonsLayer,
+  EditableGeoJsonLayer,
   Feature,
   HtmlTooltipOverlay,
   Nebula,
@@ -235,7 +235,7 @@ export default class Example extends Component<
     const { innerHeight: height, innerWidth: width } = window;
     viewport = Object.assign(viewport, { height, width });
 
-    const editablePolygonsLayer = new EditablePolygonsLayer({
+    const editableGeoJsonLayer = new EditableGeoJsonLayer({
       data: this.state.testPolygons,
       selectedFeatureIndex: this.state.selectedFeatureIndex,
       pickable: true,
@@ -282,7 +282,7 @@ export default class Example extends Component<
       ]
     });
     const nebulaLayers = [segmentsLayer, editableJunctionsLayer];
-    const deckLayers = [editablePolygonsLayer, textLayer];
+    const deckLayers = [editableGeoJsonLayer, textLayer];
 
     return (
       <div style={styles.mapContainer}>

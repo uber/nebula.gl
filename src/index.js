@@ -12,6 +12,7 @@ export { default as SegmentsLayer } from './lib/layers/segments-layer';
 export { default as EditableJunctionsLayer } from './lib/layers/editable-junctions-layer';
 export { default as PolygonsLayer } from './lib/layers/polygons-layer';
 export { default as LinesLayer } from './lib/layers/lines-layer';
+export { default as EditableGeoJsonLayer } from './lib/layers/editable-geojson-layer';
 export { default as EditablePolygonsLayer } from './lib/layers/editable-polygons-layer';
 export { default as TextsLayer } from './lib/layers/texts-layer';
 export { default as EditableLinesLayer } from './lib/layers/editable-lines-layer';

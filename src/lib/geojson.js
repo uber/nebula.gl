@@ -53,8 +53,11 @@ export function immutablyReplaceCoordinate(
   updatedCoordinate: Array<number>,
   isPolygonal: boolean = false
 ): Array<mixed> {
-  if (!indexes || indexes.length === 0) {
+  if (!indexes) {
     return coordinates;
+  }
+  if (indexes.length === 0) {
+    return updatedCoordinate;
   }
   if (indexes.length === 1) {
     const updated = [
@@ -129,6 +132,7 @@ export function flattenPositions(geometry) {
 }
 
 // TODO: move these to a test file
+
 function assertEquals(expected, actual, message) {
   const expectedString = JSON.stringify(expected);
   const actualString = JSON.stringify(actual);
@@ -136,6 +140,44 @@ function assertEquals(expected, actual, message) {
     console.error(`TESTT: expected, actual`, expected, actual); // eslint-disable-line
   }
 }
+
+// immutablyReplaceCoordinate tests
+
+let coords;
+let updatedCoords;
+
+coords = [1, 2];
+updatedCoords = immutablyReplaceCoordinate(coords, [], [10, 20], false);
+assertEquals([1, 2], coords);
+assertEquals([10, 20], updatedCoords);
+
+coords = [[1, 2]];
+updatedCoords = immutablyReplaceCoordinate(coords, [0], [10, 20], false);
+assertEquals([[1, 2]], coords);
+assertEquals([[10, 20]], updatedCoords);
+
+coords = [[1, 2], [3, 4]];
+updatedCoords = immutablyReplaceCoordinate(coords, [1], [30, 40], false);
+assertEquals([[1, 2], [3, 4]], coords);
+assertEquals([[1, 2], [30, 40]], updatedCoords);
+
+coords = [[[1, 2], [3, 4]], [[5, 6], [7, 8]]];
+updatedCoords = immutablyReplaceCoordinate(coords, [1, 0], [50, 60], false);
+assertEquals([[[1, 2], [3, 4]], [[5, 6], [7, 8]]], coords);
+assertEquals([[[1, 2], [3, 4]], [[50, 60], [7, 8]]], updatedCoords);
+
+// polygonal
+coords = [[1, 2], [3, 4], [1, 2]];
+updatedCoords = immutablyReplaceCoordinate(coords, [0], [10, 20], true);
+assertEquals([[1, 2], [3, 4], [1, 2]], coords);
+assertEquals([[10, 20], [3, 4], [10, 20]], updatedCoords);
+
+coords = [[1, 2], [3, 4], [1, 2]];
+updatedCoords = immutablyReplaceCoordinate(coords, [2], [10, 20], true);
+assertEquals([[1, 2], [3, 4], [1, 2]], coords);
+assertEquals([[10, 20], [3, 4], [10, 20]], updatedCoords);
+
+// flattenPositions tests
 
 assertEquals(
   [{ position: [1, 2], indexes: [] }],

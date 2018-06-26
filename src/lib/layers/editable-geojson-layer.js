@@ -55,15 +55,6 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
       if (info.object) {
         info.coordinateIndexes = info.object.indexes;
       }
-
-      // // Get array indexes to picked coordinate `${this.props.id}-points|${index0}|${index1}`
-      // info.coordinateIndexes = sourceLayer.id
-      //   .substring(`${this.props.id}-points|`.length)
-      //   .split('|')
-      //   .map(indexString => parseInt(indexString, 10));
-
-      // // Add the index of the actual coordinate
-      // info.coordinateIndexes.push(info.index);
     }
 
     return info;
@@ -105,93 +96,25 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
     //   updateTriggers
     // } = this.props;
 
-    const layers = [];
-
     const editingFeature = this.getEditingFeature();
     const positions = flattenPositions(editingFeature.geometry);
-    // const nestingLevel = getCoordinatesNestingLevel(geometry);
 
-    // const coordinates = [];
-    // coordEach(
-    //   editingFeature,
-    //   (currentCoord, coordIndex, featureIndex, multiFeatureIndex, geometryIndex) => {
-    //     let coordinateIndexes;
-    //     switch (editingFeature.geometry.type) {
-    //       case 'Polygon':
-    //         console.log('Polygon');
-    //         break;
-    //       default:
-    //         throw new Error(`Unhandled geometry type ${editingFeature.geometry.type}`);
-    //     }
-    //     coordinates.push({
-    //       coord: currentCoord,
-    //       coordinateIndexes
-    //     });
-    //   }
-    // );
-
-    const layer = new ScatterplotLayer({
-      ...this.props,
-      data: positions,
-      // getPosition: data => data.position,
-      pickable: true,
-      autoHighlight: true,
-      getRadius: this.props.getPointRadius || (() => 1),
-      radiusScale: this.props.pointRadiusScale || 20,
-      radiusMinPixels: this.props.pointRadiusMinPixels || 4,
-      radiusMaxPixels: this.props.pointRadiusMaxPixels || 10,
-      opacity: this.props.pointOpacity || 1.0,
-      highlightColor: this.props.pointHighlightColor || [0xff, 0xff, 0xff, 0xff],
-      getColor: this.props.getPointColor || (() => [0x80, 0x80, 0x80, 0xff]),
-      id: `${this.props.id}-points`
-    });
-    layers.push(layer);
-
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-
-    // const coordinateIndexes = new Array(nestingLevel);
-    // const indexIndex = 0;
-    // while (indexIndex < nestingLevel) {}
-
-    // let polygons = [];
-    // if (geometry.type === 'MultiPolygon') {
-    //   polygons = geometry.coordinates;
-    // } else if (geometry.type === 'Polygon') {
-    //   polygons = [geometry.coordinates];
-    // }
-
-    // for (let polygonIndex = 0; polygonIndex < polygons.length; polygonIndex++) {
-    //   const polygon = polygons[polygonIndex];
-    //   for (let ringIndex = 0; ringIndex < polygon.length; ringIndex++) {
-    //     const ring = polygon[ringIndex];
-
-    //     // create a layer per ring
-    //     const layer = new ScatterplotLayer({
-    //       ...this.props,
-    //       data: ring,
-    //       getPosition: data => data,
-    //       pickable: true,
-    //       autoHighlight: true,
-    //       getRadius: this.props.getPointRadius || (() => 1),
-    //       radiusScale: this.props.pointRadiusScale || 20,
-    //       radiusMinPixels: this.props.pointRadiusMinPixels || 4,
-    //       radiusMaxPixels: this.props.pointRadiusMaxPixels || 10,
-    //       opacity: this.props.pointOpacity || 1.0,
-    //       highlightColor: this.props.pointHighlightColor || [0xff, 0xff, 0xff, 0xff],
-    //       getColor: this.props.getPointColor || (() => [0x80, 0x80, 0x80, 0xff]),
-    //       id: `${this.props.id}-points|${polygonIndex}|${ringIndex}`
-    //     });
-    //     layers.push(layer);
-    //   }
-    // }
+    const layers = [
+      new ScatterplotLayer({
+        ...this.props,
+        data: positions,
+        pickable: true,
+        autoHighlight: true,
+        getRadius: this.props.getPointRadius || (() => 1),
+        radiusScale: this.props.pointRadiusScale || 20,
+        radiusMinPixels: this.props.pointRadiusMinPixels || 4,
+        radiusMaxPixels: this.props.pointRadiusMaxPixels || 10,
+        opacity: this.props.pointOpacity || 1.0,
+        highlightColor: this.props.pointHighlightColor || [0xff, 0xff, 0xff, 0xff],
+        getColor: this.props.getPointColor || (() => [0x80, 0x80, 0x80, 0xff]),
+        id: `${this.props.id}-points`
+      })
+    ];
 
     return layers;
   }

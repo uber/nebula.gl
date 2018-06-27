@@ -30,7 +30,7 @@ const defaultProps = {
     (f && f.properties && f.properties.radius) || (f && f.properties && f.properties.size) || 1,
   getLineWidth: f => (f && f.properties && f.properties.lineWidth) || 1,
 
-  // Editing points
+  // Editing handles
   editingPointRadiusScale: 1,
   editingPointRadiusMinPixels: 4,
   editingPointRadiusMaxPixels: Number.MAX_SAFE_INTEGER,
@@ -113,9 +113,9 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
   }
 
   getPickingInfo({ info, sourceLayer }) {
-    if (sourceLayer.id.endsWith('-points')) {
-      // If user is picking a point, add additional data to the info
-      info.isPoint = true;
+    if (sourceLayer.id.endsWith('-edit-handles')) {
+      // If user is picking an editing handle, add additional data to the info
+      info.isEditingHandle = true;
 
       if (info.object) {
         info.coordinateIndexes = info.object.indexes;
@@ -137,7 +137,7 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
     const layers = [
       new ScatterplotLayer(
         this.getSubLayerProps({
-          id: 'points',
+          id: 'edit-handles',
           data: positions,
           fp64: this.props.fp64,
 
@@ -261,7 +261,7 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
       radius: 10
     });
 
-    const pickedPoint = allPicked.find(picked => picked.isPoint);
+    const pickedPoint = allPicked.find(picked => picked.isEditingHandle);
     if (pickedPoint) {
       this.setState({ draggingPoint: pickedPoint });
       if (this.props.onStartDraggingPoint) {

@@ -2,9 +2,9 @@
 # yarn lockfile v1
 
 
-"@deck.gl/core@^5.3.0":
-  version "5.3.0"
-  resolved "https://unpm.uberinternal.com/@deck.gl%2fcore/-/core-5.3.0.tgz#f98cfad06e677f634f197b7e6eb66567f6ade5aa"
+"@deck.gl/core@^5.3.1":
+  version "5.3.1"
+  resolved "https://registry.yarnpkg.com/@deck.gl/core/-/core-5.3.1.tgz#acfc1e5fefd3b12e9142419b0aeb77c07885626c"
   dependencies:
     luma.gl "^5.3.0"
     math.gl "^1.2.1"
@@ -13,19 +13,26 @@
     seer "^0.2.4"
     viewport-mercator-project "^5.1.0"
 
-"@deck.gl/layers@^5.3.0":
-  version "5.3.0"
-  resolved "https://unpm.uberinternal.com/@deck.gl%2flayers/-/layers-5.3.0.tgz#add5e9a92b08998d72a5929ea7b69ece4ebcf3a5"
+"@deck.gl/experimental-layers@5.X.X":
+  version "5.3.2"
+  resolved "https://registry.yarnpkg.com/@deck.gl/experimental-layers/-/experimental-layers-5.3.2.tgz#8869a95804fddc79f72a3489c9911a663f8da774"
   dependencies:
-    "@deck.gl/core" "^5.3.0"
+    "@deck.gl/core" "^5.3.1"
+    "@deck.gl/layers" "^5.3.2"
+
+"@deck.gl/layers@^5.3.2":
+  version "5.3.2"
+  resolved "https://registry.yarnpkg.com/@deck.gl/layers/-/layers-5.3.2.tgz#c76b9a7890305a5d6a0fdd56bd0d0d68d4046f6f"
+  dependencies:
+    "@deck.gl/core" "^5.3.1"
     d3-hexbin "^0.2.1"
     earcut "^2.0.6"
 
-"@deck.gl/react@^5.3.0":
-  version "5.3.0"
-  resolved "https://unpm.uberinternal.com/@deck.gl%2freact/-/react-5.3.0.tgz#8b3dd26ce5fe85473e9d9e30238cb93428925167"
+"@deck.gl/react@^5.3.1":
+  version "5.3.1"
+  resolved "https://registry.yarnpkg.com/@deck.gl/react/-/react-5.3.1.tgz#0c16fac59061924eb3509dea06c837bcef8044f2"
   dependencies:
-    "@deck.gl/core" "^5.3.0"
+    "@deck.gl/core" "^5.3.1"
     prop-types "^15.6.0"
 
 "@mapbox/geojson-area@0.2.2":
@@ -70,27 +77,27 @@
 
 "@turf/area@^5.1.5":
   version "5.1.5"
-  resolved "https://unpm.uberinternal.com/@turf%2farea/-/area-5.1.5.tgz#efd899bfd260cdbd1541b2a3c155f8a5d2eefa1d"
+  resolved "https://registry.yarnpkg.com/@turf/area/-/area-5.1.5.tgz#efd899bfd260cdbd1541b2a3c155f8a5d2eefa1d"
   dependencies:
     "@turf/helpers" "^5.1.5"
     "@turf/meta" "^5.1.5"
 
 "@turf/bbox-polygon@^5.1.5":
   version "5.1.5"
-  resolved "https://unpm.uberinternal.com/@turf%2fbbox-polygon/-/bbox-polygon-5.1.5.tgz#6aeba4ed51d85d296e0f7c38b88c339f01eee024"
+  resolved "https://registry.yarnpkg.com/@turf/bbox-polygon/-/bbox-polygon-5.1.5.tgz#6aeba4ed51d85d296e0f7c38b88c339f01eee024"
   dependencies:
     "@turf/helpers" "^5.1.5"
 
 "@turf/bbox@^5.1.5":
   version "5.1.5"
-  resolved "https://unpm.uberinternal.com/@turf%2fbbox/-/bbox-5.1.5.tgz#3051df514ad4c50f4a4f9b8a2d15fd8b6840eda3"
+  resolved "https://registry.yarnpkg.com/@turf/bbox/-/bbox-5.1.5.tgz#3051df514ad4c50f4a4f9b8a2d15fd8b6840eda3"
   dependencies:
     "@turf/helpers" "^5.1.5"
     "@turf/meta" "^5.1.5"
 
 "@turf/buffer@^5.1.5":
   version "5.1.5"
-  resolved "https://unpm.uberinternal.com/@turf%2fbuffer/-/buffer-5.1.5.tgz#841c9627cfb974b122ac4e1a956f0466bc0231c4"
+  resolved "https://registry.yarnpkg.com/@turf/buffer/-/buffer-5.1.5.tgz#841c9627cfb974b122ac4e1a956f0466bc0231c4"
   dependencies:
     "@turf/bbox" "^5.1.5"
     "@turf/center" "^5.1.5"
@@ -102,20 +109,20 @@
 
 "@turf/center@^5.1.5":
   version "5.1.5"
-  resolved "https://unpm.uberinternal.com/@turf%2fcenter/-/center-5.1.5.tgz#44ab2cd954f63c0d37757f7158a99c3ef5114b80"
+  resolved "https://registry.yarnpkg.com/@turf/center/-/center-5.1.5.tgz#44ab2cd954f63c0d37757f7158a99c3ef5114b80"
   dependencies:
     "@turf/bbox" "^5.1.5"
     "@turf/helpers" "^5.1.5"
 
 "@turf/clone@^5.1.5":
   version "5.1.5"
-  resolved "https://unpm.uberinternal.com/@turf%2fclone/-/clone-5.1.5.tgz#253e8d35477181976e33adfab50a0f02a7f0e367"
+  resolved "https://registry.yarnpkg.com/@turf/clone/-/clone-5.1.5.tgz#253e8d35477181976e33adfab50a0f02a7f0e367"
   dependencies:
     "@turf/helpers" "^5.1.5"
 
 "@turf/difference@^5.1.5":
   version "5.1.5"
-  resolved "https://unpm.uberinternal.com/@turf%2fdifference/-/difference-5.1.5.tgz#a24d690a7bca803f1090a9ee3b9d906fc4371f42"
+  resolved "https://registry.yarnpkg.com/@turf/difference/-/difference-5.1.5.tgz#a24d690a7bca803f1090a9ee3b9d906fc4371f42"
   dependencies:
     "@turf/area" "^5.1.5"
     "@turf/helpers" "^5.1.5"
@@ -125,43 +132,43 @@
 
 "@turf/distance@^5.1.5":
   version "5.1.5"
-  resolved "https://unpm.uberinternal.com/@turf%2fdistance/-/distance-5.1.5.tgz#39cf18204bbf87587d707e609a60118909156409"
+  resolved "https://registry.yarnpkg.com/@turf/distance/-/distance-5.1.5.tgz#39cf18204bbf87587d707e609a60118909156409"
   dependencies:
     "@turf/helpers" "^5.1.5"
     "@turf/invariant" "^5.1.5"
 
 "@turf/flatten@^5.1.5":
   version "5.1.5"
-  resolved "https://unpm.uberinternal.com/@turf%2fflatten/-/flatten-5.1.5.tgz#da2927067133ed6169b0b9d607b9215688aa1358"
+  resolved "https://registry.yarnpkg.com/@turf/flatten/-/flatten-5.1.5.tgz#da2927067133ed6169b0b9d607b9215688aa1358"
   dependencies:
     "@turf/helpers" "^5.1.5"
     "@turf/meta" "^5.1.5"
 
 "@turf/helpers@^5.1.5":
   version "5.1.5"
-  resolved "https://unpm.uberinternal.com/@turf%2fhelpers/-/helpers-5.1.5.tgz#153405227ab933d004a5bb9641a9ed999fcbe0cf"
+  resolved "https://registry.yarnpkg.com/@turf/helpers/-/helpers-5.1.5.tgz#153405227ab933d004a5bb9641a9ed999fcbe0cf"
 
 "@turf/inside@^5.0.0":
   version "5.0.0"
-  resolved "https://unpm.uberinternal.com/@turf%2finside/-/inside-5.0.0.tgz#31193c7f1429469bfaa16c6685f54234e59131a0"
+  resolved "https://registry.yarnpkg.com/@turf/inside/-/inside-5.0.0.tgz#31193c7f1429469bfaa16c6685f54234e59131a0"
   dependencies:
     "@turf/invariant" "^5.0.0"
 
 "@turf/invariant@^5.0.0", "@turf/invariant@^5.1.5":
   version "5.2.0"
-  resolved "https://unpm.uberinternal.com/@turf%2finvariant/-/invariant-5.2.0.tgz#f0150ff7290b38577b73d088b7932c1ee0aa90a7"
+  resolved "https://registry.yarnpkg.com/@turf/invariant/-/invariant-5.2.0.tgz#f0150ff7290b38577b73d088b7932c1ee0aa90a7"
   dependencies:
     "@turf/helpers" "^5.1.5"
 
 "@turf/meta@^5.1.5":
   version "5.2.0"
-  resolved "https://unpm.uberinternal.com/@turf%2fmeta/-/meta-5.2.0.tgz#3b1ad485ee0c3b0b1775132a32c384d53e4ba53d"
+  resolved "https://registry.yarnpkg.com/@turf/meta/-/meta-5.2.0.tgz#3b1ad485ee0c3b0b1775132a32c384d53e4ba53d"
   dependencies:
     "@turf/helpers" "^5.1.5"
 
 "@turf/projection@^5.1.5":
   version "5.1.5"
-  resolved "https://unpm.uberinternal.com/@turf%2fprojection/-/projection-5.1.5.tgz#24517eeeb2f36816ba9f712e7ae6d6a368edf757"
+  resolved "https://registry.yarnpkg.com/@turf/projection/-/projection-5.1.5.tgz#24517eeeb2f36816ba9f712e7ae6d6a368edf757"
   dependencies:
     "@turf/clone" "^5.1.5"
     "@turf/helpers" "^5.1.5"
@@ -1365,17 +1372,17 @@ currently-unhandled@^0.4.1:
 
 d3-array@1:
   version "1.2.1"
-  resolved "https://unpm.uberinternal.com/d3-array/-/d3-array-1.2.1.tgz#d1ca33de2f6ac31efadb8e050a021d7e2396d5dc"
+  resolved "https://registry.yarnpkg.com/d3-array/-/d3-array-1.2.1.tgz#d1ca33de2f6ac31efadb8e050a021d7e2396d5dc"
 
 d3-geo@1.7.1:
   version "1.7.1"
-  resolved "https://unpm.uberinternal.com/d3-geo/-/d3-geo-1.7.1.tgz#44bbc7a218b1fd859f3d8fd7c443ca836569ce99"
+  resolved "https://registry.yarnpkg.com/d3-geo/-/d3-geo-1.7.1.tgz#44bbc7a218b1fd859f3d8fd7c443ca836569ce99"
   dependencies:
     d3-array "1"
 
 d3-hexbin@^0.2.1:
   version "0.2.2"
-  resolved "https://unpm.uberinternal.com/d3-hexbin/-/d3-hexbin-0.2.2.tgz#9c5837dacfd471ab05337a9e91ef10bfc4f98831"
+  resolved "https://registry.yarnpkg.com/d3-hexbin/-/d3-hexbin-0.2.2.tgz#9c5837dacfd471ab05337a9e91ef10bfc4f98831"
 
 date-now@^0.1.4:
   version "0.1.4"
@@ -1398,16 +1405,16 @@ decamelize@^1.0.0, decamelize@^1.1.1, decamelize@^1.1.2:
   resolved "https://registry.yarnpkg.com/decamelize/-/decamelize-1.2.0.tgz#f6534d15148269b20352e7bee26f501f9a191290"
 
 deck.gl-layers@0.X.X:
-  version "0.0.26"
-  resolved "https://unpm.uberinternal.com/deck.gl-layers/-/deck.gl-layers-0.0.26.tgz#c769c555dd4aae14dfe8c9fa09689f1845540416"
+  version "0.0.25"
+  resolved "https://registry.yarnpkg.com/deck.gl-layers/-/deck.gl-layers-0.0.25.tgz#870a6a94c512e5e019c7044012bcc3f95f8ac126"
 
 deck.gl@5.X.X:
-  version "5.3.0"
-  resolved "https://unpm.uberinternal.com/deck.gl/-/deck.gl-5.3.0.tgz#bd6584c152603819be9504438ac824bb3c6b4186"
+  version "5.3.2"
+  resolved "https://registry.yarnpkg.com/deck.gl/-/deck.gl-5.3.2.tgz#2297d820fb8fb02eab95ac6a03261a689500bc11"
   dependencies:
-    "@deck.gl/core" "^5.3.0"
-    "@deck.gl/layers" "^5.3.0"
-    "@deck.gl/react" "^5.3.0"
+    "@deck.gl/core" "^5.3.1"
+    "@deck.gl/layers" "^5.3.2"
+    "@deck.gl/react" "^5.3.1"
 
 decode-uri-component@^0.2.0:
   version "0.2.0"
@@ -1526,7 +1533,7 @@ dns-txt@^2.0.2:
 
 dom-walk@^0.1.0:
   version "0.1.1"
-  resolved "https://unpm.uberinternal.com/dom-walk/-/dom-walk-0.1.1.tgz#672226dc74c8f799ad35307df936aba11acd6018"
+  resolved "https://registry.yarnpkg.com/dom-walk/-/dom-walk-0.1.1.tgz#672226dc74c8f799ad35307df936aba11acd6018"
 
 domain-browser@^1.1.1:
   version "1.2.0"
@@ -1955,7 +1962,7 @@ geojson-rewind@^0.3.0:
 
 geojson-types@^2.0.1:
   version "2.0.1"
-  resolved "https://unpm.uberinternal.com/geojson-types/-/geojson-types-2.0.1.tgz#91040649b7ad39b2904643bd9ad51e5e86d524e3"
+  resolved "https://registry.yarnpkg.com/geojson-types/-/geojson-types-2.0.1.tgz#91040649b7ad39b2904643bd9ad51e5e86d524e3"
 
 geojson-vt@^3.0.0:
   version "3.1.2"
@@ -2034,7 +2041,7 @@ glob@^7.0.3, glob@^7.0.5:
 
 global@^4.3.2:
   version "4.3.2"
-  resolved "https://unpm.uberinternal.com/global/-/global-4.3.2.tgz#e76989268a6c74c38908b1305b10fc0e394e9d0f"
+  resolved "https://registry.yarnpkg.com/global/-/global-4.3.2.tgz#e76989268a6c74c38908b1305b10fc0e394e9d0f"
   dependencies:
     min-document "^2.19.0"
     process "~0.5.1"
@@ -2601,7 +2608,7 @@ kdbush@^1.0.1:
 
 keymirror@^0.1.1:
   version "0.1.1"
-  resolved "https://unpm.uberinternal.com/keymirror/-/keymirror-0.1.1.tgz#918889ea13f8d0a42e7c557250eee713adc95c35"
+  resolved "https://registry.yarnpkg.com/keymirror/-/keymirror-0.1.1.tgz#918889ea13f8d0a42e7c557250eee713adc95c35"
 
 killable@^1.0.0:
   version "1.0.0"
@@ -2744,7 +2751,7 @@ loud-rejection@^1.0.0:
 
 luma.gl@^5.3.0:
   version "5.3.0"
-  resolved "https://unpm.uberinternal.com/luma.gl/-/luma.gl-5.3.0.tgz#a93b2f34489d8230eb6d8c871335800d9b83ee67"
+  resolved "https://registry.yarnpkg.com/luma.gl/-/luma.gl-5.3.0.tgz#a93b2f34489d8230eb6d8c871335800d9b83ee67"
   dependencies:
     math.gl "^1.1.0"
     probe.gl "^1.0.0"
@@ -2979,7 +2986,7 @@ mime@^1.5.0:
 
 min-document@^2.19.0:
   version "2.19.0"
-  resolved "https://unpm.uberinternal.com/min-document/-/min-document-2.19.0.tgz#7bd282e3f5842ed295bb748cdd9f1ffa2c824685"
+  resolved "https://registry.yarnpkg.com/min-document/-/min-document-2.19.0.tgz#7bd282e3f5842ed295bb748cdd9f1ffa2c824685"
   dependencies:
     dom-walk "^0.1.0"
 
@@ -3085,7 +3092,7 @@ nanomatch@^1.2.9:
 
 nebula.gl@^0.1.0:
   version "0.1.0"
-  resolved "https://unpm.uberinternal.com/nebula.gl/-/nebula.gl-0.1.0.tgz#bc80578ca1f8aa2f897d7743a3b8c714390ebbb0"
+  resolved "https://registry.yarnpkg.com/nebula.gl/-/nebula.gl-0.1.0.tgz#bc80578ca1f8aa2f897d7743a3b8c714390ebbb0"
   dependencies:
     "@turf/bbox" "^5.1.5"
     "@turf/bbox-polygon" "^5.1.5"
@@ -3511,7 +3518,7 @@ private@^0.1.6, private@^0.1.8:
 
 probe.gl@^1.0.0:
   version "1.0.2"
-  resolved "https://unpm.uberinternal.com/probe.gl/-/probe.gl-1.0.2.tgz#3b0bdf015ff07dba6582badc6993890cfa5219e6"
+  resolved "https://registry.yarnpkg.com/probe.gl/-/probe.gl-1.0.2.tgz#3b0bdf015ff07dba6582badc6993890cfa5219e6"
   dependencies:
     babel-runtime "^6.11.6"
 
@@ -3525,7 +3532,7 @@ process@^0.11.10:
 
 process@~0.5.1:
   version "0.5.2"
-  resolved "https://unpm.uberinternal.com/process/-/process-0.5.2.tgz#1638d8a8e34c2f440a91db95ab9aeb677fc185cf"
+  resolved "https://registry.yarnpkg.com/process/-/process-0.5.2.tgz#1638d8a8e34c2f440a91db95ab9aeb677fc185cf"
 
 promise@^7.1.1:
   version "7.3.1"
@@ -3813,7 +3820,7 @@ requires-port@^1.0.0:
 
 reselect@^3.0.1:
   version "3.0.1"
-  resolved "https://unpm.uberinternal.com/reselect/-/reselect-3.0.1.tgz#efdaa98ea7451324d092b2b2163a6a1d7a9a2147"
+  resolved "https://registry.yarnpkg.com/reselect/-/reselect-3.0.1.tgz#efdaa98ea7451324d092b2b2163a6a1d7a9a2147"
 
 resolve-cwd@^2.0.0:
   version "2.0.0"
@@ -3896,7 +3903,7 @@ seedrandom@^2.4.2:
 
 seer@^0.2.4:
   version "0.2.4"
-  resolved "https://unpm.uberinternal.com/seer/-/seer-0.2.4.tgz#6b8a81d09bfe6b3b3ad0268971a65e7f7405135c"
+  resolved "https://registry.yarnpkg.com/seer/-/seer-0.2.4.tgz#6b8a81d09bfe6b3b3ad0268971a65e7f7405135c"
 
 select-hose@^2.0.0:
   version "2.0.0"
@@ -4315,8 +4322,8 @@ supercluster@^2.3.0:
     kdbush "^1.0.1"
 
 supercluster@^3.0.2:
-  version "3.0.3"
-  resolved "https://unpm.uberinternal.com/supercluster/-/supercluster-3.0.3.tgz#3b7c86bbc8f56ecf35b923a4f5675676ed52e2cb"
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/supercluster/-/supercluster-3.0.2.tgz#370d6b4fcc9381f034f60f950593d7e4de3235ef"
   dependencies:
     kdbush "^1.0.1"
 
@@ -4425,7 +4432,7 @@ tty-browserify@0.0.0:
 
 turf-jsts@*:
   version "1.2.3"
-  resolved "https://unpm.uberinternal.com/turf-jsts/-/turf-jsts-1.2.3.tgz#59757f542afbff9a577bbf411f183b8f48d38aa4"
+  resolved "https://registry.yarnpkg.com/turf-jsts/-/turf-jsts-1.2.3.tgz#59757f542afbff9a577bbf411f183b8f48d38aa4"
 
 type-check@~0.3.2:
   version "0.3.2"
@@ -4618,7 +4625,7 @@ wbuf@^1.1.0, wbuf@^1.7.2:
 
 webgl-debug@^2.0.0:
   version "2.0.1"
-  resolved "https://unpm.uberinternal.com/webgl-debug/-/webgl-debug-2.0.1.tgz#dc11bea3d947764bce061fdb5a23109c13787c95"
+  resolved "https://registry.yarnpkg.com/webgl-debug/-/webgl-debug-2.0.1.tgz#dc11bea3d947764bce061fdb5a23109c13787c95"
 
 webpack-dev-middleware@1.12.2:
   version "1.12.2"

@@ -2,25 +2,37 @@
 # yarn lockfile v1
 
 
-"@deck.gl/core@^5.2.1":
-  version "5.2.1"
-  resolved "https://registry.yarnpkg.com/@deck.gl%2fcore/-/core-5.2.1.tgz#cb1d67b3557ec4df2fe571cadbcf2f6c863b1211"
+"@deck.gl/core@^5.3.1":
+  version "5.3.1"
+  resolved "https://registry.yarnpkg.com/@deck.gl/core/-/core-5.3.1.tgz#acfc1e5fefd3b12e9142419b0aeb77c07885626c"
   dependencies:
-    d3-hexbin "^0.2.1"
-    earcut "^2.0.6"
-    lodash.flattendeep "^4.4.0"
-    luma.gl "^5.2.0"
-    math.gl "^1.1.3"
+    luma.gl "^5.3.0"
+    math.gl "^1.2.1"
     mjolnir.js "^1.0.0"
     probe.gl "^1.0.0"
     seer "^0.2.4"
     viewport-mercator-project "^5.1.0"
 
-"@deck.gl/react@^5.2.1":
-  version "5.2.1"
-  resolved "https://registry.yarnpkg.com/@deck.gl%2freact/-/react-5.2.1.tgz#e0c36f516aae7cf38ef70f157cc84e9d5ec60980"
+"@deck.gl/experimental-layers@5.X.X":
+  version "5.3.2"
+  resolved "https://registry.yarnpkg.com/@deck.gl/experimental-layers/-/experimental-layers-5.3.2.tgz#8869a95804fddc79f72a3489c9911a663f8da774"
   dependencies:
-    "@deck.gl/core" "^5.2.1"
+    "@deck.gl/core" "^5.3.1"
+    "@deck.gl/layers" "^5.3.2"
+
+"@deck.gl/layers@^5.3.2":
+  version "5.3.2"
+  resolved "https://registry.yarnpkg.com/@deck.gl/layers/-/layers-5.3.2.tgz#c76b9a7890305a5d6a0fdd56bd0d0d68d4046f6f"
+  dependencies:
+    "@deck.gl/core" "^5.3.1"
+    d3-hexbin "^0.2.1"
+    earcut "^2.0.6"
+
+"@deck.gl/react@^5.3.1":
+  version "5.3.1"
+  resolved "https://registry.yarnpkg.com/@deck.gl/react/-/react-5.3.1.tgz#0c16fac59061924eb3509dea06c837bcef8044f2"
+  dependencies:
+    "@deck.gl/core" "^5.3.1"
     prop-types "^15.6.0"
 
 "@mapbox/geojson-area@0.2.2":
@@ -1397,11 +1409,12 @@ deck.gl-layers@0.X.X:
   resolved "https://registry.yarnpkg.com/deck.gl-layers/-/deck.gl-layers-0.0.25.tgz#870a6a94c512e5e019c7044012bcc3f95f8ac126"
 
 deck.gl@5.X.X:
-  version "5.2.1"
-  resolved "https://registry.yarnpkg.com/deck.gl/-/deck.gl-5.2.1.tgz#a8eaa0cf5499805dbaabe4e1ab78cfbc9ddae1ce"
+  version "5.3.2"
+  resolved "https://registry.yarnpkg.com/deck.gl/-/deck.gl-5.3.2.tgz#2297d820fb8fb02eab95ac6a03261a689500bc11"
   dependencies:
-    "@deck.gl/core" "^5.2.1"
-    "@deck.gl/react" "^5.2.1"
+    "@deck.gl/core" "^5.3.1"
+    "@deck.gl/layers" "^5.3.2"
+    "@deck.gl/react" "^5.3.1"
 
 decode-uri-component@^0.2.0:
   version "0.2.0"
@@ -2684,10 +2697,6 @@ lodash._getnative@^3.0.0:
   version "3.9.1"
   resolved "https://registry.yarnpkg.com/lodash._getnative/-/lodash._getnative-3.9.1.tgz#570bc7dede46d61cdcde687d65d3eecbaa3aaff5"
 
-lodash.flattendeep@^4.4.0:
-  version "4.4.0"
-  resolved "https://registry.yarnpkg.com/lodash.flattendeep/-/lodash.flattendeep-4.4.0.tgz#fb030917f86a3134e5bc9bec0d69e0013ddfedb2"
-
 lodash.isarguments@^3.0.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/lodash.isarguments/-/lodash.isarguments-3.1.0.tgz#2f573d85c6a24289ff00663b491c1d338ff3458a"
@@ -2740,7 +2749,7 @@ loud-rejection@^1.0.0:
     currently-unhandled "^0.4.1"
     signal-exit "^3.0.0"
 
-luma.gl@^5.2.0:
+luma.gl@^5.3.0:
   version "5.3.0"
   resolved "https://registry.yarnpkg.com/luma.gl/-/luma.gl-5.3.0.tgz#a93b2f34489d8230eb6d8c871335800d9b83ee67"
   dependencies:
@@ -2852,7 +2861,7 @@ math-random@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/math-random/-/math-random-1.0.1.tgz#8b3aac588b8a66e4975e3cdea67f7bb329601fac"
 
-math.gl@^1.1.0, math.gl@^1.1.3:
+math.gl@^1.1.0, math.gl@^1.1.3, math.gl@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/math.gl/-/math.gl-1.2.1.tgz#3c7da0ae4f3383116c24bc183533cc4d7b8065a9"
   dependencies:

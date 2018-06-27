@@ -1,6 +1,6 @@
 // @flow
 import { COORDINATE_SYSTEM } from 'deck.gl';
-import { PathMarkerLayer } from 'deck.gl-layers';
+import { PathMarkerLayer } from '@deck.gl/experimental-layers';
 import { GL } from 'luma.gl';
 
 import { ArrowStyles, DEFAULT_STYLE, MAX_ARROWS } from '../style';

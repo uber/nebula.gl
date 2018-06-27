@@ -221,10 +221,7 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
 
       if (this.props.onDraggingPoint) {
         const pointerCoords = this.getPointerCoords(event);
-        const groundCoords = this.context.layerManager.viewports[0].unproject([
-          pointerCoords.x,
-          pointerCoords.y
-        ]);
+        const groundCoords = this.context.viewport.unproject([pointerCoords.x, pointerCoords.y]);
 
         const { coordinateIndexes } = this.state.draggingPoint;
         const editingFeature = this.getEditingFeature();
@@ -261,8 +258,7 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
       ...this.getPointerCoords(event),
       mode: 'query',
       layers: [this.props.id],
-      radius: 10,
-      depth: 2
+      radius: 10
     });
 
     const pickedPoint = allPicked.find(picked => picked.isPoint);

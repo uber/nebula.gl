@@ -1,5 +1,4 @@
 // @flow
-/* eslint-disable no-inline-comments */
 
 import window from 'global/window';
 import React, { Component } from 'react';
@@ -51,7 +50,7 @@ export default class Example extends Component<
       viewport: initialViewport,
       testFeatures: sampleGeoJson,
       isEditing: true,
-      selectedFeatureIndex: null
+      selectedFeatureIndex: 5
     };
   }
 
@@ -97,7 +96,7 @@ export default class Example extends Component<
       console.log(`select editing feature ${info.index}`); // eslint-disable-line
       // a feature was clicked
       // TODO: once https://github.com/uber/deck.gl/pull/1918 lands, this will work since it'll work with Multi* geometry types
-      // this.setState({ selectedFeatureIndex: info.index });
+      this.setState({ selectedFeatureIndex: info.index });
     } else {
       console.log('deselect editing feature'); // eslint-disable-line
       // open space was clicked, so stop editing
@@ -144,12 +143,11 @@ export default class Example extends Component<
     const editableGeoJsonLayer = new EditableGeoJsonLayer({
       data: testFeatures,
       selectedFeatureIndex,
-      pickable: true,
       isEditing: this.state.isEditing,
+      fp64: true,
 
       onStartDraggingPoint: ({ featureIndex, coordinateIndexes }) => {
-        // eslint-disable-next-line no-console, no-undef
-        console.log(`Start dragging point`, featureIndex, coordinateIndexes);
+        console.log(`Start dragging point`, featureIndex, coordinateIndexes); // eslint-disable-line
       },
       onDraggingPoint: ({ feature, featureIndex, coordinateIndexes }) => {
         // Immutably replace the feature being edited in the featureCollection
@@ -165,21 +163,22 @@ export default class Example extends Component<
         });
       },
       onStopDraggingPoint: ({ featureIndex, coordinateIndexes }) => {
-        // eslint-disable-next-line no-console, no-undef
-        console.log(`Stop dragging point`, featureIndex, coordinateIndexes);
+        console.log(`Stop dragging point`, featureIndex, coordinateIndexes); // eslint-disable-line
       },
 
-      // Can specify GeoJsonLayer props
-      getFillColor: () => [0x00, 0x20, 0x70, 0x30],
-      getLineColor: () => [0x00, 0x20, 0x70, 0xc0],
-      getLineWidth: () => 30,
+      // Specify the same GeoJsonLayer props
       lineWidthMinPixels: 2,
-      lineWidthMaxPixels: 10,
 
-      // As well as point layer props
-      pointRadiusMinPixels: 10,
-      getPointColor: () => [0x00, 0x20, 0x70, 0xff],
-      pointHighlightColor: [0xff, 0xff, 0xff, 0xff]
+      // Accessors receive an isSelected argument
+      getFillColor: (feature, isSelected) => {
+        return isSelected ? [0x20, 0x40, 0x90, 0xc0] : [0x20, 0x20, 0x20, 0x30];
+      },
+      getLineColor: (feature, isSelected) => {
+        return isSelected ? [0x00, 0x20, 0x90, 0xff] : [0x20, 0x20, 0x20, 0xff];
+      },
+
+      // Can customize editing points props
+      getEditingPointColor: () => [0xff, 0x80, 0x00, 0xff]
     });
 
     return (

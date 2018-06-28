@@ -1,21 +1,22 @@
 // @flow
+
 import window from 'global/window';
 import React, { Component } from 'react';
 import DeckGL, { MapController } from 'deck.gl';
 import { StaticMap } from 'react-map-gl';
 
-import { EditablePolygonsLayer } from 'nebula.gl';
+import { EditableGeoJsonLayer } from 'nebula.gl';
 
-import testPolygons from '../data/sf-polygons';
+import sampleGeoJson from '../data/sample-geojson.json';
 
 const initialViewport = {
   bearing: 0,
   height: 0,
-  latitude: 37.75,
-  longitude: -122.4,
+  latitude: 37.76,
+  longitude: -122.44,
   pitch: 0,
   width: 0,
-  zoom: 10
+  zoom: 11
 };
 
 const styles = {
@@ -23,9 +24,25 @@ const styles = {
     position: 'absolute',
     top: 12,
     left: 12,
-    background: 'rgba(0, 0, 0, 0.2)',
+    background: 'white',
     padding: 10,
-    borderRadius: 10
+    borderRadius: 4,
+    border: '1px solid gray',
+    width: 300,
+    fontFamily: 'Arial, Helvetica, sans-serif'
+  },
+  toolboxList: {
+    margin: 0,
+    display: 'flex',
+    flexWrap: 'wrap'
+  },
+  toolboxTerm: {
+    flex: '0 0 60%',
+    marginBottom: 7
+  },
+  toolboxDescription: {
+    margin: 0,
+    flex: '0 0 40%'
   },
   mapContainer: {
     alignItems: 'stretch',
@@ -43,17 +60,11 @@ export default class Example extends Component<
   constructor() {
     super();
 
-    // TODO: once https://github.com/uber/deck.gl/pull/1918 lands, remove this filter since it'll work with MultiPolygons
-    const testPolygonsWithoutMultiPolygons = testPolygons.filter(
-      feature => feature.geometry.type === 'Polygon'
-    );
-
     this.state = {
       viewport: initialViewport,
-      testFeatures: {
-        type: 'FeatureCollection',
-        features: testPolygonsWithoutMultiPolygons
-      }
+      testFeatures: sampleGeoJson,
+      editable: true,
+      selectedFeatureIndex: 5
     };
   }
 
@@ -71,10 +82,34 @@ export default class Example extends Component<
     });
   };
 
+  _incrementSelectedFeature() {
+    if (this.state.selectedFeatureIndex === null) {
+      this.setState({ selectedFeatureIndex: 0 });
+    } else {
+      this.setState({
+        selectedFeatureIndex:
+          (this.state.selectedFeatureIndex + 1) % this.state.testFeatures.features.length
+      });
+    }
+  }
+
+  _decrementSelectedFeature() {
+    if (this.state.selectedFeatureIndex === null) {
+      this.setState({ selectedFeatureIndex: 0 });
+    } else {
+      this.setState({
+        selectedFeatureIndex:
+          (this.state.selectedFeatureIndex + this.state.testFeatures.features.length - 1) %
+          this.state.testFeatures.features.length
+      });
+    }
+  }
+
   _onLayerClick = info => {
     if (info) {
       console.log(`select editing feature ${info.index}`); // eslint-disable-line
-      // a polygon was clicked
+      // a feature was clicked
+      // TODO: once https://github.com/uber/deck.gl/pull/1918 lands, this will work since it'll work with Multi* geometry types
       this.setState({ selectedFeatureIndex: info.index });
     } else {
       console.log('deselect editing feature'); // eslint-disable-line
@@ -87,6 +122,39 @@ export default class Example extends Component<
     this.forceUpdate();
   };
 
+  _renderToolBox() {
+    return (
+      <div style={styles.toolbox}>
+        <dl style={styles.toolboxList}>
+          <dt style={styles.toolboxTerm}>Allow edit</dt>
+          <dd style={styles.toolboxDescription}>
+            <input
+              type="checkbox"
+              checked={this.state.editable}
+              onChange={() => this.setState({ editable: !this.state.editable })}
+            />
+          </dd>
+          <dt style={styles.toolboxTerm}>Selected feature index</dt>
+          <dd style={styles.toolboxDescription}>
+            {this.state.selectedFeatureIndex}{' '}
+            <span style={{ float: 'right' }}>
+              <button onClick={() => this._decrementSelectedFeature()}>-</button>
+              <button onClick={() => this._incrementSelectedFeature()}>+</button>
+            </span>
+          </dd>
+          <dt style={styles.toolboxTerm}>Selected feature type</dt>
+          <dd style={styles.toolboxDescription}>
+            {this.state.selectedFeatureIndex !== null
+              ? this.state.testFeatures.features[this.state.selectedFeatureIndex].geometry.type
+              : ''}
+          </dd>
+          <dt style={styles.toolboxTerm}>Feature count</dt>
+          <dd style={styles.toolboxDescription}>{this.state.testFeatures.features.length}</dd>
+        </dl>
+      </div>
+    );
+  }
+
   render() {
     const { testFeatures, selectedFeatureIndex } = this.state;
 
@@ -96,15 +164,14 @@ export default class Example extends Component<
       width: window.innerWidth
     };
 
-    const editablePolygonsLayer = new EditablePolygonsLayer({
+    const editableGeoJsonLayer = new EditableGeoJsonLayer({
       data: testFeatures,
       selectedFeatureIndex,
-      pickable: true,
-      isEditing: true,
+      editable: this.state.editable,
+      fp64: true,
 
-      onStartDraggingPoint: ({ coordinateIndexes }) => {
-        // eslint-disable-next-line no-console, no-undef
-        console.log(`Start dragging point`, coordinateIndexes);
+      onStartDraggingPoint: ({ featureIndex, coordinateIndexes }) => {
+        console.log(`Start dragging point`, featureIndex, coordinateIndexes); // eslint-disable-line
       },
       onDraggingPoint: ({ feature, featureIndex, coordinateIndexes }) => {
         // Immutably replace the feature being edited in the featureCollection
@@ -119,21 +186,23 @@ export default class Example extends Component<
           }
         });
       },
-      onStopDraggingPoint: ({ coordinateIndexes }) => {
-        // eslint-disable-next-line no-console, no-undef
-        console.log(`Stop dragging point`, coordinateIndexes);
+      onStopDraggingPoint: ({ featureIndex, coordinateIndexes }) => {
+        console.log(`Stop dragging point`, featureIndex, coordinateIndexes); // eslint-disable-line
       },
 
-      // Can specify GeoJsonLayer props
-      getFillColor: () => [0x00, 0x20, 0x70, 0x30],
-      getLineColor: () => [0x00, 0x20, 0x70, 0xc0],
-      getLineWidth: () => 30,
+      // Specify the same GeoJsonLayer props
       lineWidthMinPixels: 2,
-      lineWidthMaxPixels: 10,
 
-      // As well as point layer props
-      getPointColor: () => [0x00, 0x20, 0x70, 0xff],
-      pointHighlightColor: [0xff, 0xff, 0xff, 0xff]
+      // Accessors receive an isSelected argument
+      getFillColor: (feature, isSelected) => {
+        return isSelected ? [0x20, 0x40, 0x90, 0xc0] : [0x20, 0x20, 0x20, 0x30];
+      },
+      getLineColor: (feature, isSelected) => {
+        return isSelected ? [0x00, 0x20, 0x90, 0xff] : [0x20, 0x20, 0x20, 0xff];
+      },
+
+      // Can customize editing points props
+      getEditingPointColor: () => [0xff, 0x80, 0x00, 0xff]
     });
 
     return (
@@ -142,12 +211,13 @@ export default class Example extends Component<
         <StaticMap {...viewport}>
           <DeckGL
             {...viewport}
-            layers={[editablePolygonsLayer]}
+            layers={[editableGeoJsonLayer]}
             controller={MapController}
             onLayerClick={this._onLayerClick}
             onViewStateChange={({ viewState }) => this.setState({ viewport: viewState })}
           />
         </StaticMap>
+        {this._renderToolBox()}
       </div>
     );
   }

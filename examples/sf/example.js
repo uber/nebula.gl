@@ -6,7 +6,7 @@ import MapGL from 'react-map-gl';
 
 import {
   EditableJunctionsLayer,
-  EditablePolygonsLayer,
+  EditableGeoJsonLayer,
   Feature,
   HtmlTooltipOverlay,
   Nebula,
@@ -235,11 +235,11 @@ export default class Example extends Component<
     const { innerHeight: height, innerWidth: width } = window;
     viewport = Object.assign(viewport, { height, width });
 
-    const editablePolygonsLayer = new EditablePolygonsLayer({
+    const editableGeoJsonLayer = new EditableGeoJsonLayer({
       data: this.state.testPolygons,
       selectedFeatureIndex: this.state.selectedFeatureIndex,
       pickable: true,
-      isEditing: this.state.allowEdit,
+      editable: this.state.allowEdit,
 
       onStartDraggingPoint: ({ coordinateIndexes }) => {
         console.log(`Start dragging point`, coordinateIndexes); // eslint-disable-line
@@ -281,8 +281,8 @@ export default class Example extends Component<
         }
       ]
     });
-    const nebulaLayers = [segmentsLayer, editableJunctionsLayer, textLayer];
-    const deckLayers = [editablePolygonsLayer];
+    const nebulaLayers = [segmentsLayer, editableJunctionsLayer];
+    const deckLayers = [editableGeoJsonLayer, textLayer];
 
     return (
       <div style={styles.mapContainer}>

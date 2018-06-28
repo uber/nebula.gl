@@ -53,8 +53,11 @@ export function immutablyReplaceCoordinate(
   updatedCoordinate: Array<number>,
   isPolygonal: boolean = false
 ): Array<mixed> {
-  if (!indexes || indexes.length === 0) {
+  if (!indexes) {
     return coordinates;
+  }
+  if (indexes.length === 0) {
+    return updatedCoordinate;
   }
   if (indexes.length === 1) {
     const updated = [
@@ -83,4 +86,56 @@ export function immutablyReplaceCoordinate(
     ),
     ...coordinates.slice(indexes[0] + 1)
   ];
+}
+
+export function flattenPositions(geometry) {
+  let positions = [];
+  switch (geometry.type) {
+    case 'Point':
+      // positions are not nested
+      positions = [
+        {
+          position: geometry.coordinates,
+          indexes: []
+        }
+      ];
+      break;
+    case 'MultiPoint':
+    case 'LineString':
+      // positions are nested 1 level
+      positions = geometry.coordinates.map((position, index) => ({
+        position,
+        indexes: [index]
+      }));
+      break;
+    case 'Polygon':
+    case 'MultiLineString':
+      // positions are nested 2 levels
+      for (let a = 0; a < geometry.coordinates.length; a++) {
+        positions = positions.concat(
+          geometry.coordinates[a].map((position, index) => ({
+            position,
+            indexes: [a, index]
+          }))
+        );
+      }
+      break;
+    case 'MultiPolygon':
+      // positions are nested 3 levels
+      for (let a = 0; a < geometry.coordinates.length; a++) {
+        for (let b = 0; b < geometry.coordinates[a].length; b++) {
+          positions = positions.concat(
+            geometry.coordinates[a][b].map((position, index) => ({
+              position,
+              indexes: [a, b, index]
+            }))
+          );
+        }
+      }
+      break;
+    default:
+      throw Error(`Unhandled geometry type: ${geometry.type}`);
+  }
+
+  return positions;
 }

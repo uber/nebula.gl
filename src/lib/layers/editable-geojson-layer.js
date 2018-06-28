@@ -89,7 +89,7 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
   updateState({ props, changeFlags }) {
     // unsubscribe previous layer instance's handlers
     this.removePointerHandlers();
-    if (props.isEditing) {
+    if (props.editable) {
       // and re-subscribe to this instance
       this.addPointerHandlers();
     }
@@ -201,7 +201,7 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
   }
 
   getEditingFeature() {
-    if (!this.props.isEditing) {
+    if (!this.props.editable) {
       return null;
     }
     if (Array.isArray(this.props.data)) {

@@ -239,7 +239,7 @@ export default class Example extends Component<
       data: this.state.testPolygons,
       selectedFeatureIndex: this.state.selectedFeatureIndex,
       pickable: true,
-      isEditing: this.state.allowEdit,
+      editable: this.state.allowEdit,
 
       onStartDraggingPoint: ({ coordinateIndexes }) => {
         console.log(`Start dragging point`, coordinateIndexes); // eslint-disable-line

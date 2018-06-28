@@ -12,8 +12,6 @@ import sampleGeoJson from '../data/sample-geojson.json';
 const initialViewport = {
   bearing: 0,
   height: 0,
-  // latitude: 70.13,
-  // longitude: 23.04,
   latitude: 37.76,
   longitude: -122.44,
   pitch: 0,
@@ -26,9 +24,25 @@ const styles = {
     position: 'absolute',
     top: 12,
     left: 12,
-    background: 'rgba(0, 0, 0, 0.2)',
+    background: 'white',
     padding: 10,
-    borderRadius: 10
+    borderRadius: 4,
+    border: '1px solid gray',
+    width: 300,
+    fontFamily: 'Arial, Helvetica, sans-serif'
+  },
+  toolboxList: {
+    margin: 0,
+    display: 'flex',
+    flexWrap: 'wrap'
+  },
+  toolboxTerm: {
+    flex: '0 0 60%',
+    marginBottom: 7
+  },
+  toolboxDescription: {
+    margin: 0,
+    flex: '0 0 40%'
   },
   mapContainer: {
     alignItems: 'stretch',
@@ -49,7 +63,7 @@ export default class Example extends Component<
     this.state = {
       viewport: initialViewport,
       testFeatures: sampleGeoJson,
-      isEditing: true,
+      editable: true,
       selectedFeatureIndex: 5
     };
   }
@@ -111,28 +125,32 @@ export default class Example extends Component<
   _renderToolBox() {
     return (
       <div style={styles.toolbox}>
-        <div>
-          <label>
-            Allow edit:{' '}
+        <dl style={styles.toolboxList}>
+          <dt style={styles.toolboxTerm}>Allow edit</dt>
+          <dd style={styles.toolboxDescription}>
             <input
               type="checkbox"
-              checked={this.state.isEditing}
-              onChange={() => this.setState({ isEditing: !this.state.isEditing })}
+              checked={this.state.editable}
+              onChange={() => this.setState({ editable: !this.state.editable })}
             />
-          </label>
-        </div>
-        <div>
-          Selected feature index: {this.state.selectedFeatureIndex}{' '}
-          <button onClick={() => this._decrementSelectedFeature()}>-</button>
-          <button onClick={() => this._incrementSelectedFeature()}>+</button>
-        </div>
-        <div>
-          Selected feature type:{' '}
-          {this.state.selectedFeatureIndex !== null
-            ? this.state.testFeatures.features[this.state.selectedFeatureIndex].geometry.type
-            : ''}
-        </div>
-        <div>Feature count: {this.state.testFeatures.features.length}</div>
+          </dd>
+          <dt style={styles.toolboxTerm}>Selected feature index</dt>
+          <dd style={styles.toolboxDescription}>
+            {this.state.selectedFeatureIndex}{' '}
+            <span style={{ float: 'right' }}>
+              <button onClick={() => this._decrementSelectedFeature()}>-</button>
+              <button onClick={() => this._incrementSelectedFeature()}>+</button>
+            </span>
+          </dd>
+          <dt style={styles.toolboxTerm}>Selected feature type</dt>
+          <dd style={styles.toolboxDescription}>
+            {this.state.selectedFeatureIndex !== null
+              ? this.state.testFeatures.features[this.state.selectedFeatureIndex].geometry.type
+              : ''}
+          </dd>
+          <dt style={styles.toolboxTerm}>Feature count</dt>
+          <dd style={styles.toolboxDescription}>{this.state.testFeatures.features.length}</dd>
+        </dl>
       </div>
     );
   }
@@ -149,7 +167,7 @@ export default class Example extends Component<
     const editableGeoJsonLayer = new EditableGeoJsonLayer({
       data: testFeatures,
       selectedFeatureIndex,
-      isEditing: this.state.isEditing,
+      editable: this.state.editable,
       fp64: true,
 
       onStartDraggingPoint: ({ featureIndex, coordinateIndexes }) => {

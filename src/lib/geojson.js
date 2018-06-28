@@ -139,5 +139,3 @@ export function flattenPositions(geometry) {
 
   return positions;
 }
-
-// flattenPositions tests

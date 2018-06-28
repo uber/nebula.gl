@@ -37,8 +37,8 @@ export function expandMultiGeometry(
 }
 
 /**
- * Updates a coordinate deeply nested in a GeoJSON geometry coordinates.
- * Works with MultiPoint, LineString, MultiLineString, Polygon, and MultiPolygon.
+ * Updates a coordinate deeply nested in a GeoJSON geometry coordinates array.
+ * Works with Point, MultiPoint, LineString, MultiLineString, Polygon, and MultiPolygon.
  *
  * @param coordinates A GeoJSON geometry coordinates array
  * @param indexes An array containing the indexes of the coordinates to replace
@@ -82,6 +82,60 @@ export function immutablyReplaceCoordinate(
       coordinates[indexes[0]],
       indexes.slice(1, indexes.length),
       updatedCoordinate,
+      isPolygonal
+    ),
+    ...coordinates.slice(indexes[0] + 1)
+  ];
+}
+
+// TODO: add tests for immutablyRemoveCoordinate
+/**
+ * Removes a coordinate deeply nested in a GeoJSON geometry coordinates array.
+ * Works with MultiPoint, LineString, MultiLineString, Polygon, and MultiPolygon.
+ *
+ * @param coordinates A GeoJSON geometry coordinates array
+ * @param indexes An array containing the indexes of the coordinates to remove
+ * @param isPolygonal `true` if `coordinates` is a Polygon or MultiPolygon
+ *
+ * @returns A new array with the coordinates at the given index removed. Does not modify `coordinates`.
+ */
+export function immutablyRemoveCoordinate(
+  coordinates: Array<mixed>,
+  indexes: Array<number>,
+  isPolygonal: boolean = false
+): Array<mixed> {
+  if (!indexes) {
+    return coordinates;
+  }
+  if (indexes.length === 0) {
+    throw Error('Must specify the index of the coordinate to remove');
+  }
+  if (indexes.length === 1) {
+    if (isPolygonal && coordinates.length < 5) {
+      throw Error('Cannot remove a coordinate from a triangle as it will no longer be a polygon');
+    }
+    const updated = [...coordinates.slice(0, indexes[0]), ...coordinates.slice(indexes[0] + 1)];
+
+    if (isPolygonal && (indexes[0] === 0 || indexes[0] === coordinates.length - 1)) {
+      // for polygons, the first point is repeated at the end of the array
+      // so, if the first/last coordinate is to be removed, coordinates[1] will be the new first/last coordinate
+      if (indexes[0] === 0) {
+        // change the last to be the same as the first
+        updated[updated.length - 1] = updated[0];
+      } else if (indexes[0] === coordinates.length - 1) {
+        // change the first to be the same as the last
+        updated[0] = updated[updated.length - 1];
+      }
+    }
+    return updated;
+  }
+
+  // recursively update inner array
+  return [
+    ...coordinates.slice(0, indexes[0]),
+    immutablyRemoveCoordinate(
+      coordinates[indexes[0]],
+      indexes.slice(1, indexes.length),
       isPolygonal
     ),
     ...coordinates.slice(indexes[0] + 1)

@@ -1,7 +1,11 @@
 /* eslint-env browser */
 
 import { CompositeLayer, GeoJsonLayer, ScatterplotLayer } from 'deck.gl';
-import { immutablyReplaceCoordinate, flattenPositions } from '../geojson';
+import {
+  immutablyReplaceCoordinate,
+  immutablyRemoveCoordinate,
+  flattenPositions
+} from '../geojson';
 
 const DEFAULT_LINE_COLOR = [0x0, 0x0, 0x0, 0xff];
 const DEFAULT_FILL_COLOR = [0x0, 0x0, 0x0, 0x90];
@@ -37,6 +41,9 @@ const defaultProps = {
   getEditingPointColor: () => DEFAULT_EDITING_POINT_COLOR,
   getEditingPointRadius: () => 3
 };
+
+// Minimum number of pixels the pointer must move from the original pointer down to be considered dragging
+const MINIMUM_POINTER_MOVE_THRESHOLD_PIXELS = 10;
 
 export default class EditableGeoJsonLayer extends CompositeLayer {
   renderLayers() {
@@ -215,47 +222,76 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
   }
 
   onPointerMove(event) {
-    if (this.state.draggingPoint) {
-      // stop propagation to prevent map panning
-      event.stopPropagation();
+    if (!this.state.pointerDownPoint) {
+      // TODO: only subscribe to pointermove if the pointer was down (at which point we can remove this)
+      return;
+    }
 
-      if (this.props.onDraggingPoint) {
-        const pointerCoords = this.getPointerCoords(event);
-        const groundCoords = this.context.viewport.unproject([pointerCoords.x, pointerCoords.y]);
+    // stop propagation to prevent map panning
+    event.stopPropagation();
 
-        const { coordinateIndexes } = this.state.draggingPoint;
-        const editingFeature = this.getEditingFeature();
-        const isPolygonal =
-          editingFeature.geometry.type === 'Polygon' ||
-          editingFeature.geometry.type === 'MultiPolygon';
+    const pointerCoords = this.getPointerCoords(event);
 
-        const coordinates = immutablyReplaceCoordinate(
-          editingFeature.geometry.coordinates,
-          coordinateIndexes,
-          groundCoords,
-          isPolygonal
-        );
+    if (!this.state.draggingPoint) {
+      // pointer is moving, but is it moving enough?
 
-        const updatedFeature = {
-          ...editingFeature,
-          geometry: {
-            ...editingFeature.geometry,
-            coordinates
-          }
-        };
+      if (
+        Math.abs(this.state.pointerDownCoords.x - pointerCoords.x) >
+          MINIMUM_POINTER_MOVE_THRESHOLD_PIXELS ||
+        Math.abs(this.state.pointerDownCoords.y - pointerCoords.y) >
+          MINIMUM_POINTER_MOVE_THRESHOLD_PIXELS
+      ) {
+        this.state.draggingPoint = this.state.pointerDownPoint;
 
-        this.props.onDraggingPoint({
-          feature: updatedFeature,
-          featureIndex: this.props.selectedFeatureIndex,
-          coordinateIndexes: this.state.draggingPoint.coordinateIndexes
-        });
+        // Fire the start dragging event
+        if (this.props.onStartDraggingPoint) {
+          this.props.onStartDraggingPoint({
+            featureIndex: this.props.selectedFeatureIndex,
+            coordinateIndexes: this.state.draggingPoint.coordinateIndexes
+          });
+        }
+      } else {
+        // pointer barely moved, so nothing else to do
+        return;
       }
+    }
+
+    if (this.props.onDraggingPoint) {
+      const groundCoords = this.context.viewport.unproject([pointerCoords.x, pointerCoords.y]);
+
+      const { coordinateIndexes } = this.state.draggingPoint;
+      const editingFeature = this.getEditingFeature();
+      const isPolygonal =
+        editingFeature.geometry.type === 'Polygon' ||
+        editingFeature.geometry.type === 'MultiPolygon';
+
+      const coordinates = immutablyReplaceCoordinate(
+        editingFeature.geometry.coordinates,
+        coordinateIndexes,
+        groundCoords,
+        isPolygonal
+      );
+
+      const updatedFeature = {
+        ...editingFeature,
+        geometry: {
+          ...editingFeature.geometry,
+          coordinates
+        }
+      };
+
+      this.props.onDraggingPoint({
+        feature: updatedFeature,
+        featureIndex: this.props.selectedFeatureIndex,
+        coordinateIndexes: this.state.draggingPoint.coordinateIndexes
+      });
     }
   }
 
   onPointerDown(event) {
+    const pointerCoords = this.getPointerCoords(event);
     const allPicked = this.context.layerManager.pickObject({
-      ...this.getPointerCoords(event),
+      ...pointerCoords,
       mode: 'query',
       layers: [this.props.id],
       radius: 10
@@ -263,30 +299,61 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
 
     const pickedPoint = allPicked.find(picked => picked.isEditingHandle);
     if (pickedPoint) {
-      this.setState({ draggingPoint: pickedPoint });
-      if (this.props.onStartDraggingPoint) {
-        this.props.onStartDraggingPoint({
+      this.setState({ pointerDownPoint: pickedPoint, pointerDownCoords: pointerCoords });
+    }
+  }
+
+  onPointerUp(event) {
+    if (this.state.draggingPoint) {
+      if (this.props.onStopDraggingPoint) {
+        this.props.onStopDraggingPoint({
           featureIndex: this.props.selectedFeatureIndex,
-          coordinateIndexes: pickedPoint.coordinateIndexes
+          coordinateIndexes: this.state.draggingPoint.coordinateIndexes
         });
       }
+    } else if (this.state.pointerDownPoint) {
+      // they pointer downed on a point but didn't drag it, so remove it
+      if (this.props.onRemovePoint) {
+        const editingFeature = this.getEditingFeature();
+        const isPolygonal =
+          editingFeature.geometry.type === 'Polygon' ||
+          editingFeature.geometry.type === 'MultiPolygon';
+
+        let coordinates;
+        try {
+          coordinates = immutablyRemoveCoordinate(
+            editingFeature.geometry.coordinates,
+            this.state.pointerDownPoint.coordinateIndexes,
+            isPolygonal
+          );
+        } catch (error) {
+          // Sometimes we can't remove a coordinate (e.g. trying to remove a point from a triangle)
+        }
+
+        if (coordinates) {
+          const updatedFeature = {
+            ...editingFeature,
+            geometry: {
+              ...editingFeature.geometry,
+              coordinates
+            }
+          };
+
+          this.props.onRemovePoint({
+            feature: updatedFeature,
+            featureIndex: this.props.selectedFeatureIndex,
+            coordinateIndexes: this.state.pointerDownPoint.coordinateIndexes
+          });
+        }
+      }
     }
+    this.setState({ draggingPoint: null, pointerDownPoint: null, pointerDownCoords: null });
   }
 
-  onPointerUp() {
-    if (this.state.draggingPoint && this.props.onStopDraggingPoint) {
-      this.props.onStopDraggingPoint({
-        featureIndex: this.props.selectedFeatureIndex,
-        coordinateIndexes: this.state.draggingPoint.coordinateIndexes
-      });
-    }
-    this.setState({ draggingPoint: null });
-  }
-
-  getPointerCoords(mouseEvent) {
+  getPointerCoords(pointerEvent) {
     return {
-      x: mouseEvent.clientX - this.context.gl.canvas.getBoundingClientRect().x,
-      y: mouseEvent.clientY - this.context.gl.canvas.getBoundingClientRect().y
+      x: pointerEvent.clientX - this.context.gl.canvas.getBoundingClientRect().x,
+      y: pointerEvent.clientY - this.context.gl.canvas.getBoundingClientRect().y
     };
   }
 }

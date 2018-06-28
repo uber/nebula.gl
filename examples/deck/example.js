@@ -106,6 +106,13 @@ export default class Example extends Component<
   }
 
   _onLayerClick = info => {
+    console.log('onLayerClick', info); // eslint-disable-line
+
+    if (this.state.editable) {
+      // don't change selection while editing
+      return;
+    }
+
     if (info) {
       console.log(`select editing feature ${info.index}`); // eslint-disable-line
       // a feature was clicked
@@ -169,6 +176,7 @@ export default class Example extends Component<
       selectedFeatureIndex,
       editable: this.state.editable,
       fp64: true,
+      autoHighlight: true,
 
       onStartDraggingPoint: ({ featureIndex, coordinateIndexes }) => {
         console.log(`Start dragging point`, featureIndex, coordinateIndexes); // eslint-disable-line
@@ -188,6 +196,22 @@ export default class Example extends Component<
       },
       onStopDraggingPoint: ({ featureIndex, coordinateIndexes }) => {
         console.log(`Stop dragging point`, featureIndex, coordinateIndexes); // eslint-disable-line
+      },
+
+      onRemovePoint: ({ feature, featureIndex, coordinateIndexes }) => {
+        console.log(`Remove point`, featureIndex, coordinateIndexes); // eslint-disable-line
+
+        // Immutably replace the feature being edited in the featureCollection
+        this.setState({
+          testFeatures: {
+            ...this.state.testFeatures,
+            features: [
+              ...this.state.testFeatures.features.slice(0, featureIndex),
+              feature,
+              ...this.state.testFeatures.features.slice(featureIndex + 1)
+            ]
+          }
+        });
       },
 
       // Specify the same GeoJsonLayer props

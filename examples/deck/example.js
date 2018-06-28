@@ -111,12 +111,6 @@ export default class Example extends Component<
   _renderToolBox() {
     return (
       <div style={styles.toolbox}>
-        <div>Loaded Features: {this.state.testFeatures.features.length}</div>
-        <div>
-          Selected Feature Index: {this.state.selectedFeatureIndex}{' '}
-          <button onClick={() => this._decrementSelectedFeature()}>-</button>
-          <button onClick={() => this._incrementSelectedFeature()}>+</button>
-        </div>
         <div>
           <label>
             Allow edit:{' '}
@@ -127,6 +121,18 @@ export default class Example extends Component<
             />
           </label>
         </div>
+        <div>
+          Selected feature index: {this.state.selectedFeatureIndex}{' '}
+          <button onClick={() => this._decrementSelectedFeature()}>-</button>
+          <button onClick={() => this._incrementSelectedFeature()}>+</button>
+        </div>
+        <div>
+          Selected feature type:{' '}
+          {this.state.selectedFeatureIndex !== null
+            ? this.state.testFeatures.features[this.state.selectedFeatureIndex].geometry.type
+            : ''}
+        </div>
+        <div>Feature count: {this.state.testFeatures.features.length}</div>
       </div>
     );
   }

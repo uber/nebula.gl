@@ -2,7 +2,7 @@
 
 import window from 'global/window';
 import React, { Component } from 'react';
-import DeckGL, { MapController } from 'deck.gl';
+import DeckGL, { MapView, MapController } from 'deck.gl';
 import { StaticMap } from 'react-map-gl';
 
 import { EditableGeoJsonLayer } from 'nebula.gl';
@@ -260,15 +260,15 @@ export default class Example extends Component<
     return (
       <div style={styles.mapContainer}>
         <link href="https://api.mapbox.com/mapbox-gl-js/v0.44.0/mapbox-gl.css" rel="stylesheet" />
-        <StaticMap {...viewport}>
-          <DeckGL
-            {...viewport}
-            layers={[editableGeoJsonLayer]}
-            controller={MapController}
-            onLayerClick={this._onLayerClick}
-            onViewStateChange={({ viewState }) => this.setState({ viewport: viewState })}
-          />
-        </StaticMap>
+        <DeckGL
+          {...viewport}
+          layers={[editableGeoJsonLayer]}
+          views={new MapView({ id: 'basemap', controller: MapController })}
+          onLayerClick={this._onLayerClick}
+          onViewStateChange={({ viewState }) => this.setState({ viewport: viewState })}
+        >
+          <StaticMap {...viewport} />
+        </DeckGL>
         {this._renderToolBox()}
       </div>
     );

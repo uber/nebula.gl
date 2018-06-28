@@ -8,7 +8,6 @@ export { default as Nebula } from './lib/nebula-react';
 
 export { default as NebulaLayer } from './lib/nebula-layer';
 export { default as JunctionsLayer } from './lib/layers/junctions-layer';
-export { default as SegmentsLayer } from './lib/layers/segments-layer';
 export { default as EditableJunctionsLayer } from './lib/layers/editable-junctions-layer';
 export { default as EditableGeoJsonLayer } from './lib/layers/editable-geojson-layer';
 export { default as TextsLayer } from './lib/layers/texts-layer';

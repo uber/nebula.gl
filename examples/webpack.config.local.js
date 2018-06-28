@@ -32,10 +32,6 @@ function makeLocalDevConfig(EXAMPLE_DIR = LIB_DIR) {
         'nebula.gl': SRC_DIR,
 
         'deck.gl': resolve(LIB_DIR, './node_modules/deck.gl'),
-        '@deck.gl/experimental-layers': resolve(
-          LIB_DIR,
-          './node_modules/@deck.gl/experimental-layers'
-        ),
 
         // Use luma.gl specified by root package.json
         'luma.gl': resolve(LIB_DIR, './node_modules/luma.gl'),

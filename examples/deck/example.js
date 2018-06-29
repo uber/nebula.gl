@@ -64,6 +64,7 @@ export default class Example extends Component<
       viewport: initialViewport,
       testFeatures: sampleGeoJson,
       editable: true,
+      pointsRemovable: true,
       selectedFeatureIndex: 5
     };
   }
@@ -106,6 +107,13 @@ export default class Example extends Component<
   }
 
   _onLayerClick = info => {
+    console.log('onLayerClick', info); // eslint-disable-line
+
+    if (this.state.editable) {
+      // don't change selection while editing
+      return;
+    }
+
     if (info) {
       console.log(`select editing feature ${info.index}`); // eslint-disable-line
       // a feature was clicked
@@ -132,6 +140,14 @@ export default class Example extends Component<
               type="checkbox"
               checked={this.state.editable}
               onChange={() => this.setState({ editable: !this.state.editable })}
+            />
+          </dd>
+          <dt style={styles.toolboxTerm}>Allow removing points</dt>
+          <dd style={styles.toolboxDescription}>
+            <input
+              type="checkbox"
+              checked={this.state.pointsRemovable}
+              onChange={() => this.setState({ pointsRemovable: !this.state.pointsRemovable })}
             />
           </dd>
           <dt style={styles.toolboxTerm}>Selected feature index</dt>
@@ -169,25 +185,24 @@ export default class Example extends Component<
       selectedFeatureIndex,
       editable: this.state.editable,
       fp64: true,
+      autoHighlight: true,
 
-      onStartDraggingPoint: ({ featureIndex, coordinateIndexes }) => {
-        console.log(`Start dragging point`, featureIndex, coordinateIndexes); // eslint-disable-line
+      // Editing callbacks
+      onEdit: ({ data, editType, featureIndex, positionIndexes, position }) => {
+        if (editType !== 'moveposition') {
+          console.log('onEdit', editType, featureIndex, positionIndexes, position); // eslint-disable-line
+        }
+        if (editType === 'removeposition' && !this.state.pointsRemovable) {
+          // reject the edit
+          return;
+        }
+        this.setState({ testFeatures: data });
       },
-      onDraggingPoint: ({ feature, featureIndex, coordinateIndexes }) => {
-        // Immutably replace the feature being edited in the featureCollection
-        this.setState({
-          testFeatures: {
-            ...this.state.testFeatures,
-            features: [
-              ...this.state.testFeatures.features.slice(0, featureIndex),
-              feature,
-              ...this.state.testFeatures.features.slice(featureIndex + 1)
-            ]
-          }
-        });
+      onStartDraggingPosition: ({ featureIndex, positionIndexes }) => {
+        console.log(`Start dragging position`, featureIndex, positionIndexes); // eslint-disable-line
       },
-      onStopDraggingPoint: ({ featureIndex, coordinateIndexes }) => {
-        console.log(`Stop dragging point`, featureIndex, coordinateIndexes); // eslint-disable-line
+      onStopDraggingPosition: ({ featureIndex, positionIndexes }) => {
+        console.log(`Stop dragging position`, featureIndex, positionIndexes); // eslint-disable-line
       },
 
       // Specify the same GeoJsonLayer props

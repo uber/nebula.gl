@@ -48,7 +48,7 @@ export default class Example extends Component<
     viewport: Object,
     allowEdit: boolean,
     selectionType?: number,
-    testPolygons: Array<Object>
+    testFeatures: Array<Object>
   }
 > {
   constructor() {
@@ -62,7 +62,7 @@ export default class Example extends Component<
     this.state = {
       viewport: initialViewport,
       allowEdit: true,
-      testPolygons: testPolygonsWithoutMultiPolygons
+      testFeatures: { type: 'FeatureCollection', features: testPolygonsWithoutMultiPolygons }
     };
 
     this.testSegments = [];
@@ -215,7 +215,8 @@ export default class Example extends Component<
           </button>
         </div>
         <div>
-          Road Count: {this.testSegments.length} Poly Count: {this.state.testPolygons.length}
+          Road Count: {this.testSegments.length}
+          Poly Count: {this.state.testFeatures.features.length}
         </div>
         <div>
           <button onClick={() => this.setState({ allowEdit: !this.state.allowEdit })}>
@@ -236,28 +237,15 @@ export default class Example extends Component<
     viewport = Object.assign(viewport, { height, width });
 
     const editableGeoJsonLayer = new EditableGeoJsonLayer({
-      data: this.state.testPolygons,
+      data: this.state.testFeatures,
       selectedFeatureIndex: this.state.selectedFeatureIndex,
       pickable: true,
       editable: this.state.allowEdit,
 
-      onStartDraggingPoint: ({ coordinateIndexes }) => {
-        console.log(`Start dragging point`, coordinateIndexes); // eslint-disable-line
-      },
-      onDraggingPoint: ({ feature, featureIndex, coordinateIndexes }) => {
+      onEdit: ({ data }) => {
         if (this.state.allowEdit) {
-          // replace the feature being edited
-          this.setState({
-            testPolygons: [
-              ...this.state.testPolygons.slice(0, featureIndex),
-              feature,
-              ...this.state.testPolygons.slice(featureIndex + 1)
-            ]
-          });
+          this.setState({ testFeatures: data });
         }
-      },
-      onStopDraggingPoint: ({ coordinateIndexes }) => {
-        console.log(`Stop dragging point`, coordinateIndexes); // eslint-disable-line
       },
 
       // Can specify GeoJsonLayer props

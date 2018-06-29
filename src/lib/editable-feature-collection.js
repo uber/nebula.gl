@@ -105,7 +105,62 @@ export class EditableFeatureCollection {
    * @param featureIndex The index of the feature to get edit handles
    */
   getEditHandles(featureIndex: number) {
-    return flattenPositions(this.featureCollection.features[featureIndex].geometry);
+    let positions = [];
+
+    const geometry = this.featureCollection.features[featureIndex].geometry;
+
+    switch (geometry.type) {
+      case 'Point':
+        // positions are not nested
+        positions = [
+          {
+            position: geometry.coordinates,
+            positionIndexes: [],
+            handleType: 'existing'
+          }
+        ];
+        break;
+      case 'MultiPoint':
+      case 'LineString':
+        // positions are nested 1 level
+        positions = geometry.coordinates.map((position, index) => ({
+          position,
+          positionIndexes: [index],
+          handleType: 'existing'
+        }));
+        break;
+      case 'Polygon':
+      case 'MultiLineString':
+        // positions are nested 2 levels
+        for (let a = 0; a < geometry.coordinates.length; a++) {
+          positions = positions.concat(
+            geometry.coordinates[a].map((position, index) => ({
+              position,
+              positionIndexes: [a, index],
+              handleType: 'existing'
+            }))
+          );
+        }
+        break;
+      case 'MultiPolygon':
+        // positions are nested 3 levels
+        for (let a = 0; a < geometry.coordinates.length; a++) {
+          for (let b = 0; b < geometry.coordinates[a].length; b++) {
+            positions = positions.concat(
+              geometry.coordinates[a][b].map((position, index) => ({
+                position,
+                positionIndexes: [a, b, index],
+                handleType: 'existing'
+              }))
+            );
+          }
+        }
+        break;
+      default:
+        throw Error(`Unhandled geometry type: ${geometry.type}`);
+    }
+
+    return positions;
   }
 }
 
@@ -201,56 +256,4 @@ function immutablyRemovePosition(
     ),
     ...coordinates.slice(positionIndexes[0] + 1)
   ];
-}
-
-function flattenPositions(geometry) {
-  let positions = [];
-  switch (geometry.type) {
-    case 'Point':
-      // positions are not nested
-      positions = [
-        {
-          position: geometry.coordinates,
-          positionIndexes: []
-        }
-      ];
-      break;
-    case 'MultiPoint':
-    case 'LineString':
-      // positions are nested 1 level
-      positions = geometry.coordinates.map((position, index) => ({
-        position,
-        positionIndexes: [index]
-      }));
-      break;
-    case 'Polygon':
-    case 'MultiLineString':
-      // positions are nested 2 levels
-      for (let a = 0; a < geometry.coordinates.length; a++) {
-        positions = positions.concat(
-          geometry.coordinates[a].map((position, index) => ({
-            position,
-            positionIndexes: [a, index]
-          }))
-        );
-      }
-      break;
-    case 'MultiPolygon':
-      // positions are nested 3 levels
-      for (let a = 0; a < geometry.coordinates.length; a++) {
-        for (let b = 0; b < geometry.coordinates[a].length; b++) {
-          positions = positions.concat(
-            geometry.coordinates[a][b].map((position, index) => ({
-              position,
-              positionIndexes: [a, b, index]
-            }))
-          );
-        }
-      }
-      break;
-    default:
-      throw Error(`Unhandled geometry type: ${geometry.type}`);
-  }
-
-  return positions;
 }

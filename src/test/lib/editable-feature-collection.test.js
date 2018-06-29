@@ -266,7 +266,7 @@ describe('EditableFeatureCollection', () => {
       });
 
       const actual = features.getEditHandles(0);
-      const expected = [{ position: [1, 2], positionIndexes: [] }];
+      const expected = [{ position: [1, 2], positionIndexes: [], handleType: 'existing' }];
 
       expect(actual).toEqual(expected);
     });
@@ -279,8 +279,8 @@ describe('EditableFeatureCollection', () => {
 
       const actual = features.getEditHandles(0);
       const expected = [
-        { position: [1, 2], positionIndexes: [0] },
-        { position: [3, 4], positionIndexes: [1] }
+        { position: [1, 2], positionIndexes: [0], handleType: 'existing' },
+        { position: [3, 4], positionIndexes: [1], handleType: 'existing' }
       ];
 
       expect(actual).toEqual(expected);
@@ -294,16 +294,16 @@ describe('EditableFeatureCollection', () => {
 
       const actual = features.getEditHandles(0);
       const expected = [
-        { position: [-1, -1], positionIndexes: [0, 0] },
-        { position: [1, -1], positionIndexes: [0, 1] },
-        { position: [1, 1], positionIndexes: [0, 2] },
-        { position: [-1, 1], positionIndexes: [0, 3] },
-        { position: [-1, -1], positionIndexes: [0, 4] },
-        { position: [-0.5, -0.5], positionIndexes: [1, 0] },
-        { position: [-0.5, 0.5], positionIndexes: [1, 1] },
-        { position: [0.5, 0.5], positionIndexes: [1, 2] },
-        { position: [0.5, -0.5], positionIndexes: [1, 3] },
-        { position: [-0.5, -0.5], positionIndexes: [1, 4] }
+        { position: [-1, -1], positionIndexes: [0, 0], handleType: 'existing' },
+        { position: [1, -1], positionIndexes: [0, 1], handleType: 'existing' },
+        { position: [1, 1], positionIndexes: [0, 2], handleType: 'existing' },
+        { position: [-1, 1], positionIndexes: [0, 3], handleType: 'existing' },
+        { position: [-1, -1], positionIndexes: [0, 4], handleType: 'existing' },
+        { position: [-0.5, -0.5], positionIndexes: [1, 0], handleType: 'existing' },
+        { position: [-0.5, 0.5], positionIndexes: [1, 1], handleType: 'existing' },
+        { position: [0.5, 0.5], positionIndexes: [1, 2], handleType: 'existing' },
+        { position: [0.5, -0.5], positionIndexes: [1, 3], handleType: 'existing' },
+        { position: [-0.5, -0.5], positionIndexes: [1, 4], handleType: 'existing' }
       ];
 
       expect(actual).toEqual(expected);
@@ -317,8 +317,8 @@ describe('EditableFeatureCollection', () => {
 
       const actual = features.getEditHandles(0);
       const expected = [
-        { position: [1, 2], positionIndexes: [0] },
-        { position: [3, 4], positionIndexes: [1] }
+        { position: [1, 2], positionIndexes: [0], handleType: 'existing' },
+        { position: [3, 4], positionIndexes: [1], handleType: 'existing' }
       ];
 
       expect(actual).toEqual(expected);
@@ -332,10 +332,10 @@ describe('EditableFeatureCollection', () => {
 
       const actual = features.getEditHandles(0);
       const expected = [
-        { position: [1, 2], positionIndexes: [0, 0] },
-        { position: [3, 4], positionIndexes: [0, 1] },
-        { position: [5, 6], positionIndexes: [1, 0] },
-        { position: [7, 8], positionIndexes: [1, 1] }
+        { position: [1, 2], positionIndexes: [0, 0], handleType: 'existing' },
+        { position: [3, 4], positionIndexes: [0, 1], handleType: 'existing' },
+        { position: [5, 6], positionIndexes: [1, 0], handleType: 'existing' },
+        { position: [7, 8], positionIndexes: [1, 1], handleType: 'existing' }
       ];
 
       expect(actual).toEqual(expected);
@@ -349,21 +349,21 @@ describe('EditableFeatureCollection', () => {
 
       const actual = features.getEditHandles(0);
       const expected = [
-        { position: [-1, -1], positionIndexes: [0, 0, 0] },
-        { position: [1, -1], positionIndexes: [0, 0, 1] },
-        { position: [1, 1], positionIndexes: [0, 0, 2] },
-        { position: [-1, 1], positionIndexes: [0, 0, 3] },
-        { position: [-1, -1], positionIndexes: [0, 0, 4] },
-        { position: [-0.5, -0.5], positionIndexes: [0, 1, 0] },
-        { position: [-0.5, 0.5], positionIndexes: [0, 1, 1] },
-        { position: [0.5, 0.5], positionIndexes: [0, 1, 2] },
-        { position: [0.5, -0.5], positionIndexes: [0, 1, 3] },
-        { position: [-0.5, -0.5], positionIndexes: [0, 1, 4] },
-        { position: [2, -1], positionIndexes: [1, 0, 0] },
-        { position: [4, -1], positionIndexes: [1, 0, 1] },
-        { position: [4, 1], positionIndexes: [1, 0, 2] },
-        { position: [2, 1], positionIndexes: [1, 0, 3] },
-        { position: [2, -1], positionIndexes: [1, 0, 4] }
+        { position: [-1, -1], positionIndexes: [0, 0, 0], handleType: 'existing' },
+        { position: [1, -1], positionIndexes: [0, 0, 1], handleType: 'existing' },
+        { position: [1, 1], positionIndexes: [0, 0, 2], handleType: 'existing' },
+        { position: [-1, 1], positionIndexes: [0, 0, 3], handleType: 'existing' },
+        { position: [-1, -1], positionIndexes: [0, 0, 4], handleType: 'existing' },
+        { position: [-0.5, -0.5], positionIndexes: [0, 1, 0], handleType: 'existing' },
+        { position: [-0.5, 0.5], positionIndexes: [0, 1, 1], handleType: 'existing' },
+        { position: [0.5, 0.5], positionIndexes: [0, 1, 2], handleType: 'existing' },
+        { position: [0.5, -0.5], positionIndexes: [0, 1, 3], handleType: 'existing' },
+        { position: [-0.5, -0.5], positionIndexes: [0, 1, 4], handleType: 'existing' },
+        { position: [2, -1], positionIndexes: [1, 0, 0], handleType: 'existing' },
+        { position: [4, -1], positionIndexes: [1, 0, 1], handleType: 'existing' },
+        { position: [4, 1], positionIndexes: [1, 0, 2], handleType: 'existing' },
+        { position: [2, 1], positionIndexes: [1, 0, 3], handleType: 'existing' },
+        { position: [2, -1], positionIndexes: [1, 0, 4], handleType: 'existing' }
       ];
 
       expect(actual).toEqual(expected);

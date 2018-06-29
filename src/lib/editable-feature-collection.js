@@ -123,11 +123,24 @@ export class EditableFeatureCollection {
       case 'MultiPoint':
       case 'LineString':
         // positions are nested 1 level
-        positions = geometry.coordinates.map((position, index) => ({
-          position,
-          positionIndexes: [index],
-          handleType: 'existing'
-        }));
+        for (let i = 0; i < geometry.coordinates.length; i++) {
+          const position = geometry.coordinates[i];
+          positions.push({
+            position,
+            positionIndexes: [i],
+            handleType: 'existing'
+          });
+
+          if (i < geometry.coordinates.length - 1) {
+            // add intermediate position after every position except the last one
+            const nextPosition = geometry.coordinates[i + 1];
+            positions.push({
+              position: getIntermediatePosition(position, nextPosition),
+              positionIndexes: [i],
+              handleType: 'intermediate'
+            });
+          }
+        }
         break;
       case 'Polygon':
       case 'MultiLineString':
@@ -256,4 +269,15 @@ function immutablyRemovePosition(
     ),
     ...coordinates.slice(positionIndexes[0] + 1)
   ];
+}
+
+function getIntermediatePosition(
+  position1: Array<number>,
+  position2: Array<number>
+): Array<number> {
+  const intermediatePosition = [];
+  for (let dimension = 0; dimension < position1.length; dimension++) {
+    intermediatePosition.push((position1[dimension] + position2[dimension]) / 2.0);
+  }
+  return intermediatePosition;
 }

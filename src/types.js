@@ -38,3 +38,21 @@ export type Viewport = {
   bearing?: number,
   pitch?: number
 };
+
+export type GeoJsonGeometry = {
+  type: string,
+  coordinates: Array<mixed>
+};
+
+export type GeoJsonFeature = {
+  // type: 'Feature',
+  type: string,
+  properties: Object,
+  geometry: GeoJsonGeometry
+};
+
+export type GeoJsonFeatureCollection = {
+  // type: 'FeatureCollection',
+  type: string,
+  features: Feature[]
+};

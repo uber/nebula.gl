@@ -1,52 +1,118 @@
 // @flow
-import keymirror from 'keymirror';
 
-import Feature from './feature';
+export class EditableFeatureCollection {
+  constructor(featureCollection) {
+    this.featureCollection = featureCollection;
+  }
 
-export const GeoJsonGeometryTypes = keymirror({
-  Point: null,
-  LineString: null,
-  Polygon: null,
-  MultiPoint: null,
-  MultiLineString: null,
-  MultiPolygon: null
-});
+  getObject() {
+    return this.featureCollection;
+  }
 
-export function expandMultiGeometry(
-  data: Feature[],
-  singleType: string,
-  multiType: string,
-  createMulti: Function
-): { result: Feature[], rejected: Feature[] } {
-  const result = [];
-  const rejected = [];
+  /**
+   * Replaces the coordinate deeply nested withing the given feature's geometry.
+   * Works with Point, MultiPoint, LineString, MultiLineString, Polygon, and MultiPolygon.
+   *
+   * @param featureIndex The index of the feature to update
+   * @param coordinateIndexes An array containing the indexes of the coordinates to replace
+   * @param updatedCoordinate The updated coordinate to place in the result (i.e. [lng, lat])
+   *
+   * @returns A new `EditableFeatureCollection` with the given coordinate replaced. Does not modify this `EditableFeatureCollection`.
+   */
+  replaceCoordinate(
+    featureIndex: number,
+    coordinateIndexes: Array<number>,
+    updatedCoordinate: [number, number] | [number, number, number]
+  ): EditableFeatureCollection {
+    const featureToUpdate = this.featureCollection.features[featureIndex];
+    const isPolygonal =
+      featureToUpdate.geometry.type === 'Polygon' ||
+      featureToUpdate.geometry.type === 'MultiPolygon';
 
-  data.forEach(nf => {
-    if (nf.geoJson.geometry.type === singleType) {
-      result.push(nf);
-    } else if (nf.geoJson.geometry.type === multiType) {
-      nf.geoJson.geometry.coordinates.forEach((coord, index) => {
-        result.push(new Feature(createMulti(coord), nf.style, nf.original, { index }));
-      });
-    } else {
-      rejected.push(nf);
-    }
-  });
+    const updatedCoordinates = immutablyReplaceCoordinate(
+      featureToUpdate.geometry.coordinates,
+      coordinateIndexes,
+      updatedCoordinate,
+      isPolygonal
+    );
 
-  return { result, rejected };
+    const updatedFeature = {
+      ...featureToUpdate,
+      geometry: {
+        ...featureToUpdate.geometry,
+        coordinates: updatedCoordinates
+      }
+    };
+
+    // Immutably replace the feature being edited in the featureCollection
+    const updatedFeatureCollection = {
+      ...this.featureCollection,
+      features: [
+        ...this.featureCollection.features.slice(0, featureIndex),
+        updatedFeature,
+        ...this.featureCollection.features.slice(featureIndex + 1)
+      ]
+    };
+
+    return new EditableFeatureCollection(updatedFeatureCollection);
+  }
+
+  /**
+   * Removes a coordinate deeply nested in a GeoJSON geometry coordinates array.
+   * Works with MultiPoint, LineString, MultiLineString, Polygon, and MultiPolygon.
+   *
+   * @param featureIndex The index of the feature to update
+   * @param coordinateIndexes An array containing the indexes of the coordinates to remove
+   *
+   * @returns A new `EditableFeatureCollection` with the given coordinate removed. Does not modify this `EditableFeatureCollection`.
+   */
+  removeCoordinate(
+    featureIndex: number,
+    coordinateIndexes: Array<number>
+  ): EditableFeatureCollection {
+    const featureToUpdate = this.featureCollection.features[featureIndex];
+    const isPolygonal =
+      featureToUpdate.geometry.type === 'Polygon' ||
+      featureToUpdate.geometry.type === 'MultiPolygon';
+
+    const updatedCoordinates = immutablyRemoveCoordinate(
+      featureToUpdate.geometry.coordinates,
+      coordinateIndexes,
+      isPolygonal
+    );
+
+    const updatedFeature = {
+      ...featureToUpdate,
+      geometry: {
+        ...featureToUpdate.geometry,
+        coordinates: updatedCoordinates
+      }
+    };
+
+    // Immutably replace the feature being edited in the featureCollection
+    const updatedFeatureCollection = {
+      ...this.featureCollection,
+      features: [
+        ...this.featureCollection.features.slice(0, featureIndex),
+        updatedFeature,
+        ...this.featureCollection.features.slice(featureIndex + 1)
+      ]
+    };
+
+    return new EditableFeatureCollection(updatedFeatureCollection);
+  }
+
+  /**
+   * Returns a flat array of coordinates for the given feature along with their indexes into the feature's geometry.
+   *
+   * @param featureIndex The index of the feature to get edit handles
+   */
+  getEditHandles(featureIndex: number) {
+    return flattenPositions(this.featureCollection.features[featureIndex].geometry);
+  }
 }
 
-/**
- * Updates a coordinate deeply nested in a GeoJSON geometry coordinates array.
- * Works with Point, MultiPoint, LineString, MultiLineString, Polygon, and MultiPolygon.
- *
- * @param coordinates A GeoJSON geometry coordinates array
- * @param indexes An array containing the indexes of the coordinates to replace
- * @param updatedCoordinate The updated coordinate to place in the result (i.e. [lng, lat])
- * @param isPolygonal `true` if `coordinates` is a Polygon or MultiPolygon
- *
- * @returns A new array with the coordinates at the given index replaced. Does not modify `coordinates`.
- */
+// TODO: don't export
 export function immutablyReplaceCoordinate(
   coordinates: Array<mixed>,
   indexes: Array<number>,
@@ -88,17 +154,7 @@ export function immutablyReplaceCoordinate(
   ];
 }
 
-// TODO: add tests for immutablyRemoveCoordinate
-/**
- * Removes a coordinate deeply nested in a GeoJSON geometry coordinates array.
- * Works with MultiPoint, LineString, MultiLineString, Polygon, and MultiPolygon.
- *
- * @param coordinates A GeoJSON geometry coordinates array
- * @param indexes An array containing the indexes of the coordinates to remove
- * @param isPolygonal `true` if `coordinates` is a Polygon or MultiPolygon
- *
- * @returns A new array with the coordinates at the given index removed. Does not modify `coordinates`.
- */
+// TODO: don't export
 export function immutablyRemoveCoordinate(
   coordinates: Array<mixed>,
   indexes: Array<number>,
@@ -142,6 +198,7 @@ export function immutablyRemoveCoordinate(
   ];
 }
 
+// TODO: don't export
 export function flattenPositions(geometry) {
   let positions = [];
   switch (geometry.type) {

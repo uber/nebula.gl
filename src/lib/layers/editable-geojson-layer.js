@@ -1,11 +1,7 @@
 /* eslint-env browser */
 
 import { CompositeLayer, GeoJsonLayer, ScatterplotLayer } from 'deck.gl';
-import {
-  immutablyReplaceCoordinate,
-  immutablyRemoveCoordinate,
-  flattenPositions
-} from '../geojson';
+import { EditableFeatureCollection } from '../editable-feature-collection';
 
 const DEFAULT_LINE_COLOR = [0x0, 0x0, 0x0, 0xff];
 const DEFAULT_FILL_COLOR = [0x0, 0x0, 0x0, 0x90];
@@ -85,7 +81,8 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
 
   initializeState() {
     this.state = {
-      draggingPoint: null
+      draggingPoint: null,
+      editableFeatureCollection: null
     };
   }
 
@@ -94,6 +91,10 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
   }
 
   updateState({ props, changeFlags }) {
+    if (changeFlags.dataChanged) {
+      this.setState({ editableFeatureCollection: new EditableFeatureCollection(props.data) });
+    }
+
     // unsubscribe previous layer instance's handlers
     this.removePointerHandlers();
     if (props.editable) {
@@ -133,12 +134,13 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
   }
 
   createPointLayers() {
-    if (!this.getEditingFeature()) {
+    if (!this.getEditingFeature() || !this.state.editableFeatureCollection) {
       return [];
     }
 
-    const editingFeature = this.getEditingFeature();
-    const positions = flattenPositions(editingFeature.geometry);
+    const positions = this.state.editableFeatureCollection.getEditHandles(
+      this.props.selectedFeatureIndex
+    );
 
     // TODO: support using IconLayer for editing handles
     const layers = [
@@ -255,37 +257,12 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
     }
 
     const groundCoords = this.context.viewport.unproject([pointerCoords.x, pointerCoords.y]);
-
     const { coordinateIndexes } = this.state.draggingPoint;
-    const editingFeature = this.getEditingFeature();
-    const isPolygonal =
-      editingFeature.geometry.type === 'Polygon' || editingFeature.geometry.type === 'MultiPolygon';
+    const { selectedFeatureIndex } = this.props;
 
-    const coordinates = immutablyReplaceCoordinate(
-      editingFeature.geometry.coordinates,
-      coordinateIndexes,
-      groundCoords,
-      isPolygonal
-    );
-
-    const updatedFeature = {
-      ...editingFeature,
-      geometry: {
-        ...editingFeature.geometry,
-        coordinates
-      }
-    };
-
-    // TODO: should we support Feature instead of just FeatureCollection?
-    // Immutably replace the feature being edited in the featureCollection
-    const updatedData = {
-      ...this.props.data,
-      features: [
-        ...this.props.data.features.slice(0, this.props.selectedFeatureIndex),
-        updatedFeature,
-        ...this.props.data.features.slice(this.props.selectedFeatureIndex + 1)
-      ]
-    };
+    const updatedData = this.state.editableFeatureCollection
+      .replaceCoordinate(selectedFeatureIndex, coordinateIndexes, groundCoords)
+      .getObject();
 
     (this.props.onEdit || (() => {}))({
       data: updatedData
@@ -294,7 +271,7 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
     (this.props.onDraggingPoint || (() => {}))({
       data: updatedData,
       groundCoords,
-      featureIndex: this.props.selectedFeatureIndex,
+      featureIndex: selectedFeatureIndex,
       coordinateIndexes: this.state.draggingPoint.coordinateIndexes
     });
   }
@@ -322,50 +299,27 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
       });
     } else if (this.state.pointerDownPoint) {
       // they pointer downed on a point but didn't drag it, so remove it
-      const editingFeature = this.getEditingFeature();
-      const isPolygonal =
-        editingFeature.geometry.type === 'Polygon' ||
-        editingFeature.geometry.type === 'MultiPolygon';
+      const { coordinateIndexes } = this.state.pointerDownPoint;
+      const { selectedFeatureIndex } = this.props;
 
-      let coordinates;
+      let updatedData;
       try {
-        coordinates = immutablyRemoveCoordinate(
-          editingFeature.geometry.coordinates,
-          this.state.pointerDownPoint.coordinateIndexes,
-          isPolygonal
-        );
+        updatedData = this.state.editableFeatureCollection
+          .removeCoordinate(selectedFeatureIndex, coordinateIndexes)
+          .getObject();
       } catch (error) {
         // Sometimes we can't remove a coordinate (e.g. trying to remove a point from a triangle)
       }
 
-      if (coordinates) {
-        const updatedFeature = {
-          ...editingFeature,
-          geometry: {
-            ...editingFeature.geometry,
-            coordinates
-          }
-        };
-
-        // TODO: should we support Feature instead of just FeatureCollection?
-        // Immutably replace the feature being edited in the featureCollection
-        const updatedData = {
-          ...this.props.data,
-          features: [
-            ...this.props.data.features.slice(0, this.props.selectedFeatureIndex),
-            updatedFeature,
-            ...this.props.data.features.slice(this.props.selectedFeatureIndex + 1)
-          ]
-        };
-
+      if (updatedData) {
         (this.props.onEdit || (() => {}))({
           data: updatedData
         });
 
         (this.props.onRemovePoint || (() => {}))({
           data: updatedData,
-          featureIndex: this.props.selectedFeatureIndex,
-          coordinateIndexes: this.state.pointerDownPoint.coordinateIndexes
+          featureIndex: selectedFeatureIndex,
+          coordinateIndexes
         });
       }
     }

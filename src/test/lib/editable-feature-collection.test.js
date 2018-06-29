@@ -86,13 +86,13 @@ describe('EditableFeatureCollection', () => {
     });
   });
 
-  describe('replaceCoordinate()', () => {
+  describe('replacePosition()', () => {
     it(`doesn't mutate original`, () => {
       const features = new EditableFeatureCollection({
         type: 'FeatureCollection',
         features: [pointFeature]
       });
-      features.replaceCoordinate(0, [], [10, 20]);
+      features.replacePosition(0, [], [10, 20]);
 
       expect(pointFeature.geometry.coordinates).toEqual([1, 2]);
     });
@@ -102,7 +102,7 @@ describe('EditableFeatureCollection', () => {
         type: 'FeatureCollection',
         features: [pointFeature]
       });
-      const updatedFeatures = features.replaceCoordinate(0, [], [10, 20]);
+      const updatedFeatures = features.replacePosition(0, [], [10, 20]);
 
       const actualCoordinates = updatedFeatures.getObject().features[0].geometry.coordinates;
       const expectedCoordinates = [10, 20];
@@ -115,7 +115,7 @@ describe('EditableFeatureCollection', () => {
         type: 'FeatureCollection',
         features: [lineStringFeature]
       });
-      const updatedFeatures = features.replaceCoordinate(0, [0], [10, 20]);
+      const updatedFeatures = features.replacePosition(0, [0], [10, 20]);
 
       const actualCoordinates = updatedFeatures.getObject().features[0].geometry.coordinates;
       const expectedCoordinates = [[10, 20], [3, 4]];
@@ -129,8 +129,8 @@ describe('EditableFeatureCollection', () => {
         features: [polygonFeature]
       });
       const updatedFeatures = features
-        .replaceCoordinate(0, [0, 1], [1.1, -1.1])
-        .replaceCoordinate(0, [1, 2], [0.6, 0.6]);
+        .replacePosition(0, [0, 1], [1.1, -1.1])
+        .replacePosition(0, [1, 2], [0.6, 0.6]);
 
       const actualCoordinates = updatedFeatures.getObject().features[0].geometry.coordinates;
       const expectedCoordinates = [
@@ -146,7 +146,7 @@ describe('EditableFeatureCollection', () => {
         type: 'FeatureCollection',
         features: [polygonFeature]
       });
-      const updatedFeatures = features.replaceCoordinate(0, [0, 0], [-1.1, -1.1]);
+      const updatedFeatures = features.replacePosition(0, [0, 0], [-1.1, -1.1]);
 
       const actualCoordinates = updatedFeatures.getObject().features[0].geometry.coordinates;
       const expectedCoordinates = [
@@ -162,7 +162,7 @@ describe('EditableFeatureCollection', () => {
         type: 'FeatureCollection',
         features: [polygonFeature]
       });
-      const updatedFeatures = features.replaceCoordinate(0, [0, 4], [-1.1, -1.1]);
+      const updatedFeatures = features.replacePosition(0, [0, 4], [-1.1, -1.1]);
 
       const actualCoordinates = updatedFeatures.getObject().features[0].geometry.coordinates;
       const expectedCoordinates = [
@@ -174,13 +174,13 @@ describe('EditableFeatureCollection', () => {
     });
   });
 
-  describe('removeCoordinate()', () => {
+  describe('removePosition()', () => {
     it(`doesn't mutate original`, () => {
       const features = new EditableFeatureCollection({
         type: 'FeatureCollection',
         features: [lineStringFeature]
       });
-      features.removeCoordinate(0, [0]);
+      features.removePosition(0, [0]);
 
       expect(lineStringFeature.geometry.coordinates).toEqual([[1, 2], [3, 4]]);
     });
@@ -191,8 +191,8 @@ describe('EditableFeatureCollection', () => {
         features: [pointFeature]
       });
 
-      expect(() => features.removeCoordinate(0, [])).toThrow(
-        'Must specify the index of the coordinate to remove'
+      expect(() => features.removePosition(0, [])).toThrow(
+        'Must specify the index of the position to remove'
       );
     });
 
@@ -201,7 +201,7 @@ describe('EditableFeatureCollection', () => {
         type: 'FeatureCollection',
         features: [lineStringFeature]
       });
-      const updatedFeatures = features.removeCoordinate(0, [0]);
+      const updatedFeatures = features.removePosition(0, [0]);
 
       const actualCoordinates = updatedFeatures.getObject().features[0].geometry.coordinates;
       const expectedCoordinates = [[3, 4]];
@@ -214,7 +214,7 @@ describe('EditableFeatureCollection', () => {
         type: 'FeatureCollection',
         features: [polygonFeature]
       });
-      const updatedFeatures = features.removeCoordinate(0, [0, 1]).removeCoordinate(0, [1, 3]);
+      const updatedFeatures = features.removePosition(0, [0, 1]).removePosition(0, [1, 3]);
 
       const actualCoordinates = updatedFeatures.getObject().features[0].geometry.coordinates;
       const expectedCoordinates = [
@@ -230,7 +230,7 @@ describe('EditableFeatureCollection', () => {
         type: 'FeatureCollection',
         features: [polygonFeature]
       });
-      const updatedFeatures = features.removeCoordinate(0, [1, 0]);
+      const updatedFeatures = features.removePosition(0, [1, 0]);
 
       const actualCoordinates = updatedFeatures.getObject().features[0].geometry.coordinates;
       const expectedCoordinates = [
@@ -246,7 +246,7 @@ describe('EditableFeatureCollection', () => {
         type: 'FeatureCollection',
         features: [polygonFeature]
       });
-      const updatedFeatures = features.removeCoordinate(0, [1, 4]);
+      const updatedFeatures = features.removePosition(0, [1, 4]);
 
       const actualCoordinates = updatedFeatures.getObject().features[0].geometry.coordinates;
       const expectedCoordinates = [
@@ -266,7 +266,7 @@ describe('EditableFeatureCollection', () => {
       });
 
       const actual = features.getEditHandles(0);
-      const expected = [{ position: [1, 2], indexes: [] }];
+      const expected = [{ position: [1, 2], positionIndexes: [] }];
 
       expect(actual).toEqual(expected);
     });
@@ -278,7 +278,10 @@ describe('EditableFeatureCollection', () => {
       });
 
       const actual = features.getEditHandles(0);
-      const expected = [{ position: [1, 2], indexes: [0] }, { position: [3, 4], indexes: [1] }];
+      const expected = [
+        { position: [1, 2], positionIndexes: [0] },
+        { position: [3, 4], positionIndexes: [1] }
+      ];
 
       expect(actual).toEqual(expected);
     });
@@ -291,16 +294,16 @@ describe('EditableFeatureCollection', () => {
 
       const actual = features.getEditHandles(0);
       const expected = [
-        { position: [-1, -1], indexes: [0, 0] },
-        { position: [1, -1], indexes: [0, 1] },
-        { position: [1, 1], indexes: [0, 2] },
-        { position: [-1, 1], indexes: [0, 3] },
-        { position: [-1, -1], indexes: [0, 4] },
-        { position: [-0.5, -0.5], indexes: [1, 0] },
-        { position: [-0.5, 0.5], indexes: [1, 1] },
-        { position: [0.5, 0.5], indexes: [1, 2] },
-        { position: [0.5, -0.5], indexes: [1, 3] },
-        { position: [-0.5, -0.5], indexes: [1, 4] }
+        { position: [-1, -1], positionIndexes: [0, 0] },
+        { position: [1, -1], positionIndexes: [0, 1] },
+        { position: [1, 1], positionIndexes: [0, 2] },
+        { position: [-1, 1], positionIndexes: [0, 3] },
+        { position: [-1, -1], positionIndexes: [0, 4] },
+        { position: [-0.5, -0.5], positionIndexes: [1, 0] },
+        { position: [-0.5, 0.5], positionIndexes: [1, 1] },
+        { position: [0.5, 0.5], positionIndexes: [1, 2] },
+        { position: [0.5, -0.5], positionIndexes: [1, 3] },
+        { position: [-0.5, -0.5], positionIndexes: [1, 4] }
       ];
 
       expect(actual).toEqual(expected);
@@ -313,7 +316,10 @@ describe('EditableFeatureCollection', () => {
       });
 
       const actual = features.getEditHandles(0);
-      const expected = [{ position: [1, 2], indexes: [0] }, { position: [3, 4], indexes: [1] }];
+      const expected = [
+        { position: [1, 2], positionIndexes: [0] },
+        { position: [3, 4], positionIndexes: [1] }
+      ];
 
       expect(actual).toEqual(expected);
     });
@@ -326,10 +332,10 @@ describe('EditableFeatureCollection', () => {
 
       const actual = features.getEditHandles(0);
       const expected = [
-        { position: [1, 2], indexes: [0, 0] },
-        { position: [3, 4], indexes: [0, 1] },
-        { position: [5, 6], indexes: [1, 0] },
-        { position: [7, 8], indexes: [1, 1] }
+        { position: [1, 2], positionIndexes: [0, 0] },
+        { position: [3, 4], positionIndexes: [0, 1] },
+        { position: [5, 6], positionIndexes: [1, 0] },
+        { position: [7, 8], positionIndexes: [1, 1] }
       ];
 
       expect(actual).toEqual(expected);
@@ -343,21 +349,21 @@ describe('EditableFeatureCollection', () => {
 
       const actual = features.getEditHandles(0);
       const expected = [
-        { position: [-1, -1], indexes: [0, 0, 0] },
-        { position: [1, -1], indexes: [0, 0, 1] },
-        { position: [1, 1], indexes: [0, 0, 2] },
-        { position: [-1, 1], indexes: [0, 0, 3] },
-        { position: [-1, -1], indexes: [0, 0, 4] },
-        { position: [-0.5, -0.5], indexes: [0, 1, 0] },
-        { position: [-0.5, 0.5], indexes: [0, 1, 1] },
-        { position: [0.5, 0.5], indexes: [0, 1, 2] },
-        { position: [0.5, -0.5], indexes: [0, 1, 3] },
-        { position: [-0.5, -0.5], indexes: [0, 1, 4] },
-        { position: [2, -1], indexes: [1, 0, 0] },
-        { position: [4, -1], indexes: [1, 0, 1] },
-        { position: [4, 1], indexes: [1, 0, 2] },
-        { position: [2, 1], indexes: [1, 0, 3] },
-        { position: [2, -1], indexes: [1, 0, 4] }
+        { position: [-1, -1], positionIndexes: [0, 0, 0] },
+        { position: [1, -1], positionIndexes: [0, 0, 1] },
+        { position: [1, 1], positionIndexes: [0, 0, 2] },
+        { position: [-1, 1], positionIndexes: [0, 0, 3] },
+        { position: [-1, -1], positionIndexes: [0, 0, 4] },
+        { position: [-0.5, -0.5], positionIndexes: [0, 1, 0] },
+        { position: [-0.5, 0.5], positionIndexes: [0, 1, 1] },
+        { position: [0.5, 0.5], positionIndexes: [0, 1, 2] },
+        { position: [0.5, -0.5], positionIndexes: [0, 1, 3] },
+        { position: [-0.5, -0.5], positionIndexes: [0, 1, 4] },
+        { position: [2, -1], positionIndexes: [1, 0, 0] },
+        { position: [4, -1], positionIndexes: [1, 0, 1] },
+        { position: [4, 1], positionIndexes: [1, 0, 2] },
+        { position: [2, 1], positionIndexes: [1, 0, 3] },
+        { position: [2, -1], positionIndexes: [1, 0, 4] }
       ];
 
       expect(actual).toEqual(expected);

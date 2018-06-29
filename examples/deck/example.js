@@ -178,20 +178,21 @@ export default class Example extends Component<
       fp64: true,
       autoHighlight: true,
 
+      // Editing callbacks
       onEdit: ({ data }) => {
         this.setState({ testFeatures: data });
       },
-      onStartDraggingPoint: ({ featureIndex, coordinateIndexes }) => {
-        console.log(`Start dragging point`, featureIndex, coordinateIndexes); // eslint-disable-line
+      onStartDraggingPosition: ({ featureIndex, positionIndexes }) => {
+        console.log(`Start dragging position`, featureIndex, positionIndexes); // eslint-disable-line
       },
-      onDraggingPoint: ({ featureIndex, coordinateIndexes, groundCoords }) => {
-        // console.log(`Dragging point`, groundCoords, featureIndex, coordinateIndexes); // eslint-disable-line
+      onDraggingPosition: ({ featureIndex, positionIndexes, position }) => {
+        // console.log(`Dragging position`, position, featureIndex, positionIndexes); // eslint-disable-line
       },
-      onStopDraggingPoint: ({ featureIndex, coordinateIndexes }) => {
-        console.log(`Stop dragging point`, featureIndex, coordinateIndexes); // eslint-disable-line
+      onStopDraggingPosition: ({ featureIndex, positionIndexes }) => {
+        console.log(`Stop dragging position`, featureIndex, positionIndexes); // eslint-disable-line
       },
-      onRemovePoint: ({ featureIndex, coordinateIndexes }) => {
-        console.log(`Remove point`, featureIndex, coordinateIndexes); // eslint-disable-line
+      onRemovePosition: ({ featureIndex, positionIndexes }) => {
+        console.log(`Remove position`, featureIndex, positionIndexes); // eslint-disable-line
       },
 
       // Specify the same GeoJsonLayer props

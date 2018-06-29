@@ -81,7 +81,7 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
 
   initializeState() {
     this.state = {
-      draggingPoint: null,
+      draggingPosition: null,
       editableFeatureCollection: null
     };
   }
@@ -126,7 +126,7 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
       info.isEditingHandle = true;
 
       if (info.object) {
-        info.coordinateIndexes = info.object.indexes;
+        info.positionIndexes = info.object.positionIndexes;
       }
     }
 
@@ -224,8 +224,8 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
   }
 
   onPointerMove(event) {
-    if (!this.state.pointerDownPoint) {
-      // TODO: only subscribe to pointermove if the pointer was down (at which point we can remove this)
+    if (!this.state.pointerDownPosition) {
+      // TODO: only subscribe to pointermove once the pointer goes down (at which point we can remove this check)
       return;
     }
 
@@ -234,7 +234,7 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
 
     const pointerCoords = this.getPointerCoords(event);
 
-    if (!this.state.draggingPoint) {
+    if (!this.state.draggingPosition) {
       // pointer is moving, but is it moving enough?
 
       if (
@@ -243,12 +243,12 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
         Math.abs(this.state.pointerDownCoords.y - pointerCoords.y) >
           MINIMUM_POINTER_MOVE_THRESHOLD_PIXELS
       ) {
-        this.state.draggingPoint = this.state.pointerDownPoint;
+        this.state.draggingPosition = this.state.pointerDownPosition;
 
         // Fire the start dragging event
-        (this.props.onStartDraggingPoint || (() => {}))({
+        (this.props.onStartDraggingPosition || (() => {}))({
           featureIndex: this.props.selectedFeatureIndex,
-          coordinateIndexes: this.state.draggingPoint.coordinateIndexes
+          positionIndexes: this.state.draggingPosition.positionIndexes
         });
       } else {
         // pointer barely moved, so nothing else to do
@@ -256,23 +256,23 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
       }
     }
 
-    const groundCoords = this.context.viewport.unproject([pointerCoords.x, pointerCoords.y]);
-    const { coordinateIndexes } = this.state.draggingPoint;
+    const position = this.context.viewport.unproject([pointerCoords.x, pointerCoords.y]);
+    const { positionIndexes } = this.state.draggingPosition;
     const { selectedFeatureIndex } = this.props;
 
     const updatedData = this.state.editableFeatureCollection
-      .replaceCoordinate(selectedFeatureIndex, coordinateIndexes, groundCoords)
+      .replacePosition(selectedFeatureIndex, positionIndexes, position)
       .getObject();
 
     (this.props.onEdit || (() => {}))({
       data: updatedData
     });
 
-    (this.props.onDraggingPoint || (() => {}))({
+    (this.props.onDraggingPosition || (() => {}))({
       data: updatedData,
-      groundCoords,
+      position,
       featureIndex: selectedFeatureIndex,
-      coordinateIndexes: this.state.draggingPoint.coordinateIndexes
+      positionIndexes: this.state.draggingPosition.positionIndexes
     });
   }
 
@@ -287,28 +287,28 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
 
     const pickedPoint = allPicked.find(picked => picked.isEditingHandle);
     if (pickedPoint) {
-      this.setState({ pointerDownPoint: pickedPoint, pointerDownCoords: pointerCoords });
+      this.setState({ pointerDownPosition: pickedPoint, pointerDownCoords: pointerCoords });
     }
   }
 
   onPointerUp(event) {
-    if (this.state.draggingPoint) {
-      (this.props.onStopDraggingPoint || (() => {}))({
+    if (this.state.draggingPosition) {
+      (this.props.onStopDraggingPosition || (() => {}))({
         featureIndex: this.props.selectedFeatureIndex,
-        coordinateIndexes: this.state.draggingPoint.coordinateIndexes
+        positionIndexes: this.state.draggingPosition.positionIndexes
       });
-    } else if (this.state.pointerDownPoint) {
-      // they pointer downed on a point but didn't drag it, so remove it
-      const { coordinateIndexes } = this.state.pointerDownPoint;
+    } else if (this.state.pointerDownPosition) {
+      // the pointer went down on a point but wasn't dragged, so remove it
+      const { positionIndexes } = this.state.pointerDownPosition;
       const { selectedFeatureIndex } = this.props;
 
       let updatedData;
       try {
         updatedData = this.state.editableFeatureCollection
-          .removeCoordinate(selectedFeatureIndex, coordinateIndexes)
+          .removePosition(selectedFeatureIndex, positionIndexes)
           .getObject();
       } catch (error) {
-        // Sometimes we can't remove a coordinate (e.g. trying to remove a point from a triangle)
+        // Sometimes we can't remove a coordinate (e.g. trying to remove a position from a triangle)
       }
 
       if (updatedData) {
@@ -319,11 +319,11 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
         (this.props.onRemovePoint || (() => {}))({
           data: updatedData,
           featureIndex: selectedFeatureIndex,
-          coordinateIndexes
+          positionIndexes
         });
       }
     }
-    this.setState({ draggingPoint: null, pointerDownPoint: null, pointerDownCoords: null });
+    this.setState({ draggingPosition: null, pointerDownPosition: null, pointerDownCoords: null });
   }
 
   getPointerCoords(pointerEvent) {

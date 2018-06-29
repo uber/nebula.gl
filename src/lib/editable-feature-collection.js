@@ -10,29 +10,29 @@ export class EditableFeatureCollection {
   }
 
   /**
-   * Replaces the coordinate deeply nested withing the given feature's geometry.
+   * Replaces the position deeply nested withing the given feature's geometry.
    * Works with Point, MultiPoint, LineString, MultiLineString, Polygon, and MultiPolygon.
    *
    * @param featureIndex The index of the feature to update
-   * @param coordinateIndexes An array containing the indexes of the coordinates to replace
-   * @param updatedCoordinate The updated coordinate to place in the result (i.e. [lng, lat])
+   * @param positionIndexes An array containing the indexes of the position to replace
+   * @param updatedPosition The updated position to place in the result (i.e. [lng, lat])
    *
-   * @returns A new `EditableFeatureCollection` with the given coordinate replaced. Does not modify this `EditableFeatureCollection`.
+   * @returns A new `EditableFeatureCollection` with the given position replaced. Does not modify this `EditableFeatureCollection`.
    */
-  replaceCoordinate(
+  replacePosition(
     featureIndex: number,
-    coordinateIndexes: Array<number>,
-    updatedCoordinate: [number, number] | [number, number, number]
+    positionIndexes: Array<number>,
+    updatedPosition: [number, number] | [number, number, number]
   ): EditableFeatureCollection {
     const featureToUpdate = this.featureCollection.features[featureIndex];
     const isPolygonal =
       featureToUpdate.geometry.type === 'Polygon' ||
       featureToUpdate.geometry.type === 'MultiPolygon';
 
-    const updatedCoordinates = immutablyReplaceCoordinate(
+    const updatedCoordinates = immutablyReplacePosition(
       featureToUpdate.geometry.coordinates,
-      coordinateIndexes,
-      updatedCoordinate,
+      positionIndexes,
+      updatedPosition,
       isPolygonal
     );
 
@@ -58,26 +58,23 @@ export class EditableFeatureCollection {
   }
 
   /**
-   * Removes a coordinate deeply nested in a GeoJSON geometry coordinates array.
+   * Removes a position deeply nested in a GeoJSON geometry coordinates array.
    * Works with MultiPoint, LineString, MultiLineString, Polygon, and MultiPolygon.
    *
    * @param featureIndex The index of the feature to update
-   * @param coordinateIndexes An array containing the indexes of the coordinates to remove
+   * @param positionIndexes An array containing the indexes of the postion to remove
    *
    * @returns A new `EditableFeatureCollection` with the given coordinate removed. Does not modify this `EditableFeatureCollection`.
    */
-  removeCoordinate(
-    featureIndex: number,
-    coordinateIndexes: Array<number>
-  ): EditableFeatureCollection {
+  removePosition(featureIndex: number, positionIndexes: Array<number>): EditableFeatureCollection {
     const featureToUpdate = this.featureCollection.features[featureIndex];
     const isPolygonal =
       featureToUpdate.geometry.type === 'Polygon' ||
       featureToUpdate.geometry.type === 'MultiPolygon';
 
-    const updatedCoordinates = immutablyRemoveCoordinate(
+    const updatedCoordinates = immutablyRemovePosition(
       featureToUpdate.geometry.coordinates,
-      coordinateIndexes,
+      positionIndexes,
       isPolygonal
     );
 
@@ -103,7 +100,7 @@ export class EditableFeatureCollection {
   }
 
   /**
-   * Returns a flat array of coordinates for the given feature along with their indexes into the feature's geometry.
+   * Returns a flat array of positions for the given feature along with their indexes into the feature's geometry's coordinates.
    *
    * @param featureIndex The index of the feature to get edit handles
    */
@@ -112,73 +109,81 @@ export class EditableFeatureCollection {
   }
 }
 
-// TODO: don't export
-export function immutablyReplaceCoordinate(
+function immutablyReplacePosition(
   coordinates: Array<mixed>,
-  indexes: Array<number>,
-  updatedCoordinate: Array<number>,
+  positionIndexes: Array<number>,
+  updatedPosition: Array<number>,
   isPolygonal: boolean = false
 ): Array<mixed> {
-  if (!indexes) {
+  if (!positionIndexes) {
     return coordinates;
   }
-  if (indexes.length === 0) {
-    return updatedCoordinate;
+  if (positionIndexes.length === 0) {
+    return updatedPosition;
   }
-  if (indexes.length === 1) {
+  if (positionIndexes.length === 1) {
     const updated = [
-      ...coordinates.slice(0, indexes[0]),
-      updatedCoordinate,
-      ...coordinates.slice(indexes[0] + 1)
+      ...coordinates.slice(0, positionIndexes[0]),
+      updatedPosition,
+      ...coordinates.slice(positionIndexes[0] + 1)
     ];
 
-    if (isPolygonal && (indexes[0] === 0 || indexes[0] === coordinates.length - 1)) {
+    if (
+      isPolygonal &&
+      (positionIndexes[0] === 0 || positionIndexes[0] === coordinates.length - 1)
+    ) {
       // for polygons, the first point is repeated at the end of the array
       // so, update it on both ends of the array
-      updated[0] = updatedCoordinate;
-      updated[coordinates.length - 1] = updatedCoordinate;
+      updated[0] = updatedPosition;
+      updated[coordinates.length - 1] = updatedPosition;
     }
     return updated;
   }
 
   // recursively update inner array
   return [
-    ...coordinates.slice(0, indexes[0]),
-    immutablyReplaceCoordinate(
-      coordinates[indexes[0]],
-      indexes.slice(1, indexes.length),
-      updatedCoordinate,
+    ...coordinates.slice(0, positionIndexes[0]),
+    immutablyReplacePosition(
+      coordinates[positionIndexes[0]],
+      positionIndexes.slice(1, positionIndexes.length),
+      updatedPosition,
       isPolygonal
     ),
-    ...coordinates.slice(indexes[0] + 1)
+    ...coordinates.slice(positionIndexes[0] + 1)
   ];
 }
 
-// TODO: don't export
-export function immutablyRemoveCoordinate(
+function immutablyRemovePosition(
   coordinates: Array<mixed>,
-  indexes: Array<number>,
+  positionIndexes: Array<number>,
   isPolygonal: boolean = false
 ): Array<mixed> {
-  if (!indexes) {
+  if (!positionIndexes) {
     return coordinates;
   }
-  if (indexes.length === 0) {
-    throw Error('Must specify the index of the coordinate to remove');
+  if (positionIndexes.length === 0) {
+    throw Error('Must specify the index of the position to remove');
   }
-  if (indexes.length === 1) {
+  if (positionIndexes.length === 1) {
     if (isPolygonal && coordinates.length < 5) {
-      throw Error('Cannot remove a coordinate from a triangle as it will no longer be a polygon');
+      // TODO: test this case
+      throw Error('Cannot remove a position from a triangle as it will no longer be a polygon');
     }
-    const updated = [...coordinates.slice(0, indexes[0]), ...coordinates.slice(indexes[0] + 1)];
+    const updated = [
+      ...coordinates.slice(0, positionIndexes[0]),
+      ...coordinates.slice(positionIndexes[0] + 1)
+    ];
 
-    if (isPolygonal && (indexes[0] === 0 || indexes[0] === coordinates.length - 1)) {
+    if (
+      isPolygonal &&
+      (positionIndexes[0] === 0 || positionIndexes[0] === coordinates.length - 1)
+    ) {
       // for polygons, the first point is repeated at the end of the array
       // so, if the first/last coordinate is to be removed, coordinates[1] will be the new first/last coordinate
-      if (indexes[0] === 0) {
+      if (positionIndexes[0] === 0) {
         // change the last to be the same as the first
         updated[updated.length - 1] = updated[0];
-      } else if (indexes[0] === coordinates.length - 1) {
+      } else if (positionIndexes[0] === coordinates.length - 1) {
         // change the first to be the same as the last
         updated[0] = updated[updated.length - 1];
       }
@@ -188,18 +193,17 @@ export function immutablyRemoveCoordinate(
 
   // recursively update inner array
   return [
-    ...coordinates.slice(0, indexes[0]),
-    immutablyRemoveCoordinate(
-      coordinates[indexes[0]],
-      indexes.slice(1, indexes.length),
+    ...coordinates.slice(0, positionIndexes[0]),
+    immutablyRemovePosition(
+      coordinates[positionIndexes[0]],
+      positionIndexes.slice(1, positionIndexes.length),
       isPolygonal
     ),
-    ...coordinates.slice(indexes[0] + 1)
+    ...coordinates.slice(positionIndexes[0] + 1)
   ];
 }
 
-// TODO: don't export
-export function flattenPositions(geometry) {
+function flattenPositions(geometry) {
   let positions = [];
   switch (geometry.type) {
     case 'Point':
@@ -207,7 +211,7 @@ export function flattenPositions(geometry) {
       positions = [
         {
           position: geometry.coordinates,
-          indexes: []
+          positionIndexes: []
         }
       ];
       break;
@@ -216,7 +220,7 @@ export function flattenPositions(geometry) {
       // positions are nested 1 level
       positions = geometry.coordinates.map((position, index) => ({
         position,
-        indexes: [index]
+        positionIndexes: [index]
       }));
       break;
     case 'Polygon':
@@ -226,7 +230,7 @@ export function flattenPositions(geometry) {
         positions = positions.concat(
           geometry.coordinates[a].map((position, index) => ({
             position,
-            indexes: [a, index]
+            positionIndexes: [a, index]
           }))
         );
       }
@@ -238,7 +242,7 @@ export function flattenPositions(geometry) {
           positions = positions.concat(
             geometry.coordinates[a][b].map((position, index) => ({
               position,
-              indexes: [a, b, index]
+              positionIndexes: [a, b, index]
             }))
           );
         }

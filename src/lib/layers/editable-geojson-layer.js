@@ -43,7 +43,7 @@ const defaultProps = {
 };
 
 // Minimum number of pixels the pointer must move from the original pointer down to be considered dragging
-const MINIMUM_POINTER_MOVE_THRESHOLD_PIXELS = 10;
+const MINIMUM_POINTER_MOVE_THRESHOLD_PIXELS = 7;
 
 export default class EditableGeoJsonLayer extends CompositeLayer {
   renderLayers() {
@@ -244,48 +244,59 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
         this.state.draggingPoint = this.state.pointerDownPoint;
 
         // Fire the start dragging event
-        if (this.props.onStartDraggingPoint) {
-          this.props.onStartDraggingPoint({
-            featureIndex: this.props.selectedFeatureIndex,
-            coordinateIndexes: this.state.draggingPoint.coordinateIndexes
-          });
-        }
+        (this.props.onStartDraggingPoint || (() => {}))({
+          featureIndex: this.props.selectedFeatureIndex,
+          coordinateIndexes: this.state.draggingPoint.coordinateIndexes
+        });
       } else {
         // pointer barely moved, so nothing else to do
         return;
       }
     }
 
-    if (this.props.onDraggingPoint) {
-      const groundCoords = this.context.viewport.unproject([pointerCoords.x, pointerCoords.y]);
+    const groundCoords = this.context.viewport.unproject([pointerCoords.x, pointerCoords.y]);
 
-      const { coordinateIndexes } = this.state.draggingPoint;
-      const editingFeature = this.getEditingFeature();
-      const isPolygonal =
-        editingFeature.geometry.type === 'Polygon' ||
-        editingFeature.geometry.type === 'MultiPolygon';
+    const { coordinateIndexes } = this.state.draggingPoint;
+    const editingFeature = this.getEditingFeature();
+    const isPolygonal =
+      editingFeature.geometry.type === 'Polygon' || editingFeature.geometry.type === 'MultiPolygon';
 
-      const coordinates = immutablyReplaceCoordinate(
-        editingFeature.geometry.coordinates,
-        coordinateIndexes,
-        groundCoords,
-        isPolygonal
-      );
+    const coordinates = immutablyReplaceCoordinate(
+      editingFeature.geometry.coordinates,
+      coordinateIndexes,
+      groundCoords,
+      isPolygonal
+    );
 
-      const updatedFeature = {
-        ...editingFeature,
-        geometry: {
-          ...editingFeature.geometry,
-          coordinates
-        }
-      };
+    const updatedFeature = {
+      ...editingFeature,
+      geometry: {
+        ...editingFeature.geometry,
+        coordinates
+      }
+    };
 
-      this.props.onDraggingPoint({
-        feature: updatedFeature,
-        featureIndex: this.props.selectedFeatureIndex,
-        coordinateIndexes: this.state.draggingPoint.coordinateIndexes
-      });
-    }
+    // TODO: should we support Feature instead of just FeatureCollection?
+    // Immutably replace the feature being edited in the featureCollection
+    const updatedData = {
+      ...this.props.data,
+      features: [
+        ...this.props.data.features.slice(0, this.props.selectedFeatureIndex),
+        updatedFeature,
+        ...this.props.data.features.slice(this.props.selectedFeatureIndex + 1)
+      ]
+    };
+
+    (this.props.onEdit || (() => {}))({
+      data: updatedData
+    });
+
+    (this.props.onDraggingPoint || (() => {}))({
+      data: updatedData,
+      groundCoords,
+      featureIndex: this.props.selectedFeatureIndex,
+      coordinateIndexes: this.state.draggingPoint.coordinateIndexes
+    });
   }
 
   onPointerDown(event) {
@@ -305,46 +316,57 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
 
   onPointerUp(event) {
     if (this.state.draggingPoint) {
-      if (this.props.onStopDraggingPoint) {
-        this.props.onStopDraggingPoint({
-          featureIndex: this.props.selectedFeatureIndex,
-          coordinateIndexes: this.state.draggingPoint.coordinateIndexes
-        });
-      }
+      (this.props.onStopDraggingPoint || (() => {}))({
+        featureIndex: this.props.selectedFeatureIndex,
+        coordinateIndexes: this.state.draggingPoint.coordinateIndexes
+      });
     } else if (this.state.pointerDownPoint) {
       // they pointer downed on a point but didn't drag it, so remove it
-      if (this.props.onRemovePoint) {
-        const editingFeature = this.getEditingFeature();
-        const isPolygonal =
-          editingFeature.geometry.type === 'Polygon' ||
-          editingFeature.geometry.type === 'MultiPolygon';
+      const editingFeature = this.getEditingFeature();
+      const isPolygonal =
+        editingFeature.geometry.type === 'Polygon' ||
+        editingFeature.geometry.type === 'MultiPolygon';
 
-        let coordinates;
-        try {
-          coordinates = immutablyRemoveCoordinate(
-            editingFeature.geometry.coordinates,
-            this.state.pointerDownPoint.coordinateIndexes,
-            isPolygonal
-          );
-        } catch (error) {
-          // Sometimes we can't remove a coordinate (e.g. trying to remove a point from a triangle)
-        }
+      let coordinates;
+      try {
+        coordinates = immutablyRemoveCoordinate(
+          editingFeature.geometry.coordinates,
+          this.state.pointerDownPoint.coordinateIndexes,
+          isPolygonal
+        );
+      } catch (error) {
+        // Sometimes we can't remove a coordinate (e.g. trying to remove a point from a triangle)
+      }
 
-        if (coordinates) {
-          const updatedFeature = {
-            ...editingFeature,
-            geometry: {
-              ...editingFeature.geometry,
-              coordinates
-            }
-          };
+      if (coordinates) {
+        const updatedFeature = {
+          ...editingFeature,
+          geometry: {
+            ...editingFeature.geometry,
+            coordinates
+          }
+        };
 
-          this.props.onRemovePoint({
-            feature: updatedFeature,
-            featureIndex: this.props.selectedFeatureIndex,
-            coordinateIndexes: this.state.pointerDownPoint.coordinateIndexes
-          });
-        }
+        // TODO: should we support Feature instead of just FeatureCollection?
+        // Immutably replace the feature being edited in the featureCollection
+        const updatedData = {
+          ...this.props.data,
+          features: [
+            ...this.props.data.features.slice(0, this.props.selectedFeatureIndex),
+            updatedFeature,
+            ...this.props.data.features.slice(this.props.selectedFeatureIndex + 1)
+          ]
+        };
+
+        (this.props.onEdit || (() => {}))({
+          data: updatedData
+        });
+
+        (this.props.onRemovePoint || (() => {}))({
+          data: updatedData,
+          featureIndex: this.props.selectedFeatureIndex,
+          coordinateIndexes: this.state.pointerDownPoint.coordinateIndexes
+        });
       }
     }
     this.setState({ draggingPoint: null, pointerDownPoint: null, pointerDownCoords: null });

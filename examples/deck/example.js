@@ -178,40 +178,20 @@ export default class Example extends Component<
       fp64: true,
       autoHighlight: true,
 
+      onEdit: ({ data }) => {
+        this.setState({ testFeatures: data });
+      },
       onStartDraggingPoint: ({ featureIndex, coordinateIndexes }) => {
         console.log(`Start dragging point`, featureIndex, coordinateIndexes); // eslint-disable-line
       },
-      onDraggingPoint: ({ feature, featureIndex, coordinateIndexes }) => {
-        // Immutably replace the feature being edited in the featureCollection
-        this.setState({
-          testFeatures: {
-            ...this.state.testFeatures,
-            features: [
-              ...this.state.testFeatures.features.slice(0, featureIndex),
-              feature,
-              ...this.state.testFeatures.features.slice(featureIndex + 1)
-            ]
-          }
-        });
+      onDraggingPoint: ({ featureIndex, coordinateIndexes, groundCoords }) => {
+        // console.log(`Dragging point`, groundCoords, featureIndex, coordinateIndexes); // eslint-disable-line
       },
       onStopDraggingPoint: ({ featureIndex, coordinateIndexes }) => {
         console.log(`Stop dragging point`, featureIndex, coordinateIndexes); // eslint-disable-line
       },
-
-      onRemovePoint: ({ feature, featureIndex, coordinateIndexes }) => {
+      onRemovePoint: ({ featureIndex, coordinateIndexes }) => {
         console.log(`Remove point`, featureIndex, coordinateIndexes); // eslint-disable-line
-
-        // Immutably replace the feature being edited in the featureCollection
-        this.setState({
-          testFeatures: {
-            ...this.state.testFeatures,
-            features: [
-              ...this.state.testFeatures.features.slice(0, featureIndex),
-              feature,
-              ...this.state.testFeatures.features.slice(featureIndex + 1)
-            ]
-          }
-        });
       },
 
       // Specify the same GeoJsonLayer props

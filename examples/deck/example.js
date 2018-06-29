@@ -64,6 +64,7 @@ export default class Example extends Component<
       viewport: initialViewport,
       testFeatures: sampleGeoJson,
       editable: true,
+      pointsRemovable: true,
       selectedFeatureIndex: 5
     };
   }
@@ -141,6 +142,14 @@ export default class Example extends Component<
               onChange={() => this.setState({ editable: !this.state.editable })}
             />
           </dd>
+          <dt style={styles.toolboxTerm}>Allow removing points</dt>
+          <dd style={styles.toolboxDescription}>
+            <input
+              type="checkbox"
+              checked={this.state.pointsRemovable}
+              onChange={() => this.setState({ pointsRemovable: !this.state.pointsRemovable })}
+            />
+          </dd>
           <dt style={styles.toolboxTerm}>Selected feature index</dt>
           <dd style={styles.toolboxDescription}>
             {this.state.selectedFeatureIndex}{' '}
@@ -179,20 +188,21 @@ export default class Example extends Component<
       autoHighlight: true,
 
       // Editing callbacks
-      onEdit: ({ data }) => {
+      onEdit: ({ data, editType, featureIndex, positionIndexes, position }) => {
+        if (editType !== 'moveposition') {
+          console.log('onEdit', editType, featureIndex, positionIndexes, position); // eslint-disable-line
+        }
+        if (editType === 'removeposition' && !this.state.pointsRemovable) {
+          // reject the edit
+          return;
+        }
         this.setState({ testFeatures: data });
       },
       onStartDraggingPosition: ({ featureIndex, positionIndexes }) => {
         console.log(`Start dragging position`, featureIndex, positionIndexes); // eslint-disable-line
       },
-      onDraggingPosition: ({ featureIndex, positionIndexes, position }) => {
-        // console.log(`Dragging position`, position, featureIndex, positionIndexes); // eslint-disable-line
-      },
       onStopDraggingPosition: ({ featureIndex, positionIndexes }) => {
         console.log(`Stop dragging position`, featureIndex, positionIndexes); // eslint-disable-line
-      },
-      onRemovePosition: ({ featureIndex, positionIndexes }) => {
-        console.log(`Remove position`, featureIndex, positionIndexes); // eslint-disable-line
       },
 
       // Specify the same GeoJsonLayer props

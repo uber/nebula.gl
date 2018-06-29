@@ -1,3 +1,4 @@
+// @flow
 /* eslint-env browser */
 
 import { CompositeLayer, GeoJsonLayer, ScatterplotLayer } from 'deck.gl';
@@ -265,14 +266,11 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
       .getObject();
 
     (this.props.onEdit || (() => {}))({
-      data: updatedData
-    });
-
-    (this.props.onDraggingPosition || (() => {}))({
       data: updatedData,
-      position,
+      editType: 'moveposition',
       featureIndex: selectedFeatureIndex,
-      positionIndexes: this.state.draggingPosition.positionIndexes
+      positionIndexes,
+      position
     });
   }
 
@@ -313,11 +311,8 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
 
       if (updatedData) {
         (this.props.onEdit || (() => {}))({
-          data: updatedData
-        });
-
-        (this.props.onRemovePoint || (() => {}))({
           data: updatedData,
+          editType: 'removeposition',
           featureIndex: selectedFeatureIndex,
           positionIndexes
         });

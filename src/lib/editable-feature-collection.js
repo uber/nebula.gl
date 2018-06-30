@@ -116,56 +116,28 @@ export class EditableFeatureCollection {
           {
             position: geometry.coordinates,
             positionIndexes: [],
-            handleType: 'existing'
+            type: 'existing'
           }
         ];
         break;
       case 'MultiPoint':
       case 'LineString':
         // positions are nested 1 level
-        for (let i = 0; i < geometry.coordinates.length; i++) {
-          const position = geometry.coordinates[i];
-          positions.push({
-            position,
-            positionIndexes: [i],
-            handleType: 'existing'
-          });
-
-          if (i < geometry.coordinates.length - 1) {
-            // add intermediate position after every position except the last one
-            const nextPosition = geometry.coordinates[i + 1];
-            positions.push({
-              position: getIntermediatePosition(position, nextPosition),
-              positionIndexes: [i],
-              handleType: 'intermediate'
-            });
-          }
-        }
+        const includeIntermediate = geometry.type !== 'MultiPoint';
+        positions = positions.concat(getEditHandles(geometry.coordinates, [], includeIntermediate));
         break;
       case 'Polygon':
       case 'MultiLineString':
         // positions are nested 2 levels
         for (let a = 0; a < geometry.coordinates.length; a++) {
-          positions = positions.concat(
-            geometry.coordinates[a].map((position, index) => ({
-              position,
-              positionIndexes: [a, index],
-              handleType: 'existing'
-            }))
-          );
+          positions = positions.concat(getEditHandles(geometry.coordinates[a], [a], true));
         }
         break;
       case 'MultiPolygon':
         // positions are nested 3 levels
         for (let a = 0; a < geometry.coordinates.length; a++) {
           for (let b = 0; b < geometry.coordinates[a].length; b++) {
-            positions = positions.concat(
-              geometry.coordinates[a][b].map((position, index) => ({
-                position,
-                positionIndexes: [a, b, index],
-                handleType: 'existing'
-              }))
-            );
+            positions = positions.concat(getEditHandles(geometry.coordinates[a][b], [a, b], true));
           }
         }
         break;
@@ -280,4 +252,31 @@ function getIntermediatePosition(
     intermediatePosition.push((position1[dimension] + position2[dimension]) / 2.0);
   }
   return intermediatePosition;
+}
+
+function getEditHandles(
+  coordinates: Array<Array<number>>,
+  positionIndexPrefix: Array<number>,
+  includeIntermediate: boolean
+) {
+  const editHandles = [];
+  for (let i = 0; i < coordinates.length; i++) {
+    const position = coordinates[i];
+    editHandles.push({
+      position,
+      positionIndexes: [...positionIndexPrefix, i],
+      type: 'existing'
+    });
+
+    if (includeIntermediate && i < coordinates.length - 1) {
+      // add intermediate position after every position except the last one
+      const nextPosition = coordinates[i + 1];
+      editHandles.push({
+        position: getIntermediatePosition(position, nextPosition),
+        positionIndexes: [...positionIndexPrefix, i],
+        type: 'intermediate'
+      });
+    }
+  }
+  return editHandles;
 }

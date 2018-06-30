@@ -217,7 +217,8 @@ export default class Example extends Component<
       },
 
       // Can customize editing points props
-      getEditingPointColor: () => [0xff, 0x80, 0x00, 0xff]
+      getEditHandlePointColor: handle =>
+        handle.type === 'existing' ? [0xff, 0x80, 0x00, 0xff] : [0x0, 0x0, 0x0, 0x80]
     });
 
     return (

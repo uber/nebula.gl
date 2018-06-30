@@ -8,7 +8,8 @@ const DEFAULT_LINE_COLOR = [0x0, 0x0, 0x0, 0xff];
 const DEFAULT_FILL_COLOR = [0x0, 0x0, 0x0, 0x90];
 const DEFAULT_SELECTED_LINE_COLOR = [0x90, 0x90, 0x90, 0xff];
 const DEFAULT_SELECTED_FILL_COLOR = [0x90, 0x90, 0x90, 0x90];
-const DEFAULT_EDITING_POINT_COLOR = [0x0, 0x0, 0x0, 0xff];
+const DEFAULT_EDITING_EXISTING_POINT_COLOR = [0xc0, 0x0, 0x0, 0xff];
+const DEFAULT_EDITING_INTERMEDIATE_POINT_COLOR = [0x0, 0x0, 0x0, 0x80];
 
 const defaultProps = {
   pickable: true,
@@ -32,11 +33,14 @@ const defaultProps = {
   getLineWidth: f => (f && f.properties && f.properties.lineWidth) || 1,
 
   // Editing handles
-  editingPointRadiusScale: 1,
-  editingPointRadiusMinPixels: 4,
-  editingPointRadiusMaxPixels: Number.MAX_SAFE_INTEGER,
-  getEditingPointColor: () => DEFAULT_EDITING_POINT_COLOR,
-  getEditingPointRadius: () => 3
+  editHandlePointRadiusScale: 1,
+  editHandlePointRadiusMinPixels: 4,
+  editHandlePointRadiusMaxPixels: Number.MAX_SAFE_INTEGER,
+  getEditHandlePointColor: handle =>
+    handle.type === 'existing'
+      ? DEFAULT_EDITING_EXISTING_POINT_COLOR
+      : DEFAULT_EDITING_INTERMEDIATE_POINT_COLOR,
+  getEditHandlePointRadius: handle => (handle.type === 'existing' ? 5 : 3)
 };
 
 // Minimum number of pixels the pointer must move from the original pointer down to be considered dragging
@@ -152,11 +156,11 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
           fp64: this.props.fp64,
 
           // Proxy editing point props
-          radiusScale: this.props.editingPointRadiusScale,
-          radiusMinPixels: this.props.editingPointRadiusMinPixels,
-          radiusMaxPixels: this.props.editingPointRadiusMaxPixels,
-          getColor: this.props.getEditingPointColor,
-          getRadius: this.props.getEditingPointRadius
+          radiusScale: this.props.editHandlePointRadiusScale,
+          radiusMinPixels: this.props.editHandlePointRadiusMinPixels,
+          radiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
+          getColor: this.props.getEditHandlePointColor,
+          getRadius: this.props.getEditHandlePointRadius
         })
       )
     ];
@@ -285,6 +289,23 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
 
     const pickedPoint = allPicked.find(picked => picked.isEditingHandle);
     if (pickedPoint) {
+      if (pickedPoint.object.type === 'intermediate') {
+        const { position, positionIndexes } = pickedPoint.object;
+        const { selectedFeatureIndex } = this.props;
+
+        const updatedData = this.state.editableFeatureCollection
+          .addPosition(selectedFeatureIndex, positionIndexes, position)
+          .getObject();
+
+        (this.props.onEdit || (() => {}))({
+          data: updatedData,
+          editType: 'addintermediateposition',
+          featureIndex: selectedFeatureIndex,
+          positionIndexes,
+          position
+        });
+      }
+
       this.setState({ pointerDownPosition: pickedPoint, pointerDownCoords: pointerCoords });
     }
   }

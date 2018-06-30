@@ -299,7 +299,7 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
 
         (this.props.onEdit || (() => {}))({
           data: updatedData,
-          editType: 'addposition',
+          editType: 'addintermediateposition',
           featureIndex: selectedFeatureIndex,
           positionIndexes,
           position

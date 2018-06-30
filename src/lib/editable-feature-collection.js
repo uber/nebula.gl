@@ -100,6 +100,59 @@ export class EditableFeatureCollection {
   }
 
   /**
+   * Adds a position deeply nested in a GeoJSON geometry coordinates array.
+   * Works with MultiPoint, LineString, MultiLineString, Polygon, and MultiPolygon.
+   *
+   * @param featureIndex The index of the feature to update
+   * @param positionIndexes An array containing the indexes of the postion that will preceed the new position
+   * @param positionToAdd The new position to place in the result (i.e. [lng, lat])
+   *
+   * @returns A new `EditableFeatureCollection` with the given coordinate removed. Does not modify this `EditableFeatureCollection`.
+   */
+  addPosition(
+    featureIndex: number,
+    positionIndexes: Array<number>,
+    positionToAdd: [number, number] | [number, number, number]
+  ): EditableFeatureCollection {
+    const featureToUpdate = this.featureCollection.features[featureIndex];
+
+    if (featureToUpdate.geometry.type === 'Point') {
+      throw new Error('Unable to add a position to a Point feature');
+    }
+
+    const isPolygonal =
+      featureToUpdate.geometry.type === 'Polygon' ||
+      featureToUpdate.geometry.type === 'MultiPolygon';
+
+    const updatedCoordinates = immutablyAddPosition(
+      featureToUpdate.geometry.coordinates,
+      positionIndexes,
+      positionToAdd,
+      isPolygonal
+    );
+
+    const updatedFeature = {
+      ...featureToUpdate,
+      geometry: {
+        ...featureToUpdate.geometry,
+        coordinates: updatedCoordinates
+      }
+    };
+
+    // Immutably replace the feature being edited in the featureCollection
+    const updatedFeatureCollection = {
+      ...this.featureCollection,
+      features: [
+        ...this.featureCollection.features.slice(0, featureIndex),
+        updatedFeature,
+        ...this.featureCollection.features.slice(featureIndex + 1)
+      ]
+    };
+
+    return new EditableFeatureCollection(updatedFeatureCollection);
+  }
+
+  /**
    * Returns a flat array of positions for the given feature along with their indexes into the feature's geometry's coordinates.
    *
    * @param featureIndex The index of the feature to get edit handles
@@ -153,7 +206,7 @@ function immutablyReplacePosition(
   coordinates: Array<mixed>,
   positionIndexes: Array<number>,
   updatedPosition: Array<number>,
-  isPolygonal: boolean = false
+  isPolygonal: boolean
 ): Array<mixed> {
   if (!positionIndexes) {
     return coordinates;
@@ -196,7 +249,7 @@ function immutablyReplacePosition(
 function immutablyRemovePosition(
   coordinates: Array<mixed>,
   positionIndexes: Array<number>,
-  isPolygonal: boolean = false
+  isPolygonal: boolean
 ): Array<mixed> {
   if (!positionIndexes) {
     return coordinates;
@@ -243,6 +296,48 @@ function immutablyRemovePosition(
   ];
 }
 
+function immutablyAddPosition(
+  coordinates: Array<mixed>,
+  positionIndexes: Array<number>,
+  positionToAdd: Array<number>,
+  isPolygonal: boolean
+): Array<mixed> {
+  if (!positionIndexes) {
+    return coordinates;
+  }
+  if (positionIndexes.length === 0) {
+    throw Error('Must specify the index of the position to remove');
+  }
+  if (positionIndexes.length === 1) {
+    if (isPolygonal && (positionIndexes[0] < 1 || positionIndexes[0] > coordinates.length - 1)) {
+      // TODO: test this case
+      throw Error(
+        `Invalid position index for polygon: ${
+          positionIndexes[0]
+        }. Points must be added to a Polygon between the first and last point.`
+      );
+    }
+    const updated = [
+      ...coordinates.slice(0, positionIndexes[0]),
+      positionToAdd,
+      ...coordinates.slice(positionIndexes[0])
+    ];
+    return updated;
+  }
+
+  // recursively update inner array
+  return [
+    ...coordinates.slice(0, positionIndexes[0]),
+    immutablyAddPosition(
+      coordinates[positionIndexes[0]],
+      positionIndexes.slice(1, positionIndexes.length),
+      positionToAdd,
+      isPolygonal
+    ),
+    ...coordinates.slice(positionIndexes[0] + 1)
+  ];
+}
+
 function getIntermediatePosition(
   position1: Array<number>,
   position2: Array<number>
@@ -273,7 +368,7 @@ function getEditHandles(
       const nextPosition = coordinates[i + 1];
       editHandles.push({
         position: getIntermediatePosition(position, nextPosition),
-        positionIndexes: [...positionIndexPrefix, i],
+        positionIndexes: [...positionIndexPrefix, i + 1],
         type: 'intermediate'
       });
     }

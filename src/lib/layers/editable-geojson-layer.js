@@ -290,10 +290,23 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
     const pickedPoint = allPicked.find(picked => picked.isEditingHandle);
     if (pickedPoint) {
       if (pickedPoint.object.type === 'intermediate') {
-        console.log('TODO: implement adding intermediate points', pickedPoint.object); // eslint-disable-line
-      } else {
-        this.setState({ pointerDownPosition: pickedPoint, pointerDownCoords: pointerCoords });
+        const { position, positionIndexes } = pickedPoint.object;
+        const { selectedFeatureIndex } = this.props;
+
+        const updatedData = this.state.editableFeatureCollection
+          .addPosition(selectedFeatureIndex, positionIndexes, position)
+          .getObject();
+
+        (this.props.onEdit || (() => {}))({
+          data: updatedData,
+          editType: 'addposition',
+          featureIndex: selectedFeatureIndex,
+          positionIndexes,
+          position
+        });
       }
+
+      this.setState({ pointerDownPosition: pickedPoint, pointerDownCoords: pointerCoords });
     }
   }
 

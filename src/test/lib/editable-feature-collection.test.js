@@ -18,11 +18,13 @@ describe('EditableFeatureCollection', () => {
       properties: {},
       geometry: { type: 'Point', coordinates: [1, 2] }
     };
+
     lineStringFeature = {
       type: 'Feature',
       properties: {},
       geometry: { type: 'LineString', coordinates: [[1, 2], [3, 4]] }
     };
+
     polygonFeature = {
       type: 'Feature',
       properties: {},
@@ -36,16 +38,19 @@ describe('EditableFeatureCollection', () => {
         ]
       }
     };
+
     multiPointFeature = {
       type: 'Feature',
       properties: {},
       geometry: { type: 'MultiPoint', coordinates: [[1, 2], [3, 4]] }
     };
+
     multiLineStringFeature = {
       type: 'Feature',
       properties: {},
       geometry: { type: 'MultiLineString', coordinates: [[[1, 2], [3, 4]], [[5, 6], [7, 8]]] }
     };
+
     multiPolygonFeature = {
       type: 'Feature',
       properties: {},
@@ -65,6 +70,7 @@ describe('EditableFeatureCollection', () => {
         ]
       }
     };
+
     featureCollection = {
       type: 'FeatureCollection',
       features: [
@@ -92,12 +98,13 @@ describe('EditableFeatureCollection', () => {
         type: 'FeatureCollection',
         features: [pointFeature]
       });
-      features.replacePosition(0, [], [10, 20]);
+      const updatedFeatures = features.replacePosition(0, [], [10, 20]);
 
+      expect(updatedFeatures).not.toBe(features);
       expect(pointFeature.geometry.coordinates).toEqual([1, 2]);
     });
 
-    it('replaces coordinate in Point', () => {
+    it('replaces position in Point', () => {
       const features = new EditableFeatureCollection({
         type: 'FeatureCollection',
         features: [pointFeature]
@@ -110,7 +117,7 @@ describe('EditableFeatureCollection', () => {
       expect(actualCoordinates).toEqual(expectedCoordinates);
     });
 
-    it('replaces first coordinate in LineString', () => {
+    it('replaces first position in LineString', () => {
       const features = new EditableFeatureCollection({
         type: 'FeatureCollection',
         features: [lineStringFeature]
@@ -123,7 +130,7 @@ describe('EditableFeatureCollection', () => {
       expect(actualCoordinates).toEqual(expectedCoordinates);
     });
 
-    it('replaces middle coordinate in Polygon', () => {
+    it('replaces middle position in Polygon', () => {
       const features = new EditableFeatureCollection({
         type: 'FeatureCollection',
         features: [polygonFeature]
@@ -141,7 +148,7 @@ describe('EditableFeatureCollection', () => {
       expect(actualCoordinates).toEqual(expectedCoordinates);
     });
 
-    it('replaces last coordinate when replacing first coordinate in Polygon', () => {
+    it('replaces last position when replacing first position in Polygon', () => {
       const features = new EditableFeatureCollection({
         type: 'FeatureCollection',
         features: [polygonFeature]
@@ -157,7 +164,7 @@ describe('EditableFeatureCollection', () => {
       expect(actualCoordinates).toEqual(expectedCoordinates);
     });
 
-    it('replaces first coordinate when replacing last coordinate in Polygon', () => {
+    it('replaces first position when replacing last position in Polygon', () => {
       const features = new EditableFeatureCollection({
         type: 'FeatureCollection',
         features: [polygonFeature]
@@ -180,8 +187,9 @@ describe('EditableFeatureCollection', () => {
         type: 'FeatureCollection',
         features: [lineStringFeature]
       });
-      features.removePosition(0, [0]);
+      const updatedFeatures = features.removePosition(0, [0]);
 
+      expect(updatedFeatures).not.toBe(features);
       expect(lineStringFeature.geometry.coordinates).toEqual([[1, 2], [3, 4]]);
     });
 
@@ -196,7 +204,7 @@ describe('EditableFeatureCollection', () => {
       );
     });
 
-    it('removes first coordinate in LineString', () => {
+    it('removes first position in LineString', () => {
       const features = new EditableFeatureCollection({
         type: 'FeatureCollection',
         features: [lineStringFeature]
@@ -209,7 +217,7 @@ describe('EditableFeatureCollection', () => {
       expect(actualCoordinates).toEqual(expectedCoordinates);
     });
 
-    it('removes middle coordinate in Polygon', () => {
+    it('removes middle position in Polygon', () => {
       const features = new EditableFeatureCollection({
         type: 'FeatureCollection',
         features: [polygonFeature]
@@ -225,7 +233,7 @@ describe('EditableFeatureCollection', () => {
       expect(actualCoordinates).toEqual(expectedCoordinates);
     });
 
-    it('changes last coordinate when removing first coordinate in Polygon', () => {
+    it('changes last position when removing first position in Polygon', () => {
       const features = new EditableFeatureCollection({
         type: 'FeatureCollection',
         features: [polygonFeature]
@@ -241,7 +249,7 @@ describe('EditableFeatureCollection', () => {
       expect(actualCoordinates).toEqual(expectedCoordinates);
     });
 
-    it('changes first coordinate when removing last coordinate in Polygon', () => {
+    it('changes first position when removing last position in Polygon', () => {
       const features = new EditableFeatureCollection({
         type: 'FeatureCollection',
         features: [polygonFeature]
@@ -255,6 +263,109 @@ describe('EditableFeatureCollection', () => {
       ];
 
       expect(actualCoordinates).toEqual(expectedCoordinates);
+    });
+  });
+
+  describe('addPosition()', () => {
+    it(`doesn't mutate original`, () => {
+      const features = new EditableFeatureCollection({
+        type: 'FeatureCollection',
+        features: [lineStringFeature]
+      });
+      const updatedFeatures = features.addPosition(0, [1], [2, 3]);
+
+      expect(updatedFeatures).not.toBe(features);
+      expect(lineStringFeature.geometry.coordinates).toEqual([[1, 2], [3, 4]]);
+    });
+
+    it('throws exception when attempting to add position to Point', () => {
+      const features = new EditableFeatureCollection({
+        type: 'FeatureCollection',
+        features: [pointFeature]
+      });
+
+      expect(() => features.addPosition(0, [], [3, 4])).toThrow(
+        'Unable to add a position to a Point feature'
+      );
+    });
+
+    it('adds position to beginning of LineString', () => {
+      const features = new EditableFeatureCollection({
+        type: 'FeatureCollection',
+        features: [lineStringFeature]
+      });
+      const updatedFeatures = features.addPosition(0, [0], [10, 20]);
+
+      const actualCoordinates = updatedFeatures.getObject().features[0].geometry.coordinates;
+      const expectedCoordinates = [[10, 20], [1, 2], [3, 4]];
+
+      expect(actualCoordinates).toEqual(expectedCoordinates);
+    });
+
+    it('adds position to middle of LineString', () => {
+      const features = new EditableFeatureCollection({
+        type: 'FeatureCollection',
+        features: [lineStringFeature]
+      });
+      const updatedFeatures = features.addPosition(0, [1], [10, 20]);
+
+      const actualCoordinates = updatedFeatures.getObject().features[0].geometry.coordinates;
+      const expectedCoordinates = [[1, 2], [10, 20], [3, 4]];
+
+      expect(actualCoordinates).toEqual(expectedCoordinates);
+    });
+
+    it('adds position to end of LineString', () => {
+      const features = new EditableFeatureCollection({
+        type: 'FeatureCollection',
+        features: [lineStringFeature]
+      });
+      const updatedFeatures = features.addPosition(0, [2], [10, 20]);
+
+      const actualCoordinates = updatedFeatures.getObject().features[0].geometry.coordinates;
+      const expectedCoordinates = [[1, 2], [3, 4], [10, 20]];
+
+      expect(actualCoordinates).toEqual(expectedCoordinates);
+    });
+
+    it('adds position in Polygon', () => {
+      const features = new EditableFeatureCollection({
+        type: 'FeatureCollection',
+        features: [polygonFeature]
+      });
+      const updatedFeatures = features
+        .addPosition(0, [0, 1], [0, -1])
+        .addPosition(0, [1, 4], [0, -0.5]);
+
+      const actualCoordinates = updatedFeatures.getObject().features[0].geometry.coordinates;
+      const expectedCoordinates = [
+        [[-1, -1], [0, -1], [1, -1], [1, 1], [-1, 1], [-1, -1]],
+        [[-0.5, -0.5], [-0.5, 0.5], [0.5, 0.5], [0.5, -0.5], [0, -0.5], [-0.5, -0.5]]
+      ];
+
+      expect(actualCoordinates).toEqual(expectedCoordinates);
+    });
+
+    it('throws exception attempting to add before first position in Polygon', () => {
+      const features = new EditableFeatureCollection({
+        type: 'FeatureCollection',
+        features: [polygonFeature]
+      });
+
+      expect(() => features.addPosition(0, [1, 0])).toThrow(
+        'Invalid position index for polygon: 0. Points must be added to a Polygon between the first and last point.'
+      );
+    });
+
+    it('throws exception attempting to add after last position in Polygon', () => {
+      const features = new EditableFeatureCollection({
+        type: 'FeatureCollection',
+        features: [polygonFeature]
+      });
+
+      expect(() => features.addPosition(0, [1, 5])).toThrow(
+        'Invalid position index for polygon: 5. Points must be added to a Polygon between the first and last point.'
+      );
     });
   });
 
@@ -280,7 +391,7 @@ describe('EditableFeatureCollection', () => {
       const actual = features.getEditHandles(0);
       const expected = [
         { position: [1, 2], positionIndexes: [0], type: 'existing' },
-        { position: [2, 3], positionIndexes: [0], type: 'intermediate' },
+        { position: [2, 3], positionIndexes: [1], type: 'intermediate' },
         { position: [3, 4], positionIndexes: [1], type: 'existing' }
       ];
 
@@ -296,22 +407,22 @@ describe('EditableFeatureCollection', () => {
       const actual = features.getEditHandles(0);
       const expected = [
         { position: [-1, -1], positionIndexes: [0, 0], type: 'existing' },
-        { position: [0, -1], positionIndexes: [0, 0], type: 'intermediate' },
+        { position: [0, -1], positionIndexes: [0, 1], type: 'intermediate' },
         { position: [1, -1], positionIndexes: [0, 1], type: 'existing' },
-        { position: [1, 0], positionIndexes: [0, 1], type: 'intermediate' },
+        { position: [1, 0], positionIndexes: [0, 2], type: 'intermediate' },
         { position: [1, 1], positionIndexes: [0, 2], type: 'existing' },
-        { position: [0, 1], positionIndexes: [0, 2], type: 'intermediate' },
+        { position: [0, 1], positionIndexes: [0, 3], type: 'intermediate' },
         { position: [-1, 1], positionIndexes: [0, 3], type: 'existing' },
-        { position: [-1, 0], positionIndexes: [0, 3], type: 'intermediate' },
+        { position: [-1, 0], positionIndexes: [0, 4], type: 'intermediate' },
         { position: [-1, -1], positionIndexes: [0, 4], type: 'existing' },
         { position: [-0.5, -0.5], positionIndexes: [1, 0], type: 'existing' },
-        { position: [-0.5, 0], positionIndexes: [1, 0], type: 'intermediate' },
+        { position: [-0.5, 0], positionIndexes: [1, 1], type: 'intermediate' },
         { position: [-0.5, 0.5], positionIndexes: [1, 1], type: 'existing' },
-        { position: [0, 0.5], positionIndexes: [1, 1], type: 'intermediate' },
+        { position: [0, 0.5], positionIndexes: [1, 2], type: 'intermediate' },
         { position: [0.5, 0.5], positionIndexes: [1, 2], type: 'existing' },
-        { position: [0.5, 0], positionIndexes: [1, 2], type: 'intermediate' },
+        { position: [0.5, 0], positionIndexes: [1, 3], type: 'intermediate' },
         { position: [0.5, -0.5], positionIndexes: [1, 3], type: 'existing' },
-        { position: [0, -0.5], positionIndexes: [1, 3], type: 'intermediate' },
+        { position: [0, -0.5], positionIndexes: [1, 4], type: 'intermediate' },
         { position: [-0.5, -0.5], positionIndexes: [1, 4], type: 'existing' }
       ];
 
@@ -342,10 +453,10 @@ describe('EditableFeatureCollection', () => {
       const actual = features.getEditHandles(0);
       const expected = [
         { position: [1, 2], positionIndexes: [0, 0], type: 'existing' },
-        { position: [2, 3], positionIndexes: [0, 0], type: 'intermediate' },
+        { position: [2, 3], positionIndexes: [0, 1], type: 'intermediate' },
         { position: [3, 4], positionIndexes: [0, 1], type: 'existing' },
         { position: [5, 6], positionIndexes: [1, 0], type: 'existing' },
-        { position: [6, 7], positionIndexes: [1, 0], type: 'intermediate' },
+        { position: [6, 7], positionIndexes: [1, 1], type: 'intermediate' },
         { position: [7, 8], positionIndexes: [1, 1], type: 'existing' }
       ];
 
@@ -361,31 +472,31 @@ describe('EditableFeatureCollection', () => {
       const actual = features.getEditHandles(0);
       const expected = [
         { position: [-1, -1], positionIndexes: [0, 0, 0], type: 'existing' },
-        { position: [0, -1], positionIndexes: [0, 0, 0], type: 'intermediate' },
+        { position: [0, -1], positionIndexes: [0, 0, 1], type: 'intermediate' },
         { position: [1, -1], positionIndexes: [0, 0, 1], type: 'existing' },
-        { position: [1, 0], positionIndexes: [0, 0, 1], type: 'intermediate' },
+        { position: [1, 0], positionIndexes: [0, 0, 2], type: 'intermediate' },
         { position: [1, 1], positionIndexes: [0, 0, 2], type: 'existing' },
-        { position: [0, 1], positionIndexes: [0, 0, 2], type: 'intermediate' },
+        { position: [0, 1], positionIndexes: [0, 0, 3], type: 'intermediate' },
         { position: [-1, 1], positionIndexes: [0, 0, 3], type: 'existing' },
-        { position: [-1, 0], positionIndexes: [0, 0, 3], type: 'intermediate' },
+        { position: [-1, 0], positionIndexes: [0, 0, 4], type: 'intermediate' },
         { position: [-1, -1], positionIndexes: [0, 0, 4], type: 'existing' },
         { position: [-0.5, -0.5], positionIndexes: [0, 1, 0], type: 'existing' },
-        { position: [-0.5, 0], positionIndexes: [0, 1, 0], type: 'intermediate' },
+        { position: [-0.5, 0], positionIndexes: [0, 1, 1], type: 'intermediate' },
         { position: [-0.5, 0.5], positionIndexes: [0, 1, 1], type: 'existing' },
-        { position: [0, 0.5], positionIndexes: [0, 1, 1], type: 'intermediate' },
+        { position: [0, 0.5], positionIndexes: [0, 1, 2], type: 'intermediate' },
         { position: [0.5, 0.5], positionIndexes: [0, 1, 2], type: 'existing' },
-        { position: [0.5, 0], positionIndexes: [0, 1, 2], type: 'intermediate' },
+        { position: [0.5, 0], positionIndexes: [0, 1, 3], type: 'intermediate' },
         { position: [0.5, -0.5], positionIndexes: [0, 1, 3], type: 'existing' },
-        { position: [0, -0.5], positionIndexes: [0, 1, 3], type: 'intermediate' },
+        { position: [0, -0.5], positionIndexes: [0, 1, 4], type: 'intermediate' },
         { position: [-0.5, -0.5], positionIndexes: [0, 1, 4], type: 'existing' },
         { position: [2, -1], positionIndexes: [1, 0, 0], type: 'existing' },
-        { position: [3, -1], positionIndexes: [1, 0, 0], type: 'intermediate' },
+        { position: [3, -1], positionIndexes: [1, 0, 1], type: 'intermediate' },
         { position: [4, -1], positionIndexes: [1, 0, 1], type: 'existing' },
-        { position: [4, 0], positionIndexes: [1, 0, 1], type: 'intermediate' },
+        { position: [4, 0], positionIndexes: [1, 0, 2], type: 'intermediate' },
         { position: [4, 1], positionIndexes: [1, 0, 2], type: 'existing' },
-        { position: [3, 1], positionIndexes: [1, 0, 2], type: 'intermediate' },
+        { position: [3, 1], positionIndexes: [1, 0, 3], type: 'intermediate' },
         { position: [2, 1], positionIndexes: [1, 0, 3], type: 'existing' },
-        { position: [2, 0], positionIndexes: [1, 0, 3], type: 'intermediate' },
+        { position: [2, 0], positionIndexes: [1, 0, 4], type: 'intermediate' },
         { position: [2, -1], positionIndexes: [1, 0, 4], type: 'existing' }
       ];
 

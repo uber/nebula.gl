@@ -63,7 +63,7 @@ export default class Example extends Component<
     this.state = {
       viewport: initialViewport,
       testFeatures: sampleGeoJson,
-      editable: true,
+      mode: 'edit',
       pointsRemovable: true,
       selectedFeatureIndex: 5
     };
@@ -109,7 +109,7 @@ export default class Example extends Component<
   _onLayerClick = info => {
     console.log('onLayerClick', info); // eslint-disable-line
 
-    if (this.state.editable) {
+    if (this.state.mode !== 'view') {
       // don't change selection while editing
       return;
     }
@@ -134,13 +134,16 @@ export default class Example extends Component<
     return (
       <div style={styles.toolbox}>
         <dl style={styles.toolboxList}>
-          <dt style={styles.toolboxTerm}>Allow edit</dt>
+          <dt style={styles.toolboxTerm}>Mode</dt>
           <dd style={styles.toolboxDescription}>
-            <input
-              type="checkbox"
-              checked={this.state.editable}
-              onChange={() => this.setState({ editable: !this.state.editable })}
-            />
+            <select
+              value={this.state.mode}
+              onChange={event => this.setState({ mode: event.target.value })}
+            >
+              <option value="view">view</option>
+              <option value="edit">edit</option>
+              <option value="extendLineString">extendLineString</option>
+            </select>
           </dd>
           <dt style={styles.toolboxTerm}>Allow removing points</dt>
           <dd style={styles.toolboxDescription}>
@@ -183,20 +186,21 @@ export default class Example extends Component<
     const editableGeoJsonLayer = new EditableGeoJsonLayer({
       data: testFeatures,
       selectedFeatureIndex,
-      editable: this.state.editable,
+      mode: this.state.mode,
       fp64: true,
       autoHighlight: true,
 
       // Editing callbacks
-      onEdit: ({ data, editType, featureIndex, positionIndexes, position }) => {
-        if (editType !== 'moveposition') {
-          console.log('onEdit', editType, featureIndex, positionIndexes, position); // eslint-disable-line
+      onEdit: ({ updatedData, updatedMode, editType, featureIndex, positionIndexes, position }) => {
+        if (editType !== 'movePosition') {
+          // Don't log moves since they're really chatty
+          console.log('onEdit', editType, updatedMode, featureIndex, positionIndexes, position); // eslint-disable-line
         }
-        if (editType === 'removeposition' && !this.state.pointsRemovable) {
+        if (editType === 'removePosition' && !this.state.pointsRemovable) {
           // reject the edit
           return;
         }
-        this.setState({ testFeatures: data });
+        this.setState({ testFeatures: updatedData, mode: updatedMode });
       },
       onStartDraggingPosition: ({ featureIndex, positionIndexes }) => {
         console.log(`Start dragging position`, featureIndex, positionIndexes); // eslint-disable-line

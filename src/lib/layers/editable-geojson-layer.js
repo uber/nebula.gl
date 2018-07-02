@@ -32,6 +32,9 @@ const defaultProps = {
     (f && f.properties && f.properties.radius) || (f && f.properties && f.properties.size) || 1,
   getLineWidth: f => (f && f.properties && f.properties.lineWidth) || 1,
 
+  // 'view' | 'edit' | 'addLineString' | 'extendLineString' | 'addPolygon'
+  mode: 'edit',
+
   // Editing handles
   editHandlePointRadiusScale: 1,
   editHandlePointRadiusMinPixels: 4,
@@ -102,7 +105,7 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
 
     // unsubscribe previous layer instance's handlers
     this.removePointerHandlers();
-    if (props.editable) {
+    if (props.mode !== 'view') {
       // and re-subscribe to this instance
       this.addPointerHandlers();
     }
@@ -215,9 +218,14 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
   }
 
   getEditingFeature() {
-    if (!this.props.editable) {
+    if (
+      this.props.mode === 'view' ||
+      this.props.mode === 'addLineString' ||
+      this.props.mode === 'addPolygon'
+    ) {
       return null;
     }
+
     if (Array.isArray(this.props.data)) {
       return this.props.data[this.props.selectedFeatureIndex];
     }
@@ -251,7 +259,7 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
         this.state.draggingPosition = this.state.pointerDownPosition;
 
         // Fire the start dragging event
-        (this.props.onStartDraggingPosition || (() => {}))({
+        this.props.onStartDraggingPosition({
           featureIndex: this.props.selectedFeatureIndex,
           positionIndexes: this.state.draggingPosition.positionIndexes
         });
@@ -269,9 +277,10 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
       .replacePosition(selectedFeatureIndex, positionIndexes, position)
       .getObject();
 
-    (this.props.onEdit || (() => {}))({
-      data: updatedData,
-      editType: 'moveposition',
+    this.props.onEdit({
+      updatedData,
+      updatedMode: 'edit',
+      editType: 'movePosition',
       featureIndex: selectedFeatureIndex,
       positionIndexes,
       position
@@ -297,9 +306,10 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
           .addPosition(selectedFeatureIndex, positionIndexes, position)
           .getObject();
 
-        (this.props.onEdit || (() => {}))({
-          data: updatedData,
-          editType: 'addintermediateposition',
+        this.props.onEdit({
+          updatedData,
+          updatedMode: 'edit',
+          editType: 'addIntermediatePosition',
           featureIndex: selectedFeatureIndex,
           positionIndexes,
           position
@@ -312,7 +322,7 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
 
   onPointerUp(event) {
     if (this.state.draggingPosition) {
-      (this.props.onStopDraggingPosition || (() => {}))({
+      this.props.onStopDraggingPosition({
         featureIndex: this.props.selectedFeatureIndex,
         positionIndexes: this.state.draggingPosition.positionIndexes
       });
@@ -331,9 +341,10 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
       }
 
       if (updatedData) {
-        (this.props.onEdit || (() => {}))({
-          data: updatedData,
-          editType: 'removeposition',
+        this.props.onEdit({
+          updatedData,
+          updatedMode: 'edit',
+          editType: 'removePosition',
           featureIndex: selectedFeatureIndex,
           positionIndexes
         });

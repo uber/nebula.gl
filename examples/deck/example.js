@@ -202,12 +202,6 @@ export default class Example extends Component<
         }
         this.setState({ testFeatures: updatedData, mode: updatedMode });
       },
-      onStartDraggingPosition: ({ featureIndex, positionIndexes }) => {
-        console.log(`Start dragging position`, featureIndex, positionIndexes); // eslint-disable-line
-      },
-      onStopDraggingPosition: ({ featureIndex, positionIndexes }) => {
-        console.log(`Stop dragging position`, featureIndex, positionIndexes); // eslint-disable-line
-      },
 
       // Specify the same GeoJsonLayer props
       lineWidthMinPixels: 2,

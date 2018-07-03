@@ -158,14 +158,14 @@ export class EditableFeatureCollection {
    * @param featureIndex The index of the feature to get edit handles
    */
   getEditHandles(featureIndex: number) {
-    let positions = [];
+    let handles = [];
 
     const geometry = this.featureCollection.features[featureIndex].geometry;
 
     switch (geometry.type) {
       case 'Point':
         // positions are not nested
-        positions = [
+        handles = [
           {
             position: geometry.coordinates,
             positionIndexes: [],
@@ -177,20 +177,20 @@ export class EditableFeatureCollection {
       case 'LineString':
         // positions are nested 1 level
         const includeIntermediate = geometry.type !== 'MultiPoint';
-        positions = positions.concat(getEditHandles(geometry.coordinates, [], includeIntermediate));
+        handles = handles.concat(getEditHandles(geometry.coordinates, [], includeIntermediate));
         break;
       case 'Polygon':
       case 'MultiLineString':
         // positions are nested 2 levels
         for (let a = 0; a < geometry.coordinates.length; a++) {
-          positions = positions.concat(getEditHandles(geometry.coordinates[a], [a], true));
+          handles = handles.concat(getEditHandles(geometry.coordinates[a], [a], true));
         }
         break;
       case 'MultiPolygon':
         // positions are nested 3 levels
         for (let a = 0; a < geometry.coordinates.length; a++) {
           for (let b = 0; b < geometry.coordinates[a].length; b++) {
-            positions = positions.concat(getEditHandles(geometry.coordinates[a][b], [a, b], true));
+            handles = handles.concat(getEditHandles(geometry.coordinates[a][b], [a, b], true));
           }
         }
         break;
@@ -198,7 +198,7 @@ export class EditableFeatureCollection {
         throw Error(`Unhandled geometry type: ${geometry.type}`);
     }
 
-    return positions;
+    return handles;
   }
 }
 

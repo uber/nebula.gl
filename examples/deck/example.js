@@ -63,9 +63,9 @@ export default class Example extends Component<
     this.state = {
       viewport: initialViewport,
       testFeatures: sampleGeoJson,
-      mode: 'edit',
+      mode: 'extendLineString',
       pointsRemovable: true,
-      selectedFeatureIndex: 5
+      selectedFeatureIndex: 3
     };
   }
 

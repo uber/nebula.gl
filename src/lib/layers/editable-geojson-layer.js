@@ -35,6 +35,10 @@ const defaultProps = {
   // 'view' | 'edit' | 'addLineString' | 'extendLineString' | 'addPolygon'
   mode: 'edit',
 
+  onEdit: () => {},
+  onStartDraggingPosition: () => {},
+  onStopDraggingPosition: () => {},
+
   // Editing handles
   editHandlePointRadiusScale: 1,
   editHandlePointRadiusMinPixels: 4,
@@ -83,14 +87,18 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
     let layers = [new GeoJsonLayer(subLayerProps)];
 
     layers = layers.concat(this.createPointLayers());
+    layers = layers.concat(this.createExtensionLineStringLayers());
 
     return layers;
   }
 
   initializeState() {
     this.state = {
-      draggingPosition: null,
-      editableFeatureCollection: null
+      draggingEditHandle: null,
+      editableFeatureCollection: null,
+      selectedFeature: null,
+      editHandles: null,
+      extensionLineString: null
     };
   }
 
@@ -98,16 +106,64 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
     this.removePointerHandlers();
   }
 
+  // TODO: figure out how to properly update state from a pointer event handler
+  shouldUpdateState({ props, oldProps, context, oldContext, changeFlags }) {
+    return true;
+  }
+
   updateState({ props, changeFlags }) {
+    let editableFeatureCollection = this.state.editableFeatureCollection;
     if (changeFlags.dataChanged) {
-      this.setState({ editableFeatureCollection: new EditableFeatureCollection(props.data) });
+      editableFeatureCollection = new EditableFeatureCollection(props.data);
     }
+
+    const selectedFeature =
+      typeof props.selectedFeatureIndex === 'number'
+        ? props.data.features[props.selectedFeatureIndex]
+        : null;
+
+    const editHandles = selectedFeature
+      ? editableFeatureCollection.getEditHandles(props.selectedFeatureIndex)
+      : null;
+
+    this.handleExtendLineStringStateUpdate({ props, changeFlags });
+
+    this.setState({ editableFeatureCollection, selectedFeature, editHandles });
 
     // unsubscribe previous layer instance's handlers
     this.removePointerHandlers();
     if (props.mode !== 'view') {
       // and re-subscribe to this instance
       this.addPointerHandlers();
+    }
+  }
+
+  handleExtendLineStringStateUpdate({ props, changeFlags }) {
+    if (props.mode !== 'extendLineString' || typeof props.selectedFeatureIndex !== 'number') {
+      this.setState({ extensionLineString: null });
+      return;
+    }
+
+    const selectedFeature = props.data.features[props.selectedFeatureIndex];
+
+    if (selectedFeature.geometry.type !== 'LineString') {
+      this.setState({ extensionLineString: null });
+      return;
+    }
+
+    if (this.state.extensionLineString === null || changeFlags.dataChanged) {
+      const lastPosition =
+        selectedFeature.geometry.coordinates[selectedFeature.geometry.coordinates.length - 1];
+
+      const extensionLineString = {
+        type: 'Feature',
+        geometry: {
+          type: 'LineString',
+          coordinates: [lastPosition, lastPosition]
+        }
+      };
+
+      this.setState({ extensionLineString });
     }
   }
 
@@ -142,20 +198,16 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
   }
 
   createPointLayers() {
-    if (!this.getEditingFeature() || !this.state.editableFeatureCollection) {
+    if (!this.state.editHandles) {
       return [];
     }
-
-    const positions = this.state.editableFeatureCollection.getEditHandles(
-      this.props.selectedFeatureIndex
-    );
 
     // TODO: support using IconLayer for editing handles
     const layers = [
       new ScatterplotLayer(
         this.getSubLayerProps({
           id: 'edit-handles',
-          data: positions,
+          data: this.state.editHandles,
           fp64: this.props.fp64,
 
           // Proxy editing point props
@@ -167,6 +219,37 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
         })
       )
     ];
+
+    return layers;
+  }
+
+  createExtensionLineStringLayers() {
+    if (!this.state.extensionLineString) {
+      return [];
+    }
+
+    this.state.extensionsLineStringLayer = new GeoJsonLayer(
+      this.getSubLayerProps({
+        id: 'extension-linestring',
+        data: this.state.extensionLineString,
+        fp64: this.props.fp64,
+        pickable: false,
+        autoHighlight: false,
+        lineWidthScale: this.props.lineWidthScale,
+        lineWidthMinPixels: this.props.lineWidthMinPixels,
+        lineWidthMaxPixels: this.props.lineWidthMaxPixels,
+        lineJointRounded: this.props.lineJointRounded,
+        lineMiterLimit: this.props.lineMiterLimit,
+        pointRadiusScale: this.props.editHandlePointRadiusScale,
+        pointRadiusMinPixels: this.props.editHandlePointRadiusMinPixels,
+        pointRadiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
+        // getLineColor: () => [0xff, 0x0, 0x0, 0xff],
+        getFillColor: this.props.getEditHandlePointColor,
+        getRadius: this.props.getEditHandlePointRadius
+      })
+    );
+
+    const layers = [this.state.extensionsLineStringLayer];
 
     return layers;
   }
@@ -226,18 +309,34 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
       return null;
     }
 
-    if (Array.isArray(this.props.data)) {
-      return this.props.data[this.props.selectedFeatureIndex];
-    }
-    if (this.props.data.type === 'FeatureCollection') {
-      return this.props.data.features[this.props.selectedFeatureIndex];
-    }
-    // Assume it is a single feature
-    return this.props.data;
+    return this.state.selectedFeature;
   }
 
   onPointerMove(event) {
-    if (!this.state.pointerDownPosition) {
+    const pointerCoords = this.getPointerCoords(event);
+    const position = this.context.viewport.unproject([pointerCoords.x, pointerCoords.y]);
+
+    if (this.props.mode === 'extendLineString' && this.state.extensionLineString) {
+      this.setState({
+        extensionLineString: {
+          ...this.state.extensionLineString,
+          geometry: {
+            ...this.state.extensionLineString.geometry,
+            coordinates: [this.state.extensionLineString.geometry.coordinates[0], [...position]]
+          }
+        }
+      });
+
+      // TODO: figure out how to properly update state from a pointer event handler
+      this.setLayerNeedsUpdate();
+      // if (this.state.extensionsLineStringLayer) {
+      //   this.state.extensionsLineStringLayer.setNeedsRedraw();
+      // }
+      // this.setNeedsRedraw('update from pointer event');
+      // this.context.layerManager.setNeedsUpdate('update from pointer event');
+    }
+
+    if (!this.state.pointerDownEditHandle) {
       // TODO: only subscribe to pointermove once the pointer goes down (at which point we can remove this check)
       return;
     }
@@ -245,9 +344,7 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
     // stop propagation to prevent map panning
     event.stopPropagation();
 
-    const pointerCoords = this.getPointerCoords(event);
-
-    if (!this.state.draggingPosition) {
+    if (!this.state.draggingEditHandle) {
       // pointer is moving, but is it moving enough?
 
       if (
@@ -256,12 +353,12 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
         Math.abs(this.state.pointerDownCoords.y - pointerCoords.y) >
           MINIMUM_POINTER_MOVE_THRESHOLD_PIXELS
       ) {
-        this.state.draggingPosition = this.state.pointerDownPosition;
+        this.state.draggingEditHandle = this.state.pointerDownEditHandle;
 
         // Fire the start dragging event
         this.props.onStartDraggingPosition({
           featureIndex: this.props.selectedFeatureIndex,
-          positionIndexes: this.state.draggingPosition.positionIndexes
+          positionIndexes: this.state.draggingEditHandle.positionIndexes
         });
       } else {
         // pointer barely moved, so nothing else to do
@@ -269,8 +366,7 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
       }
     }
 
-    const position = this.context.viewport.unproject([pointerCoords.x, pointerCoords.y]);
-    const { positionIndexes } = this.state.draggingPosition;
+    const { positionIndexes } = this.state.draggingEditHandle;
     const { selectedFeatureIndex } = this.props;
 
     const updatedData = this.state.editableFeatureCollection
@@ -316,20 +412,18 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
         });
       }
 
-      this.setState({ pointerDownPosition: pickedPoint, pointerDownCoords: pointerCoords });
+      this.setState({ pointerDownEditHandle: pickedPoint });
     }
+    this.setState({ pointerDownCoords: pointerCoords });
   }
 
-  onPointerUp(event) {
-    if (this.state.draggingPosition) {
-      this.props.onStopDraggingPosition({
-        featureIndex: this.props.selectedFeatureIndex,
-        positionIndexes: this.state.draggingPosition.positionIndexes
-      });
-    } else if (this.state.pointerDownPosition) {
-      // the pointer went down on a point but wasn't dragged, so remove it
-      const { positionIndexes } = this.state.pointerDownPosition;
-      const { selectedFeatureIndex } = this.props;
+  onClick(event) {
+    const { pointerDownCoords, pointerDownEditHandle, selectedFeature } = this.state;
+    const { selectedFeatureIndex } = this.props;
+
+    if (this.props.mode === 'edit' && pointerDownEditHandle) {
+      // they clicked an edit handle but didn't drag it, so remove it
+      const { positionIndexes } = pointerDownEditHandle;
 
       let updatedData;
       try {
@@ -350,7 +444,42 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
         });
       }
     }
-    this.setState({ draggingPosition: null, pointerDownPosition: null, pointerDownCoords: null });
+    if (this.props.mode === 'extendLineString') {
+      const positionIndexes = [selectedFeature.geometry.coordinates.length];
+      const groundPosition = this.context.viewport.unproject([
+        pointerDownCoords.x,
+        pointerDownCoords.y
+      ]);
+
+      const updatedData = this.state.editableFeatureCollection
+        .addPosition(selectedFeatureIndex, positionIndexes, groundPosition)
+        .getObject();
+
+      this.props.onEdit({
+        updatedData,
+        updatedMode: 'extendLineString',
+        editType: 'addPosition',
+        featureIndex: selectedFeatureIndex,
+        positionIndexes
+      });
+    }
+  }
+
+  onPointerUp(event) {
+    if (this.state.draggingEditHandle) {
+      this.props.onStopDraggingPosition({
+        featureIndex: this.props.selectedFeatureIndex,
+        positionIndexes: this.state.draggingEditHandle.positionIndexes
+      });
+    } else if (this.state.pointerDownCoords) {
+      // They didn't drag, so consider it a click
+      this.onClick(event);
+    }
+    this.setState({
+      draggingEditHandle: null,
+      pointerDownEditHandle: null,
+      pointerDownCoords: null
+    });
   }
 
   getPointerCoords(pointerEvent) {

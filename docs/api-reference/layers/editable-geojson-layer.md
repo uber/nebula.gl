@@ -25,8 +25,16 @@ class App extends React.Component {
       mode: this.state.mode,
       selectedFeatureIndex: this.state.selectedFeatureIndex,
 
-      onEdit: ({ updatedData, updatedMode }) => {
-        this.setState({ data: updatedData, mode: updatedMode });
+      onEdit: ({
+        updatedData,
+        updatedMode,
+        updatedSelectedFeatureIndex
+      }) => {
+        this.setState({
+          data: updatedData,
+          mode: updatedMode,
+          selectedFeatureIndex: updatedSelectedFeatureIndex
+        });
       }
     });
 
@@ -61,25 +69,42 @@ A [GeoJSON](http://geojson.org) `FeatureCollection` object. The following types 
 
 The `mode` property dictates what type of edits the user can perform and how to handle user interaction events (e.g. pointer events) in order to accomplish those edits.
 
-* `view`: no edits are possible, but selection is still possible
-* `modify`: user can move existing points, add intermediate points along lines, and remove points
-* `extendLineString`: user can add additional points to the end of a `LineString` feature
+* `view`: no edits are possible, but selection is still possible.
+
+* `modify`: user can move existing points, add intermediate points along lines, and remove points.
+
+* `drawLineString`: user can draw a new `LineString` feature (by passing `selectedFeatureIndex: null`) or add additional points to the end of a `LineString` feature.
 
 #### `onEdit` (Function, optional)
 
 The `onEdit` event is the core event provided by this layer and must be handled in order to accept and render edits. The `event` argument includes the following properties:
 
 * `updatedData` (Object): A new `FeatureCollection` with the edit applied.
+
   * To accept the edit as is, supply this object into the `data` prop on the next render cycle (e.g. by calling React's `setState` function)
+
   * To reject the edit, do nothing
+
   * You may also supply a modified version of this object into the `data` prop on the next render cycle (e.g. if you have your own snapping logic).
-* `updatedMode` (String): A suggested `mode` to use after the edit is applied. Often this is the same value. But occasionally, an edit will need to transition the layer from one mode to another.
+
+* `updatedMode` (String): A suggested value to use for `mode` after the edit is applied. Often this is the same value. But occasionally, an edit will need to transition the layer from one mode to another.
+
+* `updatedSelectedFeatureIndex` (Number): A suggested value to use for `selectedFeatureIndex` after the edit is applied. Often this is the same value. But occasionally, an edit will change the selected feature (e.g. when creating a new feature, it goes from `null` to the index of the newly created feature).
+
 * `editType` (String): The type of edit requested. One of:
+
   * `movePosition`: A position was moved.
+
   * `addPosition`: A position was added (either at the beginning, middle, or end of a feature's coordinates).
+
   * `removePosition`: A position was removed.
+
+  * `addLineString`: A new `LineString` feature was added.
+
 * `featureIndex` (Number): The index of edited feature.
+
 * `positionIndexes` (Array): An array of numbers representing the indexes of the edited position within the features' `coordinates` array
+
 * `position` (Array): An array containing the ground coordinates (i.e. [lng, lat]) of the edited position (or `null` if it doesn't apply to the type of edit performed)
 
 ##### Example

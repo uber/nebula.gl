@@ -371,7 +371,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     this.props.onEdit({
       updatedData,
       updatedMode: this.props.mode,
-      editType: 'addIntermediatePosition',
+      editType: 'addPosition',
       featureIndex,
       positionIndexes,
       position: groundCoords
@@ -411,7 +411,8 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       updatedMode: 'extendLineString',
       editType: 'addPosition',
       featureIndex,
-      positionIndexes
+      positionIndexes,
+      position: groundCoords
     });
   }
 

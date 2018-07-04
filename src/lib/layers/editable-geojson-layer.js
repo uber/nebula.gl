@@ -13,8 +13,8 @@ const DEFAULT_EDITING_EXISTING_POINT_COLOR = [0xc0, 0x0, 0x0, 0xff];
 const DEFAULT_EDITING_INTERMEDIATE_POINT_COLOR = [0x0, 0x0, 0x0, 0x80];
 
 const defaultProps = {
-  // 'view' | 'edit' | 'addLineString' | 'extendLineString' | 'addPolygon'
-  mode: 'edit',
+  // 'view' | 'modify' | 'addLineString' | 'extendLineString' | 'addPolygon'
+  mode: 'modify',
 
   // Edit and interaction events
   onEdit: () => {},
@@ -276,7 +276,11 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       return;
     }
 
-    if (this.props.mode === 'edit' && editHandleInfo && editHandleInfo.object.type === 'existing') {
+    if (
+      this.props.mode === 'modify' &&
+      editHandleInfo &&
+      editHandleInfo.object.type === 'existing'
+    ) {
       this.handleRemovePosition(selectedFeatureIndex, editHandleInfo.object.positionIndexes);
     } else if (this.props.mode === 'extendLineString') {
       this.handleExtendLineString(selectedFeature, selectedFeatureIndex, groundCoords);
@@ -366,7 +370,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
     this.props.onEdit({
       updatedData,
-      updatedMode: 'edit',
+      updatedMode: this.props.mode,
       editType: 'addIntermediatePosition',
       featureIndex,
       positionIndexes,
@@ -387,7 +391,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     if (updatedData) {
       this.props.onEdit({
         updatedData,
-        updatedMode: 'edit',
+        updatedMode: this.props.mode,
         editType: 'removePosition',
         featureIndex,
         positionIndexes

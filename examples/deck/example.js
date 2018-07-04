@@ -63,7 +63,7 @@ export default class Example extends Component<
     this.state = {
       viewport: initialViewport,
       testFeatures: sampleGeoJson,
-      mode: 'extendLineString',
+      mode: 'modify',
       pointsRemovable: true,
       selectedFeatureIndex: 3
     };
@@ -141,7 +141,7 @@ export default class Example extends Component<
               onChange={event => this.setState({ mode: event.target.value })}
             >
               <option value="view">view</option>
-              <option value="edit">edit</option>
+              <option value="modify">modify</option>
               <option value="extendLineString">extendLineString</option>
             </select>
           </dd>

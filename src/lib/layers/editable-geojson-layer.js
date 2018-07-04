@@ -13,7 +13,7 @@ const DEFAULT_EDITING_EXISTING_POINT_COLOR = [0xc0, 0x0, 0x0, 0xff];
 const DEFAULT_EDITING_INTERMEDIATE_POINT_COLOR = [0x0, 0x0, 0x0, 0x80];
 
 const defaultProps = {
-  // 'view' | 'modify' | 'addLineString' | 'extendLineString' | 'addPolygon'
+  // 'view' | 'modify' | 'drawLineString' | 'drawPolygon'
   mode: 'modify',
 
   // Edit and interaction events
@@ -84,7 +84,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     let layers = [new GeoJsonLayer(subLayerProps)];
 
     layers = layers.concat(this.createPointLayers());
-    layers = layers.concat(this.createExtensionLineStringLayers());
+    layers = layers.concat(this.createDrawLineStringLayers());
 
     return layers;
   }
@@ -96,7 +96,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       editableFeatureCollection: null,
       selectedFeature: null,
       editHandles: null,
-      extensionLineString: null
+      drawLineStringFeature: null
     });
   }
 
@@ -105,7 +105,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     return true;
   }
 
-  updateState({ props, changeFlags }) {
+  updateState({ props, oldProps, changeFlags }) {
     super.updateState({ props, changeFlags });
 
     let editableFeatureCollection = this.state.editableFeatureCollection;
@@ -123,37 +123,27 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         ? editableFeatureCollection.getEditHandles(props.selectedFeatureIndex)
         : null;
 
-    this.handleExtendLineStringStateUpdate({ props, changeFlags });
-
     this.setState({ editableFeatureCollection, selectedFeature, editHandles });
+
+    this.handleDrawLineStringStateUpdate({ props, oldProps, changeFlags });
   }
 
-  handleExtendLineStringStateUpdate({ props, changeFlags }) {
-    if (props.mode !== 'extendLineString' || typeof props.selectedFeatureIndex !== 'number') {
-      this.setState({ extensionLineString: null });
+  handleDrawLineStringStateUpdate({ props, oldProps, changeFlags }) {
+    const selectedFeature = this.state.selectedFeature;
+
+    if (
+      props.mode !== 'drawLineString' ||
+      changeFlags.dataChanged ||
+      props.selectedFeatureIndex !== oldProps.selectedFeatureIndex
+    ) {
+      this.setState({ drawLineStringFeature: null });
       return;
     }
 
-    const selectedFeature = props.data.features[props.selectedFeatureIndex];
-
-    if (selectedFeature.geometry.type !== 'LineString') {
-      this.setState({ extensionLineString: null });
+    if (selectedFeature !== null && selectedFeature.geometry.type !== 'LineString') {
+      // Perhaps this should warn?
+      this.setState({ drawLineStringFeature: null });
       return;
-    }
-
-    if (this.state.extensionLineString === null || changeFlags.dataChanged) {
-      const lastPosition =
-        selectedFeature.geometry.coordinates[selectedFeature.geometry.coordinates.length - 1];
-
-      const extensionLineString = {
-        type: 'Feature',
-        geometry: {
-          type: 'LineString',
-          coordinates: [lastPosition, lastPosition]
-        }
-      };
-
-      this.setState({ extensionLineString });
     }
   }
 
@@ -209,15 +199,15 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     return layers;
   }
 
-  createExtensionLineStringLayers() {
-    if (!this.state.extensionLineString) {
+  createDrawLineStringLayers() {
+    if (!this.state.drawLineStringFeature) {
       return [];
     }
 
-    this.state.extensionsLineStringLayer = new GeoJsonLayer(
+    const layer = new GeoJsonLayer(
       this.getSubLayerProps({
-        id: 'extension-linestring',
-        data: this.state.extensionLineString,
+        id: 'draw-linestring',
+        data: this.state.drawLineStringFeature,
         fp64: this.props.fp64,
         pickable: false,
         autoHighlight: false,
@@ -229,19 +219,14 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         pointRadiusScale: this.props.editHandlePointRadiusScale,
         pointRadiusMinPixels: this.props.editHandlePointRadiusMinPixels,
         pointRadiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
-        getLineColor: feature =>
-          this.props.getLineColor
-            ? this.props.getLineColor(feature, true)
-            : defaultProps.getLineColor(feature, true),
-        getFillColor: this.props.getEditHandlePointColor,
+        getLineColor: feature => this.props.getLineColor(feature, true),
+        getFillColor: () => this.props.getEditHandlePointColor({ type: 'existing' }),
         // TODO: dashed line for extended LineString?
         getRadius: this.props.getEditHandlePointRadius
       })
     );
 
-    const layers = [this.state.extensionsLineStringLayer];
-
-    return layers;
+    return [layer];
   }
 
   getFeatures() {
@@ -272,18 +257,20 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     const { selectedFeatureIndex } = this.props;
     const editHandleInfo = this.getPickedEditHandle(picks);
 
-    if (!selectedFeature) {
-      return;
-    }
-
     if (
       this.props.mode === 'modify' &&
       editHandleInfo &&
       editHandleInfo.object.type === 'existing'
     ) {
       this.handleRemovePosition(selectedFeatureIndex, editHandleInfo.object.positionIndexes);
-    } else if (this.props.mode === 'extendLineString') {
+    } else if (
+      this.props.mode === 'drawLineString' &&
+      selectedFeature &&
+      selectedFeature.geometry.type === 'LineString'
+    ) {
       this.handleExtendLineString(selectedFeature, selectedFeatureIndex, groundCoords);
+    } else if (this.props.mode === 'drawLineString' && !selectedFeature) {
+      this.handleDrawNewLineString(groundCoords);
     }
   }
 
@@ -332,16 +319,33 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }
 
   onPointerMove({ screenCoords, groundCoords, isDragging }) {
-    if (this.props.mode === 'extendLineString' && this.state.extensionLineString) {
-      this.setState({
-        extensionLineString: {
-          ...this.state.extensionLineString,
-          geometry: {
-            ...this.state.extensionLineString.geometry,
-            coordinates: [this.state.extensionLineString.geometry.coordinates[0], [...groundCoords]]
+    if (this.props.mode === 'drawLineString') {
+      const { selectedFeature } = this.state;
+      if (selectedFeature && selectedFeature.geometry.type === 'LineString') {
+        // Draw an extension line beyond the last point
+        const lastPosition =
+          selectedFeature.geometry.coordinates[selectedFeature.geometry.coordinates.length - 1];
+
+        this.setState({
+          drawLineStringFeature: {
+            type: 'Feature',
+            geometry: {
+              type: 'LineString',
+              coordinates: [lastPosition, groundCoords]
+            }
           }
-        }
-      });
+        });
+      } else if (!selectedFeature) {
+        this.setState({
+          drawLineStringFeature: {
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: groundCoords
+            }
+          }
+        });
+      }
 
       // TODO: figure out how to properly update state from a pointer event handler
       this.setLayerNeedsUpdate();
@@ -356,6 +360,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     this.props.onEdit({
       updatedData,
       updatedMode: this.props.mode,
+      updatedSelectedFeatureIndex: this.props.selectedFeatureIndex,
       editType: 'movePosition',
       featureIndex,
       positionIndexes,
@@ -371,6 +376,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     this.props.onEdit({
       updatedData,
       updatedMode: this.props.mode,
+      updatedSelectedFeatureIndex: this.props.selectedFeatureIndex,
       editType: 'addPosition',
       featureIndex,
       positionIndexes,
@@ -392,6 +398,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       this.props.onEdit({
         updatedData,
         updatedMode: this.props.mode,
+        updatedSelectedFeatureIndex: this.props.selectedFeatureIndex,
         editType: 'removePosition',
         featureIndex,
         positionIndexes
@@ -408,10 +415,38 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
     this.props.onEdit({
       updatedData,
-      updatedMode: 'extendLineString',
+      updatedMode: 'drawLineString',
+      updatedSelectedFeatureIndex: this.props.selectedFeatureIndex,
       editType: 'addPosition',
       featureIndex,
       positionIndexes,
+      position: groundCoords
+    });
+  }
+
+  handleDrawNewLineString(groundCoords) {
+    // TODO: move this to EditableFeatureCollection
+    const updatedData = {
+      ...this.props.data,
+      features: [
+        ...this.props.data.features,
+        {
+          type: 'Feature',
+          geometry: {
+            type: 'LineString',
+            coordinates: [groundCoords]
+          }
+        }
+      ]
+    };
+
+    this.props.onEdit({
+      updatedData,
+      updatedMode: 'drawLineString',
+      updatedSelectedFeatureIndex: this.props.data.features.length,
+      editType: 'addLineString',
+      featureIndex: this.props.data.features.length,
+      positionIndexes: [0],
       position: groundCoords
     });
   }

@@ -63,9 +63,9 @@ export default class Example extends Component<
     this.state = {
       viewport: initialViewport,
       testFeatures: sampleGeoJson,
-      mode: 'modify',
+      mode: 'drawLineString',
       pointsRemovable: true,
-      selectedFeatureIndex: 3
+      selectedFeatureIndex: null
     };
   }
 
@@ -106,6 +106,10 @@ export default class Example extends Component<
     }
   }
 
+  _deselectFeature() {
+    this.setState({ selectedFeatureIndex: null });
+  }
+
   _onLayerClick = info => {
     console.log('onLayerClick', info); // eslint-disable-line
 
@@ -142,7 +146,7 @@ export default class Example extends Component<
             >
               <option value="view">view</option>
               <option value="modify">modify</option>
-              <option value="extendLineString">extendLineString</option>
+              <option value="drawLineString">drawLineString</option>
             </select>
           </dd>
           <dt style={styles.toolboxTerm}>Allow removing points</dt>
@@ -157,8 +161,21 @@ export default class Example extends Component<
           <dd style={styles.toolboxDescription}>
             {this.state.selectedFeatureIndex}{' '}
             <span style={{ float: 'right' }}>
-              <button onClick={() => this._decrementSelectedFeature()}>-</button>
-              <button onClick={() => this._incrementSelectedFeature()}>+</button>
+              <button
+                onClick={() => this._decrementSelectedFeature()}
+                title="Select previous feature"
+              >
+                -
+              </button>
+              <button
+                onClick={() => this._incrementSelectedFeature()}
+                title="Select previous feature"
+              >
+                +
+              </button>
+              <button onClick={() => this._deselectFeature()} title="Deselect feature">
+                Deselect
+              </button>
             </span>
           </dd>
           <dt style={styles.toolboxTerm}>Selected feature type</dt>
@@ -191,16 +208,37 @@ export default class Example extends Component<
       autoHighlight: true,
 
       // Editing callbacks
-      onEdit: ({ updatedData, updatedMode, editType, featureIndex, positionIndexes, position }) => {
+      onEdit: ({
+        updatedData,
+        updatedMode,
+        updatedSelectedFeatureIndex,
+        editType,
+        featureIndex,
+        positionIndexes,
+        position
+      }) => {
         if (editType !== 'movePosition') {
           // Don't log moves since they're really chatty
-          console.log('onEdit', editType, updatedMode, featureIndex, positionIndexes, position); // eslint-disable-line
+          // eslint-disable-next-line
+          console.log(
+            'onEdit',
+            editType,
+            updatedMode,
+            updatedSelectedFeatureIndex,
+            featureIndex,
+            positionIndexes,
+            position
+          );
         }
         if (editType === 'removePosition' && !this.state.pointsRemovable) {
           // reject the edit
           return;
         }
-        this.setState({ testFeatures: updatedData, mode: updatedMode });
+        this.setState({
+          testFeatures: updatedData,
+          mode: updatedMode,
+          selectedFeatureIndex: updatedSelectedFeatureIndex
+        });
       },
 
       // Specify the same GeoJsonLayer props

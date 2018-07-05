@@ -369,6 +369,76 @@ describe('EditableFeatureCollection', () => {
     });
   });
 
+  describe('addFeature()', () => {
+    it(`doesn't mutate original`, () => {
+      const features = new EditableFeatureCollection({
+        type: 'FeatureCollection',
+        features: []
+      });
+      features.addFeature(pointFeature);
+
+      expect(features.getObject().features.length).toEqual(0);
+    });
+
+    it('adds feature to empty array', () => {
+      const features = new EditableFeatureCollection({
+        type: 'FeatureCollection',
+        features: []
+      });
+      const actualFeatures = features.addFeature(pointFeature).getObject();
+
+      const expectedFeatures = {
+        type: 'FeatureCollection',
+        features: [pointFeature]
+      };
+
+      expect(actualFeatures).toEqual(expectedFeatures);
+    });
+
+    it('adds feature to end of array', () => {
+      const features = new EditableFeatureCollection({
+        type: 'FeatureCollection',
+        features: [multiPointFeature]
+      });
+      const actualFeatures = features.addFeature(multiLineStringFeature).getObject();
+
+      const expectedFeatures = {
+        type: 'FeatureCollection',
+        features: [multiPointFeature, multiLineStringFeature]
+      };
+
+      expect(actualFeatures).toEqual(expectedFeatures);
+    });
+  });
+
+  describe('upgradePointToLineString()', () => {
+    it('upgrades a Point to a LineString', () => {
+      const features = new EditableFeatureCollection({
+        type: 'FeatureCollection',
+        features: [pointFeature]
+      });
+      const updatedFeatures = features.upgradePointToLineString(0, [3, 4]);
+
+      const actualType = updatedFeatures.getObject().features[0].geometry.type;
+      const actualCoordinates = updatedFeatures.getObject().features[0].geometry.coordinates;
+      const expectedCoordinates = [[1, 2], [3, 4]];
+
+      expect(actualType).toEqual('LineString');
+      expect(actualCoordinates).toEqual(expectedCoordinates);
+    });
+
+    it('throws exception attempting to call on non-Point', () => {
+      const features = new EditableFeatureCollection({
+        type: 'FeatureCollection',
+        features: [polygonFeature]
+      });
+
+      expect(() => features.upgradePointToLineString(0, [3, 4])).toThrow(
+        'Must be performed on a Point feature but requested on Polygon feature'
+      );
+    });
+  });
+
   describe('getEditHandles()', () => {
     it('gets edit handles for Point', () => {
       const features = new EditableFeatureCollection({

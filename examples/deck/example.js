@@ -28,7 +28,7 @@ const styles = {
     padding: 10,
     borderRadius: 4,
     border: '1px solid gray',
-    width: 300,
+    width: 350,
     fontFamily: 'Arial, Helvetica, sans-serif'
   },
   toolboxList: {
@@ -63,9 +63,9 @@ export default class Example extends Component<
     this.state = {
       viewport: initialViewport,
       testFeatures: sampleGeoJson,
-      editable: true,
+      mode: 'drawLineString',
       pointsRemovable: true,
-      selectedFeatureIndex: 5
+      selectedFeatureIndex: null
     };
   }
 
@@ -106,10 +106,14 @@ export default class Example extends Component<
     }
   }
 
+  _deselectFeature() {
+    this.setState({ selectedFeatureIndex: null });
+  }
+
   _onLayerClick = info => {
     console.log('onLayerClick', info); // eslint-disable-line
 
-    if (this.state.editable) {
+    if (this.state.mode !== 'view') {
       // don't change selection while editing
       return;
     }
@@ -134,13 +138,16 @@ export default class Example extends Component<
     return (
       <div style={styles.toolbox}>
         <dl style={styles.toolboxList}>
-          <dt style={styles.toolboxTerm}>Allow edit</dt>
+          <dt style={styles.toolboxTerm}>Mode</dt>
           <dd style={styles.toolboxDescription}>
-            <input
-              type="checkbox"
-              checked={this.state.editable}
-              onChange={() => this.setState({ editable: !this.state.editable })}
-            />
+            <select
+              value={this.state.mode}
+              onChange={event => this.setState({ mode: event.target.value })}
+            >
+              <option value="view">view</option>
+              <option value="modify">modify</option>
+              <option value="drawLineString">drawLineString</option>
+            </select>
           </dd>
           <dt style={styles.toolboxTerm}>Allow removing points</dt>
           <dd style={styles.toolboxDescription}>
@@ -154,8 +161,21 @@ export default class Example extends Component<
           <dd style={styles.toolboxDescription}>
             {this.state.selectedFeatureIndex}{' '}
             <span style={{ float: 'right' }}>
-              <button onClick={() => this._decrementSelectedFeature()}>-</button>
-              <button onClick={() => this._incrementSelectedFeature()}>+</button>
+              <button
+                onClick={() => this._decrementSelectedFeature()}
+                title="Select previous feature"
+              >
+                -
+              </button>
+              <button
+                onClick={() => this._incrementSelectedFeature()}
+                title="Select previous feature"
+              >
+                +
+              </button>
+              <button onClick={() => this._deselectFeature()} title="Deselect feature">
+                Deselect
+              </button>
             </span>
           </dd>
           <dt style={styles.toolboxTerm}>Selected feature type</dt>
@@ -183,26 +203,42 @@ export default class Example extends Component<
     const editableGeoJsonLayer = new EditableGeoJsonLayer({
       data: testFeatures,
       selectedFeatureIndex,
-      editable: this.state.editable,
+      mode: this.state.mode,
       fp64: true,
       autoHighlight: true,
 
       // Editing callbacks
-      onEdit: ({ data, editType, featureIndex, positionIndexes, position }) => {
-        if (editType !== 'moveposition') {
-          console.log('onEdit', editType, featureIndex, positionIndexes, position); // eslint-disable-line
+      onEdit: ({
+        updatedData,
+        updatedMode,
+        updatedSelectedFeatureIndex,
+        editType,
+        featureIndex,
+        positionIndexes,
+        position
+      }) => {
+        if (editType !== 'movePosition') {
+          // Don't log moves since they're really chatty
+          // eslint-disable-next-line
+          console.log(
+            'onEdit',
+            editType,
+            updatedMode,
+            updatedSelectedFeatureIndex,
+            featureIndex,
+            positionIndexes,
+            position
+          );
         }
-        if (editType === 'removeposition' && !this.state.pointsRemovable) {
+        if (editType === 'removePosition' && !this.state.pointsRemovable) {
           // reject the edit
           return;
         }
-        this.setState({ testFeatures: data });
-      },
-      onStartDraggingPosition: ({ featureIndex, positionIndexes }) => {
-        console.log(`Start dragging position`, featureIndex, positionIndexes); // eslint-disable-line
-      },
-      onStopDraggingPosition: ({ featureIndex, positionIndexes }) => {
-        console.log(`Stop dragging position`, featureIndex, positionIndexes); // eslint-disable-line
+        this.setState({
+          testFeatures: updatedData,
+          mode: updatedMode,
+          selectedFeatureIndex: updatedSelectedFeatureIndex
+        });
       },
 
       // Specify the same GeoJsonLayer props

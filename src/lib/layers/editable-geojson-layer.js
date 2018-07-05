@@ -1,8 +1,9 @@
 // @flow
 /* eslint-env browser */
 
-import { CompositeLayer, GeoJsonLayer, ScatterplotLayer } from 'deck.gl';
+import { GeoJsonLayer, ScatterplotLayer } from 'deck.gl';
 import { EditableFeatureCollection } from '../editable-feature-collection';
+import EditableLayer from './editable-layer';
 
 const DEFAULT_LINE_COLOR = [0x0, 0x0, 0x0, 0xff];
 const DEFAULT_FILL_COLOR = [0x0, 0x0, 0x0, 0x90];
@@ -12,6 +13,12 @@ const DEFAULT_EDITING_EXISTING_POINT_COLOR = [0xc0, 0x0, 0x0, 0xff];
 const DEFAULT_EDITING_INTERMEDIATE_POINT_COLOR = [0x0, 0x0, 0x0, 0x80];
 
 const defaultProps = {
+  // 'view' | 'modify' | 'drawLineString' | 'drawPolygon'
+  mode: 'modify',
+
+  // Edit and interaction events
+  onEdit: () => {},
+
   pickable: true,
   fp64: false,
   filled: true,
@@ -43,10 +50,7 @@ const defaultProps = {
   getEditHandlePointRadius: handle => (handle.type === 'existing' ? 5 : 3)
 };
 
-// Minimum number of pixels the pointer must move from the original pointer down to be considered dragging
-const MINIMUM_POINTER_MOVE_THRESHOLD_PIXELS = 7;
-
-export default class EditableGeoJsonLayer extends CompositeLayer {
+export default class EditableGeoJsonLayer extends EditableLayer {
   renderLayers() {
     const subLayerProps = this.getSubLayerProps({
       id: 'geojson',
@@ -80,31 +84,70 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
     let layers = [new GeoJsonLayer(subLayerProps)];
 
     layers = layers.concat(this.createPointLayers());
+    layers = layers.concat(this.createDrawLineStringLayers());
 
     return layers;
   }
 
   initializeState() {
-    this.state = {
-      draggingPosition: null,
-      editableFeatureCollection: null
-    };
+    super.initializeState();
+
+    this.setState({
+      editableFeatureCollection: null,
+      selectedFeature: null,
+      editHandles: null,
+      drawLineStringFeature: null
+    });
   }
 
-  finalizeState() {
-    this.removePointerHandlers();
+  // TODO: figure out how to properly update state from an outside event handler
+  shouldUpdateState({ props, oldProps, context, oldContext, changeFlags }) {
+    return true;
   }
 
-  updateState({ props, changeFlags }) {
+  updateState({ props, oldProps, changeFlags }) {
+    super.updateState({ props, changeFlags });
+
+    let editableFeatureCollection = this.state.editableFeatureCollection;
     if (changeFlags.dataChanged) {
-      this.setState({ editableFeatureCollection: new EditableFeatureCollection(props.data) });
+      editableFeatureCollection = new EditableFeatureCollection(props.data);
     }
 
-    // unsubscribe previous layer instance's handlers
-    this.removePointerHandlers();
-    if (props.editable) {
-      // and re-subscribe to this instance
-      this.addPointerHandlers();
+    const selectedFeature =
+      typeof props.selectedFeatureIndex === 'number'
+        ? props.data.features[props.selectedFeatureIndex]
+        : null;
+
+    const editHandles =
+      selectedFeature && props.mode !== 'view'
+        ? editableFeatureCollection.getEditHandles(props.selectedFeatureIndex)
+        : null;
+
+    this.setState({ editableFeatureCollection, selectedFeature, editHandles });
+
+    this.handleDrawLineStringStateUpdate({ props, oldProps, changeFlags });
+  }
+
+  handleDrawLineStringStateUpdate({ props, oldProps, changeFlags }) {
+    const selectedFeature = this.state.selectedFeature;
+
+    if (
+      props.mode !== 'drawLineString' ||
+      changeFlags.dataChanged ||
+      props.selectedFeatureIndex !== oldProps.selectedFeatureIndex
+    ) {
+      this.setState({ drawLineStringFeature: null });
+      return;
+    }
+
+    if (
+      selectedFeature !== null &&
+      selectedFeature.geometry.type !== 'LineString' &&
+      selectedFeature.geometry.type !== 'Point'
+    ) {
+      // Perhaps this should warn?
+      this.setState({ drawLineStringFeature: null });
+      return;
     }
   }
 
@@ -129,30 +172,22 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
     if (sourceLayer.id.endsWith('-edit-handles')) {
       // If user is picking an editing handle, add additional data to the info
       info.isEditingHandle = true;
-
-      if (info.object) {
-        info.positionIndexes = info.object.positionIndexes;
-      }
     }
 
     return info;
   }
 
   createPointLayers() {
-    if (!this.getEditingFeature() || !this.state.editableFeatureCollection) {
+    if (!this.state.editHandles) {
       return [];
     }
-
-    const positions = this.state.editableFeatureCollection.getEditHandles(
-      this.props.selectedFeatureIndex
-    );
 
     // TODO: support using IconLayer for editing handles
     const layers = [
       new ScatterplotLayer(
         this.getSubLayerProps({
           id: 'edit-handles',
-          data: positions,
+          data: this.state.editHandles,
           fp64: this.props.fp64,
 
           // Proxy editing point props
@@ -168,39 +203,34 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
     return layers;
   }
 
-  removePointerHandlers() {
-    if (this.state.pointerHandlers) {
-      this.context.gl.canvas.removeEventListener(
-        'pointermove',
-        this.state.pointerHandlers.onPointerMove
-      );
-      this.context.gl.canvas.removeEventListener(
-        'pointerdown',
-        this.state.pointerHandlers.onPointerDown
-      );
-      this.context.gl.canvas.removeEventListener(
-        'pointerup',
-        this.state.pointerHandlers.onPointerUp
-      );
+  createDrawLineStringLayers() {
+    if (!this.state.drawLineStringFeature) {
+      return [];
     }
-  }
 
-  addPointerHandlers() {
-    this.state.pointerHandlers = {
-      onPointerMove: this.onPointerMove.bind(this),
-      onPointerDown: this.onPointerDown.bind(this),
-      onPointerUp: this.onPointerUp.bind(this)
-    };
+    const layer = new GeoJsonLayer(
+      this.getSubLayerProps({
+        id: 'draw-linestring',
+        data: this.state.drawLineStringFeature,
+        fp64: this.props.fp64,
+        pickable: false,
+        autoHighlight: false,
+        lineWidthScale: this.props.lineWidthScale,
+        lineWidthMinPixels: this.props.lineWidthMinPixels,
+        lineWidthMaxPixels: this.props.lineWidthMaxPixels,
+        lineJointRounded: this.props.lineJointRounded,
+        lineMiterLimit: this.props.lineMiterLimit,
+        pointRadiusScale: this.props.editHandlePointRadiusScale,
+        pointRadiusMinPixels: this.props.editHandlePointRadiusMinPixels,
+        pointRadiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
+        getLineColor: feature => this.props.getLineColor(feature, true),
+        getFillColor: () => this.props.getEditHandlePointColor({ type: 'existing' }),
+        // TODO: dashed line for extended LineString?
+        getRadius: this.props.getEditHandlePointRadius
+      })
+    );
 
-    this.context.gl.canvas.addEventListener(
-      'pointermove',
-      this.state.pointerHandlers.onPointerMove
-    );
-    this.context.gl.canvas.addEventListener(
-      'pointerdown',
-      this.state.pointerHandlers.onPointerDown
-    );
-    this.context.gl.canvas.addEventListener('pointerup', this.state.pointerHandlers.onPointerUp);
+    return [layer];
   }
 
   getFeatures() {
@@ -215,138 +245,238 @@ export default class EditableGeoJsonLayer extends CompositeLayer {
   }
 
   getEditingFeature() {
-    if (!this.props.editable) {
+    if (
+      this.props.mode === 'view' ||
+      this.props.mode === 'addLineString' ||
+      this.props.mode === 'addPolygon'
+    ) {
       return null;
     }
-    if (Array.isArray(this.props.data)) {
-      return this.props.data[this.props.selectedFeatureIndex];
-    }
-    if (this.props.data.type === 'FeatureCollection') {
-      return this.props.data.features[this.props.selectedFeatureIndex];
-    }
-    // Assume it is a single feature
-    return this.props.data;
+
+    return this.state.selectedFeature;
   }
 
-  onPointerMove(event) {
-    if (!this.state.pointerDownPosition) {
-      // TODO: only subscribe to pointermove once the pointer goes down (at which point we can remove this check)
+  onClick({ picks, screenCoords, groundCoords }) {
+    const { selectedFeature } = this.state;
+    const { selectedFeatureIndex } = this.props;
+    const editHandleInfo = this.getPickedEditHandle(picks);
+
+    if (
+      this.props.mode === 'modify' &&
+      editHandleInfo &&
+      editHandleInfo.object.type === 'existing'
+    ) {
+      this.handleRemovePosition(selectedFeatureIndex, editHandleInfo.object.positionIndexes);
+    } else if (
+      this.props.mode === 'drawLineString' &&
+      selectedFeature &&
+      (selectedFeature.geometry.type === 'LineString' || selectedFeature.geometry.type === 'Point')
+    ) {
+      this.handleExtendLineString(selectedFeature, selectedFeatureIndex, groundCoords);
+    } else if (this.props.mode === 'drawLineString' && !selectedFeature) {
+      this.handleDrawNewLineString(groundCoords);
+    }
+  }
+
+  onStartDragging({
+    picks,
+    screenCoords,
+    groundCoords,
+    dragStartScreenCoords,
+    dragStartGroundCoords
+  }) {
+    const { selectedFeature } = this.state;
+    const { selectedFeatureIndex } = this.props;
+    const editHandleInfo = this.getPickedEditHandle(picks);
+
+    if (!selectedFeature) {
       return;
     }
 
-    // stop propagation to prevent map panning
-    event.stopPropagation();
-
-    const pointerCoords = this.getPointerCoords(event);
-
-    if (!this.state.draggingPosition) {
-      // pointer is moving, but is it moving enough?
-
-      if (
-        Math.abs(this.state.pointerDownCoords.x - pointerCoords.x) >
-          MINIMUM_POINTER_MOVE_THRESHOLD_PIXELS ||
-        Math.abs(this.state.pointerDownCoords.y - pointerCoords.y) >
-          MINIMUM_POINTER_MOVE_THRESHOLD_PIXELS
-      ) {
-        this.state.draggingPosition = this.state.pointerDownPosition;
-
-        // Fire the start dragging event
-        (this.props.onStartDraggingPosition || (() => {}))({
-          featureIndex: this.props.selectedFeatureIndex,
-          positionIndexes: this.state.draggingPosition.positionIndexes
-        });
-      } else {
-        // pointer barely moved, so nothing else to do
-        return;
+    if (editHandleInfo) {
+      if (editHandleInfo.object.type === 'intermediate') {
+        this.handleAddIntermediatePosition(
+          selectedFeatureIndex,
+          editHandleInfo.object.positionIndexes,
+          groundCoords
+        );
       }
     }
+  }
 
-    const position = this.context.viewport.unproject([pointerCoords.x, pointerCoords.y]);
-    const { positionIndexes } = this.state.draggingPosition;
+  onDragging({ picks, screenCoords, groundCoords, dragStartScreenCoords, dragStartGroundCoords }) {
+    const { selectedFeature } = this.state;
     const { selectedFeatureIndex } = this.props;
+    const editHandleInfo = this.getPickedEditHandle(picks);
 
+    if (!selectedFeature) {
+      return;
+    }
+
+    if (editHandleInfo) {
+      this.handleMovePosition(
+        selectedFeatureIndex,
+        editHandleInfo.object.positionIndexes,
+        groundCoords
+      );
+    }
+  }
+
+  onPointerMove({ screenCoords, groundCoords, isDragging }) {
+    if (this.props.mode === 'drawLineString') {
+      const { selectedFeature } = this.state;
+      if (selectedFeature && selectedFeature.geometry.type === 'LineString') {
+        // Draw an extension line beyond the last point
+        const startPosition =
+          selectedFeature.geometry.coordinates[selectedFeature.geometry.coordinates.length - 1];
+
+        this.setState({
+          drawLineStringFeature: {
+            type: 'Feature',
+            geometry: {
+              type: 'LineString',
+              coordinates: [startPosition, groundCoords]
+            }
+          }
+        });
+      } else if (selectedFeature && selectedFeature.geometry.type === 'Point') {
+        // Draw an extension line starting from the point
+        const startPosition = selectedFeature.geometry.coordinates;
+
+        this.setState({
+          drawLineStringFeature: {
+            type: 'Feature',
+            geometry: {
+              type: 'LineString',
+              coordinates: [startPosition, groundCoords]
+            }
+          }
+        });
+      } else if (!selectedFeature) {
+        this.setState({
+          drawLineStringFeature: {
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: groundCoords
+            }
+          }
+        });
+      }
+
+      // TODO: figure out how to properly update state from a pointer event handler
+      this.setLayerNeedsUpdate();
+    }
+  }
+
+  handleMovePosition(featureIndex, positionIndexes, groundCoords) {
     const updatedData = this.state.editableFeatureCollection
-      .replacePosition(selectedFeatureIndex, positionIndexes, position)
+      .replacePosition(featureIndex, positionIndexes, groundCoords)
       .getObject();
 
-    (this.props.onEdit || (() => {}))({
-      data: updatedData,
-      editType: 'moveposition',
-      featureIndex: selectedFeatureIndex,
+    this.props.onEdit({
+      updatedData,
+      updatedMode: this.props.mode,
+      updatedSelectedFeatureIndex: this.props.selectedFeatureIndex,
+      editType: 'movePosition',
+      featureIndex,
       positionIndexes,
-      position
+      position: groundCoords
     });
   }
 
-  onPointerDown(event) {
-    const pointerCoords = this.getPointerCoords(event);
-    const allPicked = this.context.layerManager.pickObject({
-      ...pointerCoords,
-      mode: 'query',
-      layers: [this.props.id],
-      radius: 10
+  handleAddIntermediatePosition(featureIndex, positionIndexes, groundCoords) {
+    const updatedData = this.state.editableFeatureCollection
+      .addPosition(featureIndex, positionIndexes, groundCoords)
+      .getObject();
+
+    this.props.onEdit({
+      updatedData,
+      updatedMode: this.props.mode,
+      updatedSelectedFeatureIndex: this.props.selectedFeatureIndex,
+      editType: 'addPosition',
+      featureIndex,
+      positionIndexes,
+      position: groundCoords
     });
+  }
 
-    const pickedPoint = allPicked.find(picked => picked.isEditingHandle);
-    if (pickedPoint) {
-      if (pickedPoint.object.type === 'intermediate') {
-        const { position, positionIndexes } = pickedPoint.object;
-        const { selectedFeatureIndex } = this.props;
-
-        const updatedData = this.state.editableFeatureCollection
-          .addPosition(selectedFeatureIndex, positionIndexes, position)
-          .getObject();
-
-        (this.props.onEdit || (() => {}))({
-          data: updatedData,
-          editType: 'addintermediateposition',
-          featureIndex: selectedFeatureIndex,
-          positionIndexes,
-          position
-        });
-      }
-
-      this.setState({ pointerDownPosition: pickedPoint, pointerDownCoords: pointerCoords });
+  handleRemovePosition(featureIndex, positionIndexes) {
+    let updatedData;
+    try {
+      updatedData = this.state.editableFeatureCollection
+        .removePosition(featureIndex, positionIndexes)
+        .getObject();
+    } catch (error) {
+      // Sometimes we can't remove a position (e.g. trying to remove a position from a triangle)
     }
-  }
 
-  onPointerUp(event) {
-    if (this.state.draggingPosition) {
-      (this.props.onStopDraggingPosition || (() => {}))({
-        featureIndex: this.props.selectedFeatureIndex,
-        positionIndexes: this.state.draggingPosition.positionIndexes
+    if (updatedData) {
+      this.props.onEdit({
+        updatedData,
+        updatedMode: this.props.mode,
+        updatedSelectedFeatureIndex: this.props.selectedFeatureIndex,
+        editType: 'removePosition',
+        featureIndex,
+        positionIndexes
       });
-    } else if (this.state.pointerDownPosition) {
-      // the pointer went down on a point but wasn't dragged, so remove it
-      const { positionIndexes } = this.state.pointerDownPosition;
-      const { selectedFeatureIndex } = this.props;
-
-      let updatedData;
-      try {
-        updatedData = this.state.editableFeatureCollection
-          .removePosition(selectedFeatureIndex, positionIndexes)
-          .getObject();
-      } catch (error) {
-        // Sometimes we can't remove a coordinate (e.g. trying to remove a position from a triangle)
-      }
-
-      if (updatedData) {
-        (this.props.onEdit || (() => {}))({
-          data: updatedData,
-          editType: 'removeposition',
-          featureIndex: selectedFeatureIndex,
-          positionIndexes
-        });
-      }
     }
-    this.setState({ draggingPosition: null, pointerDownPosition: null, pointerDownCoords: null });
   }
 
-  getPointerCoords(pointerEvent) {
-    return {
-      x: pointerEvent.clientX - this.context.gl.canvas.getBoundingClientRect().x,
-      y: pointerEvent.clientY - this.context.gl.canvas.getBoundingClientRect().y
+  handleExtendLineString(selectedFeature, featureIndex, groundCoords) {
+    let featureCollection = this.state.editableFeatureCollection;
+    let positionIndexes;
+
+    if (selectedFeature.geometry.type === 'Point') {
+      positionIndexes = [1];
+      featureCollection = featureCollection.upgradePointToLineString(featureIndex, groundCoords);
+    } else {
+      positionIndexes = [selectedFeature.geometry.coordinates.length];
+      featureCollection = featureCollection.addPosition(
+        featureIndex,
+        positionIndexes,
+        groundCoords
+      );
+    }
+
+    const updatedData = featureCollection.getObject();
+
+    this.props.onEdit({
+      updatedData,
+      updatedMode: 'drawLineString',
+      updatedSelectedFeatureIndex: this.props.selectedFeatureIndex,
+      editType: 'addPosition',
+      featureIndex,
+      positionIndexes,
+      position: groundCoords
+    });
+  }
+
+  handleDrawNewLineString(groundCoords) {
+    // Starts off as a point (since LineString requires at least 2 positions)
+    const newFeature = {
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: groundCoords
+      }
     };
+
+    const updatedData = this.state.editableFeatureCollection.addFeature(newFeature).getObject();
+
+    this.props.onEdit({
+      updatedData,
+      updatedMode: 'drawLineString',
+      updatedSelectedFeatureIndex: this.props.data.features.length,
+      editType: 'addLineString',
+      featureIndex: this.props.data.features.length,
+      positionIndexes: [0],
+      position: groundCoords
+    });
+  }
+
+  getPickedEditHandle(picks) {
+    return picks.find(pick => pick.isEditingHandle);
   }
 }
 

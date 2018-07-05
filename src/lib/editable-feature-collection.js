@@ -1,11 +1,13 @@
 // @flow
 
+// TODO: type FeatureCollection object
+
 export class EditableFeatureCollection {
-  constructor(featureCollection) {
+  constructor(featureCollection: Object) {
     this.featureCollection = featureCollection;
   }
 
-  getObject() {
+  getObject(): Object {
     return this.featureCollection;
   }
 
@@ -152,20 +154,64 @@ export class EditableFeatureCollection {
     return new EditableFeatureCollection(updatedFeatureCollection);
   }
 
+  addFeature(feature: Object) {
+    const updatedFeatureCollection = {
+      ...this.featureCollection,
+      features: [...this.featureCollection.features, feature]
+    };
+    return new EditableFeatureCollection(updatedFeatureCollection);
+  }
+
+  upgradePointToLineString(
+    featureIndex: number,
+    positionToAdd: [number, number] | [number, number, number]
+  ): EditableFeatureCollection {
+    const featureToUpdate = this.featureCollection.features[featureIndex];
+
+    if (featureToUpdate.geometry.type !== 'Point') {
+      throw new Error(
+        `Must be performed on a Point feature but requested on ${
+          featureToUpdate.geometry.type
+        } feature`
+      );
+    }
+
+    const updatedFeature = {
+      ...featureToUpdate,
+      geometry: {
+        ...featureToUpdate.geometry,
+        type: 'LineString',
+        coordinates: [featureToUpdate.geometry.coordinates, positionToAdd]
+      }
+    };
+
+    // Immutably replace the feature being edited in the featureCollection
+    const updatedFeatureCollection = {
+      ...this.featureCollection,
+      features: [
+        ...this.featureCollection.features.slice(0, featureIndex),
+        updatedFeature,
+        ...this.featureCollection.features.slice(featureIndex + 1)
+      ]
+    };
+
+    return new EditableFeatureCollection(updatedFeatureCollection);
+  }
+
   /**
    * Returns a flat array of positions for the given feature along with their indexes into the feature's geometry's coordinates.
    *
    * @param featureIndex The index of the feature to get edit handles
    */
   getEditHandles(featureIndex: number) {
-    let positions = [];
+    let handles = [];
 
     const geometry = this.featureCollection.features[featureIndex].geometry;
 
     switch (geometry.type) {
       case 'Point':
         // positions are not nested
-        positions = [
+        handles = [
           {
             position: geometry.coordinates,
             positionIndexes: [],
@@ -177,20 +223,20 @@ export class EditableFeatureCollection {
       case 'LineString':
         // positions are nested 1 level
         const includeIntermediate = geometry.type !== 'MultiPoint';
-        positions = positions.concat(getEditHandles(geometry.coordinates, [], includeIntermediate));
+        handles = handles.concat(getEditHandles(geometry.coordinates, [], includeIntermediate));
         break;
       case 'Polygon':
       case 'MultiLineString':
         // positions are nested 2 levels
         for (let a = 0; a < geometry.coordinates.length; a++) {
-          positions = positions.concat(getEditHandles(geometry.coordinates[a], [a], true));
+          handles = handles.concat(getEditHandles(geometry.coordinates[a], [a], true));
         }
         break;
       case 'MultiPolygon':
         // positions are nested 3 levels
         for (let a = 0; a < geometry.coordinates.length; a++) {
           for (let b = 0; b < geometry.coordinates[a].length; b++) {
-            positions = positions.concat(getEditHandles(geometry.coordinates[a][b], [a, b], true));
+            handles = handles.concat(getEditHandles(geometry.coordinates[a][b], [a, b], true));
           }
         }
         break;
@@ -198,7 +244,7 @@ export class EditableFeatureCollection {
         throw Error(`Unhandled geometry type: ${geometry.type}`);
     }
 
-    return positions;
+    return handles;
   }
 }
 

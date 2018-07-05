@@ -8,7 +8,7 @@ const MINIMUM_POINTER_MOVE_THRESHOLD_PIXELS = 7;
 
 export default class EditableLayer extends CompositeLayer {
   // Overridable interaction event handlers
-  onClick({ picks, screenCoords, groundCoords }) {
+  onClick({ picks, screenCoords, groundCoords }: Object) {
     // default implementation - do nothing
   }
 
@@ -18,11 +18,17 @@ export default class EditableLayer extends CompositeLayer {
     groundCoords,
     dragStartScreenCoords,
     dragStartGroundCoords
-  }) {
+  }: Object) {
     // default implementation - do nothing
   }
 
-  onDragging({ picks, screenCoords, groundCoords, dragStartScreenCoords, dragStartGroundCoords }) {
+  onDragging({
+    picks,
+    screenCoords,
+    groundCoords,
+    dragStartScreenCoords,
+    dragStartGroundCoords
+  }: Object) {
     // default implementation - do nothing
   }
 
@@ -32,11 +38,11 @@ export default class EditableLayer extends CompositeLayer {
     groundCoords,
     dragStartScreenCoords,
     dragStartGroundCoords
-  }) {
+  }: Object) {
     // default implementation - do nothing
   }
 
-  onPointerMove({ screenCoords, groundCoords, isDragging }) {
+  onPointerMove({ screenCoords, groundCoords, isDragging }: Object) {
     // default implementation - do nothing
   }
 
@@ -63,7 +69,7 @@ export default class EditableLayer extends CompositeLayer {
     this._removePointerHandlers();
   }
 
-  updateState({ props, changeFlags }) {
+  updateState({ props, changeFlags }: Object) {
     // unsubscribe previous layer instance's handlers
     this._removePointerHandlers();
     this._addPointerHandlers();
@@ -108,7 +114,7 @@ export default class EditableLayer extends CompositeLayer {
     );
   }
 
-  _onPointerDown(event) {
+  _onPointerDown(event: Object) {
     const screenCoords = this.getScreenCoords(event);
     const groundCoords = this.getGroundCoords(screenCoords);
 
@@ -131,7 +137,7 @@ export default class EditableLayer extends CompositeLayer {
     });
   }
 
-  _onPointerMove(event) {
+  _onPointerMove(event: Object) {
     const screenCoords = this.getScreenCoords(event);
     const groundCoords = this.getGroundCoords(screenCoords);
 
@@ -186,7 +192,7 @@ export default class EditableLayer extends CompositeLayer {
     }
   }
 
-  _onPointerUp(event) {
+  _onPointerUp(event: Object) {
     const screenCoords = this.getScreenCoords(event);
     const groundCoords = this.getGroundCoords(screenCoords);
 
@@ -229,18 +235,18 @@ export default class EditableLayer extends CompositeLayer {
     });
   }
 
-  getScreenCoords(pointerEvent) {
+  getScreenCoords(pointerEvent: Object) {
     return [
       pointerEvent.clientX - this.context.gl.canvas.getBoundingClientRect().x,
       pointerEvent.clientY - this.context.gl.canvas.getBoundingClientRect().y
     ];
   }
 
-  getGroundCoords(screenCoords) {
+  getGroundCoords(screenCoords: number[]) {
     return this.context.viewport.unproject([screenCoords[0], screenCoords[1]]);
   }
 
-  movedEnoughForDrag(screenCoords1, screenCoords2) {
+  movedEnoughForDrag(screenCoords1: number[], screenCoords2: number[]) {
     return (
       Math.abs(screenCoords1[0] - screenCoords2[0]) > MINIMUM_POINTER_MOVE_THRESHOLD_PIXELS ||
       Math.abs(screenCoords1[1] - screenCoords2[1]) > MINIMUM_POINTER_MOVE_THRESHOLD_PIXELS

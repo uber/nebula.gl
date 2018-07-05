@@ -59,6 +59,7 @@
     "geojson-types": "^2.0.1",
     "global": "^4.3.2",
     "keymirror": "^0.1.1",
+    "react-test-renderer": "^16.4.1",
     "supercluster": "^3.0.2",
     "viewport-mercator-project": "5.X.X"
   },

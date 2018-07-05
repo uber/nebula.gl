@@ -3,7 +3,7 @@ import React from 'react';
 import Renderer from 'react-test-renderer';
 
 import { viewport } from '../../mocks';
-import Nebula from '../../../lib/nebula';
+import Nebula from '../../../lib/nebula-react';
 import HtmlTooltipOverlay from '../../../lib/overlays/html-tooltip-overlay';
 
 it('test HtmlTooltipOverlay no items shown', () => {

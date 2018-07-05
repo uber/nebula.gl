@@ -54,5 +54,5 @@ export type GeoJsonFeature = {
 export type GeoJsonFeatureCollection = {
   // type: 'FeatureCollection',
   type: string,
-  features: Feature[]
+  features: GeoJsonFeature[]
 };

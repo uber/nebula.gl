@@ -46,6 +46,8 @@ export default class Nebula {
   _mouseWasDown: boolean;
   wmViewport: WebMercatorViewport;
   queryObjectEvents: EventEmitter = new EventEmitter();
+  forceUpdate: Function;
+  inited: boolean;
 
   log(message: string) {
     const { logger } = this.props;
@@ -271,7 +273,7 @@ export default class Nebula {
     return [...this.renderDeckLayers(), ...this.getExtraDeckLayers()];
   }
 
-  updateAndGetRenderedLayers(layers, viewport, container) {
+  updateAndGetRenderedLayers(layers: Object[], viewport: WebMercatorViewport, container: Object) {
     if (this.inited) {
       this.updateProps({ layers, viewport });
       this.forceUpdate = () => container.forceUpdate();

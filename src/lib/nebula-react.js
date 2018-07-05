@@ -51,6 +51,7 @@ export default class NebulaReact extends Component<Props> {
   }
 
   nebula: Nebula;
+  mainContainer: ?Object;
 
   updateAllDeckObjects() {
     this.nebula.updateAllDeckObjects();

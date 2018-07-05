@@ -1,13 +1,16 @@
 // @flow
-
-// TODO: type FeatureCollection object
+type FeatureCollection = {
+  features: Array<Object>
+};
 
 export class EditableFeatureCollection {
-  constructor(featureCollection: Object) {
+  featureCollection: FeatureCollection;
+
+  constructor(featureCollection: FeatureCollection) {
     this.featureCollection = featureCollection;
   }
 
-  getObject(): Object {
+  getObject(): FeatureCollection {
     return this.featureCollection;
   }
 
@@ -24,7 +27,7 @@ export class EditableFeatureCollection {
   replacePosition(
     featureIndex: number,
     positionIndexes: Array<number>,
-    updatedPosition: [number, number] | [number, number, number]
+    updatedPosition: Array<number>
   ): EditableFeatureCollection {
     const featureToUpdate = this.featureCollection.features[featureIndex];
     const isPolygonal =
@@ -114,7 +117,7 @@ export class EditableFeatureCollection {
   addPosition(
     featureIndex: number,
     positionIndexes: Array<number>,
-    positionToAdd: [number, number] | [number, number, number]
+    positionToAdd: Array<number>
   ): EditableFeatureCollection {
     const featureToUpdate = this.featureCollection.features[featureIndex];
 
@@ -249,11 +252,11 @@ export class EditableFeatureCollection {
 }
 
 function immutablyReplacePosition(
-  coordinates: Array<mixed>,
+  coordinates: Array<any>,
   positionIndexes: Array<number>,
   updatedPosition: Array<number>,
   isPolygonal: boolean
-): Array<mixed> {
+): Array<any> {
   if (!positionIndexes) {
     return coordinates;
   }
@@ -293,10 +296,10 @@ function immutablyReplacePosition(
 }
 
 function immutablyRemovePosition(
-  coordinates: Array<mixed>,
+  coordinates: Array<any>,
   positionIndexes: Array<number>,
   isPolygonal: boolean
-): Array<mixed> {
+): Array<any> {
   if (!positionIndexes) {
     return coordinates;
   }
@@ -343,11 +346,11 @@ function immutablyRemovePosition(
 }
 
 function immutablyAddPosition(
-  coordinates: Array<mixed>,
+  coordinates: Array<any>,
   positionIndexes: Array<number>,
   positionToAdd: Array<number>,
   isPolygonal: boolean
-): Array<mixed> {
+): Array<any> {
   if (!positionIndexes) {
     return coordinates;
   }

@@ -1,11 +1,13 @@
 // @flow
 
+// TODO: type FeatureCollection object
+
 export class EditableFeatureCollection {
-  constructor(featureCollection) {
+  constructor(featureCollection: Object) {
     this.featureCollection = featureCollection;
   }
 
-  getObject() {
+  getObject(): Object {
     return this.featureCollection;
   }
 
@@ -136,6 +138,50 @@ export class EditableFeatureCollection {
       geometry: {
         ...featureToUpdate.geometry,
         coordinates: updatedCoordinates
+      }
+    };
+
+    // Immutably replace the feature being edited in the featureCollection
+    const updatedFeatureCollection = {
+      ...this.featureCollection,
+      features: [
+        ...this.featureCollection.features.slice(0, featureIndex),
+        updatedFeature,
+        ...this.featureCollection.features.slice(featureIndex + 1)
+      ]
+    };
+
+    return new EditableFeatureCollection(updatedFeatureCollection);
+  }
+
+  addFeature(feature: Object) {
+    const updatedFeatureCollection = {
+      ...this.featureCollection,
+      features: [...this.featureCollection.features, feature]
+    };
+    return new EditableFeatureCollection(updatedFeatureCollection);
+  }
+
+  upgradePointToLineString(
+    featureIndex: number,
+    positionToAdd: [number, number] | [number, number, number]
+  ): EditableFeatureCollection {
+    const featureToUpdate = this.featureCollection.features[featureIndex];
+
+    if (featureToUpdate.geometry.type !== 'Point') {
+      throw new Error(
+        `Must be performed on a Point feature but requested on ${
+          featureToUpdate.geometry.type
+        } feature`
+      );
+    }
+
+    const updatedFeature = {
+      ...featureToUpdate,
+      geometry: {
+        ...featureToUpdate.geometry,
+        type: 'LineString',
+        coordinates: [featureToUpdate.geometry.coordinates, positionToAdd]
       }
     };
 

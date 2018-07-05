@@ -140,7 +140,11 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       return;
     }
 
-    if (selectedFeature !== null && selectedFeature.geometry.type !== 'LineString') {
+    if (
+      selectedFeature !== null &&
+      selectedFeature.geometry.type !== 'LineString' &&
+      selectedFeature.geometry.type !== 'Point'
+    ) {
       // Perhaps this should warn?
       this.setState({ drawLineStringFeature: null });
       return;
@@ -266,7 +270,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     } else if (
       this.props.mode === 'drawLineString' &&
       selectedFeature &&
-      selectedFeature.geometry.type === 'LineString'
+      (selectedFeature.geometry.type === 'LineString' || selectedFeature.geometry.type === 'Point')
     ) {
       this.handleExtendLineString(selectedFeature, selectedFeatureIndex, groundCoords);
     } else if (this.props.mode === 'drawLineString' && !selectedFeature) {
@@ -323,7 +327,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       const { selectedFeature } = this.state;
       if (selectedFeature && selectedFeature.geometry.type === 'LineString') {
         // Draw an extension line beyond the last point
-        const lastPosition =
+        const startPosition =
           selectedFeature.geometry.coordinates[selectedFeature.geometry.coordinates.length - 1];
 
         this.setState({
@@ -331,7 +335,20 @@ export default class EditableGeoJsonLayer extends EditableLayer {
             type: 'Feature',
             geometry: {
               type: 'LineString',
-              coordinates: [lastPosition, groundCoords]
+              coordinates: [startPosition, groundCoords]
+            }
+          }
+        });
+      } else if (selectedFeature && selectedFeature.geometry.type === 'Point') {
+        // Draw an extension line starting from the point
+        const startPosition = selectedFeature.geometry.coordinates;
+
+        this.setState({
+          drawLineStringFeature: {
+            type: 'Feature',
+            geometry: {
+              type: 'LineString',
+              coordinates: [startPosition, groundCoords]
             }
           }
         });
@@ -407,11 +424,22 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }
 
   handleExtendLineString(selectedFeature, featureIndex, groundCoords) {
-    const positionIndexes = [selectedFeature.geometry.coordinates.length];
+    let featureCollection = this.state.editableFeatureCollection;
+    let positionIndexes;
 
-    const updatedData = this.state.editableFeatureCollection
-      .addPosition(featureIndex, positionIndexes, groundCoords)
-      .getObject();
+    if (selectedFeature.geometry.type === 'Point') {
+      positionIndexes = [1];
+      featureCollection = featureCollection.upgradePointToLineString(featureIndex, groundCoords);
+    } else {
+      positionIndexes = [selectedFeature.geometry.coordinates.length];
+      featureCollection = featureCollection.addPosition(
+        featureIndex,
+        positionIndexes,
+        groundCoords
+      );
+    }
+
+    const updatedData = featureCollection.getObject();
 
     this.props.onEdit({
       updatedData,
@@ -425,20 +453,16 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }
 
   handleDrawNewLineString(groundCoords) {
-    // TODO: move this to EditableFeatureCollection
-    const updatedData = {
-      ...this.props.data,
-      features: [
-        ...this.props.data.features,
-        {
-          type: 'Feature',
-          geometry: {
-            type: 'LineString',
-            coordinates: [groundCoords]
-          }
-        }
-      ]
+    // Starts off as a point (since LineString requires at least 2 positions)
+    const newFeature = {
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: groundCoords
+      }
     };
+
+    const updatedData = this.state.editableFeatureCollection.addFeature(newFeature).getObject();
 
     this.props.onEdit({
       updatedData,

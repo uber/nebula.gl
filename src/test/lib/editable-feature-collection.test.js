@@ -419,12 +419,13 @@ describe('EditableFeatureCollection', () => {
       });
       const updatedFeatures = features.upgradePointToLineString(0, [3, 4]);
 
-      const actualType = updatedFeatures.getObject().features[0].geometry.type;
-      const actualCoordinates = updatedFeatures.getObject().features[0].geometry.coordinates;
-      const expectedCoordinates = [[1, 2], [3, 4]];
+      const actualGeometry = updatedFeatures.getObject().features[0].geometry;
+      const expectedGeometry = {
+        type: 'LineString',
+        coordinates: [[1, 2], [3, 4]]
+      };
 
-      expect(actualType).toEqual('LineString');
-      expect(actualCoordinates).toEqual(expectedCoordinates);
+      expect(actualGeometry).toEqual(expectedGeometry);
     });
 
     it('throws exception attempting to call on non-Point', () => {
@@ -435,6 +436,43 @@ describe('EditableFeatureCollection', () => {
 
       expect(() => features.upgradePointToLineString(0, [3, 4])).toThrow(
         'Must be performed on a Point feature but requested on Polygon feature'
+      );
+    });
+  });
+
+  describe('convertLineStringToPolygon()', () => {
+    it('upgrades a Point to a LineString', () => {
+      const features = new EditableFeatureCollection({
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            geometry: {
+              type: 'LineString',
+              coordinates: [[-1, -1], [1, -1], [1, 1], [-1, 1]]
+            }
+          }
+        ]
+      });
+      const updatedFeatures = features.convertLineStringToPolygon(0);
+
+      const actualGeometry = updatedFeatures.getObject().features[0].geometry;
+      const expectedGeometry = {
+        type: 'Polygon',
+        coordinates: [[[-1, -1], [1, -1], [1, 1], [-1, 1], [-1, -1]]]
+      };
+
+      expect(actualGeometry).toEqual(expectedGeometry);
+    });
+
+    it('throws exception attempting to call on non-LineString', () => {
+      const features = new EditableFeatureCollection({
+        type: 'FeatureCollection',
+        features: [polygonFeature]
+      });
+
+      expect(() => features.convertLineStringToPolygon(0)).toThrow(
+        'Must be performed on a LineString feature but requested on Polygon feature'
       );
     });
   });

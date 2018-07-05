@@ -73,7 +73,21 @@ The `mode` property dictates what type of edits the user can perform and how to 
 
 * `modify`: user can move existing points, add intermediate points along lines, and remove points.
 
-* `drawLineString`: user can draw a new `LineString` feature (by passing `selectedFeatureIndex: null`) or add additional points to the end of a `LineString` feature.
+* `drawLineString`: user can draw a `LineString` feature by clicking positions to add.
+
+  * If no feature is selected, clicking will create a new feature `Point` feature and select it (by passing its index as `updatedSelectedFeatureIndex`).
+
+  * If a `Point` feature is selected, clicking will convert it to a `LineString` and add the clicked position to it.
+
+  * If a `LineString` feature is selected, clicking will add the clicked position to it.
+
+* `drawPolygon`: user can draw a new `Polygon` feature by clicking positions to add then closing the polygon.
+
+  * If no feature is selected, clicking will create a new feature `Point` feature and select it (by passing its index as `updatedSelectedFeatureIndex`).
+
+  * If a `Point` feature is selected, clicking will convert it to a `LineString` and add the clicked position to it.
+
+  * If a `LineString` feature is selected, clicking will add the clicked position to it. If that clicked position is the first position, the feature will be converted to a `Polygon` feature.
 
 #### `onEdit` (Function, optional)
 
@@ -95,13 +109,13 @@ The `onEdit` event is the core event provided by this layer and must be handled 
 
   * `movePosition`: A position was moved.
 
-  * `addPosition`: A position was added (either at the beginning, middle, or end of a feature's coordinates).
+  * `addPosition`: A position was added (either at the beginning, middle, or end of a feature's coordinates). Note: this may result in a feature being upgraded from one type to another (e.g. `Point` to `LineString` or `LineString` to `Polygon`).
 
   * `removePosition`: A position was removed.
 
-  * `addLineString`: A new `LineString` feature was added.
+  * `addFeature`: A new feature was added. Its index is reflected in `featureIndex`.
 
-* `featureIndex` (Number): The index of edited feature.
+* `featureIndex` (Number): The index of the edited/added feature.
 
 * `positionIndexes` (Array): An array of numbers representing the indexes of the edited position within the features' `coordinates` array
 
@@ -115,6 +129,7 @@ Consider the user removed the third position from a `Polygon`'s first ring, and 
 {
   updatedData: {...},
   updatedMode: 'modify',
+  updatedSelectedFeatureIndex: 3,
   editType: 'removePosition',
   featureIndex: 3,
   positionIndexes: [1, 2],

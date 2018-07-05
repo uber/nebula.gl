@@ -63,7 +63,7 @@ export default class Example extends Component<
     this.state = {
       viewport: initialViewport,
       testFeatures: sampleGeoJson,
-      mode: 'drawLineString',
+      mode: 'modify',
       pointsRemovable: true,
       selectedFeatureIndex: null
     };
@@ -147,6 +147,7 @@ export default class Example extends Component<
               <option value="view">view</option>
               <option value="modify">modify</option>
               <option value="drawLineString">drawLineString</option>
+              <option value="drawPolygon">drawPolygon</option>
             </select>
           </dd>
           <dt style={styles.toolboxTerm}>Allow removing points</dt>

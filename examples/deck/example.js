@@ -28,7 +28,7 @@ const styles = {
     padding: 10,
     borderRadius: 4,
     border: '1px solid gray',
-    width: 300,
+    width: 350,
     fontFamily: 'Arial, Helvetica, sans-serif'
   },
   toolboxList: {

@@ -2,6 +2,7 @@
 /* eslint-env browser */
 
 import { GeoJsonLayer, ScatterplotLayer } from 'deck.gl';
+import type { GeoJsonFeature } from '../../types';
 import { EditableFeatureCollection } from '../editable-feature-collection';
 import EditableLayer from './editable-layer';
 
@@ -299,7 +300,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
   }
 
-  getDrawFeature(selectedFeature, mode, groundCoords) {
+  getDrawFeature(selectedFeature: ?GeoJsonFeature, mode: string, groundCoords: ?(number[])) {
     let drawFeature = null;
 
     if (!selectedFeature && !groundCoords) {
@@ -424,7 +425,12 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
   }
 
-  handleDrawLineString(selectedFeature, featureIndex, groundCoords, picks) {
+  handleDrawLineString(
+    selectedFeature: GeoJsonFeature,
+    featureIndex: number,
+    groundCoords: number[],
+    picks: Object[]
+  ) {
     let featureCollection = this.state.editableFeatureCollection;
     let positionIndexes;
 
@@ -455,7 +461,12 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     });
   }
 
-  handleDrawPolygon(selectedFeature, featureIndex, groundCoords, picks) {
+  handleDrawPolygon(
+    selectedFeature: GeoJsonFeature,
+    featureIndex: number,
+    groundCoords: number[],
+    picks: Object[]
+  ) {
     let featureCollection = this.state.editableFeatureCollection;
     let positionIndexes;
 
@@ -500,7 +511,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     });
   }
 
-  handleDrawNewPoint(groundCoords) {
+  handleDrawNewPoint(groundCoords: number[]) {
     // Starts off as a point (since LineString requires at least 2 positions)
     const newFeature = {
       type: 'Feature',

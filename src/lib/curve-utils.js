@@ -14,7 +14,7 @@ function calculateSingleTangent(p0: [number, number], p1: [number, number], d: n
   return [x, y];
 }
 
-export function generateCurveFromControlPoints(line: Feature): Feature {
+export function generateCurveFromControlPoints(line: Feature<Object>): Feature<Object> {
   // calculate knots
   const knots = [0];
   let prev = null;

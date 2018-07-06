@@ -101,11 +101,11 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }
 
   // TODO: figure out how to properly update state from an outside event handler
-  shouldUpdateState({ props, oldProps, context, oldContext, changeFlags }) {
+  shouldUpdateState({ props, oldProps, context, oldContext, changeFlags }: Object) {
     return true;
   }
 
-  updateState({ props, oldProps, changeFlags }) {
+  updateState({ props, oldProps, changeFlags }: Object) {
     super.updateState({ props, changeFlags });
 
     let editableFeatureCollection = this.state.editableFeatureCollection;
@@ -128,7 +128,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     this.handleDrawLineStringStateUpdate({ props, oldProps, changeFlags });
   }
 
-  handleDrawLineStringStateUpdate({ props, oldProps, changeFlags }) {
+  handleDrawLineStringStateUpdate({ props, oldProps, changeFlags }: Object) {
     const selectedFeature = this.state.selectedFeature;
 
     if (
@@ -151,14 +151,14 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
   }
 
-  selectionAwareAccessor(accessor) {
+  selectionAwareAccessor(accessor: any) {
     if (typeof accessor !== 'function') {
       return accessor;
     }
-    return feature => accessor(feature, this.isFeatureSelected(feature));
+    return (feature: Object) => accessor(feature, this.isFeatureSelected(feature));
   }
 
-  isFeatureSelected(feature) {
+  isFeatureSelected(feature: Object) {
     // TODO: Upgrade deck to include https://github.com/uber/deck.gl/commit/40ff66ed
     // This will be buggy until then
     if (!this.props.data) {
@@ -168,7 +168,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     return this.props.selectedFeatureIndex === featureIndex;
   }
 
-  getPickingInfo({ info, sourceLayer }) {
+  getPickingInfo({ info, sourceLayer }: Object) {
     if (sourceLayer.id.endsWith('-edit-handles')) {
       // If user is picking an editing handle, add additional data to the info
       info.isEditingHandle = true;
@@ -256,7 +256,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     return this.state.selectedFeature;
   }
 
-  onClick({ picks, screenCoords, groundCoords }) {
+  onClick({ picks, screenCoords, groundCoords }: Object) {
     const { selectedFeature } = this.state;
     const { selectedFeatureIndex } = this.props;
     const editHandleInfo = this.getPickedEditHandle(picks);
@@ -284,7 +284,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     groundCoords,
     dragStartScreenCoords,
     dragStartGroundCoords
-  }) {
+  }: Object) {
     const { selectedFeature } = this.state;
     const { selectedFeatureIndex } = this.props;
     const editHandleInfo = this.getPickedEditHandle(picks);
@@ -304,7 +304,13 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
   }
 
-  onDragging({ picks, screenCoords, groundCoords, dragStartScreenCoords, dragStartGroundCoords }) {
+  onDragging({
+    picks,
+    screenCoords,
+    groundCoords,
+    dragStartScreenCoords,
+    dragStartGroundCoords
+  }: Object) {
     const { selectedFeature } = this.state;
     const { selectedFeatureIndex } = this.props;
     const editHandleInfo = this.getPickedEditHandle(picks);
@@ -322,7 +328,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
   }
 
-  onPointerMove({ screenCoords, groundCoords, isDragging }) {
+  onPointerMove({ screenCoords, groundCoords, isDragging }: Object) {
     if (this.props.mode === 'drawLineString') {
       const { selectedFeature } = this.state;
       if (selectedFeature && selectedFeature.geometry.type === 'LineString') {
@@ -369,7 +375,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
   }
 
-  handleMovePosition(featureIndex, positionIndexes, groundCoords) {
+  handleMovePosition(featureIndex: number, positionIndexes: number, groundCoords: number[]) {
     const updatedData = this.state.editableFeatureCollection
       .replacePosition(featureIndex, positionIndexes, groundCoords)
       .getObject();
@@ -385,7 +391,11 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     });
   }
 
-  handleAddIntermediatePosition(featureIndex, positionIndexes, groundCoords) {
+  handleAddIntermediatePosition(
+    featureIndex: number,
+    positionIndexes: number,
+    groundCoords: number[]
+  ) {
     const updatedData = this.state.editableFeatureCollection
       .addPosition(featureIndex, positionIndexes, groundCoords)
       .getObject();
@@ -401,7 +411,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     });
   }
 
-  handleRemovePosition(featureIndex, positionIndexes) {
+  handleRemovePosition(featureIndex: number, positionIndexes: number) {
     let updatedData;
     try {
       updatedData = this.state.editableFeatureCollection
@@ -423,7 +433,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
   }
 
-  handleExtendLineString(selectedFeature, featureIndex, groundCoords) {
+  handleExtendLineString(selectedFeature: Object, featureIndex: number, groundCoords: number[]) {
     let featureCollection = this.state.editableFeatureCollection;
     let positionIndexes;
 
@@ -452,7 +462,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     });
   }
 
-  handleDrawNewLineString(groundCoords) {
+  handleDrawNewLineString(groundCoords: number[]) {
     // Starts off as a point (since LineString requires at least 2 positions)
     const newFeature = {
       type: 'Feature',
@@ -475,7 +485,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     });
   }
 
-  getPickedEditHandle(picks) {
+  getPickedEditHandle(picks: Object[]) {
     return picks.find(pick => pick.isEditingHandle);
   }
 }

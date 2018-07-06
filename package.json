@@ -31,7 +31,8 @@
     "prepublish": "npm run build",
     "publish-prod": "npm run build && npm run test && npm run test-dist && npm publish",
     "publish-beta": "npm run build && npm run test && npm run test-dist && npm publish --tag beta",
-    "test": "npm run lint && npm run build && npm run test-node && (cd test/rendering-test && node node-rendering.js)",
+    "test": "npm run lint && npm run build && npm run flow && npm run jest",
+    "test-r": "npm run lint && npm run build && npm run test-node && (cd test/rendering-test && node node-rendering.js)",
     "test-fast": "npm run test-node",
     "test-ci": "npm run lint && node test/node-ci.js",
     "test-cover": "NODE_ENV=test tape -r babel-register test/node.js && nyc report",
@@ -58,6 +59,7 @@
     "geojson-types": "^2.0.1",
     "global": "^4.3.2",
     "keymirror": "^0.1.1",
+    "react-test-renderer": "^16.4.1",
     "supercluster": "^3.0.2",
     "viewport-mercator-project": "5.X.X"
   },

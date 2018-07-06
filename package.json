@@ -42,7 +42,8 @@
     "jest": "jest src",
     "bench": "node test/bench/node.js",
     "bench-browser": "webpack-dev-server --env.bench --progress --hot --open",
-    "test-rendering": "(cd test/rendering-test && webpack-dev-server --config webpack.config.test-rendering.js --progress --hot --open)"
+    "test-rendering": "(cd test/rendering-test && webpack-dev-server --config webpack.config.test-rendering.js --progress --hot --open)",
+    "publish-docs": "./publish-docs.sh"
   },
   "dependencies": {
     "@deck.gl/experimental-layers": ">=6.0.0-beta.1",

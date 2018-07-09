@@ -201,6 +201,41 @@ export class EditableFeatureCollection {
     return new EditableFeatureCollection(updatedFeatureCollection);
   }
 
+  convertLineStringToPolygon(featureIndex: number): EditableFeatureCollection {
+    const featureToUpdate = this.featureCollection.features[featureIndex];
+
+    if (featureToUpdate.geometry.type !== 'LineString') {
+      throw new Error(
+        `Must be performed on a LineString feature but requested on ${
+          featureToUpdate.geometry.type
+        } feature`
+      );
+    }
+
+    const updatedFeature = {
+      ...featureToUpdate,
+      geometry: {
+        ...featureToUpdate.geometry,
+        type: 'Polygon',
+        coordinates: [
+          [...featureToUpdate.geometry.coordinates, featureToUpdate.geometry.coordinates[0]]
+        ]
+      }
+    };
+
+    // Immutably replace the feature being edited in the featureCollection
+    const updatedFeatureCollection = {
+      ...this.featureCollection,
+      features: [
+        ...this.featureCollection.features.slice(0, featureIndex),
+        updatedFeature,
+        ...this.featureCollection.features.slice(featureIndex + 1)
+      ]
+    };
+
+    return new EditableFeatureCollection(updatedFeatureCollection);
+  }
+
   /**
    * Returns a flat array of positions for the given feature along with their indexes into the feature's geometry's coordinates.
    *

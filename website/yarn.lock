@@ -2,25 +2,37 @@
 # yarn lockfile v1
 
 
-"@deck.gl/core@^5.2.1":
-  version "5.2.1"
-  resolved "https://registry.yarnpkg.com/@deck.gl%2fcore/-/core-5.2.1.tgz#cb1d67b3557ec4df2fe571cadbcf2f6c863b1211"
+"@deck.gl/core@^6.0.0-beta.1":
+  version "6.0.0-beta.1"
+  resolved "https://registry.yarnpkg.com/@deck.gl/core/-/core-6.0.0-beta.1.tgz#0a4cd92da74acf43367f98c7953c089fca09a220"
   dependencies:
-    d3-hexbin "^0.2.1"
-    earcut "^2.0.6"
-    lodash.flattendeep "^4.4.0"
-    luma.gl "^5.2.0"
-    math.gl "^1.1.3"
+    luma.gl "^6.0.0-beta.1"
+    math.gl "^2.0.0"
     mjolnir.js "^1.0.0"
     probe.gl "^1.0.0"
     seer "^0.2.4"
-    viewport-mercator-project "^5.1.0"
+    viewport-mercator-project "^5.2.0"
 
-"@deck.gl/react@^5.2.1":
-  version "5.2.1"
-  resolved "https://registry.yarnpkg.com/@deck.gl%2freact/-/react-5.2.1.tgz#e0c36f516aae7cf38ef70f157cc84e9d5ec60980"
+"@deck.gl/experimental-layers@>=6.0.0-beta.1":
+  version "6.0.0-beta.1"
+  resolved "https://registry.yarnpkg.com/@deck.gl/experimental-layers/-/experimental-layers-6.0.0-beta.1.tgz#285b471f3852db3b99269f96bf80ea1d6b6c5350"
   dependencies:
-    "@deck.gl/core" "^5.2.1"
+    "@deck.gl/core" "^6.0.0-beta.1"
+    "@deck.gl/layers" "^6.0.0-beta.1"
+
+"@deck.gl/layers@^6.0.0-beta.1":
+  version "6.0.0-beta.1"
+  resolved "https://registry.yarnpkg.com/@deck.gl/layers/-/layers-6.0.0-beta.1.tgz#064ed20c63fac1cd83e71b116faae3a50001513d"
+  dependencies:
+    "@deck.gl/core" "^6.0.0-beta.1"
+    d3-hexbin "^0.2.1"
+    earcut "^2.0.6"
+
+"@deck.gl/react@^6.0.0-beta.1":
+  version "6.0.0-beta.1"
+  resolved "https://registry.yarnpkg.com/@deck.gl/react/-/react-6.0.0-beta.1.tgz#7e8dd02d9bf2e5786cceffcea341d823256737e6"
+  dependencies:
+    "@deck.gl/core" "^6.0.0-beta.1"
     prop-types "^15.6.0"
 
 "@mapbox/geojson-area@0.2.2":
@@ -135,6 +147,10 @@
 "@turf/helpers@^5.1.5":
   version "5.1.5"
   resolved "https://registry.yarnpkg.com/@turf/helpers/-/helpers-5.1.5.tgz#153405227ab933d004a5bb9641a9ed999fcbe0cf"
+
+"@turf/helpers@^6.1.4":
+  version "6.1.4"
+  resolved "https://registry.yarnpkg.com/@turf/helpers/-/helpers-6.1.4.tgz#d6fd7ebe6782dd9c87dca5559bda5c48ae4c3836"
 
 "@turf/inside@^5.0.0":
   version "5.0.0"
@@ -1991,6 +2007,10 @@ csv-loader@^2.1.1:
     loader-utils "^1.1.0"
     papaparse "^4.2.0"
 
+cubic-hermite-spline@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/cubic-hermite-spline/-/cubic-hermite-spline-1.0.1.tgz#48fb0a4153aa6a1ce3aa1e7e8c545afe8c624bac"
+
 currently-unhandled@^0.4.1:
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/currently-unhandled/-/currently-unhandled-0.4.1.tgz#988df33feab191ef799a61369dd76c17adf957ea"
@@ -2051,16 +2071,13 @@ decamelize@^1.0.0, decamelize@^1.1.1, decamelize@^1.1.2:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/decamelize/-/decamelize-1.2.0.tgz#f6534d15148269b20352e7bee26f501f9a191290"
 
-deck.gl-layers@0.X.X:
-  version "0.0.26"
-  resolved "https://registry.yarnpkg.com/deck.gl-layers/-/deck.gl-layers-0.0.26.tgz#c769c555dd4aae14dfe8c9fa09689f1845540416"
-
-deck.gl@5.X.X:
-  version "5.2.1"
-  resolved "https://registry.yarnpkg.com/deck.gl/-/deck.gl-5.2.1.tgz#a8eaa0cf5499805dbaabe4e1ab78cfbc9ddae1ce"
+deck.gl@>=6.0.0-beta.1:
+  version "6.0.0-beta.1"
+  resolved "https://registry.yarnpkg.com/deck.gl/-/deck.gl-6.0.0-beta.1.tgz#40348b925e00bb5444c64d63fbc08b69adeefa95"
   dependencies:
-    "@deck.gl/core" "^5.2.1"
-    "@deck.gl/react" "^5.2.1"
+    "@deck.gl/core" "^6.0.0-beta.1"
+    "@deck.gl/layers" "^6.0.0-beta.1"
+    "@deck.gl/react" "^6.0.0-beta.1"
 
 decode-uri-component@^0.2.0:
   version "0.2.0"
@@ -3419,6 +3436,10 @@ hoek@2.x.x:
   version "2.16.3"
   resolved "https://registry.yarnpkg.com/hoek/-/hoek-2.16.3.tgz#20bb7403d3cea398e91dc4710a8ff1b8274a25ed"
 
+hoek@^4.2.1:
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/hoek/-/hoek-4.2.1.tgz#9634502aa12c445dd5a7c5734b572bb8738aacbb"
+
 hoist-non-react-statics@^2.5.0:
   version "2.5.2"
   resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-2.5.2.tgz#de8381ea0fbed0041cb49d132c1ff654d3c79455"
@@ -4182,10 +4203,6 @@ lodash.debounce@^4.0.8:
   version "4.0.8"
   resolved "https://registry.yarnpkg.com/lodash.debounce/-/lodash.debounce-4.0.8.tgz#82d79bff30a67c4005ffd5e2515300ad9ca4d7af"
 
-lodash.flattendeep@^4.4.0:
-  version "4.4.0"
-  resolved "https://registry.yarnpkg.com/lodash.flattendeep/-/lodash.flattendeep-4.4.0.tgz#fb030917f86a3134e5bc9bec0d69e0013ddfedb2"
-
 lodash.memoize@^4.1.2:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/lodash.memoize/-/lodash.memoize-4.1.2.tgz#bcc6c49a42a2840ed997f323eada5ecd182e0bfe"
@@ -4238,11 +4255,11 @@ lru-cache@^4.0.1, lru-cache@^4.1.1:
     pseudomap "^1.0.2"
     yallist "^2.1.2"
 
-luma.gl@^5.2.0:
-  version "5.3.0"
-  resolved "https://registry.yarnpkg.com/luma.gl/-/luma.gl-5.3.0.tgz#a93b2f34489d8230eb6d8c871335800d9b83ee67"
+luma.gl@^6.0.0-beta.1:
+  version "6.0.0-beta.1"
+  resolved "https://registry.yarnpkg.com/luma.gl/-/luma.gl-6.0.0-beta.1.tgz#f12becda7c52f0f59f8692dc59595711476e405f"
   dependencies:
-    math.gl "^1.1.0"
+    math.gl "^2.0.0"
     probe.gl "^1.0.0"
     seer "^0.2.4"
     webgl-debug "^2.0.0"
@@ -4330,6 +4347,17 @@ math-random@^1.0.1:
 math.gl@^1.1.0, math.gl@^1.1.3:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/math.gl/-/math.gl-1.2.1.tgz#3c7da0ae4f3383116c24bc183533cc4d7b8065a9"
+  dependencies:
+    gl-mat3 "^1.0.0"
+    gl-mat4 "^1.1.4"
+    gl-quat "^1.0.0"
+    gl-vec2 "^1.0.0"
+    gl-vec3 "^1.0.3"
+    gl-vec4 "^1.0.1"
+
+math.gl@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/math.gl/-/math.gl-2.0.0.tgz#c41cf8f5cfce820161511c435d3f706eebd7deb0"
   dependencies:
     gl-mat3 "^1.0.0"
     gl-mat4 "^1.1.4"
@@ -4611,23 +4639,25 @@ natural-compare@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
 
-nebula.gl@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/nebula.gl/-/nebula.gl-0.1.0.tgz#bc80578ca1f8aa2f897d7743a3b8c714390ebbb0"
+nebula.gl@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/nebula.gl/-/nebula.gl-0.2.0.tgz#bc3a5921a4fedfd7a2d56a15e2fcf1ebb7b36797"
   dependencies:
+    "@deck.gl/experimental-layers" ">=6.0.0-beta.1"
     "@turf/bbox" "^5.1.5"
     "@turf/bbox-polygon" "^5.1.5"
     "@turf/buffer" "^5.1.5"
     "@turf/difference" "^5.1.5"
     "@turf/distance" "^5.1.5"
     "@turf/flatten" "^5.1.5"
+    "@turf/helpers" "^6.1.4"
     "@turf/inside" "^5.0.0"
-    deck.gl "5.X.X"
-    deck.gl-layers "0.X.X"
+    cubic-hermite-spline "^1.0.1"
+    deck.gl ">=6.0.0-beta.1"
     geojson-types "^2.0.1"
     global "^4.3.2"
     keymirror "^0.1.1"
-    reselect "^3.0.1"
+    react-test-renderer "^16.4.1"
     supercluster "^3.0.2"
     viewport-mercator-project "5.X.X"
 
@@ -4896,9 +4926,9 @@ obuf@^1.0.0, obuf@^1.1.1:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/obuf/-/obuf-1.1.2.tgz#09bea3343d41859ebd446292d11c9d4db619084e"
 
-ocular@0.5.1:
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/ocular/-/ocular-0.5.1.tgz#95c95fe448278d4583de7354c10c5eeed9405fca"
+ocular@0.5.5:
+  version "0.5.5"
+  resolved "https://registry.yarnpkg.com/ocular/-/ocular-0.5.5.tgz#3672861e8fee3fa207dbff7c9217bac6b4b267d9"
   dependencies:
     autoprefixer-loader "^3.2.0"
     babel-core "^6.26.0"
@@ -4925,6 +4955,7 @@ ocular@0.5.1:
     eslint-plugin-react "^7.2.1"
     extract-text-webpack-plugin "^3.0.0"
     file-loader "^1.1.5"
+    hoek "^4.2.1"
     html-webpack-plugin "^2.30.1"
     html-webpack-template "^5.6.0"
     inquirer "^3.2.2"
@@ -5773,6 +5804,10 @@ react-icons@^2.2.5:
   dependencies:
     react-icon-base "2.1.0"
 
+react-is@^16.4.1:
+  version "16.4.1"
+  resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.4.1.tgz#d624c4650d2c65dbd52c72622bbf389435d9776e"
+
 react-map-gl@^3.2.7:
   version "3.2.8"
   resolved "https://registry.yarnpkg.com/react-map-gl/-/react-map-gl-3.2.8.tgz#8bdbb44c9e0b168c5d2d0c453e9a2acc98eeffd4"
@@ -5827,6 +5862,15 @@ react-router@^4.1.2, react-router@^4.2.0, react-router@^4.3.1:
     path-to-regexp "^1.7.0"
     prop-types "^15.6.1"
     warning "^4.0.1"
+
+react-test-renderer@^16.4.1:
+  version "16.4.1"
+  resolved "https://registry.yarnpkg.com/react-test-renderer/-/react-test-renderer-16.4.1.tgz#f2fb30c2c7b517db6e5b10ed20bb6b0a7ccd8d70"
+  dependencies:
+    fbjs "^0.8.16"
+    object-assign "^4.1.1"
+    prop-types "^15.6.0"
+    react-is "^16.4.1"
 
 react@^15.6.1:
   version "15.6.2"
@@ -6134,10 +6178,6 @@ require-uncached@^1.0.3:
 requires-port@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/requires-port/-/requires-port-1.0.0.tgz#925d2601d39ac485e091cf0da5c6e694dc3dcaff"
-
-reselect@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/reselect/-/reselect-3.0.1.tgz#efdaa98ea7451324d092b2b2163a6a1d7a9a2147"
 
 resolve-cwd@^2.0.0:
   version "2.0.0"
@@ -7360,6 +7400,12 @@ viewport-mercator-project@5.X.X, viewport-mercator-project@^5.1.0:
   resolved "https://registry.yarnpkg.com/viewport-mercator-project/-/viewport-mercator-project-5.1.0.tgz#68bc5586988c2808d1456e1eff950d424eccec16"
   dependencies:
     math.gl "^1.1.0"
+
+viewport-mercator-project@^5.2.0:
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/viewport-mercator-project/-/viewport-mercator-project-5.2.0.tgz#2c50bc624a085d01a3a486f22ec329c0511fe4bd"
+  dependencies:
+    math.gl "^2.0.0"
 
 vlq@^0.2.1, vlq@^0.2.2:
   version "0.2.3"

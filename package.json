@@ -2,7 +2,7 @@
   "name": "nebula.gl",
   "description": "A suite of 3D-enabled data editing overlays, suitable for deck.gl",
   "license": "MIT",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "author": "Georgios Karnas <georgios@uber.com>",
   "keywords": [
     "webgl",
@@ -42,10 +42,11 @@
     "jest": "jest src",
     "bench": "node test/bench/node.js",
     "bench-browser": "webpack-dev-server --env.bench --progress --hot --open",
-    "test-rendering": "(cd test/rendering-test && webpack-dev-server --config webpack.config.test-rendering.js --progress --hot --open)"
+    "test-rendering": "(cd test/rendering-test && webpack-dev-server --config webpack.config.test-rendering.js --progress --hot --open)",
+    "publish-docs": "./publish-docs.sh"
   },
   "dependencies": {
-    "@deck.gl/experimental-layers": "5.X.X",
+    "@deck.gl/experimental-layers": ">=6.0.0-beta.1",
     "@turf/bbox": "^5.1.5",
     "@turf/bbox-polygon": "^5.1.5",
     "@turf/buffer": "^5.1.5",
@@ -55,7 +56,7 @@
     "@turf/helpers": "^6.1.4",
     "@turf/inside": "^5.0.0",
     "cubic-hermite-spline": "^1.0.1",
-    "deck.gl": "5.X.X",
+    "deck.gl": ">=6.0.0-beta.1",
     "geojson-types": "^2.0.1",
     "global": "^4.3.2",
     "keymirror": "^0.1.1",

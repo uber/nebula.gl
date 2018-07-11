@@ -285,6 +285,30 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
   }
 
+  onStopDragging({
+    picks,
+    screenCoords,
+    groundCoords,
+    dragStartScreenCoords,
+    dragStartGroundCoords
+  }: Object) {
+    const { selectedFeature } = this.state;
+    const { selectedFeatureIndex } = this.props;
+    const editHandleInfo = this.getPickedEditHandle(picks);
+
+    if (!selectedFeature) {
+      return;
+    }
+
+    if (editHandleInfo) {
+      this.handleFinishMovePosition(
+        selectedFeatureIndex,
+        editHandleInfo.object.positionIndexes,
+        groundCoords
+      );
+    }
+  }
+
   onPointerMove({ screenCoords, groundCoords, isDragging }: Object) {
     if (this.props.mode === 'drawLineString' || this.props.mode === 'drawPolygon') {
       const drawFeature = this.getDrawFeature(
@@ -377,6 +401,22 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       updatedMode: this.props.mode,
       updatedSelectedFeatureIndex: featureIndex,
       editType: 'movePosition',
+      featureIndex,
+      positionIndexes,
+      position: groundCoords
+    });
+  }
+
+  handleFinishMovePosition(featureIndex: number, positionIndexes: number, groundCoords: number[]) {
+    const updatedData = this.state.editableFeatureCollection
+      .replacePosition(featureIndex, positionIndexes, groundCoords)
+      .getObject();
+
+    this.props.onEdit({
+      updatedData,
+      updatedMode: this.props.mode,
+      updatedSelectedFeatureIndex: featureIndex,
+      editType: 'finishMovePosition',
       featureIndex,
       positionIndexes,
       position: groundCoords

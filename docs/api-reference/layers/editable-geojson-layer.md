@@ -115,7 +115,7 @@ The `onEdit` event is the core event provided by this layer and must be handled 
 
   * `addFeature`: A new feature was added. Its index is reflected in `featureIndex`
 
-  * `finishMovePosition`: A position finished moving (indicated by `mouseup`).
+  * `finishMovePosition`: A position finished moving (indicated by `pointerup`).
 
 * `featureIndex` (Number): The index of the edited/added feature.
 

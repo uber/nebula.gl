@@ -157,11 +157,11 @@ The following properties from [GeoJsonLayer](https://uber.github.io/deck.gl/#/do
 * `pointRadiusScale`
 * `pointRadiusMinPixels`
 * `pointRadiusMaxPixels`
+* `lineDashJustified`
 * `fp64`
 * `getRadius`
 * `getLineWidth`
-* TODO: `lineDashJustified`
-* TODO: `getLineDashArray`
+* `getLineDashArray`
 
 ### Edit Handles Options
 

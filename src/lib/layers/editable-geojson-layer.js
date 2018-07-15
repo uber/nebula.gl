@@ -32,6 +32,7 @@ const defaultProps = {
   pointRadiusScale: 1,
   pointRadiusMinPixels: 2,
   pointRadiusMaxPixels: Number.MAX_SAFE_INTEGER,
+  lineDashJustified: false,
   getLineColor: (feature, isSelected) =>
     isSelected ? DEFAULT_SELECTED_LINE_COLOR : DEFAULT_LINE_COLOR,
   getFillColor: (feature, isSelected) =>
@@ -39,6 +40,7 @@ const defaultProps = {
   getRadius: f =>
     (f && f.properties && f.properties.radius) || (f && f.properties && f.properties.size) || 1,
   getLineWidth: f => (f && f.properties && f.properties.lineWidth) || 1,
+  getLineDashArray: null,
 
   // Editing handles
   editHandlePointRadiusScale: 1,
@@ -69,16 +71,19 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       pointRadiusScale: this.props.pointRadiusScale,
       pointRadiusMinPixels: this.props.pointRadiusMinPixels,
       pointRadiusMaxPixels: this.props.pointRadiusMaxPixels,
+      lineDashJustified: this.props.lineDashJustified,
       getLineColor: this.selectionAwareAccessor(this.props.getLineColor),
       getFillColor: this.selectionAwareAccessor(this.props.getFillColor),
       getRadius: this.selectionAwareAccessor(this.props.getRadius),
       getLineWidth: this.selectionAwareAccessor(this.props.getLineWidth),
+      getLineDashArray: this.selectionAwareAccessor(this.props.getLineDashArray),
 
       updateTriggers: {
         getLineColor: this.props.selectedFeatureIndex,
         getFillColor: this.props.selectedFeatureIndex,
         getRadius: this.props.selectedFeatureIndex,
-        getLineWidth: this.props.selectedFeatureIndex
+        getLineWidth: this.props.selectedFeatureIndex,
+        getLineDashArray: this.props.selectedFeatureIndex
       }
     });
 
@@ -207,7 +212,8 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         pointRadiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
         getLineColor: feature => this.props.getLineColor(feature, true),
         getFillColor: () => this.props.getEditHandlePointColor({ type: 'existing' }),
-        // TODO: dashed line for drawing lines?
+        getLineDashArray: () => [10, 10],
+        // getRadius: () => this.props.getEditHandlePointRadius() + 20
         getRadius: this.props.getEditHandlePointRadius
       })
     );

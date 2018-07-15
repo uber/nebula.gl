@@ -67,6 +67,12 @@ export default class Example extends Component<
       pointsRemovable: true,
       selectedFeatureIndex: null
     };
+
+    // filter to only points
+    // this.state.testFeatures = {
+    //   type: 'FeatureCollection',
+    //   features: this.state.testFeatures.features.slice(0, 2)
+    // };
   }
 
   componentDidMount() {
@@ -193,7 +199,7 @@ export default class Example extends Component<
   }
 
   render() {
-    const { testFeatures, selectedFeatureIndex } = this.state;
+    const { testFeatures, selectedFeatureIndex, mode } = this.state;
 
     const viewport = {
       ...this.state.viewport,
@@ -202,9 +208,10 @@ export default class Example extends Component<
     };
 
     const editableGeoJsonLayer = new EditableGeoJsonLayer({
+      id: 'geojson',
       data: testFeatures,
       selectedFeatureIndex,
-      mode: this.state.mode,
+      mode,
       fp64: true,
       autoHighlight: true,
 
@@ -244,14 +251,25 @@ export default class Example extends Component<
 
       // Specify the same GeoJsonLayer props
       lineWidthMinPixels: 2,
+      pointRadiusMinPixels: 5,
 
       // Accessors receive an isSelected argument
       getFillColor: (feature, isSelected) => {
+        // console.log('getFillColor called'); // eslint-disable-line
         return isSelected ? [0x20, 0x40, 0x90, 0xc0] : [0x20, 0x20, 0x20, 0x30];
+        // return this.state.selectedFeatureIndex === 'number' &&
+        //   this.state.selectedFeatureIndex % 2 === 0
+        //   ? [0x20, 0x40, 0x90, 0xc0]
+        //   : [0x20, 0x20, 0x20, 0x30];
       },
       getLineColor: (feature, isSelected) => {
         return isSelected ? [0x00, 0x20, 0x90, 0xff] : [0x20, 0x20, 0x20, 0xff];
       },
+
+      // getLineDashArray: (feature, isSelected) => {
+      //   return isSelected && mode !== 'view' ? [2, 3] : null;
+      // },
+      // getLineDashArray: () => [4, 5],
 
       // Can customize editing points props
       getEditHandlePointColor: handle =>

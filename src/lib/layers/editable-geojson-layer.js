@@ -213,7 +213,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         getLineColor: feature => this.props.getLineColor(feature, true),
         getFillColor: () => this.props.getEditHandlePointColor({ type: 'existing' }),
         getLineDashArray: () => [10, 10],
-        // getRadius: () => this.props.getEditHandlePointRadius() + 20
         getRadius: this.props.getEditHandlePointRadius
       })
     );

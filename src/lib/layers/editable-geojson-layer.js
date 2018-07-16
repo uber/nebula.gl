@@ -32,13 +32,16 @@ const defaultProps = {
   pointRadiusScale: 1,
   pointRadiusMinPixels: 2,
   pointRadiusMaxPixels: Number.MAX_SAFE_INTEGER,
-  getLineColor: (feature, isSelected) =>
+  lineDashJustified: false,
+  getLineColor: (feature, isSelected, mode) =>
     isSelected ? DEFAULT_SELECTED_LINE_COLOR : DEFAULT_LINE_COLOR,
-  getFillColor: (feature, isSelected) =>
+  getFillColor: (feature, isSelected, mode) =>
     isSelected ? DEFAULT_SELECTED_FILL_COLOR : DEFAULT_FILL_COLOR,
   getRadius: f =>
     (f && f.properties && f.properties.radius) || (f && f.properties && f.properties.size) || 1,
   getLineWidth: f => (f && f.properties && f.properties.lineWidth) || 1,
+  getLineDashArray: (feature, isSelected, mode) =>
+    isSelected && mode !== 'view' ? [7, 4] : [0, 0],
 
   // Editing handles
   editHandlePointRadiusScale: 1,
@@ -69,16 +72,19 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       pointRadiusScale: this.props.pointRadiusScale,
       pointRadiusMinPixels: this.props.pointRadiusMinPixels,
       pointRadiusMaxPixels: this.props.pointRadiusMaxPixels,
+      lineDashJustified: this.props.lineDashJustified,
       getLineColor: this.selectionAwareAccessor(this.props.getLineColor),
       getFillColor: this.selectionAwareAccessor(this.props.getFillColor),
       getRadius: this.selectionAwareAccessor(this.props.getRadius),
       getLineWidth: this.selectionAwareAccessor(this.props.getLineWidth),
+      getLineDashArray: this.selectionAwareAccessor(this.props.getLineDashArray),
 
       updateTriggers: {
-        getLineColor: this.props.selectedFeatureIndex,
-        getFillColor: this.props.selectedFeatureIndex,
-        getRadius: this.props.selectedFeatureIndex,
-        getLineWidth: this.props.selectedFeatureIndex
+        getLineColor: [this.props.selectedFeatureIndex, this.props.mode],
+        getFillColor: [this.props.selectedFeatureIndex, this.props.mode],
+        getRadius: [this.props.selectedFeatureIndex, this.props.mode],
+        getLineWidth: [this.props.selectedFeatureIndex, this.props.mode],
+        getLineDashArray: [this.props.selectedFeatureIndex, this.props.mode]
       }
     });
 
@@ -137,12 +143,10 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     if (typeof accessor !== 'function') {
       return accessor;
     }
-    return (feature: Object) => accessor(feature, this.isFeatureSelected(feature));
+    return (feature: Object) => accessor(feature, this.isFeatureSelected(feature), this.props.mode);
   }
 
   isFeatureSelected(feature: Object) {
-    // TODO: Upgrade deck to include https://github.com/uber/deck.gl/commit/40ff66ed
-    // This will be buggy until then
     if (!this.props.data) {
       return false;
     }
@@ -190,6 +194,9 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       return [];
     }
 
+    const getLineDashArray = () =>
+      this.props.getLineDashArray(this.state.selectedFeature, true, this.props.mode);
+
     const layer = new GeoJsonLayer(
       this.getSubLayerProps({
         id: 'draw',
@@ -207,7 +214,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         pointRadiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
         getLineColor: feature => this.props.getLineColor(feature, true),
         getFillColor: () => this.props.getEditHandlePointColor({ type: 'existing' }),
-        // TODO: dashed line for drawing lines?
+        getLineDashArray,
         getRadius: this.props.getEditHandlePointRadius
       })
     );

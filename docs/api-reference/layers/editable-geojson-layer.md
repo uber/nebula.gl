@@ -157,11 +157,21 @@ The following properties from [GeoJsonLayer](https://uber.github.io/deck.gl/#/do
 * `pointRadiusScale`
 * `pointRadiusMinPixels`
 * `pointRadiusMaxPixels`
+* `lineDashJustified`
 * `fp64`
+
+The following accessors function the same, but can accept additional arguments:
+
+* `getLineColor`
+* `getFillColor`
 * `getRadius`
 * `getLineWidth`
-* TODO: `lineDashJustified`
-* TODO: `getLineDashArray`
+* `getLineDashArray`
+
+The additional arguments (in order) are:
+
+* `isSelected`: indicates if the given feature is the selected feature
+* `mode`: the current value of the `mode` prop
 
 ### Edit Handles Options
 
@@ -188,34 +198,6 @@ Edit handles are the points rendered on a feature to indicate interactive capabi
 #### `getEditHandlePointRadius` (, optional)
 
 * Default: `handle => (handle.type === 'existing' ? 5 : 3)`
-
-### Data Accessors
-
-#### `getLineColor` (Function|Array, optional)
-
-* Default: `(feature, isSelected) =>
-    isSelected ? [0x90, 0x90, 0x90, 0xff] : [0x0, 0x0, 0x0, 0xff]`
-
-The rgba color of line string and/or the outline of polygon for a GeoJson feature, depending on its type.
-Format is `r, g, b, [a]`. Each component is in the 0-255 range.
-
-* If an array is provided, it is used as the line color for all features.
-* If a function is provided, it is called on each feature to retrieve its line color.
-  * The `isSelected` argument indicates if the given feature is the selected feature
-
-#### `getFillColor` (Function|Array, optional)
-
-* Default: `(feature, isSelected) =>
-    isSelected ? [0x90, 0x90, 0x90, 0x90] : [0x0, 0x0, 0x0, 0x90]`
-
-The solid color of the polygon and point features of a GeoJson.
-Format is `r, g, b, [a]`. Each component is in the 0-255 range.
-
-* If an array is provided, it is used as the fill color for all features.
-* If a function is provided, it is called on each feature to retrieve its fill color.
-  * The `isSelected` argument indicates if the given feature is the selected feature
-
-Note: This accessor is only called for `Polygon`, `MultiPolygon`, `Point`, and `MultiPoint` features.
 
 ## Methods
 

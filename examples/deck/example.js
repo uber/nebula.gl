@@ -193,7 +193,7 @@ export default class Example extends Component<
   }
 
   render() {
-    const { testFeatures, selectedFeatureIndex } = this.state;
+    const { testFeatures, selectedFeatureIndex, mode } = this.state;
 
     const viewport = {
       ...this.state.viewport,
@@ -202,9 +202,10 @@ export default class Example extends Component<
     };
 
     const editableGeoJsonLayer = new EditableGeoJsonLayer({
+      id: 'geojson',
       data: testFeatures,
       selectedFeatureIndex,
-      mode: this.state.mode,
+      mode,
       fp64: true,
       autoHighlight: true,
 
@@ -244,6 +245,7 @@ export default class Example extends Component<
 
       // Specify the same GeoJsonLayer props
       lineWidthMinPixels: 2,
+      pointRadiusMinPixels: 5,
 
       // Accessors receive an isSelected argument
       getFillColor: (feature, isSelected) => {

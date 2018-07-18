@@ -277,12 +277,12 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }: Object) {
     const { selectedFeature } = this.state;
     const { selectedFeatureIndex } = this.props;
-    const editHandleInfo = this.getPickedEditHandle(picks);
 
     if (!selectedFeature) {
       return;
     }
 
+    const editHandleInfo = this.getPickedEditHandle(picks);
     if (editHandleInfo) {
       this.handleMovePosition(
         selectedFeatureIndex,
@@ -316,7 +316,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
   }
 
-  onPointerMove({ screenCoords, groundCoords, isDragging }: Object) {
+  onPointerMove({ screenCoords, groundCoords, isDragging, pointerDownPicks, sourceEvent }: Object) {
     if (this.props.mode === 'drawLineString' || this.props.mode === 'drawPolygon') {
       const drawFeature = this.getDrawFeature(
         this.state.selectedFeature,
@@ -328,6 +328,15 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
       // TODO: figure out how to properly update state from a pointer event handler
       this.setLayerNeedsUpdate();
+    }
+
+    if (pointerDownPicks && pointerDownPicks.length > 0) {
+      const editHandleInfo = this.getPickedEditHandle(pointerDownPicks);
+      if (editHandleInfo) {
+        // TODO: find a less hacky way to prevent map panning
+        // Stop propagation to prevent map panning while dragging an edit handle
+        sourceEvent.stopPropagation();
+      }
     }
   }
 

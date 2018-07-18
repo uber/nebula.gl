@@ -254,3 +254,4 @@ The pointer moved, regardless of whether the pointer is down, up, and whether or
 * `screenCoords` (Array): `[x, y]` screen pixel coordinates relative to the deck.gl canvas where the pointer is now.
 * `groundCoords` (Array): `[lng, lat]` ground coordinates where the pointer is now.
 * `isDragging` (Boolean): `true` if the pointer is moving but it is considered a drag, in this case you likely want to handle `onDragging`
+* `pointerDownPicks` (Array): An array containing [deck.gl Picking Info Objects](https://uber.github.io/deck.gl/#/documentation/developer-guide/adding-interactivity?section=what-can-be-picked-) for all objects that were under the pointer when it went down, or `null` if pointer is moving without pointer down.

@@ -7,16 +7,16 @@ import { StaticMap } from 'react-map-gl';
 
 import { EditableGeoJsonLayer } from 'nebula.gl';
 
-import sampleGeoJson from '../data/sample-geojson.json';
+import sampleGeoJson from '../data/austin-geojson.json';
 
 const initialViewport = {
   bearing: 0,
   height: 0,
-  latitude: 37.76,
-  longitude: -122.44,
+  latitude: 30.2687,
+  longitude: -97.774,
   pitch: 0,
   width: 0,
-  zoom: 11
+  zoom: 15
 };
 
 const styles = {
@@ -59,11 +59,10 @@ export default class Example extends Component<
 > {
   constructor() {
     super();
-
     this.state = {
       viewport: initialViewport,
       testFeatures: sampleGeoJson,
-      mode: 'modify',
+      mode: 'view',
       pointsRemovable: true,
       selectedFeatureIndexes: []
     };
@@ -83,37 +82,7 @@ export default class Example extends Component<
     });
   };
 
-  _incrementSelectedFeature() {
-    if (!this.state.selectedFeatureIndexes.length) {
-      this.setState({ selectedFeatureIndexes: [0] });
-    } else {
-      this.setState({
-        selectedFeatureIndexes: [
-          (this.state.selectedFeatureIndexes[0] + 1) % this.state.testFeatures.features.length
-        ]
-      });
-    }
-  }
-
-  _decrementSelectedFeature() {
-    if (!this.state.selectedFeatureIndexes.length) {
-      this.setState({ selectedFeatureIndexes: [0] });
-    } else {
-      this.setState({
-        selectedFeatureIndexes:
-          (this.state.selectedFeatureIndexes + this.state.testFeatures.features.length - 1) %
-          this.state.testFeatures.features.length
-      });
-    }
-  }
-
-  _deselectFeature() {
-    this.setState({ selectedFeatureIndexes: [] });
-  }
-
   _onLayerClick = info => {
-    console.log('onLayerClick', info); // eslint-disable-line
-
     if (this.state.mode !== 'view') {
       // don't change selection while editing
       return;
@@ -123,11 +92,13 @@ export default class Example extends Component<
       console.log(`select editing feature ${info.index}`); // eslint-disable-line
       // a feature was clicked
       // TODO: once https://github.com/uber/deck.gl/pull/1918 lands, this will work since it'll work with Multi* geometry types
-      this.setState({ selectedFeatureIndexes: [info.index] });
+      this.setState({
+        selectedFeatureIndexes: this.state.selectedFeatureIndexes.concat([info.index])
+      });
     } else {
       console.log('deselect editing feature'); // eslint-disable-line
       // open space was clicked, so stop editing
-      this.setState({ selectedFeatureIndexes: [] });
+      this.setState({ selectedFeatureIndexes: [0] });
     }
   };
 
@@ -151,40 +122,17 @@ export default class Example extends Component<
               <option value="drawPolygon">drawPolygon</option>
             </select>
           </dd>
-          <dt style={styles.toolboxTerm}>Allow removing points</dt>
+          <dt style={styles.toolboxTerm}>Selected feature indexes</dt>
           <dd style={styles.toolboxDescription}>
             <input
-              type="checkbox"
-              checked={this.state.pointsRemovable}
-              onChange={() => this.setState({ pointsRemovable: !this.state.pointsRemovable })}
+              type="text"
+              onChange={event => {
+                const indexes = event.target.value.split('');
+                this.setState({
+                  selectedFeatureIndexes: indexes.map(num => Number.parseInt(num, 10))
+                });
+              }}
             />
-          </dd>
-          <dt style={styles.toolboxTerm}>Selected feature index</dt>
-          <dd style={styles.toolboxDescription}>
-            {this.state.selectedFeatureIndexes.length ? this.state.selectedFeatureIndexes[0] : null}{' '}
-            <span style={{ float: 'right' }}>
-              <button
-                onClick={() => this._decrementSelectedFeature()}
-                title="Select previous feature"
-              >
-                -
-              </button>
-              <button
-                onClick={() => this._incrementSelectedFeature()}
-                title="Select previous feature"
-              >
-                +
-              </button>
-              <button onClick={() => this._deselectFeature()} title="Deselect feature">
-                Deselect
-              </button>
-            </span>
-          </dd>
-          <dt style={styles.toolboxTerm}>Selected feature type</dt>
-          <dd style={styles.toolboxDescription}>
-            {this.state.selectedFeatureIndexes.length
-              ? this.state.testFeatures.features[this.state.selectedFeatureIndexes[0]].geometry.type
-              : ''}
           </dd>
           <dt style={styles.toolboxTerm}>Feature count</dt>
           <dd style={styles.toolboxDescription}>{this.state.testFeatures.features.length}</dd>
@@ -219,19 +167,6 @@ export default class Example extends Component<
         positionIndexes,
         position
       }) => {
-        if (editType !== 'movePosition') {
-          // Don't log moves since they're really chatty
-          // eslint-disable-next-line
-          console.log(
-            'onEdit',
-            editType,
-            updatedMode,
-            updatedSelectedFeatureIndexes,
-            featureIndex,
-            positionIndexes,
-            position
-          );
-        }
         if (editType === 'removePosition' && !this.state.pointsRemovable) {
           // reject the edit
           return;
@@ -244,7 +179,8 @@ export default class Example extends Component<
       },
 
       // Specify the same GeoJsonLayer props
-      lineWidthMinPixels: 2,
+      lineWidthScale: 10,
+      pointRadiusScale: 10,
 
       // Accessors receive an isSelected argument
       getFillColor: (feature, isSelected) => {

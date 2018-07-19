@@ -253,6 +253,7 @@ export class EditableFeatureCollection {
           {
             position: geometry.coordinates,
             positionIndexes: [],
+            featureIndex,
             type: 'existing'
           }
         ];
@@ -261,20 +262,26 @@ export class EditableFeatureCollection {
       case 'LineString':
         // positions are nested 1 level
         const includeIntermediate = geometry.type !== 'MultiPoint';
-        handles = handles.concat(getEditHandles(geometry.coordinates, [], includeIntermediate));
+        handles = handles.concat(
+          getEditHandles(geometry.coordinates, [], includeIntermediate, featureIndex)
+        );
         break;
       case 'Polygon':
       case 'MultiLineString':
         // positions are nested 2 levels
         for (let a = 0; a < geometry.coordinates.length; a++) {
-          handles = handles.concat(getEditHandles(geometry.coordinates[a], [a], true));
+          handles = handles.concat(
+            getEditHandles(geometry.coordinates[a], [a], true, featureIndex)
+          );
         }
         break;
       case 'MultiPolygon':
         // positions are nested 3 levels
         for (let a = 0; a < geometry.coordinates.length; a++) {
           for (let b = 0; b < geometry.coordinates[a].length; b++) {
-            handles = handles.concat(getEditHandles(geometry.coordinates[a][b], [a, b], true));
+            handles = handles.concat(
+              getEditHandles(geometry.coordinates[a][b], [a, b], true, featureIndex)
+            );
           }
         }
         break;
@@ -436,7 +443,8 @@ function getIntermediatePosition(
 function getEditHandles(
   coordinates: Array<Array<number>>,
   positionIndexPrefix: Array<number>,
-  includeIntermediate: boolean
+  includeIntermediate: boolean,
+  featureIndex: number
 ) {
   const editHandles = [];
   for (let i = 0; i < coordinates.length; i++) {
@@ -444,6 +452,7 @@ function getEditHandles(
     editHandles.push({
       position,
       positionIndexes: [...positionIndexPrefix, i],
+      featureIndex,
       type: 'existing'
     });
 
@@ -453,6 +462,7 @@ function getEditHandles(
       editHandles.push({
         position: getIntermediatePosition(position, nextPosition),
         positionIndexes: [...positionIndexPrefix, i + 1],
+        featureIndex,
         type: 'intermediate'
       });
     }

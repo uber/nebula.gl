@@ -3,7 +3,7 @@ import document from 'global/document';
 import * as React from 'react';
 import ReactDOM from 'react-dom';
 
-import Example from './example';
+import Example from './multi-select';
 
 const root = document.createElement('div');
 

@@ -75,10 +75,10 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       getLineWidth: this.selectionAwareAccessor(this.props.getLineWidth),
 
       updateTriggers: {
-        getLineColor: this.props.selectedFeatureIndex,
-        getFillColor: this.props.selectedFeatureIndex,
-        getRadius: this.props.selectedFeatureIndex,
-        getLineWidth: this.props.selectedFeatureIndex
+        getLineColor: this.props.selectedFeatureIndexes,
+        getFillColor: this.props.selectedFeatureIndexes,
+        getRadius: this.props.selectedFeatureIndexes,
+        getLineWidth: this.props.selectedFeatureIndexes
       }
     });
 
@@ -95,8 +95,8 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
     this.setState({
       editableFeatureCollection: null,
-      selectedFeature: null,
-      editHandles: null,
+      selectedFeatures: [],
+      editHandles: [],
       drawFeature: null
     });
   }
@@ -114,23 +114,27 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       editableFeatureCollection = new EditableFeatureCollection(props.data);
     }
 
-    const selectedFeature =
-      typeof props.selectedFeatureIndex === 'number'
-        ? props.data.features[props.selectedFeatureIndex]
-        : null;
+    const selectedFeatures = this.getSelectedFeatures(props.selectedFeatureIndexes);
 
-    const editHandles =
-      selectedFeature && props.mode !== 'view'
-        ? editableFeatureCollection.getEditHandles(props.selectedFeatureIndex)
-        : null;
+    let editHandles = [];
+    if (selectedFeatures.length && props.mode !== 'view') {
+      this.sanitizeIndexes(props.selectedFeatureIndexes).forEach(index => {
+        editHandles = editHandles.concat(editableFeatureCollection.getEditHandles(index));
+      });
+    }
 
     let drawFeature = this.state.drawFeature;
     if (props !== oldProps) {
       // If the props are different, recalculate the draw feature
-      drawFeature = this.getDrawFeature(selectedFeature, props.mode, null);
+      drawFeature = this.getDrawFeature(selectedFeatures, props.mode, null);
     }
 
-    this.setState({ editableFeatureCollection, selectedFeature, editHandles, drawFeature });
+    this.setState({
+      editableFeatureCollection,
+      selectedFeatures,
+      editHandles,
+      drawFeature
+    });
   }
 
   selectionAwareAccessor(accessor: any) {
@@ -143,11 +147,11 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   isFeatureSelected(feature: Object) {
     // TODO: Upgrade deck to include https://github.com/uber/deck.gl/commit/40ff66ed
     // This will be buggy until then
-    if (!this.props.data) {
+    if (!this.props.data || !this.props.selectedFeatureIndexes.length) {
       return false;
     }
     const featureIndex = this.props.data.features.indexOf(feature);
-    return this.props.selectedFeatureIndex === featureIndex;
+    return this.props.selectedFeatureIndexes.includes(featureIndex);
   }
 
   getPickingInfo({ info, sourceLayer }: Object) {
@@ -160,7 +164,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }
 
   createPointLayers() {
-    if (!this.state.editHandles) {
+    if (!this.state.editHandles.length) {
       return [];
     }
 
@@ -216,21 +220,33 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }
 
   onClick({ picks, screenCoords, groundCoords }: Object) {
-    const { selectedFeature } = this.state;
-    const { selectedFeatureIndex } = this.props;
+    const { selectedFeatures } = this.state;
     const editHandleInfo = this.getPickedEditHandle(picks);
 
     if (this.props.mode === 'modify') {
       if (editHandleInfo && editHandleInfo.object.type === 'existing') {
-        this.handleRemovePosition(selectedFeatureIndex, editHandleInfo.object.positionIndexes);
+        this.handleRemovePosition(
+          editHandleInfo.object.featureIndex,
+          editHandleInfo.object.positionIndexes
+        );
       }
     } else if (this.props.mode === 'drawLineString' || this.props.mode === 'drawPolygon') {
-      if (!selectedFeature) {
+      if (!selectedFeatures.length) {
         this.handleDrawNewPoint(groundCoords);
-      } else if (this.props.mode === 'drawLineString') {
-        this.handleDrawLineString(selectedFeature, selectedFeatureIndex, groundCoords, picks);
-      } else if (this.props.mode === 'drawPolygon') {
-        this.handleDrawPolygon(selectedFeature, selectedFeatureIndex, groundCoords, picks);
+      } else if (selectedFeatures.length === 1 && this.props.mode === 'drawLineString') {
+        this.handleDrawLineString(
+          selectedFeatures[0].feature,
+          selectedFeatures[0].index,
+          groundCoords,
+          picks
+        );
+      } else if (selectedFeatures.length === 1 && this.props.mode === 'drawPolygon') {
+        this.handleDrawPolygon(
+          selectedFeatures[0].feature,
+          selectedFeatures[0].index,
+          groundCoords,
+          picks
+        );
       }
     }
   }
@@ -242,18 +258,17 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     dragStartScreenCoords,
     dragStartGroundCoords
   }: Object) {
-    const { selectedFeature } = this.state;
-    const { selectedFeatureIndex } = this.props;
+    const { selectedFeatures } = this.state;
     const editHandleInfo = this.getPickedEditHandle(picks);
 
-    if (!selectedFeature) {
+    if (!selectedFeatures.length) {
       return;
     }
 
     if (editHandleInfo) {
       if (editHandleInfo.object.type === 'intermediate') {
         this.handleAddIntermediatePosition(
-          selectedFeatureIndex,
+          editHandleInfo.object.featureIndex,
           editHandleInfo.object.positionIndexes,
           groundCoords
         );
@@ -268,17 +283,16 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     dragStartScreenCoords,
     dragStartGroundCoords
   }: Object) {
-    const { selectedFeature } = this.state;
-    const { selectedFeatureIndex } = this.props;
+    const { selectedFeatures } = this.state;
     const editHandleInfo = this.getPickedEditHandle(picks);
 
-    if (!selectedFeature) {
+    if (!selectedFeatures.length) {
       return;
     }
 
     if (editHandleInfo) {
       this.handleMovePosition(
-        selectedFeatureIndex,
+        editHandleInfo.object.featureIndex,
         editHandleInfo.object.positionIndexes,
         groundCoords
       );
@@ -292,17 +306,16 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     dragStartScreenCoords,
     dragStartGroundCoords
   }: Object) {
-    const { selectedFeature } = this.state;
-    const { selectedFeatureIndex } = this.props;
+    const { selectedFeatures } = this.state;
     const editHandleInfo = this.getPickedEditHandle(picks);
 
-    if (!selectedFeature) {
+    if (!selectedFeatures.length) {
       return;
     }
 
     if (editHandleInfo) {
       this.handleFinishMovePosition(
-        selectedFeatureIndex,
+        editHandleInfo.object.featureIndex,
         editHandleInfo.object.positionIndexes,
         groundCoords
       );
@@ -312,7 +325,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   onPointerMove({ screenCoords, groundCoords, isDragging }: Object) {
     if (this.props.mode === 'drawLineString' || this.props.mode === 'drawPolygon') {
       const drawFeature = this.getDrawFeature(
-        this.state.selectedFeature,
+        this.state.selectedFeatures,
         this.props.mode,
         groundCoords
       );
@@ -324,15 +337,17 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
   }
 
-  getDrawFeature(selectedFeature: ?GeoJsonFeature, mode: string, groundCoords: ?(number[])) {
+  getDrawFeature(selectedFeatures: ?GeoJsonFeature[], mode: string, groundCoords: ?(number[])) {
     let drawFeature = null;
-
-    if (!selectedFeature && !groundCoords) {
+    if (!selectedFeatures.length && !groundCoords) {
       // Need a mouse position in order to draw a single point
       return null;
     }
+    if (selectedFeatures.length > 1) {
+      return null;
+    }
 
-    if (!selectedFeature) {
+    if (!selectedFeatures.length) {
       // Start with a point
       drawFeature = {
         type: 'Feature',
@@ -341,51 +356,55 @@ export default class EditableGeoJsonLayer extends EditableLayer {
           coordinates: groundCoords
         }
       };
-    } else if (selectedFeature.geometry.type === 'Point') {
-      // Draw an extension line starting from the point
-      const startPosition = selectedFeature.geometry.coordinates;
-      const endPosition = groundCoords || startPosition;
+    } else {
+      const selectedFeature = selectedFeatures[0].feature;
+      if (selectedFeature.geometry.type === 'Point') {
 
-      drawFeature = {
-        type: 'Feature',
-        geometry: {
-          type: 'LineString',
-          coordinates: [startPosition, endPosition]
-        }
-      };
-    } else if (selectedFeature.geometry.type === 'LineString') {
-      const lastPositionOfLineString =
-        selectedFeature.geometry.coordinates[selectedFeature.geometry.coordinates.length - 1];
-      const currentPosition = groundCoords || lastPositionOfLineString;
-
-      if (mode === 'drawLineString') {
-        // Draw a single line extending beyond the last point
+        // Draw an extension line starting from the point
+        const startPosition = selectedFeature.geometry.coordinates;
+        const endPosition = groundCoords || startPosition;
 
         drawFeature = {
           type: 'Feature',
           geometry: {
             type: 'LineString',
-            coordinates: [lastPositionOfLineString, currentPosition]
+            coordinates: [startPosition, endPosition]
           }
         };
-      } else if (mode === 'drawPolygon') {
-        // Draw a polygon containing all the points of the LineString,
-        // then the mouse position,
-        // then back to the starting position
+      } else if (selectedFeature.geometry.type === 'LineString') {
+        const lastPositionOfLineString =
+          selectedFeature.geometry.coordinates[selectedFeature.geometry.coordinates.length - 1];
+        const currentPosition = groundCoords || lastPositionOfLineString;
 
-        drawFeature = {
-          type: 'Feature',
-          geometry: {
-            type: 'Polygon',
-            coordinates: [
-              [
-                ...selectedFeature.geometry.coordinates,
-                currentPosition,
-                selectedFeature.geometry.coordinates[0]
+        if (mode === 'drawLineString') {
+          // Draw a single line extending beyond the last point
+
+          drawFeature = {
+            type: 'Feature',
+            geometry: {
+              type: 'LineString',
+              coordinates: [lastPositionOfLineString, currentPosition]
+            }
+          };
+        } else if (mode === 'drawPolygon') {
+          // Draw a polygon containing all the points of the LineString,
+          // then the mouse position,
+          // then back to the starting position
+
+          drawFeature = {
+            type: 'Feature',
+            geometry: {
+              type: 'Polygon',
+              coordinates: [
+                [
+                  ...selectedFeature.geometry.coordinates,
+                  currentPosition,
+                  selectedFeature.geometry.coordinates[0]
+                ]
               ]
-            ]
-          }
-        };
+            }
+          };
+        }
       }
     }
     return drawFeature;
@@ -399,7 +418,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     this.props.onEdit({
       updatedData,
       updatedMode: this.props.mode,
-      updatedSelectedFeatureIndex: featureIndex,
+      updatedSelectedFeatureIndexes: this.props.selectedFeatureIndexes,
       editType: 'movePosition',
       featureIndex,
       positionIndexes,
@@ -415,7 +434,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     this.props.onEdit({
       updatedData,
       updatedMode: this.props.mode,
-      updatedSelectedFeatureIndex: featureIndex,
+      updatedSelectedFeatureIndexes: this.props.selectedFeatureIndexes,
       editType: 'finishMovePosition',
       featureIndex,
       positionIndexes,
@@ -435,7 +454,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     this.props.onEdit({
       updatedData,
       updatedMode: this.props.mode,
-      updatedSelectedFeatureIndex: featureIndex,
+      updatedSelectedFeatureIndexes: this.props.selectedFeatureIndexes,
       editType: 'addPosition',
       featureIndex,
       positionIndexes,
@@ -457,7 +476,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       this.props.onEdit({
         updatedData,
         updatedMode: this.props.mode,
-        updatedSelectedFeatureIndex: featureIndex,
+        updatedSelectedFeatureIndexes: this.props.selectedFeatureIndexes,
         editType: 'removePosition',
         featureIndex,
         positionIndexes
@@ -493,7 +512,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     this.props.onEdit({
       updatedData,
       updatedMode: this.props.mode,
-      updatedSelectedFeatureIndex: featureIndex,
+      updatedSelectedFeatureIndexes: this.props.selectedFeatureIndexes,
       editType: 'addPosition',
       featureIndex,
       positionIndexes,
@@ -543,7 +562,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     this.props.onEdit({
       updatedData,
       updatedMode,
-      updatedSelectedFeatureIndex: featureIndex,
+      updatedSelectedFeatureIndexes: this.props.selectedFeatureIndexes,
       editType: 'addPosition',
       featureIndex,
       positionIndexes,
@@ -567,7 +586,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     this.props.onEdit({
       updatedData,
       updatedMode: this.props.mode,
-      updatedSelectedFeatureIndex: featureIndex,
+      updatedSelectedFeatureIndexes: [featureIndex],
       editType: 'addFeature',
       featureIndex,
       positionIndexes: [0],
@@ -577,6 +596,32 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
   getPickedEditHandle(picks: Object[]) {
     return picks.find(pick => pick.isEditingHandle);
+  }
+
+  getSelectedFeatures(selectedFeatureIndexes: number[]) {
+    if (!Array.isArray(selectedFeatureIndexes)) {
+      // SelectedFeaturesIndexes is not an array
+      return [];
+    }
+
+    return this.sanitizeIndexes(selectedFeatureIndexes).map(elem => {
+      return {
+        feature: this.props.data.features[elem],
+        index: elem
+      };
+    });
+  }
+
+  sanitizeIndexes(selectedFeatureIndexes) {
+    return selectedFeatureIndexes.filter((elem, pos, arr) => {
+      // sanitize data to prevent issues with invalid indexes
+      return (
+        typeof elem === 'number' &&
+        elem >= 0 &&
+        elem < this.props.data.features.length &&
+        arr.indexOf(elem) === pos
+      );
+    });
   }
 }
 

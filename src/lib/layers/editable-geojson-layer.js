@@ -126,7 +126,8 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     let drawFeature = this.state.drawFeature;
     if (props !== oldProps) {
       // If the props are different, recalculate the draw feature
-      drawFeature = this.getDrawFeature(selectedFeatures, props.mode, null);
+      const selectedFeature = selectedFeatures.length === 1 ? selectedFeatures[0].feature : null;
+      drawFeature = this.getDrawFeature(selectedFeature, props.mode, null);
     }
 
     this.setState({
@@ -324,11 +325,9 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
   onPointerMove({ screenCoords, groundCoords, isDragging }: Object) {
     if (this.props.mode === 'drawLineString' || this.props.mode === 'drawPolygon') {
-      const drawFeature = this.getDrawFeature(
-        this.state.selectedFeatures,
-        this.props.mode,
-        groundCoords
-      );
+      const selectedFeature =
+        this.state.selectedFeatures.length === 1 ? this.state.selectedFeatures[0].feature : null;
+      const drawFeature = this.getDrawFeature(selectedFeature, this.props.mode, groundCoords);
 
       this.setState({ drawFeature });
 
@@ -337,17 +336,15 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
   }
 
-  getDrawFeature(selectedFeatures: ?GeoJsonFeature[], mode: string, groundCoords: ?(number[])) {
+  getDrawFeature(selectedFeature: ?GeoJsonFeature, mode: string, groundCoords: ?(number[])) {
     let drawFeature = null;
-    if (!selectedFeatures.length && !groundCoords) {
+
+    if (!selectedFeature && !groundCoords) {
       // Need a mouse position in order to draw a single point
       return null;
     }
-    if (selectedFeatures.length > 1) {
-      return null;
-    }
 
-    if (!selectedFeatures.length) {
+    if (!selectedFeature) {
       // Start with a point
       drawFeature = {
         type: 'Feature',
@@ -356,55 +353,51 @@ export default class EditableGeoJsonLayer extends EditableLayer {
           coordinates: groundCoords
         }
       };
-    } else {
-      const selectedFeature = selectedFeatures[0].feature;
-      if (selectedFeature.geometry.type === 'Point') {
+    } else if (selectedFeature.geometry.type === 'Point') {
+      // Draw an extension line starting from the point
+      const startPosition = selectedFeature.geometry.coordinates;
+      const endPosition = groundCoords || startPosition;
 
-        // Draw an extension line starting from the point
-        const startPosition = selectedFeature.geometry.coordinates;
-        const endPosition = groundCoords || startPosition;
+      drawFeature = {
+        type: 'Feature',
+        geometry: {
+          type: 'LineString',
+          coordinates: [startPosition, endPosition]
+        }
+      };
+    } else if (selectedFeature.geometry.type === 'LineString') {
+      const lastPositionOfLineString =
+        selectedFeature.geometry.coordinates[selectedFeature.geometry.coordinates.length - 1];
+      const currentPosition = groundCoords || lastPositionOfLineString;
+
+      if (mode === 'drawLineString') {
+        // Draw a single line extending beyond the last point
 
         drawFeature = {
           type: 'Feature',
           geometry: {
             type: 'LineString',
-            coordinates: [startPosition, endPosition]
+            coordinates: [lastPositionOfLineString, currentPosition]
           }
         };
-      } else if (selectedFeature.geometry.type === 'LineString') {
-        const lastPositionOfLineString =
-          selectedFeature.geometry.coordinates[selectedFeature.geometry.coordinates.length - 1];
-        const currentPosition = groundCoords || lastPositionOfLineString;
+      } else if (mode === 'drawPolygon') {
+        // Draw a polygon containing all the points of the LineString,
+        // then the mouse position,
+        // then back to the starting position
 
-        if (mode === 'drawLineString') {
-          // Draw a single line extending beyond the last point
-
-          drawFeature = {
-            type: 'Feature',
-            geometry: {
-              type: 'LineString',
-              coordinates: [lastPositionOfLineString, currentPosition]
-            }
-          };
-        } else if (mode === 'drawPolygon') {
-          // Draw a polygon containing all the points of the LineString,
-          // then the mouse position,
-          // then back to the starting position
-
-          drawFeature = {
-            type: 'Feature',
-            geometry: {
-              type: 'Polygon',
-              coordinates: [
-                [
-                  ...selectedFeature.geometry.coordinates,
-                  currentPosition,
-                  selectedFeature.geometry.coordinates[0]
-                ]
+        drawFeature = {
+          type: 'Feature',
+          geometry: {
+            type: 'Polygon',
+            coordinates: [
+              [
+                ...selectedFeature.geometry.coordinates,
+                currentPosition,
+                selectedFeature.geometry.coordinates[0]
               ]
-            }
-          };
-        }
+            ]
+          }
+        };
       }
     }
     return drawFeature;
@@ -612,7 +605,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     });
   }
 
-  sanitizeIndexes(selectedFeatureIndexes) {
+  sanitizeIndexes(selectedFeatureIndexes: number[]) {
     return selectedFeatureIndexes.filter((elem, pos, arr) => {
       // sanitize data to prevent issues with invalid indexes
       return (

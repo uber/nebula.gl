@@ -3105,9 +3105,9 @@ nanomatch@^1.2.9:
     snapdragon "^0.8.1"
     to-regex "^3.0.1"
 
-nebula.gl@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/nebula.gl/-/nebula.gl-0.2.0.tgz#bc3a5921a4fedfd7a2d56a15e2fcf1ebb7b36797"
+nebula.gl@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/nebula.gl/-/nebula.gl-0.2.1.tgz#b19332a21b757f46eaffb66335a8b005dfe2d4f8"
   dependencies:
     "@deck.gl/experimental-layers" ">=6.0.0-beta.1"
     "@turf/bbox" "^5.1.5"

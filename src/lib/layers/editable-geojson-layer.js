@@ -32,13 +32,16 @@ const defaultProps = {
   pointRadiusScale: 1,
   pointRadiusMinPixels: 2,
   pointRadiusMaxPixels: Number.MAX_SAFE_INTEGER,
-  getLineColor: (feature, isSelected) =>
+  lineDashJustified: false,
+  getLineColor: (feature, isSelected, mode) =>
     isSelected ? DEFAULT_SELECTED_LINE_COLOR : DEFAULT_LINE_COLOR,
-  getFillColor: (feature, isSelected) =>
+  getFillColor: (feature, isSelected, mode) =>
     isSelected ? DEFAULT_SELECTED_FILL_COLOR : DEFAULT_FILL_COLOR,
   getRadius: f =>
     (f && f.properties && f.properties.radius) || (f && f.properties && f.properties.size) || 1,
   getLineWidth: f => (f && f.properties && f.properties.lineWidth) || 1,
+  getLineDashArray: (feature, isSelected, mode) =>
+    isSelected && mode !== 'view' ? [7, 4] : [0, 0],
 
   // Editing handles
   editHandlePointRadiusScale: 1,
@@ -69,16 +72,19 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       pointRadiusScale: this.props.pointRadiusScale,
       pointRadiusMinPixels: this.props.pointRadiusMinPixels,
       pointRadiusMaxPixels: this.props.pointRadiusMaxPixels,
+      lineDashJustified: this.props.lineDashJustified,
       getLineColor: this.selectionAwareAccessor(this.props.getLineColor),
       getFillColor: this.selectionAwareAccessor(this.props.getFillColor),
       getRadius: this.selectionAwareAccessor(this.props.getRadius),
       getLineWidth: this.selectionAwareAccessor(this.props.getLineWidth),
+      getLineDashArray: this.selectionAwareAccessor(this.props.getLineDashArray),
 
       updateTriggers: {
-        getLineColor: this.props.selectedFeatureIndexes,
-        getFillColor: this.props.selectedFeatureIndexes,
-        getRadius: this.props.selectedFeatureIndexes,
-        getLineWidth: this.props.selectedFeatureIndexes
+        getLineColor: [this.props.selectedFeatureIndexes, this.props.mode],
+        getFillColor: [this.props.selectedFeatureIndexes, this.props.mode],
+        getRadius: [this.props.selectedFeatureIndexes, this.props.mode],
+        getLineWidth: [this.props.selectedFeatureIndexes, this.props.mode],
+        getLineDashArray: [this.props.selectedFeatureIndexes, this.props.mode]
       }
     });
 
@@ -142,7 +148,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     if (typeof accessor !== 'function') {
       return accessor;
     }
-    return (feature: Object) => accessor(feature, this.isFeatureSelected(feature));
+    return (feature: Object) => accessor(feature, this.isFeatureSelected(feature), this.props.mode);
   }
 
   isFeatureSelected(feature: Object) {
@@ -195,6 +201,9 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       return [];
     }
 
+    const getLineDashArray = () =>
+      this.props.getLineDashArray(this.state.selectedFeature, true, this.props.mode);
+
     const layer = new GeoJsonLayer(
       this.getSubLayerProps({
         id: 'draw',
@@ -212,7 +221,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         pointRadiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
         getLineColor: feature => this.props.getLineColor(feature, true),
         getFillColor: () => this.props.getEditHandlePointColor({ type: 'existing' }),
-        // TODO: dashed line for drawing lines?
+        getLineDashArray,
         getRadius: this.props.getEditHandlePointRadius
       })
     );
@@ -285,12 +294,12 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     dragStartGroundCoords
   }: Object) {
     const { selectedFeatures } = this.state;
-    const editHandleInfo = this.getPickedEditHandle(picks);
 
     if (!selectedFeatures.length) {
       return;
     }
 
+    const editHandleInfo = this.getPickedEditHandle(picks);
     if (editHandleInfo) {
       this.handleMovePosition(
         editHandleInfo.object.featureIndex,
@@ -308,11 +317,12 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     dragStartGroundCoords
   }: Object) {
     const { selectedFeatures } = this.state;
-    const editHandleInfo = this.getPickedEditHandle(picks);
 
     if (!selectedFeatures.length) {
       return;
     }
+
+    const editHandleInfo = this.getPickedEditHandle(picks);
 
     if (editHandleInfo) {
       this.handleFinishMovePosition(
@@ -323,7 +333,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
   }
 
-  onPointerMove({ screenCoords, groundCoords, isDragging }: Object) {
+  onPointerMove({ screenCoords, groundCoords, isDragging, pointerDownPicks, sourceEvent }: Object) {
     if (this.props.mode === 'drawLineString' || this.props.mode === 'drawPolygon') {
       const selectedFeature =
         this.state.selectedFeatures.length === 1 ? this.state.selectedFeatures[0].feature : null;
@@ -333,6 +343,15 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
       // TODO: figure out how to properly update state from a pointer event handler
       this.setLayerNeedsUpdate();
+    }
+
+    if (pointerDownPicks && pointerDownPicks.length > 0) {
+      const editHandleInfo = this.getPickedEditHandle(pointerDownPicks);
+      if (editHandleInfo) {
+        // TODO: find a less hacky way to prevent map panning
+        // Stop propagation to prevent map panning while dragging an edit handle
+        sourceEvent.stopPropagation();
+      }
     }
   }
 

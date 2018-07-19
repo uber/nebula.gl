@@ -42,7 +42,7 @@ export default class EditableLayer extends CompositeLayer {
     // default implementation - do nothing
   }
 
-  onPointerMove({ screenCoords, groundCoords, isDragging }: Object) {
+  onPointerMove({ screenCoords, groundCoords, isDragging, sourceEvent }: Object) {
     // default implementation - do nothing
   }
 
@@ -153,10 +153,6 @@ export default class EditableLayer extends CompositeLayer {
     if (pointerDownPicks && pointerDownPicks.length > 0) {
       // Pointer went down on something and is moving
 
-      // Stop propagation to prevent map panning
-      // TODO: find a less hacky way to prevent map panning
-      event.stopPropagation();
-
       // Did it move enough to consider it a drag
       if (!isDragging && this.movedEnoughForDrag(pointerDownScreenCoords, screenCoords)) {
         // OK, this is considered dragging
@@ -180,7 +176,13 @@ export default class EditableLayer extends CompositeLayer {
       }
     }
 
-    this.onPointerMove({ screenCoords, groundCoords, isDragging });
+    this.onPointerMove({
+      screenCoords,
+      groundCoords,
+      isDragging,
+      pointerDownPicks,
+      sourceEvent: event
+    });
 
     if (isDragging) {
       this.onDragging({

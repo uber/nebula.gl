@@ -120,11 +120,14 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       editableFeatureCollection = new EditableFeatureCollection(props.data);
     }
 
-    const selectedFeatures = this.getSelectedFeatures(props.selectedFeatureIndexes);
+    let selectedFeatures = [];
+    if (Array.isArray(props.selectedFeatureIndexes)) {
+      selectedFeatures = props.selectedFeatureIndexes.map(elem => props.data.features[elem]);
+    }
 
     let editHandles = [];
     if (selectedFeatures.length && props.mode !== 'view') {
-      this.sanitizeIndexes(props.selectedFeatureIndexes).forEach(index => {
+      props.selectedFeatureIndexes.forEach(index => {
         editHandles = editHandles.concat(editableFeatureCollection.getEditHandles(index));
       });
     }
@@ -132,7 +135,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     let drawFeature = this.state.drawFeature;
     if (props !== oldProps) {
       // If the props are different, recalculate the draw feature
-      const selectedFeature = selectedFeatures.length === 1 ? selectedFeatures[0].feature : null;
+      const selectedFeature = selectedFeatures.length === 1 ? selectedFeatures[0] : null;
       drawFeature = this.getDrawFeature(selectedFeature, props.mode, null);
     }
 
@@ -243,20 +246,24 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     } else if (this.props.mode === 'drawLineString' || this.props.mode === 'drawPolygon') {
       if (!selectedFeatures.length) {
         this.handleDrawNewPoint(groundCoords);
-      } else if (selectedFeatures.length === 1 && this.props.mode === 'drawLineString') {
-        this.handleDrawLineString(
-          selectedFeatures[0].feature,
-          selectedFeatures[0].index,
-          groundCoords,
-          picks
-        );
-      } else if (selectedFeatures.length === 1 && this.props.mode === 'drawPolygon') {
-        this.handleDrawPolygon(
-          selectedFeatures[0].feature,
-          selectedFeatures[0].index,
-          groundCoords,
-          picks
-        );
+      } else if (selectedFeatures.length === 1) {
+        // can only draw feature while one is selected
+        if (this.props.mode === 'drawLineString') {
+          this.handleDrawLineString(
+            selectedFeatures[0],
+            this.props.selectedFeatureIndexes[0],
+            groundCoords,
+            picks
+          );
+        }
+        if (this.props.mode === 'drawPolygon') {
+          this.handleDrawPolygon(
+            selectedFeatures[0],
+            this.props.selectedFeatureIndexes[0],
+            groundCoords,
+            picks
+          );
+        }
       }
     }
   }
@@ -336,7 +343,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   onPointerMove({ screenCoords, groundCoords, isDragging, pointerDownPicks, sourceEvent }: Object) {
     if (this.props.mode === 'drawLineString' || this.props.mode === 'drawPolygon') {
       const selectedFeature =
-        this.state.selectedFeatures.length === 1 ? this.state.selectedFeatures[0].feature : null;
+        this.state.selectedFeatures.length === 1 ? this.state.selectedFeatures[0] : null;
       const drawFeature = this.getDrawFeature(selectedFeature, this.props.mode, groundCoords);
 
       this.setState({ drawFeature });
@@ -608,32 +615,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
   getPickedEditHandle(picks: Object[]) {
     return picks.find(pick => pick.isEditingHandle);
-  }
-
-  getSelectedFeatures(selectedFeatureIndexes: number[]) {
-    if (!Array.isArray(selectedFeatureIndexes)) {
-      // SelectedFeaturesIndexes is not an array
-      return [];
-    }
-
-    return this.sanitizeIndexes(selectedFeatureIndexes).map(elem => {
-      return {
-        feature: this.props.data.features[elem],
-        index: elem
-      };
-    });
-  }
-
-  sanitizeIndexes(selectedFeatureIndexes: number[]) {
-    return selectedFeatureIndexes.filter((elem, pos, arr) => {
-      // sanitize data to prevent issues with invalid indexes
-      return (
-        typeof elem === 'number' &&
-        elem >= 0 &&
-        elem < this.props.data.features.length &&
-        arr.indexOf(elem) === pos
-      );
-    });
   }
 }
 

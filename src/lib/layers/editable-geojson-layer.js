@@ -234,7 +234,8 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }
 
   onClick({ picks, screenCoords, groundCoords }: Object) {
-    const { selectedFeatures, selectedFeatureIndexes } = this.state;
+    const { selectedFeatures } = this.state;
+    const { selectedFeatureIndexes } = this.props;
     const editHandleInfo = this.getPickedEditHandle(picks);
 
     if (this.props.mode === 'modify') {

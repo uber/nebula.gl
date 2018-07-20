@@ -75,7 +75,7 @@ The `mode` property dictates what type of edits the user can perform and how to 
 
 * `drawLineString`: user can draw a `LineString` feature by clicking positions to add.
 
-  * If no feature is selected, clicking will create a new feature `Point` feature and select it (by passing its index as `updatedSelectedFeatureIndex`).
+  * If no feature is selected, clicking will create a new feature `Point` feature and select it (by passing its index as `updatedSelectedFeatureIndexes`).
 
   * If a `Point` feature is selected, clicking will convert it to a `LineString` and add the clicked position to it.
 
@@ -85,7 +85,7 @@ The `mode` property dictates what type of edits the user can perform and how to 
 
 * `drawPolygon`: user can draw a new `Polygon` feature by clicking positions to add then closing the polygon.
 
-  * If no feature is selected, clicking will create a new feature `Point` feature and select it (by passing its index as `updatedSelectedFeatureIndex`).
+  * If no feature is selected, clicking will create a new feature `Point` feature and select it (by passing its index as `updatedSelectedFeatureIndexes`).
 
   * If a `Point` feature is selected, clicking will convert it to a `LineString` and add the clicked position to it.
 

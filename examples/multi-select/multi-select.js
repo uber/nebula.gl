@@ -7,7 +7,8 @@ import { StaticMap } from 'react-map-gl';
 
 import { EditableGeoJsonLayer } from 'nebula.gl';
 
-const geoJsonURL = 'https://raw.githubusercontent.com/matthrice/deck.gl-data/master/examples/geojson/austin-geojson.json';
+const geoJsonURL =
+  'https://raw.githubusercontent.com/matthrice/deck.gl-data/master/examples/geojson/austin-geojson.json';
 
 const initialViewport = {
   bearing: 0,
@@ -62,8 +63,8 @@ export default class Example extends Component<
     this.state = {
       viewport: initialViewport,
       testFeatures: {
-        type: "FeatureCollection",
-        features: [],
+        type: 'FeatureCollection',
+        features: []
       },
       mode: 'view',
       pointsRemovable: true,
@@ -78,8 +79,8 @@ export default class Example extends Component<
       response.text().then(json => {
         const testFeatures = JSON.parse(json);
         this.setState({ testFeatures });
-      })
-    });;
+      });
+    });
   }
 
   componentWillUnmount() {

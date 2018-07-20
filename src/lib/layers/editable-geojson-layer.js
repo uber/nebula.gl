@@ -122,6 +122,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
     let selectedFeatures = [];
     if (Array.isArray(props.selectedFeatureIndexes)) {
+      // TODO: needs improved testing, i.e. checking for duplicates, NaNs, out of range numbers, ...
       selectedFeatures = props.selectedFeatureIndexes.map(elem => props.data.features[elem]);
     }
 
@@ -233,7 +234,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }
 
   onClick({ picks, screenCoords, groundCoords }: Object) {
-    const { selectedFeatures } = this.state;
+    const { selectedFeatures, selectedFeatureIndexes } = this.state;
     const editHandleInfo = this.getPickedEditHandle(picks);
 
     if (this.props.mode === 'modify') {
@@ -251,7 +252,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         if (this.props.mode === 'drawLineString') {
           this.handleDrawLineString(
             selectedFeatures[0],
-            this.props.selectedFeatureIndexes[0],
+            selectedFeatureIndexes[0],
             groundCoords,
             picks
           );
@@ -259,7 +260,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         if (this.props.mode === 'drawPolygon') {
           this.handleDrawPolygon(
             selectedFeatures[0],
-            this.props.selectedFeatureIndexes[0],
+            selectedFeatureIndexes[0],
             groundCoords,
             picks
           );

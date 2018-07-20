@@ -485,7 +485,9 @@ describe('EditableFeatureCollection', () => {
       });
 
       const actual = features.getEditHandles(0);
-      const expected = [{ position: [1, 2], positionIndexes: [], type: 'existing' }];
+      const expected = [
+        { featureIndex: 0, position: [1, 2], positionIndexes: [], type: 'existing' }
+      ];
 
       expect(actual).toEqual(expected);
     });
@@ -498,9 +500,9 @@ describe('EditableFeatureCollection', () => {
 
       const actual = features.getEditHandles(0);
       const expected = [
-        { position: [1, 2], positionIndexes: [0], type: 'existing' },
-        { position: [2, 3], positionIndexes: [1], type: 'intermediate' },
-        { position: [3, 4], positionIndexes: [1], type: 'existing' }
+        { featureIndex: 0, position: [1, 2], positionIndexes: [0], type: 'existing' },
+        { featureIndex: 0, position: [2, 3], positionIndexes: [1], type: 'intermediate' },
+        { featureIndex: 0, position: [3, 4], positionIndexes: [1], type: 'existing' }
       ];
 
       expect(actual).toEqual(expected);
@@ -514,24 +516,24 @@ describe('EditableFeatureCollection', () => {
 
       const actual = features.getEditHandles(0);
       const expected = [
-        { position: [-1, -1], positionIndexes: [0, 0], type: 'existing' },
-        { position: [0, -1], positionIndexes: [0, 1], type: 'intermediate' },
-        { position: [1, -1], positionIndexes: [0, 1], type: 'existing' },
-        { position: [1, 0], positionIndexes: [0, 2], type: 'intermediate' },
-        { position: [1, 1], positionIndexes: [0, 2], type: 'existing' },
-        { position: [0, 1], positionIndexes: [0, 3], type: 'intermediate' },
-        { position: [-1, 1], positionIndexes: [0, 3], type: 'existing' },
-        { position: [-1, 0], positionIndexes: [0, 4], type: 'intermediate' },
-        { position: [-1, -1], positionIndexes: [0, 4], type: 'existing' },
-        { position: [-0.5, -0.5], positionIndexes: [1, 0], type: 'existing' },
-        { position: [-0.5, 0], positionIndexes: [1, 1], type: 'intermediate' },
-        { position: [-0.5, 0.5], positionIndexes: [1, 1], type: 'existing' },
-        { position: [0, 0.5], positionIndexes: [1, 2], type: 'intermediate' },
-        { position: [0.5, 0.5], positionIndexes: [1, 2], type: 'existing' },
-        { position: [0.5, 0], positionIndexes: [1, 3], type: 'intermediate' },
-        { position: [0.5, -0.5], positionIndexes: [1, 3], type: 'existing' },
-        { position: [0, -0.5], positionIndexes: [1, 4], type: 'intermediate' },
-        { position: [-0.5, -0.5], positionIndexes: [1, 4], type: 'existing' }
+        { featureIndex: 0, position: [-1, -1], positionIndexes: [0, 0], type: 'existing' },
+        { featureIndex: 0, position: [0, -1], positionIndexes: [0, 1], type: 'intermediate' },
+        { featureIndex: 0, position: [1, -1], positionIndexes: [0, 1], type: 'existing' },
+        { featureIndex: 0, position: [1, 0], positionIndexes: [0, 2], type: 'intermediate' },
+        { featureIndex: 0, position: [1, 1], positionIndexes: [0, 2], type: 'existing' },
+        { featureIndex: 0, position: [0, 1], positionIndexes: [0, 3], type: 'intermediate' },
+        { featureIndex: 0, position: [-1, 1], positionIndexes: [0, 3], type: 'existing' },
+        { featureIndex: 0, position: [-1, 0], positionIndexes: [0, 4], type: 'intermediate' },
+        { featureIndex: 0, position: [-1, -1], positionIndexes: [0, 4], type: 'existing' },
+        { featureIndex: 0, position: [-0.5, -0.5], positionIndexes: [1, 0], type: 'existing' },
+        { featureIndex: 0, position: [-0.5, 0], positionIndexes: [1, 1], type: 'intermediate' },
+        { featureIndex: 0, position: [-0.5, 0.5], positionIndexes: [1, 1], type: 'existing' },
+        { featureIndex: 0, position: [0, 0.5], positionIndexes: [1, 2], type: 'intermediate' },
+        { featureIndex: 0, position: [0.5, 0.5], positionIndexes: [1, 2], type: 'existing' },
+        { featureIndex: 0, position: [0.5, 0], positionIndexes: [1, 3], type: 'intermediate' },
+        { featureIndex: 0, position: [0.5, -0.5], positionIndexes: [1, 3], type: 'existing' },
+        { featureIndex: 0, position: [0, -0.5], positionIndexes: [1, 4], type: 'intermediate' },
+        { featureIndex: 0, position: [-0.5, -0.5], positionIndexes: [1, 4], type: 'existing' }
       ];
 
       expect(actual).toEqual(expected);
@@ -545,8 +547,8 @@ describe('EditableFeatureCollection', () => {
 
       const actual = features.getEditHandles(0);
       const expected = [
-        { position: [1, 2], positionIndexes: [0], type: 'existing' },
-        { position: [3, 4], positionIndexes: [1], type: 'existing' }
+        { featureIndex: 0, position: [1, 2], positionIndexes: [0], type: 'existing' },
+        { featureIndex: 0, position: [3, 4], positionIndexes: [1], type: 'existing' }
       ];
 
       expect(actual).toEqual(expected);
@@ -560,12 +562,12 @@ describe('EditableFeatureCollection', () => {
 
       const actual = features.getEditHandles(0);
       const expected = [
-        { position: [1, 2], positionIndexes: [0, 0], type: 'existing' },
-        { position: [2, 3], positionIndexes: [0, 1], type: 'intermediate' },
-        { position: [3, 4], positionIndexes: [0, 1], type: 'existing' },
-        { position: [5, 6], positionIndexes: [1, 0], type: 'existing' },
-        { position: [6, 7], positionIndexes: [1, 1], type: 'intermediate' },
-        { position: [7, 8], positionIndexes: [1, 1], type: 'existing' }
+        { featureIndex: 0, position: [1, 2], positionIndexes: [0, 0], type: 'existing' },
+        { featureIndex: 0, position: [2, 3], positionIndexes: [0, 1], type: 'intermediate' },
+        { featureIndex: 0, position: [3, 4], positionIndexes: [0, 1], type: 'existing' },
+        { featureIndex: 0, position: [5, 6], positionIndexes: [1, 0], type: 'existing' },
+        { featureIndex: 0, position: [6, 7], positionIndexes: [1, 1], type: 'intermediate' },
+        { featureIndex: 0, position: [7, 8], positionIndexes: [1, 1], type: 'existing' }
       ];
 
       expect(actual).toEqual(expected);
@@ -579,33 +581,33 @@ describe('EditableFeatureCollection', () => {
 
       const actual = features.getEditHandles(0);
       const expected = [
-        { position: [-1, -1], positionIndexes: [0, 0, 0], type: 'existing' },
-        { position: [0, -1], positionIndexes: [0, 0, 1], type: 'intermediate' },
-        { position: [1, -1], positionIndexes: [0, 0, 1], type: 'existing' },
-        { position: [1, 0], positionIndexes: [0, 0, 2], type: 'intermediate' },
-        { position: [1, 1], positionIndexes: [0, 0, 2], type: 'existing' },
-        { position: [0, 1], positionIndexes: [0, 0, 3], type: 'intermediate' },
-        { position: [-1, 1], positionIndexes: [0, 0, 3], type: 'existing' },
-        { position: [-1, 0], positionIndexes: [0, 0, 4], type: 'intermediate' },
-        { position: [-1, -1], positionIndexes: [0, 0, 4], type: 'existing' },
-        { position: [-0.5, -0.5], positionIndexes: [0, 1, 0], type: 'existing' },
-        { position: [-0.5, 0], positionIndexes: [0, 1, 1], type: 'intermediate' },
-        { position: [-0.5, 0.5], positionIndexes: [0, 1, 1], type: 'existing' },
-        { position: [0, 0.5], positionIndexes: [0, 1, 2], type: 'intermediate' },
-        { position: [0.5, 0.5], positionIndexes: [0, 1, 2], type: 'existing' },
-        { position: [0.5, 0], positionIndexes: [0, 1, 3], type: 'intermediate' },
-        { position: [0.5, -0.5], positionIndexes: [0, 1, 3], type: 'existing' },
-        { position: [0, -0.5], positionIndexes: [0, 1, 4], type: 'intermediate' },
-        { position: [-0.5, -0.5], positionIndexes: [0, 1, 4], type: 'existing' },
-        { position: [2, -1], positionIndexes: [1, 0, 0], type: 'existing' },
-        { position: [3, -1], positionIndexes: [1, 0, 1], type: 'intermediate' },
-        { position: [4, -1], positionIndexes: [1, 0, 1], type: 'existing' },
-        { position: [4, 0], positionIndexes: [1, 0, 2], type: 'intermediate' },
-        { position: [4, 1], positionIndexes: [1, 0, 2], type: 'existing' },
-        { position: [3, 1], positionIndexes: [1, 0, 3], type: 'intermediate' },
-        { position: [2, 1], positionIndexes: [1, 0, 3], type: 'existing' },
-        { position: [2, 0], positionIndexes: [1, 0, 4], type: 'intermediate' },
-        { position: [2, -1], positionIndexes: [1, 0, 4], type: 'existing' }
+        { featureIndex: 0, position: [-1, -1], positionIndexes: [0, 0, 0], type: 'existing' },
+        { featureIndex: 0, position: [0, -1], positionIndexes: [0, 0, 1], type: 'intermediate' },
+        { featureIndex: 0, position: [1, -1], positionIndexes: [0, 0, 1], type: 'existing' },
+        { featureIndex: 0, position: [1, 0], positionIndexes: [0, 0, 2], type: 'intermediate' },
+        { featureIndex: 0, position: [1, 1], positionIndexes: [0, 0, 2], type: 'existing' },
+        { featureIndex: 0, position: [0, 1], positionIndexes: [0, 0, 3], type: 'intermediate' },
+        { featureIndex: 0, position: [-1, 1], positionIndexes: [0, 0, 3], type: 'existing' },
+        { featureIndex: 0, position: [-1, 0], positionIndexes: [0, 0, 4], type: 'intermediate' },
+        { featureIndex: 0, position: [-1, -1], positionIndexes: [0, 0, 4], type: 'existing' },
+        { featureIndex: 0, position: [-0.5, -0.5], positionIndexes: [0, 1, 0], type: 'existing' },
+        { featureIndex: 0, position: [-0.5, 0], positionIndexes: [0, 1, 1], type: 'intermediate' },
+        { featureIndex: 0, position: [-0.5, 0.5], positionIndexes: [0, 1, 1], type: 'existing' },
+        { featureIndex: 0, position: [0, 0.5], positionIndexes: [0, 1, 2], type: 'intermediate' },
+        { featureIndex: 0, position: [0.5, 0.5], positionIndexes: [0, 1, 2], type: 'existing' },
+        { featureIndex: 0, position: [0.5, 0], positionIndexes: [0, 1, 3], type: 'intermediate' },
+        { featureIndex: 0, position: [0.5, -0.5], positionIndexes: [0, 1, 3], type: 'existing' },
+        { featureIndex: 0, position: [0, -0.5], positionIndexes: [0, 1, 4], type: 'intermediate' },
+        { featureIndex: 0, position: [-0.5, -0.5], positionIndexes: [0, 1, 4], type: 'existing' },
+        { featureIndex: 0, position: [2, -1], positionIndexes: [1, 0, 0], type: 'existing' },
+        { featureIndex: 0, position: [3, -1], positionIndexes: [1, 0, 1], type: 'intermediate' },
+        { featureIndex: 0, position: [4, -1], positionIndexes: [1, 0, 1], type: 'existing' },
+        { featureIndex: 0, position: [4, 0], positionIndexes: [1, 0, 2], type: 'intermediate' },
+        { featureIndex: 0, position: [4, 1], positionIndexes: [1, 0, 2], type: 'existing' },
+        { featureIndex: 0, position: [3, 1], positionIndexes: [1, 0, 3], type: 'intermediate' },
+        { featureIndex: 0, position: [2, 1], positionIndexes: [1, 0, 3], type: 'existing' },
+        { featureIndex: 0, position: [2, 0], positionIndexes: [1, 0, 4], type: 'intermediate' },
+        { featureIndex: 0, position: [2, -1], positionIndexes: [1, 0, 4], type: 'existing' }
       ];
 
       expect(actual).toEqual(expected);

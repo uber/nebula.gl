@@ -14,7 +14,7 @@ const myFeatureCollection = {
 class App extends React.Component {
   state = {
     mode: 'modify',
-    selectedFeatureIndex: 0,
+    selectedFeatureIndexes: [0],
     data: myFeatureCollection
   };
 
@@ -23,17 +23,17 @@ class App extends React.Component {
       id: 'geojson-layer',
       data: this.state.data,
       mode: this.state.mode,
-      selectedFeatureIndex: this.state.selectedFeatureIndex,
+      selectedFeatureIndexes: this.state.selectedFeatureIndexes,
 
       onEdit: ({
         updatedData,
         updatedMode,
-        updatedSelectedFeatureIndex
+        updatedSelectedFeatureIndexes
       }) => {
         this.setState({
           data: updatedData,
           mode: updatedMode,
-          selectedFeatureIndex: updatedSelectedFeatureIndex
+          selectedFeatureIndexes: updatedSelectedFeatureIndexes
         });
       }
     });
@@ -61,7 +61,7 @@ A [GeoJSON](http://geojson.org) `FeatureCollection` object. The following types 
 * `MultiPolygon`
 * `GeometryCollection` is not supported.
 
-*Note: passing a single `Feature` is not supported. However, you can pass a `FeatureCollection` containing a single `Feature` and pass `selectedFeatureIndex: 0` to achieve the same result.*
+*Note: passing a single `Feature` is not supported. However, you can pass a `FeatureCollection` containing a single `Feature` and pass `selectedFeatureIndexes: [0]` to achieve the same result.*
 
 #### `mode` (String, optional)
 
@@ -81,6 +81,8 @@ The `mode` property dictates what type of edits the user can perform and how to 
 
   * If a `LineString` feature is selected, clicking will add the clicked position to it.
 
+  * If multiple features are selected, the user will be prevented from drawing
+
 * `drawPolygon`: user can draw a new `Polygon` feature by clicking positions to add then closing the polygon.
 
   * If no feature is selected, clicking will create a new feature `Point` feature and select it (by passing its index as `updatedSelectedFeatureIndex`).
@@ -88,6 +90,8 @@ The `mode` property dictates what type of edits the user can perform and how to 
   * If a `Point` feature is selected, clicking will convert it to a `LineString` and add the clicked position to it.
 
   * If a `LineString` feature is selected, clicking will add the clicked position to it. If that clicked position is the first position, the feature will be converted to a `Polygon` feature.
+
+  * If multiple features are selected, the user will be prevented from drawing
 
 #### `onEdit` (Function, optional)
 
@@ -103,7 +107,7 @@ The `onEdit` event is the core event provided by this layer and must be handled 
 
 * `updatedMode` (String): A suggested value to use for `mode` after the edit is applied. Often this is the same value. But occasionally, an edit will need to transition the layer from one mode to another.
 
-* `updatedSelectedFeatureIndex` (Number): A suggested value to use for `selectedFeatureIndex` after the edit is applied. Often this is the same value. But occasionally, an edit will change the selected feature (e.g. when creating a new feature, it goes from `null` to the index of the newly created feature).
+* `updatedSelectedFeatureIndexes` (Number): A suggested array to use for `selectedFeatureIndexes` after the edit is applied. Often this is the same varray. But occasionally, an edit will change the selected features (e.g. when creating a new feature, it goes from `[]` to an array holding the index of the newly created feature).
 
 * `editType` (String): The type of edit requested. One of:
 
@@ -131,7 +135,7 @@ Consider the user removed the third position from a `Polygon`'s first ring, and 
 {
   updatedData: {...},
   updatedMode: 'modify',
-  updatedSelectedFeatureIndex: 3,
+  updatedSelectedFeatureIndexes: [3],
   editType: 'removePosition',
   featureIndex: 3,
   positionIndexes: [1, 2],
@@ -172,7 +176,7 @@ The following accessors function the same, but can accept additional arguments:
 
 The additional arguments (in order) are:
 
-* `isSelected`: indicates if the given feature is the selected feature
+* `isSelected`: indicates if the given feature is a selected feature
 * `mode`: the current value of the `mode` prop
 
 ### Edit Handles Options

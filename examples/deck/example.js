@@ -9,7 +9,7 @@ import { EditableGeoJsonLayer } from 'nebula.gl';
 
 import sampleGeoJson from '../data/sample-geojson.json';
 
-import png from '../data/edit-handles.png';
+import editHandlePng from '../data/edit-handles.png';
 
 const initialViewport = {
   bearing: 0,
@@ -255,21 +255,21 @@ export default class Example extends Component<
 
       // test using icons for edit handles
       useIconsForHandles: this.state.useIcons,
-      iconAtlas: png,
+      iconAtlas: editHandlePng,
       iconMapping: {
         intermediate: {
           x: 0,
           y: 0,
-          width: 46,
-          height: 46,
-          mask: true
+          width: 58,
+          height: 58,
+          mask: false
         },
         existing: {
-          x: 46,
+          x: 58,
           y: 0,
-          width: 46,
-          height: 46,
-          mask: true
+          width: 58,
+          height: 58,
+          mask: false
         }
       },
       getIcon: d => (d.type === 'existing' ? 'existing' : 'intermediate'),
@@ -289,7 +289,7 @@ export default class Example extends Component<
       // Can customize editing points props
       getEditHandlePointColor: handle =>
         handle.type === 'existing' ? [0xff, 0x80, 0x00, 0xff] : [0x0, 0x0, 0x0, 0x80],
-      editHandlePointRadiusScale: 1.5
+      editHandlePointRadiusScale: 2,
     });
 
     return (

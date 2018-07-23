@@ -43,7 +43,7 @@ const defaultProps = {
   getLineDashArray: (feature, isSelected, mode) =>
     isSelected && mode !== 'view' ? [7, 4] : [0, 0],
 
-  // editing handles
+  // Editing handles
   editHandlePointRadiusScale: 1,
   editHandlePointRadiusMinPixels: 4,
   editHandlePointRadiusMaxPixels: Number.MAX_SAFE_INTEGER,
@@ -53,11 +53,11 @@ const defaultProps = {
       : DEFAULT_EDITING_INTERMEDIATE_POINT_COLOR,
   getEditHandlePointRadius: handle => (handle.type === 'existing' ? 5 : 3),
 
-  // icon handles
+  // Icon handles
   useIconsForHandles: false,
   iconAtlas: null,
   iconMapping: null,
-  getIcon: d => null,
+  getIcon: null,
 };
 
 export default class EditableGeoJsonLayer extends EditableLayer {
@@ -190,7 +190,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       id: 'edit-handles',
       data: this.state.editHandles,
       fp64: this.props.fp64,
-      getColor: this.props.getEditHandlePointColor,
+      getColor: this.props.getEditHandlePointColor
     };
 
     const layer = this.props.useIconsForHandles
@@ -202,7 +202,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
             sizeScale: this.props.editHandlePointRadiusScale * 5,
             getIcon: this.props.getIcon,
             getPosition: d => d.position,
-            getSize: d => 5
+            getSize: 5
           })
         )
       : new ScatterplotLayer(

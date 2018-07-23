@@ -57,7 +57,8 @@ const defaultProps = {
   useIconsForHandles: false,
   iconAtlas: null,
   iconMapping: null,
-  getIcon: null
+  getIcon: null,
+  getIconSize: 5
 };
 
 export default class EditableGeoJsonLayer extends EditableLayer {
@@ -202,7 +203,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
             sizeScale: this.props.editHandlePointRadiusScale * 5,
             getIcon: this.props.getIcon,
             getPosition: d => d.position,
-            getSize: 5
+            getSize: this.props.getIconSize
           })
         )
       : new ScatterplotLayer(

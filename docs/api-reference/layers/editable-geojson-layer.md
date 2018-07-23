@@ -190,7 +190,7 @@ The additional arguments (in order) are:
 * `isSelected`: indicates if the given feature is a selected feature
 * `mode`: the current value of the `mode` prop
 
-### Edit Handles Options
+### Edit Handles (Points)
 
 Edit handles are the points rendered on a feature to indicate interactive capabilities (e.g. vertices that can be moved). Edit handle objects have the following properties:
 
@@ -215,6 +215,43 @@ Edit handles are the points rendered on a feature to indicate interactive capabi
 #### `getEditHandlePointRadius` (, optional)
 
 * Default: `handle => (handle.type === 'existing' ? 5 : 3)`
+
+### Edit Handles (Icons)
+
+Alternatively, you can use icons in place of points as editing handles. This is supported by Deck.gl's `IconLayer`.
+
+#### `useIconsForHandles` (Boolean, optional)
+
+* Default: `false`
+
+#### `iconAtlas` (Texture2D | String, optional)
+
+* Default: `null`
+
+Atlas image url or texture
+
+#### `iconMapping` (Object | String, optional)
+
+* Default: `null`
+
+Icon names mapped to icon definitions. See [Icon Layer](https://github.com/uber/deck.gl/blob/master/docs/layers/icon-layer.md#iconmapping-object--string-required).
+
+#### getIcon (Function, optional)
+
+* Default: `null`
+
+Method called to retrieve the icon name of each object, returns string.
+
+#### getSize (Function|Number, optional)
+
+* Default: 1
+
+The height of each object, in pixels.
+
+
+Note that although these `IconLayer` properties are all optional, if `useIconsForHandles` is set to `true`, then `iconAtlas`, `iconMapping`, and `getIcon` are all required.
+
+`getEditHandlePointColor` and `getEditHandlePointRadiusScale` can be used for either icon handles or point handles.
 
 ## Methods
 

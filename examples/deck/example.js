@@ -279,6 +279,7 @@ export default class Example extends Component<
         }
       },
       getIcon: d => (d.type === 'existing' ? 'existing' : 'intermediate'),
+      getIconSize: 5,
 
       // Specify the same GeoJsonLayer props
       lineWidthMinPixels: 2,

@@ -37,17 +37,20 @@ const styles = {
     flexWrap: 'wrap'
   },
   toolboxTerm: {
-    flex: '0 0 60%',
+    flex: '0 0 50%',
     marginBottom: 7
   },
   toolboxDescription: {
     margin: 0,
-    flex: '0 0 40%'
+    flex: '0 0 50%'
   },
   mapContainer: {
     alignItems: 'stretch',
     display: 'flex',
     height: '100vh'
+  },
+  checkbox: {
+    margin: 10
   }
 };
 
@@ -83,34 +86,6 @@ export default class Example extends Component<
     });
   };
 
-  _incrementSelectedFeature() {
-    if (!this.state.selectedFeatureIndexes.length) {
-      this.setState({ selectedFeatureIndexes: [0] });
-    } else {
-      this.setState({
-        selectedFeatureIndexes: [
-          (this.state.selectedFeatureIndexes[0] + 1) % this.state.testFeatures.features.length
-        ]
-      });
-    }
-  }
-
-  _decrementSelectedFeature() {
-    if (!this.state.selectedFeatureIndexes.length) {
-      this.setState({ selectedFeatureIndexes: [0] });
-    } else {
-      this.setState({
-        selectedFeatureIndexes:
-          (this.state.selectedFeatureIndexes + this.state.testFeatures.features.length - 1) %
-          this.state.testFeatures.features.length
-      });
-    }
-  }
-
-  _deselectFeature() {
-    this.setState({ selectedFeatureIndexes: [] });
-  }
-
   _onLayerClick = info => {
     console.log('onLayerClick', info); // eslint-disable-line
 
@@ -134,6 +109,43 @@ export default class Example extends Component<
   _resize = () => {
     this.forceUpdate();
   };
+
+  _renderCheckbox(index, featureType) {
+    const { selectedFeatureIndexes } = this.state;
+    return (
+      <dt style={styles.toolboxTerm} key={index}>
+        <input
+          style={styles.checkbox}
+          type="checkbox"
+          checked={selectedFeatureIndexes.includes(index)}
+          onChange={() => {
+            if (selectedFeatureIndexes.includes(index)) {
+              this.setState({
+                selectedFeatureIndexes: selectedFeatureIndexes.filter(e => e !== index)
+              });
+            } else {
+              this.setState({
+                selectedFeatureIndexes: [...selectedFeatureIndexes, index]
+              });
+            }
+          }}
+        />
+        {index}
+        {': '}
+        {featureType}
+        {''}
+      </dt>
+    );
+  }
+
+  _renderAllCheckboxes() {
+    const { testFeatures: { features } } = this.state;
+    const checkboxes = [];
+    for (let i = 0; i < features.length; ++i) {
+      checkboxes.push(this._renderCheckbox(i, features[i].geometry.type));
+    }
+    return checkboxes;
+  }
 
   _renderToolBox() {
     return (
@@ -159,35 +171,9 @@ export default class Example extends Component<
               onChange={() => this.setState({ pointsRemovable: !this.state.pointsRemovable })}
             />
           </dd>
-          <dt style={styles.toolboxTerm}>Selected feature index</dt>
-          <dd style={styles.toolboxDescription}>
-            {this.state.selectedFeatureIndexes.length ? this.state.selectedFeatureIndexes[0] : null}{' '}
-            <span style={{ float: 'right' }}>
-              <button
-                onClick={() => this._decrementSelectedFeature()}
-                title="Select previous feature"
-              >
-                -
-              </button>
-              <button
-                onClick={() => this._incrementSelectedFeature()}
-                title="Select previous feature"
-              >
-                +
-              </button>
-              <button onClick={() => this._deselectFeature()} title="Deselect feature">
-                Deselect
-              </button>
-            </span>
-          </dd>
-          <dt style={styles.toolboxTerm}>Selected feature type</dt>
-          <dd style={styles.toolboxDescription}>
-            {this.state.selectedFeatureIndexes.length
-              ? this.state.testFeatures.features[this.state.selectedFeatureIndexes[0]].geometry.type
-              : ''}
-          </dd>
-          <dt style={styles.toolboxTerm}>Feature count</dt>
-          <dd style={styles.toolboxDescription}>{this.state.testFeatures.features.length}</dd>
+          <dt style={styles.toolboxTerm}>Select Features</dt>
+          <dd style={styles.toolboxDescription} />
+          {this._renderAllCheckboxes()}
         </dl>
       </div>
     );

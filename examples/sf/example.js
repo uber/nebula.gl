@@ -150,11 +150,11 @@ export default class Example extends Component<
     if (info) {
       console.log(`select editing feature ${info.index}`); // eslint-disable-line
       // a polygon was clicked
-      this.setState({ selectedFeatureIndex: info.index });
+      this.setState({ selectedFeatureIndexes: [info.index] });
     } else {
       console.log('deselect editing feature'); // eslint-disable-line
       // open space was clicked, so stop editing
-      this.setState({ selectedFeatureIndex: null });
+      this.setState({ selectedFeatureIndexes: [] });
     }
   };
 
@@ -238,7 +238,7 @@ export default class Example extends Component<
 
     const editableGeoJsonLayer = new EditableGeoJsonLayer({
       data: this.state.testFeatures,
-      selectedFeatureIndex: this.state.selectedFeatureIndex,
+      selectedFeatureIndexes: this.state.selectedFeatureIndexes,
       pickable: true,
       editable: this.state.allowEdit,
 

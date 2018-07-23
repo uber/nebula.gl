@@ -37,17 +37,21 @@ const styles = {
     flexWrap: 'wrap'
   },
   toolboxTerm: {
-    flex: '0 0 60%',
+    flex: '0 0 50%',
     marginBottom: 7
   },
   toolboxDescription: {
     margin: 0,
-    flex: '0 0 40%'
+    flex: '0 0 50%',
+    fontSize: '90%'
   },
   mapContainer: {
     alignItems: 'stretch',
     display: 'flex',
     height: '100vh'
+  },
+  checkbox: {
+    margin: 10
   }
 };
 
@@ -65,7 +69,7 @@ export default class Example extends Component<
       testFeatures: sampleGeoJson,
       mode: 'modify',
       pointsRemovable: true,
-      selectedFeatureIndex: null
+      selectedFeatureIndexes: []
     };
   }
 
@@ -83,33 +87,6 @@ export default class Example extends Component<
     });
   };
 
-  _incrementSelectedFeature() {
-    if (this.state.selectedFeatureIndex === null) {
-      this.setState({ selectedFeatureIndex: 0 });
-    } else {
-      this.setState({
-        selectedFeatureIndex:
-          (this.state.selectedFeatureIndex + 1) % this.state.testFeatures.features.length
-      });
-    }
-  }
-
-  _decrementSelectedFeature() {
-    if (this.state.selectedFeatureIndex === null) {
-      this.setState({ selectedFeatureIndex: 0 });
-    } else {
-      this.setState({
-        selectedFeatureIndex:
-          (this.state.selectedFeatureIndex + this.state.testFeatures.features.length - 1) %
-          this.state.testFeatures.features.length
-      });
-    }
-  }
-
-  _deselectFeature() {
-    this.setState({ selectedFeatureIndex: null });
-  }
-
   _onLayerClick = info => {
     console.log('onLayerClick', info); // eslint-disable-line
 
@@ -122,17 +99,54 @@ export default class Example extends Component<
       console.log(`select editing feature ${info.index}`); // eslint-disable-line
       // a feature was clicked
       // TODO: once https://github.com/uber/deck.gl/pull/1918 lands, this will work since it'll work with Multi* geometry types
-      this.setState({ selectedFeatureIndex: info.index });
+      this.setState({ selectedFeatureIndexes: [info.index] });
     } else {
       console.log('deselect editing feature'); // eslint-disable-line
       // open space was clicked, so stop editing
-      this.setState({ selectedFeatureIndex: null });
+      this.setState({ selectedFeatureIndexes: [] });
     }
   };
 
   _resize = () => {
     this.forceUpdate();
   };
+
+  _renderCheckbox(index, featureType) {
+    const { selectedFeatureIndexes } = this.state;
+    return (
+      <dd style={styles.toolboxDescription} key={index}>
+        <input
+          style={styles.checkbox}
+          type="checkbox"
+          checked={selectedFeatureIndexes.includes(index)}
+          onChange={() => {
+            if (selectedFeatureIndexes.includes(index)) {
+              this.setState({
+                selectedFeatureIndexes: selectedFeatureIndexes.filter(e => e !== index)
+              });
+            } else {
+              this.setState({
+                selectedFeatureIndexes: [...selectedFeatureIndexes, index]
+              });
+            }
+          }}
+        />
+        {index}
+        {': '}
+        {featureType}
+        {''}
+      </dd>
+    );
+  }
+
+  _renderAllCheckboxes() {
+    const { testFeatures: { features } } = this.state;
+    const checkboxes = [];
+    for (let i = 0; i < features.length; ++i) {
+      checkboxes.push(this._renderCheckbox(i, features[i].geometry.type));
+    }
+    return checkboxes;
+  }
 
   _renderToolBox() {
     return (
@@ -158,42 +172,22 @@ export default class Example extends Component<
               onChange={() => this.setState({ pointsRemovable: !this.state.pointsRemovable })}
             />
           </dd>
-          <dt style={styles.toolboxTerm}>Selected feature index</dt>
+          <dt style={styles.toolboxTerm}>Select Features</dt>
           <dd style={styles.toolboxDescription}>
-            {this.state.selectedFeatureIndex}{' '}
-            <span style={{ float: 'right' }}>
-              <button
-                onClick={() => this._decrementSelectedFeature()}
-                title="Select previous feature"
-              >
-                -
-              </button>
-              <button
-                onClick={() => this._incrementSelectedFeature()}
-                title="Select previous feature"
-              >
-                +
-              </button>
-              <button onClick={() => this._deselectFeature()} title="Deselect feature">
-                Deselect
-              </button>
-            </span>
+            <input
+              type="button"
+              value="Clear selection"
+              onClick={() => this.setState({ selectedFeatureIndexes: [] })}
+            />
           </dd>
-          <dt style={styles.toolboxTerm}>Selected feature type</dt>
-          <dd style={styles.toolboxDescription}>
-            {this.state.selectedFeatureIndex !== null
-              ? this.state.testFeatures.features[this.state.selectedFeatureIndex].geometry.type
-              : ''}
-          </dd>
-          <dt style={styles.toolboxTerm}>Feature count</dt>
-          <dd style={styles.toolboxDescription}>{this.state.testFeatures.features.length}</dd>
+          {this._renderAllCheckboxes()}
         </dl>
       </div>
     );
   }
 
   render() {
-    const { testFeatures, selectedFeatureIndex, mode } = this.state;
+    const { testFeatures, selectedFeatureIndexes, mode } = this.state;
 
     const viewport = {
       ...this.state.viewport,
@@ -204,7 +198,7 @@ export default class Example extends Component<
     const editableGeoJsonLayer = new EditableGeoJsonLayer({
       id: 'geojson',
       data: testFeatures,
-      selectedFeatureIndex,
+      selectedFeatureIndexes,
       mode,
       fp64: true,
       autoHighlight: true,
@@ -213,7 +207,7 @@ export default class Example extends Component<
       onEdit: ({
         updatedData,
         updatedMode,
-        updatedSelectedFeatureIndex,
+        updatedSelectedFeatureIndexes,
         editType,
         featureIndex,
         positionIndexes,
@@ -226,7 +220,7 @@ export default class Example extends Component<
             'onEdit',
             editType,
             updatedMode,
-            updatedSelectedFeatureIndex,
+            updatedSelectedFeatureIndexes,
             featureIndex,
             positionIndexes,
             position
@@ -239,7 +233,7 @@ export default class Example extends Component<
         this.setState({
           testFeatures: updatedData,
           mode: updatedMode,
-          selectedFeatureIndex: updatedSelectedFeatureIndex
+          selectedFeatureIndexes: updatedSelectedFeatureIndexes
         });
       },
 

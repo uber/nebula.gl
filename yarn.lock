@@ -78,37 +78,37 @@
     lodash "^4.2.0"
     to-fast-properties "^2.0.0"
 
-"@deck.gl/core@^6.0.0-beta.1":
-  version "6.0.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@deck.gl/core/-/core-6.0.0-beta.1.tgz#0a4cd92da74acf43367f98c7953c089fca09a220"
+"@deck.gl/core@^6.0.1":
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/@deck.gl/core/-/core-6.0.1.tgz#a563dfbbc631f2d7436b97fd53f98f3836c1d46a"
   dependencies:
-    luma.gl "^6.0.0-beta.1"
+    luma.gl "^6.0.0"
     math.gl "^2.0.0"
     mjolnir.js "^1.0.0"
     probe.gl "^1.0.0"
     seer "^0.2.4"
     viewport-mercator-project "^5.2.0"
 
-"@deck.gl/experimental-layers@>=6.0.0-beta.1":
-  version "6.0.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@deck.gl/experimental-layers/-/experimental-layers-6.0.0-beta.1.tgz#285b471f3852db3b99269f96bf80ea1d6b6c5350"
+"@deck.gl/experimental-layers@^6.0.1":
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/@deck.gl/experimental-layers/-/experimental-layers-6.0.1.tgz#14b873b1e68da69267621fe3a92f38cd457e7259"
   dependencies:
-    "@deck.gl/core" "^6.0.0-beta.1"
-    "@deck.gl/layers" "^6.0.0-beta.1"
+    "@deck.gl/core" "^6.0.1"
+    "@deck.gl/layers" "^6.0.1"
 
-"@deck.gl/layers@^6.0.0-beta.1":
-  version "6.0.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@deck.gl/layers/-/layers-6.0.0-beta.1.tgz#064ed20c63fac1cd83e71b116faae3a50001513d"
+"@deck.gl/layers@^6.0.1":
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/@deck.gl/layers/-/layers-6.0.1.tgz#8fed40f83558758fb47391c9ab036568fd3949ba"
   dependencies:
-    "@deck.gl/core" "^6.0.0-beta.1"
+    "@deck.gl/core" "^6.0.1"
     d3-hexbin "^0.2.1"
     earcut "^2.0.6"
 
-"@deck.gl/react@^6.0.0-beta.1":
-  version "6.0.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@deck.gl/react/-/react-6.0.0-beta.1.tgz#7e8dd02d9bf2e5786cceffcea341d823256737e6"
+"@deck.gl/react@^6.0.1":
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/@deck.gl/react/-/react-6.0.1.tgz#570c27f758fea982c4dd1a7952ed27fa04bdfc36"
   dependencies:
-    "@deck.gl/core" "^6.0.0-beta.1"
+    "@deck.gl/core" "^6.0.1"
     prop-types "^15.6.0"
 
 "@turf/area@^5.1.5":
@@ -1981,13 +1981,13 @@ decamelize@^1.0.0, decamelize@^1.1.1, decamelize@^1.1.2:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/decamelize/-/decamelize-1.2.0.tgz#f6534d15148269b20352e7bee26f501f9a191290"
 
-deck.gl@>=6.0.0-beta.1:
-  version "6.0.0-beta.1"
-  resolved "https://registry.yarnpkg.com/deck.gl/-/deck.gl-6.0.0-beta.1.tgz#40348b925e00bb5444c64d63fbc08b69adeefa95"
+deck.gl@^6.0.1:
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/deck.gl/-/deck.gl-6.0.1.tgz#0903ffef3ae7454def280e3c10006022bee08c45"
   dependencies:
-    "@deck.gl/core" "^6.0.0-beta.1"
-    "@deck.gl/layers" "^6.0.0-beta.1"
-    "@deck.gl/react" "^6.0.0-beta.1"
+    "@deck.gl/core" "^6.0.1"
+    "@deck.gl/layers" "^6.0.1"
+    "@deck.gl/react" "^6.0.1"
 
 decode-uri-component@^0.2.0:
   version "0.2.0"
@@ -4298,9 +4298,9 @@ lru-cache@^4.0.1:
     pseudomap "^1.0.2"
     yallist "^2.1.2"
 
-luma.gl@^6.0.0-beta.1:
-  version "6.0.0-beta.1"
-  resolved "https://registry.yarnpkg.com/luma.gl/-/luma.gl-6.0.0-beta.1.tgz#f12becda7c52f0f59f8692dc59595711476e405f"
+luma.gl@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/luma.gl/-/luma.gl-6.0.0.tgz#1df3298d9f0934f5790c89a41daf9b5a30f89f5c"
   dependencies:
     math.gl "^2.0.0"
     probe.gl "^1.0.0"

@@ -42,7 +42,8 @@ const styles = {
   },
   toolboxDescription: {
     margin: 0,
-    flex: '0 0 50%'
+    flex: '0 0 50%',
+    fontSize: '90%'
   },
   mapContainer: {
     alignItems: 'stretch',
@@ -113,7 +114,7 @@ export default class Example extends Component<
   _renderCheckbox(index, featureType) {
     const { selectedFeatureIndexes } = this.state;
     return (
-      <dt style={styles.toolboxTerm} key={index}>
+      <dd style={styles.toolboxDescription} key={index}>
         <input
           style={styles.checkbox}
           type="checkbox"
@@ -134,7 +135,7 @@ export default class Example extends Component<
         {': '}
         {featureType}
         {''}
-      </dt>
+      </dd>
     );
   }
 
@@ -172,7 +173,13 @@ export default class Example extends Component<
             />
           </dd>
           <dt style={styles.toolboxTerm}>Select Features</dt>
-          <dd style={styles.toolboxDescription} />
+          <dd style={styles.toolboxDescription}>
+            <input
+              type="button"
+              value="Clear selection"
+              onClick={() => this.setState({ selectedFeatureIndexes: [] })}
+            />
+          </dd>
           {this._renderAllCheckboxes()}
         </dl>
       </div>

@@ -182,12 +182,15 @@ export default class Example extends Component<
               checked={this.state.useIcons}
               onChange={() => {
                 const prevState = this.state.selectedFeatureIndexes.slice();
-                this.setState({
-                  selectedFeatureIndexes: [],
-                  useIcons: !this.state.useIcons
-                }, () => {
-                  this.setState({ selectedFeatureIndexes: prevState });
-                });
+                this.setState(
+                  {
+                    selectedFeatureIndexes: [],
+                    useIcons: !this.state.useIcons
+                  },
+                  () => {
+                    this.setState({ selectedFeatureIndexes: prevState });
+                  }
+                );
               }}
             />
           </dd>

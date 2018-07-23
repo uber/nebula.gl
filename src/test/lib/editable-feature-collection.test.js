@@ -612,5 +612,20 @@ describe('EditableFeatureCollection', () => {
 
       expect(actual).toEqual(expected);
     });
+
+    it('gets edit handles for MultiPoint in multi-feature collection', () => {
+      const features = new EditableFeatureCollection({
+        type: 'FeatureCollection',
+        features: [lineStringFeature, multiPointFeature]
+      });
+
+      const actual = features.getEditHandles(1);
+      const expected = [
+        { featureIndex: 1, position: [1, 2], positionIndexes: [0], type: 'existing' },
+        { featureIndex: 1, position: [3, 4], positionIndexes: [1], type: 'existing' }
+      ];
+
+      expect(actual).toEqual(expected);
+    });
   });
 });

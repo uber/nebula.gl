@@ -156,9 +156,10 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }
 
   isFeatureSelected(feature: Object) {
-    // TODO: Upgrade deck to include https://github.com/uber/deck.gl/commit/40ff66ed
-    // This will be buggy until then
-    if (!this.props.data || !this.props.selectedFeatureIndexes.length) {
+    if (!this.props.data || !this.props.selectedFeatureIndexes) {
+      return false;
+    }
+    if (!this.props.selectedFeatureIndexes.length) {
       return false;
     }
     const featureIndex = this.props.data.features.indexOf(feature);

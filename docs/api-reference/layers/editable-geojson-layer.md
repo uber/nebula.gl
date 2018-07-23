@@ -93,6 +93,17 @@ The `mode` property dictates what type of edits the user can perform and how to 
 
   * If multiple features are selected, the user will be prevented from drawing
 
+#### `selectedFeaturesIndexes` (Array, optional)
+
+* Default: `[]`
+
+* The `selectedFeatueIndexes` property distinguishes which features to treat as selected.
+  * Features are identified by their index in the collection.
+
+  * Selection of a feature causes style accessors to render a different style, defined in function such as `getLineColor` and `getFillColor`.
+
+  * Selected features in mode `modify` will render edit handles. Only one feature may be selected while in mode `drawLineString` or `drawPolygon` to draw a feature.
+
 #### `onEdit` (Function, optional)
 
 The `onEdit` event is the core event provided by this layer and must be handled in order to accept and render edits. The `event` argument includes the following properties:
@@ -107,7 +118,7 @@ The `onEdit` event is the core event provided by this layer and must be handled 
 
 * `updatedMode` (String): A suggested value to use for `mode` after the edit is applied. Often this is the same value. But occasionally, an edit will need to transition the layer from one mode to another.
 
-* `updatedSelectedFeatureIndexes` (Number): A suggested array to use for `selectedFeatureIndexes` after the edit is applied. Often this is the same varray. But occasionally, an edit will change the selected features (e.g. when creating a new feature, it goes from `[]` to an array holding the index of the newly created feature).
+* `updatedSelectedFeatureIndexes` (Number): A suggested array to use for `selectedFeatureIndexes` after the edit is applied. Often this is the same array. But occasionally, an edit will change the selected features (e.g. when creating a new feature, it goes from `[]` to an array holding the index of the newly created feature).
 
 * `editType` (String): The type of edit requested. One of:
 

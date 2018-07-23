@@ -109,7 +109,7 @@ export default class Example extends Component<
     } else {
       console.log('deselect editing feature'); // eslint-disable-line
       // open space was clicked, so stop editing
-      this.setState({ selectedFeatureIndexes: [0] });
+      this.setState({ selectedFeatureIndexes: [] });
     }
   };
 

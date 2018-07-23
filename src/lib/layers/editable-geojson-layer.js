@@ -57,7 +57,7 @@ const defaultProps = {
   useIconsForHandles: false,
   iconAtlas: null,
   iconMapping: null,
-  getIcon: null,
+  getIcon: null
 };
 
 export default class EditableGeoJsonLayer extends EditableLayer {

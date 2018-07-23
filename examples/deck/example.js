@@ -180,12 +180,15 @@ export default class Example extends Component<
             <input
               type="checkbox"
               checked={this.state.useIcons}
-              onChange={() =>
+              onChange={() => {
+                const prevState = this.state.selectedFeatureIndexes.slice();
                 this.setState({
                   selectedFeatureIndexes: [],
                   useIcons: !this.state.useIcons
-                })
-              }
+                }, () => {
+                  this.setState({ selectedFeatureIndexes: prevState });
+                });
+              }}
             />
           </dd>
           <dt style={styles.toolboxTerm}>Select Features</dt>
@@ -289,7 +292,7 @@ export default class Example extends Component<
       // Can customize editing points props
       getEditHandlePointColor: handle =>
         handle.type === 'existing' ? [0xff, 0x80, 0x00, 0xff] : [0x0, 0x0, 0x0, 0x80],
-      editHandlePointRadiusScale: 2,
+      editHandlePointRadiusScale: 2
     });
 
     return (

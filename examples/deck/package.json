@@ -8,7 +8,8 @@
     "nebula.gl": "^0.2.2",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
-    "react-map-gl": "^3.2.7"
+    "react-map-gl": "^3.2.7",
+    "url-loader": "^1.0.1"
   },
   "devDependencies": {
     "babel-core": "^6.21.0",

@@ -9,6 +9,8 @@ import { EditableGeoJsonLayer } from 'nebula.gl';
 
 import sampleGeoJson from '../data/sample-geojson.json';
 
+import png from '../data/icon-atlas.png';
+
 const initialViewport = {
   bearing: 0,
   height: 0,
@@ -202,6 +204,8 @@ export default class Example extends Component<
       mode,
       fp64: true,
       autoHighlight: true,
+      useIconsForHandles: true,
+      iconAtlas: png,
 
       // Editing callbacks
       onEdit: ({

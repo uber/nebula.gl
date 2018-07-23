@@ -55,7 +55,9 @@ const defaultProps = {
 
   // icon handles
   useIconsForHandles: false,
-  iconAtlas: ''
+  iconAtlas: null,
+  iconMapping: null,
+  getIcon: d => null,
 };
 
 export default class EditableGeoJsonLayer extends EditableLayer {
@@ -187,7 +189,8 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     const sharedProps = {
       id: 'edit-handles',
       data: this.state.editHandles,
-      fp64: this.props.fp64
+      fp64: this.props.fp64,
+      getColor: this.props.getEditHandlePointColor,
     };
 
     const layer = this.props.useIconsForHandles
@@ -195,18 +198,9 @@ export default class EditableGeoJsonLayer extends EditableLayer {
           this.getSubLayerProps({
             ...sharedProps,
             iconAtlas: this.props.iconAtlas,
-            iconMapping: {
-              marker: {
-                x: 0,
-                y: 0,
-                width: 128,
-                height: 128,
-                anchorY: 128,
-                mask: true
-              }
-            },
-            sizeScale: 5,
-            getIcon: d => 'marker',
+            iconMapping: this.props.iconMapping,
+            sizeScale: this.props.editHandlePointRadiusScale * 5,
+            getIcon: this.props.getIcon,
             getPosition: d => d.position,
             getSize: d => 5
           })
@@ -219,7 +213,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
             radiusScale: this.props.editHandlePointRadiusScale,
             radiusMinPixels: this.props.editHandlePointRadiusMinPixels,
             radiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
-            getColor: this.props.getEditHandlePointColor,
             getRadius: this.props.getEditHandlePointRadius
           })
         );

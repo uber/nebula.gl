@@ -9,6 +9,8 @@ import { EditableGeoJsonLayer } from 'nebula.gl';
 
 import sampleGeoJson from '../data/sample-geojson.json';
 
+import iconSheet from '../data/edit-handles.png';
+
 const initialViewport = {
   bearing: 0,
   height: 0,
@@ -69,7 +71,8 @@ export default class Example extends Component<
       testFeatures: sampleGeoJson,
       mode: 'modify',
       pointsRemovable: true,
-      selectedFeatureIndexes: []
+      selectedFeatureIndexes: [],
+      editHandleType: 'point'
     };
   }
 
@@ -174,6 +177,18 @@ export default class Example extends Component<
               onChange={() => this.setState({ pointsRemovable: !this.state.pointsRemovable })}
             />
           </dd>
+          <dt style={styles.toolboxTerm}>Use Icons</dt>
+          <dd style={styles.toolboxDescription}>
+            <input
+              type="checkbox"
+              checked={this.state.editHandleType === 'icon'}
+              onChange={() =>
+                this.setState({
+                  editHandleType: this.state.editHandleType === 'icon' ? 'point' : 'icon'
+                })
+              }
+            />
+          </dd>
           <dt style={styles.toolboxTerm}>Select Features</dt>
           <dd style={styles.toolboxDescription}>
             <input
@@ -239,6 +254,30 @@ export default class Example extends Component<
         });
       },
 
+      // test using icons for edit handles
+      editHandleType: this.state.editHandleType,
+      editHandleIconAtlas: iconSheet,
+      editHandleIconMapping: {
+        intermediate: {
+          x: 0,
+          y: 0,
+          width: 58,
+          height: 58,
+          mask: false
+        },
+        existing: {
+          x: 58,
+          y: 0,
+          width: 58,
+          height: 58,
+          mask: false
+        }
+      },
+      getEditHandleIcon: d => d.type,
+      getEditHandleIconSize: 40,
+      getEditHandleIconColor: handle =>
+        handle.type === 'existing' ? [0xff, 0x80, 0x00, 0xff] : [0x0, 0x0, 0x0, 0x80],
+
       // Specify the same GeoJsonLayer props
       lineWidthMinPixels: 2,
       pointRadiusMinPixels: 5,
@@ -253,7 +292,8 @@ export default class Example extends Component<
 
       // Can customize editing points props
       getEditHandlePointColor: handle =>
-        handle.type === 'existing' ? [0xff, 0x80, 0x00, 0xff] : [0x0, 0x0, 0x0, 0x80]
+        handle.type === 'existing' ? [0xff, 0x80, 0x00, 0xff] : [0x0, 0x0, 0x0, 0x80],
+      editHandlePointRadiusScale: 2
     });
 
     return (

@@ -1,7 +1,7 @@
 // @flow
 /* eslint-env browser */
 
-import { GeoJsonLayer, ScatterplotLayer } from 'deck.gl';
+import { GeoJsonLayer, ScatterplotLayer, IconLayer } from 'deck.gl';
 import bboxPolygon from '@turf/bbox-polygon';
 import circle from '@turf/circle';
 import distance from '@turf/distance';
@@ -45,7 +45,9 @@ const defaultProps = {
   getLineDashArray: (feature, isSelected, mode) =>
     isSelected && mode !== 'view' ? [7, 4] : [0, 0],
 
-  // Editing handles
+  editHandleType: 'point',
+
+  // point handles
   editHandlePointRadiusScale: 1,
   editHandlePointRadiusMinPixels: 4,
   editHandlePointRadiusMaxPixels: Number.MAX_SAFE_INTEGER,
@@ -53,7 +55,19 @@ const defaultProps = {
     handle.type === 'existing'
       ? DEFAULT_EDITING_EXISTING_POINT_COLOR
       : DEFAULT_EDITING_INTERMEDIATE_POINT_COLOR,
-  getEditHandlePointRadius: handle => (handle.type === 'existing' ? 5 : 3)
+  getEditHandlePointRadius: handle => (handle.type === 'existing' ? 5 : 3),
+
+  // icon handles
+  editHandleIconAtlas: null,
+  editHandleIconMapping: null,
+  editHandleIconSizeScale: 1,
+  getEditHandleIcon: handle => handle.type,
+  getEditHandleIconSize: 10,
+  getEditHandleIconColor: handle =>
+    handle.type === 'existing'
+      ? DEFAULT_EDITING_EXISTING_POINT_COLOR
+      : DEFAULT_EDITING_INTERMEDIATE_POINT_COLOR,
+  getEditHandleIconAngle: 0
 };
 
 export default class EditableGeoJsonLayer extends EditableLayer {
@@ -182,25 +196,44 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       return [];
     }
 
-    // TODO: support using IconLayer for editing handles
-    const layers = [
-      new ScatterplotLayer(
-        this.getSubLayerProps({
-          id: 'edit-handles',
-          data: this.state.editHandles,
-          fp64: this.props.fp64,
+    const sharedProps = {
+      id: `${this.props.editHandleType}-edit-handles`,
+      data: this.state.editHandles,
+      fp64: this.props.fp64
+    };
 
-          // Proxy editing point props
-          radiusScale: this.props.editHandlePointRadiusScale,
-          radiusMinPixels: this.props.editHandlePointRadiusMinPixels,
-          radiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
-          getColor: this.props.getEditHandlePointColor,
-          getRadius: this.props.getEditHandlePointRadius
-        })
-      )
-    ];
+    const layer =
+      this.props.editHandleType === 'icon'
+        ? new IconLayer(
+            this.getSubLayerProps({
+              ...sharedProps,
+              iconAtlas: this.props.editHandleIconAtlas,
+              iconMapping: this.props.editHandleIconMapping,
+              sizeScale: this.props.editHandleIconSizeScale,
+              getIcon: this.props.getEditHandleIcon,
+              getSize: this.props.getEditHandleIconSize,
+              getColor: this.props.getEditHandleIconColor,
+              getAngle: this.props.getEditHandleIconAngle,
 
-    return layers;
+              getPosition: d => d.position
+            })
+          )
+        : this.props.editHandleType === 'point'
+          ? new ScatterplotLayer(
+              this.getSubLayerProps({
+                ...sharedProps,
+
+                // Proxy editing point props
+                radiusScale: this.props.editHandlePointRadiusScale,
+                radiusMinPixels: this.props.editHandlePointRadiusMinPixels,
+                radiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
+                getRadius: this.props.getEditHandlePointRadius,
+                getColor: this.props.getEditHandlePointColor
+              })
+            )
+          : null;
+
+    return [layer];
   }
 
   createDrawLayers() {
@@ -227,7 +260,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         pointRadiusMinPixels: this.props.editHandlePointRadiusMinPixels,
         pointRadiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
         getLineColor: feature => this.props.getLineColor(feature, true),
-        getFillColor: () => this.props.getEditHandlePointColor({ type: 'existing' }),
+        getFillColor: feature => this.props.getFillColor(feature, true),
         getLineDashArray,
         getRadius: this.props.getEditHandlePointRadius
       })

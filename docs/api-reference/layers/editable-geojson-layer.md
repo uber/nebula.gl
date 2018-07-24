@@ -210,11 +210,21 @@ The additional arguments (in order) are:
 * `isSelected`: indicates if the given feature is a selected feature
 * `mode`: the current value of the `mode` prop
 
-### Edit Handles Options
+### Edit Handles
 
-Edit handles are the points rendered on a feature to indicate interactive capabilities (e.g. vertices that can be moved). Edit handle objects have the following properties:
+Edit handles are the points rendered on a feature to indicate interactive capabilities (e.g. vertices that can be moved).
 
 * `type` (String): either `existing` for existing positions or `intermediate` for positions half way between two other positions.
+
+#### `editHandleType` (String, optional)
+
+* Default: `point`
+
+* `point`: Edit handles endered as points
+
+* `icons`: Edit handles rendered as provided icons
+
+Edit handle objects can be represented by either points or icons. `editHandlePoint...` are proxies for the [`ScatterplotLayer`](https://github.com/uber/deck.gl/blob/master/docs/layers/scatterplot-layer.md#properties) props, and `editHandleIcon...` are proxies for the [`IconLayer`](https://github.com/uber/deck.gl/blob/master/docs/layers/icon-layer.md#properties) props.
 
 #### `editHandlePointRadiusScale` (Number, optional)
 
@@ -228,13 +238,53 @@ Edit handles are the points rendered on a feature to indicate interactive capabi
 
 * Default: `Number.MAX_SAFE_INTEGER`
 
-#### `getEditHandlePointColor` (Function|Array, optional)
+#### `getEditHandlePointColor` (Function | Array, optional)
 
 * Default: `handle => handle.type === 'existing' ? [0xc0, 0x0, 0x0, 0xff] : [0x0, 0x0, 0x0, 0x80]`
 
-#### `getEditHandlePointRadius` (, optional)
+#### `getEditHandlePointRadius` (Function | Number, optional)
 
 * Default: `handle => (handle.type === 'existing' ? 5 : 3)`
+
+#### `editHandleIconAtlas` (Texture2D | String, optional)
+
+* Default: `null`
+
+Atlas image url or texture.
+
+#### `editHandleIconMapping` (Object | String, optional)
+
+* Default: `null`
+
+Icon names mapped to icon definitions. See [`Icon Layer`](https://github.com/uber/deck.gl/blob/master/docs/layers/icon-layer.md#iconmapping-object--string-required).
+
+#### `editHandleIconSizeScale` (Number | optional)
+
+* Default: `null`
+
+Edit handle icon size multiplier.
+
+#### `getEditHandleIcon` (Function, optional)
+
+* Default: `handle => handle.type`
+
+Method called to retrieve the icon name of each edit handle, returns string.
+
+#### `getEditHandleIconSize` (Function | Number, optional)
+
+* Default: `10`
+
+The height of each edit handle, in pixels.
+
+#### `getEditHandleIconColor` (Function | Array, optional)
+
+* Default: `handle => handle.type === 'existing' ? [0xc0, 0x0, 0x0, 0xff] : [0x0, 0x0, 0x0, 0x80]`
+
+#### `getEditHandleIconAngle` (Function | Number, optional)
+
+* Default: `0`
+
+The rotating angle of each object, in degrees.
 
 ## Methods
 

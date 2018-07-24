@@ -1,5 +1,5 @@
 // @flow
-import type { GeoJsonFeature } from '../../types';
+import type { GeoJsonFeature } from '../types';
 
 type FeatureCollection = {
   features: Array<Object>

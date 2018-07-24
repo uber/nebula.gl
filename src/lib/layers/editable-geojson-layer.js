@@ -412,7 +412,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
           }
         };
       } else if (mode === 'drawRectangle') {
-        const corner1 = selectedFeature.geometry.coordinates;
+        const corner1 = ((selectedFeature.geometry.coordinates: any): Array<number>);
         const corner2 = groundCoords || corner1;
         const minX = Math.min(corner1[0], corner2[0]);
         const minY = Math.min(corner1[1], corner2[1]);
@@ -634,7 +634,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
     if (selectedFeature.geometry.type === 'Point') {
       positionIndexes = null;
-      const corner1 = selectedFeature.geometry.coordinates;
+      const corner1 = ((selectedFeature.geometry.coordinates: any): Array<number>);
       const corner2 = groundCoords;
       const minX = Math.min(corner1[0], corner2[0]);
       const minY = Math.min(corner1[1], corner2[1]);

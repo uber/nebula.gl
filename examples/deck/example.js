@@ -9,7 +9,7 @@ import { EditableGeoJsonLayer } from 'nebula.gl';
 
 import sampleGeoJson from '../data/sample-geojson.json';
 
-import editHandlePng from '../data/edit-handles.png';
+import iconSheet from '../data/edit-handles.png';
 
 const initialViewport = {
   bearing: 0,
@@ -72,7 +72,7 @@ export default class Example extends Component<
       mode: 'modify',
       pointsRemovable: true,
       selectedFeatureIndexes: [],
-      useIcons: false
+      editHandleType: 'point'
     };
   }
 
@@ -179,19 +179,12 @@ export default class Example extends Component<
           <dd style={styles.toolboxDescription}>
             <input
               type="checkbox"
-              checked={this.state.useIcons}
-              onChange={() => {
-                const prevState = this.state.selectedFeatureIndexes.slice();
-                this.setState(
-                  {
-                    selectedFeatureIndexes: [],
-                    useIcons: !this.state.useIcons
-                  },
-                  () => {
-                    this.setState({ selectedFeatureIndexes: prevState });
-                  }
-                );
-              }}
+              checked={this.state.editHandleType === 'icon'}
+              onChange={() =>
+                this.setState({
+                  editHandleType: this.state.editHandleType === 'icon' ? 'point' : 'icon'
+                })
+              }
             />
           </dd>
           <dt style={styles.toolboxTerm}>Select Features</dt>
@@ -260,9 +253,9 @@ export default class Example extends Component<
       },
 
       // test using icons for edit handles
-      useIconsForHandles: this.state.useIcons,
-      iconAtlas: editHandlePng,
-      iconMapping: {
+      editHandleType: this.state.editHandleType,
+      editHandleIconAtlas: iconSheet,
+      editHandleIconMapping: {
         intermediate: {
           x: 0,
           y: 0,
@@ -278,8 +271,10 @@ export default class Example extends Component<
           mask: false
         }
       },
-      getIcon: d => (d.type === 'existing' ? 'existing' : 'intermediate'),
-      getIconSize: 5,
+      getEditHandleIcon: d => d.type,
+      getEditHandleIconSize: 40,
+      getEditHandleIconColor: handle =>
+        handle.type === 'existing' ? [0xff, 0x80, 0x00, 0xff] : [0x0, 0x0, 0x0, 0x80],
 
       // Specify the same GeoJsonLayer props
       lineWidthMinPixels: 2,

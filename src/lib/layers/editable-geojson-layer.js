@@ -43,7 +43,9 @@ const defaultProps = {
   getLineDashArray: (feature, isSelected, mode) =>
     isSelected && mode !== 'view' ? [7, 4] : [0, 0],
 
-  // Editing handles
+  editHandleType: 'point',
+
+  // point handles
   editHandlePointRadiusScale: 1,
   editHandlePointRadiusMinPixels: 4,
   editHandlePointRadiusMaxPixels: Number.MAX_SAFE_INTEGER,
@@ -53,12 +55,17 @@ const defaultProps = {
       : DEFAULT_EDITING_INTERMEDIATE_POINT_COLOR,
   getEditHandlePointRadius: handle => (handle.type === 'existing' ? 5 : 3),
 
-  // Icon handles
-  useIconsForHandles: false,
-  iconAtlas: null,
-  iconMapping: null,
-  getIcon: null,
-  getIconSize: 5
+  // icon handles
+  editHandleIconAtlas: null,
+  editHandleIconMapping: null,
+  editHandleIconSizeScale: 1,
+  getEditHandleIcon: handle => handle.type,
+  getEditHandleIconSize: 10,
+  getEditHandleIconColor: handle =>
+    handle.type === 'existing'
+      ? DEFAULT_EDITING_EXISTING_POINT_COLOR
+      : DEFAULT_EDITING_INTERMEDIATE_POINT_COLOR,
+  getEditHandleIconAngle: 0
 };
 
 export default class EditableGeoJsonLayer extends EditableLayer {
@@ -188,35 +195,41 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
 
     const sharedProps = {
-      id: 'edit-handles',
+      id: `${this.props.editHandleType}-edit-handles`,
       data: this.state.editHandles,
-      fp64: this.props.fp64,
-      getColor: this.props.getEditHandlePointColor
+      fp64: this.props.fp64
     };
 
-    const layer = this.props.useIconsForHandles
-      ? new IconLayer(
-          this.getSubLayerProps({
-            ...sharedProps,
-            iconAtlas: this.props.iconAtlas,
-            iconMapping: this.props.iconMapping,
-            sizeScale: this.props.editHandlePointRadiusScale * 5,
-            getIcon: this.props.getIcon,
-            getPosition: d => d.position,
-            getSize: this.props.getIconSize
-          })
-        )
-      : new ScatterplotLayer(
-          this.getSubLayerProps({
-            ...sharedProps,
+    const layer =
+      this.props.editHandleType === 'icon'
+        ? new IconLayer(
+            this.getSubLayerProps({
+              ...sharedProps,
+              iconAtlas: this.props.editHandleIconAtlas,
+              iconMapping: this.props.editHandleIconMapping,
+              sizeScale: this.props.editHandleIconSizeScale,
+              getIcon: this.props.getEditHandleIcon,
+              getSize: this.props.getEditHandleIconSize,
+              getColor: this.props.getEditHandleIconColor,
+              getAngle: this.props.getEditHandleIconAngle,
 
-            // Proxy editing point props
-            radiusScale: this.props.editHandlePointRadiusScale,
-            radiusMinPixels: this.props.editHandlePointRadiusMinPixels,
-            radiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
-            getRadius: this.props.getEditHandlePointRadius
-          })
-        );
+              getPosition: d => d.position
+            })
+          )
+        : this.props.editHandleType === 'point'
+          ? new ScatterplotLayer(
+              this.getSubLayerProps({
+                ...sharedProps,
+
+                // Proxy editing point props
+                radiusScale: this.props.editHandlePointRadiusScale,
+                radiusMinPixels: this.props.editHandlePointRadiusMinPixels,
+                radiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
+                getRadius: this.props.getEditHandlePointRadius,
+                getColor: this.props.getEditHandlePointColor
+              })
+            )
+          : null;
 
     return [layer];
   }

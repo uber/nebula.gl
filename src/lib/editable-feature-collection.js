@@ -1,4 +1,6 @@
 // @flow
+import type { GeoJsonFeature } from '../../types';
+
 type FeatureCollection = {
   features: Array<Object>
 };
@@ -154,6 +156,18 @@ export class EditableFeatureCollection {
       ]
     };
 
+    return new EditableFeatureCollection(updatedFeatureCollection);
+  }
+
+  replaceFeature(featureIndex: number, feature: GeoJsonFeature) {
+    const updatedFeatureCollection = {
+      ...this.featureCollection,
+      features: [
+        ...this.featureCollection.features.slice(0, featureIndex),
+        feature,
+        ...this.featureCollection.features.slice(featureIndex + 1)
+      ]
+    };
     return new EditableFeatureCollection(updatedFeatureCollection);
   }
 

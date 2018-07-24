@@ -54,15 +54,10 @@ export default class Example extends Component<
   constructor() {
     super();
 
-    // TODO: once https://github.com/uber/deck.gl/pull/1918 lands, remove this filter since it'll work with MultiPolygons
-    const testPolygonsWithoutMultiPolygons = testPolygons.filter(
-      feature => feature.geometry.type === 'Polygon'
-    );
-
     this.state = {
       viewport: initialViewport,
       allowEdit: true,
-      testFeatures: { type: 'FeatureCollection', features: testPolygonsWithoutMultiPolygons }
+      testFeatures: { type: 'FeatureCollection', features: testPolygons }
     };
 
     this.testSegments = [];

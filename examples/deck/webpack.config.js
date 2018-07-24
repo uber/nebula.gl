@@ -26,6 +26,17 @@ const CONFIG = {
         test: /\.js$/,
         loader: 'babel-loader',
         include: [resolve('./node_modules/@mapbox/')]
+      },
+      {
+        test: /\.(png|jpg|gif)$/,
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              limit: 8192
+            }
+          }
+        ]
       }
     ]
   },

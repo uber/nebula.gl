@@ -593,7 +593,12 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
     if (selectedFeature.geometry.type === 'Point') {
       positionIndexes = [1];
-      featureCollection = featureCollection.upgradePointToLineString(featureIndex, groundCoords);
+
+      // Upgrade from Point to LineString
+      featureCollection = featureCollection.replaceGeometry(featureIndex, {
+        type: 'LineString',
+        coordinates: [selectedFeature.geometry.coordinates, groundCoords]
+      });
     } else if (selectedFeature.geometry.type === 'LineString') {
       positionIndexes = [selectedFeature.geometry.coordinates.length];
       featureCollection = featureCollection.addPosition(
@@ -632,7 +637,11 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
     if (selectedFeature.geometry.type === 'Point') {
       positionIndexes = [1];
-      featureCollection = featureCollection.upgradePointToLineString(featureIndex, groundCoords);
+      // Upgrade from Point to LineString
+      featureCollection = featureCollection.replaceGeometry(featureIndex, {
+        type: 'LineString',
+        coordinates: [selectedFeature.geometry.coordinates, groundCoords]
+      });
     } else if (selectedFeature.geometry.type === 'LineString') {
       const pickedHandleInfo = this.getPickedEditHandle(picks);
       if (
@@ -641,7 +650,12 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         selectedFeature.geometry.coordinates.length > 2
       ) {
         // They clicked the first position of the LineString, so close the polygon
-        featureCollection = featureCollection.convertLineStringToPolygon(featureIndex);
+        featureCollection = featureCollection.replaceGeometry(featureIndex, {
+          type: 'Polygon',
+          coordinates: [
+            [...selectedFeature.geometry.coordinates, selectedFeature.geometry.coordinates[0]]
+          ]
+        });
         updatedMode = 'modify';
       } else {
         // Add another point along the LineString

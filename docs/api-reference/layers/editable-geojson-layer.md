@@ -85,7 +85,7 @@ The `mode` property dictates what type of edits the user can perform and how to 
 
 * `drawPolygon`: user can draw a new `Polygon` feature by clicking positions to add then closing the polygon.
 
-  * If no feature is selected, clicking will create a new feature `Point` feature and select it (by passing its index as `updatedSelectedFeatureIndexes`).
+  * If no feature is selected, clicking will create a new `Point` feature and select it (by passing its index as `updatedSelectedFeatureIndexes`).
 
   * If a `Point` feature is selected, clicking will convert it to a `LineString` and add the clicked position to it.
 
@@ -95,11 +95,21 @@ The `mode` property dictates what type of edits the user can perform and how to 
 
 * `drawRectangle`: user can draw a new rectanglular `Polygon` feature by clicking two opposing corners of the rectangle.
 
-  * If no feature is selected, clicking will create a new feature `Point` feature and select it (by passing its index as `updatedSelectedFeatureIndexes`).
+  * If no feature is selected, clicking will create a new `Point` feature and select it (by passing its index as `updatedSelectedFeatureIndexes`).
 
   * If a `Point` feature is selected, clicking will convert it to a `Polygon` whose two opposing corners are the original point and the position clicked.
 
   * If a `LineString` feature is selected, the user will be prevented from drawing a rectangle.
+
+  * If multiple features are selected, the user will be prevented from drawing.
+
+* `drawCircle`: user can draw a new circular `Polygon` feature by clicking the center then along the ring.
+
+  * If no feature is selected, clicking will create a new `Point` feature and select it (by passing its index as `updatedSelectedFeatureIndexes`).
+
+  * If a `Point` feature is selected, clicking will convert it to a `Polygon` whose center is the original point and radius is the distance to the clicked position.
+
+  * If a `LineString` feature is selected, the user will be prevented from drawing a circle.
 
   * If multiple features are selected, the user will be prevented from drawing.
 

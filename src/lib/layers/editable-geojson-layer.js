@@ -3,6 +3,8 @@
 
 import { GeoJsonLayer, ScatterplotLayer } from 'deck.gl';
 import bboxPolygon from '@turf/bbox-polygon';
+import circle from '@turf/circle';
+import distance from '@turf/distance';
 import type { GeoJsonFeature } from '../../types';
 import { EditableFeatureCollection } from '../editable-feature-collection';
 import EditableLayer from './editable-layer';
@@ -249,7 +251,8 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     } else if (
       this.props.mode === 'drawLineString' ||
       this.props.mode === 'drawPolygon' ||
-      this.props.mode === 'drawRectangle'
+      this.props.mode === 'drawRectangle' ||
+      this.props.mode === 'drawCircle'
     ) {
       if (!selectedFeatures.length) {
         this.handleDrawNewPoint(groundCoords);
@@ -273,6 +276,14 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         }
         if (this.props.mode === 'drawRectangle') {
           this.handleDrawRectangle(
+            selectedFeatures[0],
+            selectedFeatureIndexes[0],
+            groundCoords,
+            picks
+          );
+        }
+        if (this.props.mode === 'drawCircle') {
+          this.handleDrawCircle(
             selectedFeatures[0],
             selectedFeatureIndexes[0],
             groundCoords,
@@ -359,7 +370,8 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     if (
       this.props.mode === 'drawLineString' ||
       this.props.mode === 'drawPolygon' ||
-      this.props.mode === 'drawRectangle'
+      this.props.mode === 'drawRectangle' ||
+      this.props.mode === 'drawCircle'
     ) {
       const selectedFeature =
         this.state.selectedFeatures.length === 1 ? this.state.selectedFeatures[0] : null;
@@ -420,6 +432,10 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         const maxY = Math.max(corner1[1], corner2[1]);
 
         drawFeature = bboxPolygon([minX, minY, maxX, maxY]);
+      } else if (mode === 'drawCircle') {
+        const center = ((selectedFeature.geometry.coordinates: any): Array<number>);
+        const radius = Math.max(distance(selectedFeature, groundCoords || center), 0.001);
+        drawFeature = circle(center, radius);
       }
     } else if (selectedFeature.geometry.type === 'LineString') {
       const lastPositionOfLineString =
@@ -634,16 +650,46 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
     if (selectedFeature.geometry.type === 'Point') {
       positionIndexes = null;
-      const corner1 = ((selectedFeature.geometry.coordinates: any): Array<number>);
-      const corner2 = groundCoords;
-      const minX = Math.min(corner1[0], corner2[0]);
-      const minY = Math.min(corner1[1], corner2[1]);
-      const maxX = Math.max(corner1[0], corner2[0]);
-      const maxY = Math.max(corner1[1], corner2[1]);
+      featureCollection = featureCollection.replaceGeometry(
+        featureIndex,
+        this.state.drawFeature.geometry
+      );
+      updatedMode = 'modify';
+    } else {
+      console.warn(`Unsupported geometry type: ${selectedFeature.geometry.type}`); // eslint-disable-line
+      return;
+    }
 
-      const rectangle = bboxPolygon([minX, minY, maxX, maxY]);
+    const updatedData = featureCollection.getObject();
 
-      featureCollection = featureCollection.replaceFeature(featureIndex, rectangle);
+    this.props.onEdit({
+      updatedData,
+      updatedMode,
+      updatedSelectedFeatureIndexes: this.props.selectedFeatureIndexes,
+      editType: 'addPosition',
+      featureIndex,
+      positionIndexes,
+      position: groundCoords
+    });
+  }
+
+  handleDrawCircle(
+    selectedFeature: GeoJsonFeature,
+    featureIndex: number,
+    groundCoords: number[],
+    picks: Object[]
+  ) {
+    let featureCollection = this.state.editableFeatureCollection;
+    let positionIndexes;
+
+    let updatedMode = this.props.mode;
+
+    if (selectedFeature.geometry.type === 'Point') {
+      positionIndexes = null;
+      featureCollection = featureCollection.replaceGeometry(
+        featureIndex,
+        this.state.drawFeature.geometry
+      );
       updatedMode = 'modify';
     } else {
       console.warn(`Unsupported geometry type: ${selectedFeature.geometry.type}`); // eslint-disable-line

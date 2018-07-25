@@ -22,7 +22,7 @@ describe('EditableFeatureCollection', () => {
     lineStringFeature = {
       type: 'Feature',
       properties: {},
-      geometry: { type: 'LineString', coordinates: [[1, 2], [3, 4]] }
+      geometry: { type: 'LineString', coordinates: [[1, 2], [2, 3], [3, 4]] }
     };
 
     polygonFeature = {
@@ -48,7 +48,10 @@ describe('EditableFeatureCollection', () => {
     multiLineStringFeature = {
       type: 'Feature',
       properties: {},
-      geometry: { type: 'MultiLineString', coordinates: [[[1, 2], [3, 4]], [[5, 6], [7, 8]]] }
+      geometry: {
+        type: 'MultiLineString',
+        coordinates: [[[1, 2], [2, 3], [3, 4]], [[5, 6], [6, 7], [7, 8]]]
+      }
     };
 
     multiPolygonFeature = {
@@ -125,7 +128,7 @@ describe('EditableFeatureCollection', () => {
       const updatedFeatures = features.replacePosition(0, [0], [10, 20]);
 
       const actualCoordinates = updatedFeatures.getObject().features[0].geometry.coordinates;
-      const expectedCoordinates = [[10, 20], [3, 4]];
+      const expectedCoordinates = [[10, 20], [2, 3], [3, 4]];
 
       expect(actualCoordinates).toEqual(expectedCoordinates);
     });
@@ -190,7 +193,7 @@ describe('EditableFeatureCollection', () => {
       const updatedFeatures = features.removePosition(0, [0]);
 
       expect(updatedFeatures).not.toBe(features);
-      expect(lineStringFeature.geometry.coordinates).toEqual([[1, 2], [3, 4]]);
+      expect(lineStringFeature.geometry.coordinates).toEqual([[1, 2], [2, 3], [3, 4]]);
     });
 
     it('throws exception when attempting to remove Point', () => {
@@ -199,8 +202,8 @@ describe('EditableFeatureCollection', () => {
         features: [pointFeature]
       });
 
-      expect(() => features.removePosition(0, [])).toThrow(
-        'Must specify the index of the position to remove'
+      expect(() => features.removePosition(0, [0])).toThrow(
+        `Can't remove a position from a Point or there'd be nothing left`
       );
     });
 
@@ -212,7 +215,7 @@ describe('EditableFeatureCollection', () => {
       const updatedFeatures = features.removePosition(0, [0]);
 
       const actualCoordinates = updatedFeatures.getObject().features[0].geometry.coordinates;
-      const expectedCoordinates = [[3, 4]];
+      const expectedCoordinates = [[2, 3], [3, 4]];
 
       expect(actualCoordinates).toEqual(expectedCoordinates);
     });
@@ -264,6 +267,165 @@ describe('EditableFeatureCollection', () => {
 
       expect(actualCoordinates).toEqual(expectedCoordinates);
     });
+
+    it('downgrades a LineString to a Point when it has only one position', () => {
+      const features = new EditableFeatureCollection({
+        type: 'FeatureCollection',
+        features: [
+          { type: 'Feature', geometry: { type: 'LineString', coordinates: [[0, 1], [2, 3]] } }
+        ]
+      });
+      const updatedFeatures = features.removePosition(0, [1]);
+
+      const actualGeometry = updatedFeatures.getObject().features[0].geometry;
+      const expectedGeometry = {
+        type: 'Point',
+        coordinates: [0, 1]
+      };
+
+      expect(actualGeometry).toEqual(expectedGeometry);
+    });
+
+    it('downgrades a Polygon to a LineString when it has less than four positions', () => {
+      const features = new EditableFeatureCollection({
+        type: 'FeatureCollection',
+        features: [polygonFeature]
+      });
+      const updatedFeatures = features
+        // Remove positions from outer ring
+        .removePosition(0, [0, 1])
+        .removePosition(0, [0, 1]);
+
+      const actualGeometry = updatedFeatures.getObject().features[0].geometry;
+      const expectedGeometry = {
+        type: 'LineString',
+        coordinates: [[-1, -1], [-1, 1]]
+      };
+
+      expect(actualGeometry).toEqual(expectedGeometry);
+    });
+
+    it('removes hole from Polygon when it have less than four positions', () => {
+      const features = new EditableFeatureCollection({
+        type: 'FeatureCollection',
+        features: [polygonFeature]
+      });
+      const updatedFeatures = features.removePosition(0, [1, 1]).removePosition(0, [1, 1]);
+
+      const actualGeometry = updatedFeatures.getObject().features[0].geometry;
+      const expectedGeometry = {
+        type: 'Polygon',
+        coordinates: [[[-1, -1], [1, -1], [1, 1], [-1, 1], [-1, -1]]]
+      };
+
+      expect(actualGeometry).toEqual(expectedGeometry);
+    });
+
+    it('removes LineString from MultiLineString when it has only one position', () => {
+      const features = new EditableFeatureCollection({
+        type: 'FeatureCollection',
+        features: [multiLineStringFeature]
+      });
+      const updatedFeatures = features.removePosition(0, [1, 0]).removePosition(0, [1, 0]);
+
+      const actualGeometry = updatedFeatures.getObject().features[0].geometry;
+      const expectedGeometry = {
+        type: 'MultiLineString',
+        coordinates: [[[1, 2], [2, 3], [3, 4]]]
+      };
+
+      expect(actualGeometry).toEqual(expectedGeometry);
+    });
+
+    it('downgrades a MultiLineString to a Point when it has only one position', () => {
+      const features = new EditableFeatureCollection({
+        type: 'FeatureCollection',
+        features: [multiLineStringFeature]
+      });
+      const updatedFeatures = features
+        .removePosition(0, [0, 0])
+        .removePosition(0, [0, 0])
+        .removePosition(0, [0, 0])
+        .removePosition(0, [0, 0]);
+
+      const actualGeometry = updatedFeatures.getObject().features[0].geometry;
+      const expectedGeometry = {
+        type: 'Point',
+        coordinates: [7, 8]
+      };
+
+      expect(actualGeometry).toEqual(expectedGeometry);
+    });
+
+    it('removes Polygon from MultiPolygon when outer ring has less than four positions', () => {
+      const features = new EditableFeatureCollection({
+        type: 'FeatureCollection',
+        features: [multiPolygonFeature]
+      });
+      const updatedFeatures = features.removePosition(0, [1, 0, 0]).removePosition(0, [1, 0, 0]);
+
+      const actualGeometry = updatedFeatures.getObject().features[0].geometry;
+      const expectedGeometry = {
+        type: 'MultiPolygon',
+        coordinates: [multiPolygonFeature.geometry.coordinates[0]]
+      };
+
+      expect(actualGeometry).toEqual(expectedGeometry);
+    });
+
+    it('removes hole from MultiPolygon when it has less than four positions', () => {
+      // coordinates: [
+      //     [
+      //       // exterior ring polygon 1
+      //       [[-1, -1], [1, -1], [1, 1], [-1, 1], [-1, -1]],
+      //       // hole  polygon 1
+      //       [[-0.5, -0.5], [-0.5, 0.5], [0.5, 0.5], [0.5, -0.5], [-0.5, -0.5]]
+      //     ],
+      //     [
+      //       // exterior ring polygon 2
+      //       [[2, -1], [4, -1], [4, 1], [2, 1], [2, -1]]
+      //     ]
+      //   ]
+
+      const features = new EditableFeatureCollection({
+        type: 'FeatureCollection',
+        features: [multiPolygonFeature]
+      });
+      const updatedFeatures = features.removePosition(0, [0, 1, 0]).removePosition(0, [0, 1, 0]);
+
+      const actualGeometry = updatedFeatures.getObject().features[0].geometry;
+      const expectedGeometry = {
+        type: 'MultiPolygon',
+        coordinates: [
+          [[[-1, -1], [1, -1], [1, 1], [-1, 1], [-1, -1]]],
+          [[[2, -1], [4, -1], [4, 1], [2, 1], [2, -1]]]
+        ]
+      };
+
+      expect(actualGeometry).toEqual(expectedGeometry);
+    });
+
+    it('downgrades a MultiPolygon to a LineString when its only Polygon has less than four positions', () => {
+      const features = new EditableFeatureCollection({
+        type: 'FeatureCollection',
+        features: [multiPolygonFeature]
+      });
+      const updatedFeatures = features
+        // Remove the second polygon
+        .removePosition(0, [1, 0, 0])
+        .removePosition(0, [1, 0, 0])
+        // Remove positions from outer ring
+        .removePosition(0, [0, 0, 1])
+        .removePosition(0, [0, 0, 1]);
+
+      const actualGeometry = updatedFeatures.getObject().features[0].geometry;
+      const expectedGeometry = {
+        type: 'LineString',
+        coordinates: [[-1, -1], [-1, 1]]
+      };
+
+      expect(actualGeometry).toEqual(expectedGeometry);
+    });
   });
 
   describe('addPosition()', () => {
@@ -275,7 +437,7 @@ describe('EditableFeatureCollection', () => {
       const updatedFeatures = features.addPosition(0, [1], [2, 3]);
 
       expect(updatedFeatures).not.toBe(features);
-      expect(lineStringFeature.geometry.coordinates).toEqual([[1, 2], [3, 4]]);
+      expect(lineStringFeature.geometry.coordinates).toEqual([[1, 2], [2, 3], [3, 4]]);
     });
 
     it('throws exception when attempting to add position to Point', () => {
@@ -297,7 +459,7 @@ describe('EditableFeatureCollection', () => {
       const updatedFeatures = features.addPosition(0, [0], [10, 20]);
 
       const actualCoordinates = updatedFeatures.getObject().features[0].geometry.coordinates;
-      const expectedCoordinates = [[10, 20], [1, 2], [3, 4]];
+      const expectedCoordinates = [[10, 20], [1, 2], [2, 3], [3, 4]];
 
       expect(actualCoordinates).toEqual(expectedCoordinates);
     });
@@ -310,7 +472,7 @@ describe('EditableFeatureCollection', () => {
       const updatedFeatures = features.addPosition(0, [1], [10, 20]);
 
       const actualCoordinates = updatedFeatures.getObject().features[0].geometry.coordinates;
-      const expectedCoordinates = [[1, 2], [10, 20], [3, 4]];
+      const expectedCoordinates = [[1, 2], [10, 20], [2, 3], [3, 4]];
 
       expect(actualCoordinates).toEqual(expectedCoordinates);
     });
@@ -320,10 +482,10 @@ describe('EditableFeatureCollection', () => {
         type: 'FeatureCollection',
         features: [lineStringFeature]
       });
-      const updatedFeatures = features.addPosition(0, [2], [10, 20]);
+      const updatedFeatures = features.addPosition(0, [3], [10, 20]);
 
       const actualCoordinates = updatedFeatures.getObject().features[0].geometry.coordinates;
-      const expectedCoordinates = [[1, 2], [3, 4], [10, 20]];
+      const expectedCoordinates = [[1, 2], [2, 3], [3, 4], [10, 20]];
 
       expect(actualCoordinates).toEqual(expectedCoordinates);
     });
@@ -435,8 +597,10 @@ describe('EditableFeatureCollection', () => {
       const actual = features.getEditHandles(0);
       const expected = [
         { featureIndex: 0, position: [1, 2], positionIndexes: [0], type: 'existing' },
-        { featureIndex: 0, position: [2, 3], positionIndexes: [1], type: 'intermediate' },
-        { featureIndex: 0, position: [3, 4], positionIndexes: [1], type: 'existing' }
+        { featureIndex: 0, position: [1.5, 2.5], positionIndexes: [1], type: 'intermediate' },
+        { featureIndex: 0, position: [2, 3], positionIndexes: [1], type: 'existing' },
+        { featureIndex: 0, position: [2.5, 3.5], positionIndexes: [2], type: 'intermediate' },
+        { featureIndex: 0, position: [3, 4], positionIndexes: [2], type: 'existing' }
       ];
 
       expect(actual).toEqual(expected);
@@ -497,11 +661,15 @@ describe('EditableFeatureCollection', () => {
       const actual = features.getEditHandles(0);
       const expected = [
         { featureIndex: 0, position: [1, 2], positionIndexes: [0, 0], type: 'existing' },
-        { featureIndex: 0, position: [2, 3], positionIndexes: [0, 1], type: 'intermediate' },
-        { featureIndex: 0, position: [3, 4], positionIndexes: [0, 1], type: 'existing' },
+        { featureIndex: 0, position: [1.5, 2.5], positionIndexes: [0, 1], type: 'intermediate' },
+        { featureIndex: 0, position: [2, 3], positionIndexes: [0, 1], type: 'existing' },
+        { featureIndex: 0, position: [2.5, 3.5], positionIndexes: [0, 2], type: 'intermediate' },
+        { featureIndex: 0, position: [3, 4], positionIndexes: [0, 2], type: 'existing' },
         { featureIndex: 0, position: [5, 6], positionIndexes: [1, 0], type: 'existing' },
-        { featureIndex: 0, position: [6, 7], positionIndexes: [1, 1], type: 'intermediate' },
-        { featureIndex: 0, position: [7, 8], positionIndexes: [1, 1], type: 'existing' }
+        { featureIndex: 0, position: [5.5, 6.5], positionIndexes: [1, 1], type: 'intermediate' },
+        { featureIndex: 0, position: [6, 7], positionIndexes: [1, 1], type: 'existing' },
+        { featureIndex: 0, position: [6.5, 7.5], positionIndexes: [1, 2], type: 'intermediate' },
+        { featureIndex: 0, position: [7, 8], positionIndexes: [1, 2], type: 'existing' }
       ];
 
       expect(actual).toEqual(expected);

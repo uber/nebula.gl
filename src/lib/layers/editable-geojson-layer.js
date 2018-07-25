@@ -2,6 +2,9 @@
 /* eslint-env browser */
 
 import { GeoJsonLayer, ScatterplotLayer, IconLayer } from 'deck.gl';
+import bboxPolygon from '@turf/bbox-polygon';
+import circle from '@turf/circle';
+import distance from '@turf/distance';
 import type { GeoJsonFeature } from '../../types';
 import { EditableFeatureCollection } from '../editable-feature-collection';
 import EditableLayer from './editable-layer';
@@ -14,7 +17,6 @@ const DEFAULT_EDITING_EXISTING_POINT_COLOR = [0xc0, 0x0, 0x0, 0xff];
 const DEFAULT_EDITING_INTERMEDIATE_POINT_COLOR = [0x0, 0x0, 0x0, 0x80];
 
 const defaultProps = {
-  // 'view' | 'modify' | 'drawLineString' | 'drawPolygon'
   mode: 'modify',
 
   // Edit and interaction events
@@ -279,7 +281,12 @@ export default class EditableGeoJsonLayer extends EditableLayer {
           editHandleInfo.object.positionIndexes
         );
       }
-    } else if (this.props.mode === 'drawLineString' || this.props.mode === 'drawPolygon') {
+    } else if (
+      this.props.mode === 'drawLineString' ||
+      this.props.mode === 'drawPolygon' ||
+      this.props.mode === 'drawRectangle' ||
+      this.props.mode === 'drawCircle'
+    ) {
       if (!selectedFeatures.length) {
         this.handleDrawNewPoint(groundCoords);
       } else if (selectedFeatures.length === 1) {
@@ -294,6 +301,22 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         }
         if (this.props.mode === 'drawPolygon') {
           this.handleDrawPolygon(
+            selectedFeatures[0],
+            selectedFeatureIndexes[0],
+            groundCoords,
+            picks
+          );
+        }
+        if (this.props.mode === 'drawRectangle') {
+          this.handleDrawRectangle(
+            selectedFeatures[0],
+            selectedFeatureIndexes[0],
+            groundCoords,
+            picks
+          );
+        }
+        if (this.props.mode === 'drawCircle') {
+          this.handleDrawCircle(
             selectedFeatures[0],
             selectedFeatureIndexes[0],
             groundCoords,
@@ -377,7 +400,12 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }
 
   onPointerMove({ screenCoords, groundCoords, isDragging, pointerDownPicks, sourceEvent }: Object) {
-    if (this.props.mode === 'drawLineString' || this.props.mode === 'drawPolygon') {
+    if (
+      this.props.mode === 'drawLineString' ||
+      this.props.mode === 'drawPolygon' ||
+      this.props.mode === 'drawRectangle' ||
+      this.props.mode === 'drawCircle'
+    ) {
       const selectedFeature =
         this.state.selectedFeatures.length === 1 ? this.state.selectedFeatures[0] : null;
       const drawFeature = this.getDrawFeature(selectedFeature, this.props.mode, groundCoords);
@@ -416,17 +444,32 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         }
       };
     } else if (selectedFeature.geometry.type === 'Point') {
-      // Draw an extension line starting from the point
-      const startPosition = selectedFeature.geometry.coordinates;
-      const endPosition = groundCoords || startPosition;
+      if (mode === 'drawLineString' || mode === 'drawPolygon') {
+        // Draw an extension line starting from the point
+        const startPosition = selectedFeature.geometry.coordinates;
+        const endPosition = groundCoords || startPosition;
 
-      drawFeature = {
-        type: 'Feature',
-        geometry: {
-          type: 'LineString',
-          coordinates: [startPosition, endPosition]
-        }
-      };
+        drawFeature = {
+          type: 'Feature',
+          geometry: {
+            type: 'LineString',
+            coordinates: [startPosition, endPosition]
+          }
+        };
+      } else if (mode === 'drawRectangle') {
+        const corner1 = ((selectedFeature.geometry.coordinates: any): Array<number>);
+        const corner2 = groundCoords || corner1;
+        const minX = Math.min(corner1[0], corner2[0]);
+        const minY = Math.min(corner1[1], corner2[1]);
+        const maxX = Math.max(corner1[0], corner2[0]);
+        const maxY = Math.max(corner1[1], corner2[1]);
+
+        drawFeature = bboxPolygon([minX, minY, maxX, maxY]);
+      } else if (mode === 'drawCircle') {
+        const center = ((selectedFeature.geometry.coordinates: any): Array<number>);
+        const radius = Math.max(distance(selectedFeature, groundCoords || center), 0.001);
+        drawFeature = circle(center, radius);
+      }
     } else if (selectedFeature.geometry.type === 'LineString') {
       const lastPositionOfLineString =
         selectedFeature.geometry.coordinates[selectedFeature.geometry.coordinates.length - 1];
@@ -550,7 +593,12 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
     if (selectedFeature.geometry.type === 'Point') {
       positionIndexes = [1];
-      featureCollection = featureCollection.upgradePointToLineString(featureIndex, groundCoords);
+
+      // Upgrade from Point to LineString
+      featureCollection = featureCollection.replaceGeometry(featureIndex, {
+        type: 'LineString',
+        coordinates: [selectedFeature.geometry.coordinates, groundCoords]
+      });
     } else if (selectedFeature.geometry.type === 'LineString') {
       positionIndexes = [selectedFeature.geometry.coordinates.length];
       featureCollection = featureCollection.addPosition(
@@ -560,6 +608,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       );
     } else {
       console.warn(`Unsupported geometry type: ${selectedFeature.geometry.type}`); // eslint-disable-line
+      return;
     }
 
     const updatedData = featureCollection.getObject();
@@ -588,7 +637,11 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
     if (selectedFeature.geometry.type === 'Point') {
       positionIndexes = [1];
-      featureCollection = featureCollection.upgradePointToLineString(featureIndex, groundCoords);
+      // Upgrade from Point to LineString
+      featureCollection = featureCollection.replaceGeometry(featureIndex, {
+        type: 'LineString',
+        coordinates: [selectedFeature.geometry.coordinates, groundCoords]
+      });
     } else if (selectedFeature.geometry.type === 'LineString') {
       const pickedHandleInfo = this.getPickedEditHandle(picks);
       if (
@@ -597,7 +650,12 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         selectedFeature.geometry.coordinates.length > 2
       ) {
         // They clicked the first position of the LineString, so close the polygon
-        featureCollection = featureCollection.convertLineStringToPolygon(featureIndex);
+        featureCollection = featureCollection.replaceGeometry(featureIndex, {
+          type: 'Polygon',
+          coordinates: [
+            [...selectedFeature.geometry.coordinates, selectedFeature.geometry.coordinates[0]]
+          ]
+        });
         updatedMode = 'modify';
       } else {
         // Add another point along the LineString
@@ -610,6 +668,79 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       }
     } else {
       console.warn(`Unsupported geometry type: ${selectedFeature.geometry.type}`); // eslint-disable-line
+      return;
+    }
+
+    const updatedData = featureCollection.getObject();
+
+    this.props.onEdit({
+      updatedData,
+      updatedMode,
+      updatedSelectedFeatureIndexes: this.props.selectedFeatureIndexes,
+      editType: 'addPosition',
+      featureIndex,
+      positionIndexes,
+      position: groundCoords
+    });
+  }
+
+  handleDrawRectangle(
+    selectedFeature: GeoJsonFeature,
+    featureIndex: number,
+    groundCoords: number[],
+    picks: Object[]
+  ) {
+    let featureCollection = this.state.editableFeatureCollection;
+    let positionIndexes;
+
+    let updatedMode = this.props.mode;
+
+    if (selectedFeature.geometry.type === 'Point') {
+      positionIndexes = null;
+      featureCollection = featureCollection.replaceGeometry(
+        featureIndex,
+        this.state.drawFeature.geometry
+      );
+      updatedMode = 'modify';
+    } else {
+      console.warn(`Unsupported geometry type: ${selectedFeature.geometry.type}`); // eslint-disable-line
+      return;
+    }
+
+    const updatedData = featureCollection.getObject();
+
+    this.props.onEdit({
+      updatedData,
+      updatedMode,
+      updatedSelectedFeatureIndexes: this.props.selectedFeatureIndexes,
+      editType: 'addPosition',
+      featureIndex,
+      positionIndexes,
+      position: groundCoords
+    });
+  }
+
+  handleDrawCircle(
+    selectedFeature: GeoJsonFeature,
+    featureIndex: number,
+    groundCoords: number[],
+    picks: Object[]
+  ) {
+    let featureCollection = this.state.editableFeatureCollection;
+    let positionIndexes;
+
+    let updatedMode = this.props.mode;
+
+    if (selectedFeature.geometry.type === 'Point') {
+      positionIndexes = null;
+      featureCollection = featureCollection.replaceGeometry(
+        featureIndex,
+        this.state.drawFeature.geometry
+      );
+      updatedMode = 'modify';
+    } else {
+      console.warn(`Unsupported geometry type: ${selectedFeature.geometry.type}`); // eslint-disable-line
+      return;
     }
 
     const updatedData = featureCollection.getObject();

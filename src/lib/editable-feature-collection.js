@@ -1,4 +1,6 @@
 // @flow
+import type { GeoJsonGeometry } from '../types';
+
 type FeatureCollection = {
   features: Array<Object>
 };
@@ -157,82 +159,27 @@ export class EditableFeatureCollection {
     return new EditableFeatureCollection(updatedFeatureCollection);
   }
 
+  replaceGeometry(featureIndex: number, geometry: GeoJsonGeometry) {
+    const updatedFeature = {
+      ...this.featureCollection.features[featureIndex],
+      geometry
+    };
+    const updatedFeatureCollection = {
+      ...this.featureCollection,
+      features: [
+        ...this.featureCollection.features.slice(0, featureIndex),
+        updatedFeature,
+        ...this.featureCollection.features.slice(featureIndex + 1)
+      ]
+    };
+    return new EditableFeatureCollection(updatedFeatureCollection);
+  }
+
   addFeature(feature: Object) {
     const updatedFeatureCollection = {
       ...this.featureCollection,
       features: [...this.featureCollection.features, feature]
     };
-    return new EditableFeatureCollection(updatedFeatureCollection);
-  }
-
-  upgradePointToLineString(
-    featureIndex: number,
-    positionToAdd: [number, number] | [number, number, number]
-  ): EditableFeatureCollection {
-    const featureToUpdate = this.featureCollection.features[featureIndex];
-
-    if (featureToUpdate.geometry.type !== 'Point') {
-      throw new Error(
-        `Must be performed on a Point feature but requested on ${
-          featureToUpdate.geometry.type
-        } feature`
-      );
-    }
-
-    const updatedFeature = {
-      ...featureToUpdate,
-      geometry: {
-        ...featureToUpdate.geometry,
-        type: 'LineString',
-        coordinates: [featureToUpdate.geometry.coordinates, positionToAdd]
-      }
-    };
-
-    // Immutably replace the feature being edited in the featureCollection
-    const updatedFeatureCollection = {
-      ...this.featureCollection,
-      features: [
-        ...this.featureCollection.features.slice(0, featureIndex),
-        updatedFeature,
-        ...this.featureCollection.features.slice(featureIndex + 1)
-      ]
-    };
-
-    return new EditableFeatureCollection(updatedFeatureCollection);
-  }
-
-  convertLineStringToPolygon(featureIndex: number): EditableFeatureCollection {
-    const featureToUpdate = this.featureCollection.features[featureIndex];
-
-    if (featureToUpdate.geometry.type !== 'LineString') {
-      throw new Error(
-        `Must be performed on a LineString feature but requested on ${
-          featureToUpdate.geometry.type
-        } feature`
-      );
-    }
-
-    const updatedFeature = {
-      ...featureToUpdate,
-      geometry: {
-        ...featureToUpdate.geometry,
-        type: 'Polygon',
-        coordinates: [
-          [...featureToUpdate.geometry.coordinates, featureToUpdate.geometry.coordinates[0]]
-        ]
-      }
-    };
-
-    // Immutably replace the feature being edited in the featureCollection
-    const updatedFeatureCollection = {
-      ...this.featureCollection,
-      features: [
-        ...this.featureCollection.features.slice(0, featureIndex),
-        updatedFeature,
-        ...this.featureCollection.features.slice(featureIndex + 1)
-      ]
-    };
-
     return new EditableFeatureCollection(updatedFeatureCollection);
   }
 

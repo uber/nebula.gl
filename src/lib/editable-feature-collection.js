@@ -75,6 +75,15 @@ export class EditableFeatureCollection {
    */
   removePosition(featureIndex: number, positionIndexes: Array<number>): EditableFeatureCollection {
     const featureToUpdate = this.featureCollection.features[featureIndex];
+    if (featureToUpdate.geometry.type === 'Point') {
+      throw Error(`Can't remove a position from a Point or there'd be nothing left`);
+    }
+    if (
+      featureToUpdate.geometry.type === 'MultiPoint' &&
+      featureToUpdate.geometry.coordinates.length < 2
+    ) {
+      throw Error(`Can't remove the last point of a MultiPoint or there'd be nothing left`);
+    }
     const isPolygonal =
       featureToUpdate.geometry.type === 'Polygon' ||
       featureToUpdate.geometry.type === 'MultiPolygon';
@@ -85,12 +94,17 @@ export class EditableFeatureCollection {
       isPolygonal
     );
 
+    const updatedGeometry = {
+      ...featureToUpdate.geometry,
+      coordinates: updatedCoordinates
+    };
+
+    // Handle cases where geometry type is "downgraded"
+    downgradeGeometryIfNecessary(updatedGeometry);
+
     const updatedFeature = {
       ...featureToUpdate,
-      geometry: {
-        ...featureToUpdate.geometry,
-        coordinates: updatedCoordinates
-      }
+      geometry: updatedGeometry
     };
 
     // Immutably replace the feature being edited in the featureCollection
@@ -296,10 +310,6 @@ function immutablyRemovePosition(
     throw Error('Must specify the index of the position to remove');
   }
   if (positionIndexes.length === 1) {
-    if (isPolygonal && coordinates.length < 5) {
-      // TODO: test this case
-      throw Error('Cannot remove a position from a triangle as it will no longer be a polygon');
-    }
     const updated = [
       ...coordinates.slice(0, positionIndexes[0]),
       ...coordinates.slice(positionIndexes[0] + 1)
@@ -374,6 +384,109 @@ function immutablyAddPosition(
     ),
     ...coordinates.slice(positionIndexes[0] + 1)
   ];
+}
+
+function downgradeGeometryIfNecessary(geometry: GeoJsonGeometry) {
+  switch (geometry.type) {
+    case 'LineString':
+      downgradeLineStringIfNecessary(geometry);
+      break;
+    case 'Polygon':
+      downgradePolygonIfNecessary(geometry);
+      break;
+    case 'MultiLineString':
+      downgradeMultiLineStringIfNecessary(geometry);
+      break;
+    case 'MultiPolygon':
+      downgradeMultiPolygonIfNecessary(geometry);
+      break;
+    default:
+      // Not downgradable
+      break;
+  }
+}
+
+function downgradeLineStringIfNecessary(geometry: GeoJsonGeometry) {
+  if (geometry.coordinates.length === 1) {
+    // Only one position left, so convert to a Point
+    geometry.type = 'Point';
+    geometry.coordinates = geometry.coordinates[0];
+  }
+}
+
+function downgradePolygonIfNecessary(geometry: GeoJsonGeometry) {
+  const polygon = geometry.coordinates;
+  const outerRing = polygon[0];
+  // If the outer ring is no longer a polygon, convert the whole thing to a LineString
+  if (outerRing.length <= 3) {
+    geometry.type = 'LineString';
+    geometry.coordinates = outerRing.slice(0, outerRing.length - 1);
+    return;
+  }
+
+  // If any hole is no longer a polygon, remove the hole entirely
+  for (let holeIndex = 1; holeIndex < polygon.length; holeIndex++) {
+    if (removeHoleIfNecessary(polygon, holeIndex)) {
+      // It was removed, so keep the index the same
+      holeIndex--;
+    }
+  }
+}
+
+function downgradeMultiLineStringIfNecessary(geometry: GeoJsonGeometry) {
+  if (geometry.coordinates.length === 1 && geometry.coordinates[0].length === 1) {
+    // Only one position left, so convert to a Point
+    geometry.type = 'Point';
+    geometry.coordinates = geometry.coordinates[0][0];
+    return;
+  }
+  for (let lineStringIndex = 0; lineStringIndex < geometry.coordinates.length; lineStringIndex++) {
+    const lineString = geometry.coordinates[lineStringIndex];
+    if (lineString.length === 1) {
+      // Only a single position left on this LineString, so remove it (can't have Point in MultiLineString)
+      geometry.coordinates.splice(lineStringIndex, 1);
+      // Keep the index the same
+      lineStringIndex--;
+    }
+  }
+}
+
+function downgradeMultiPolygonIfNecessary(geometry: GeoJsonGeometry) {
+  if (geometry.coordinates.length === 1) {
+    const outerRing = geometry.coordinates[0][0];
+    if (outerRing.length <= 3) {
+      geometry.type = 'LineString';
+      geometry.coordinates = outerRing.slice(0, outerRing.length - 1);
+      return;
+    }
+  }
+  for (let polygonIndex = 0; polygonIndex < geometry.coordinates.length; polygonIndex++) {
+    const polygon = geometry.coordinates[polygonIndex];
+    const outerRing = polygon[0];
+
+    // If the outer ring is no longer a polygon, remove the whole polygon
+    if (outerRing.length <= 3) {
+      geometry.coordinates.splice(polygonIndex, 1);
+      // It was removed, so keep the index the same
+      polygonIndex--;
+    }
+
+    for (let holeIndex = 1; holeIndex < polygon.length; holeIndex++) {
+      if (removeHoleIfNecessary(polygon, holeIndex)) {
+        // It was removed, so keep the index the same
+        holeIndex--;
+      }
+    }
+  }
+}
+
+function removeHoleIfNecessary(polygon: Array<any>, holeIndex: number) {
+  const hole = polygon[holeIndex];
+  if (hole.length <= 3) {
+    polygon.splice(holeIndex, 1);
+    return true;
+  }
+  return false;
 }
 
 function getIntermediatePosition(

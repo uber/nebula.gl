@@ -277,6 +277,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     if (this.props.mode === 'modify') {
       if (editHandleInfo && editHandleInfo.object.type === 'existing') {
         this.handleRemovePosition(
+          this.props.data.features[editHandleInfo.object.featureIndex],
           editHandleInfo.object.featureIndex,
           editHandleInfo.object.positionIndexes
         );
@@ -560,14 +561,18 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     });
   }
 
-  handleRemovePosition(featureIndex: number, positionIndexes: number) {
+  handleRemovePosition(
+    selectedFeature: GeoJsonFeature,
+    featureIndex: number,
+    positionIndexes: number
+  ) {
     let updatedData;
     try {
       updatedData = this.state.editableFeatureCollection
         .removePosition(featureIndex, positionIndexes)
         .getObject();
     } catch (error) {
-      // Sometimes we can't remove a position (e.g. trying to remove a position from a triangle)
+      // This happens if user attempts to remove the last point
     }
 
     if (updatedData) {

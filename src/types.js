@@ -41,7 +41,7 @@ export type Viewport = {
 
 export type GeoJsonGeometry = {
   type: string,
-  coordinates: Array<mixed>
+  coordinates: Array<any>
 };
 
 export type GeoJsonFeature = {

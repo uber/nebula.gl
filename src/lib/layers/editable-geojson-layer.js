@@ -497,7 +497,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       } else if (mode === 'drawPolygon') {
         // Requires two features, a non-stroked polygon for fill and a
         // line string for the drawing feature
-        const lastIdx = selectedFeature.geometry.coordinates.length - 1;
         drawFeature = {
           type: 'FeatureCollection',
           features: [

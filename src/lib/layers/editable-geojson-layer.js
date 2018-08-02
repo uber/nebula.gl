@@ -110,10 +110,10 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       }
     });
 
-    let layers = [new GeoJsonLayer(subLayerProps)];
+    let layers = [this.createDrawLayers()];
 
+    layers = layers.concat(new GeoJsonLayer(subLayerProps));
     layers = layers.concat(this.createPointLayers());
-    layers = layers.concat(this.createDrawLayers());
 
     return layers;
   }
@@ -253,6 +253,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         data: this.state.drawFeature,
         fp64: this.props.fp64,
         pickable: false,
+        stroked: this.props.mode !== 'drawPolygon',
         autoHighlight: false,
         lineWidthScale: this.props.lineWidthScale,
         lineWidthMinPixels: this.props.lineWidthMinPixels,
@@ -263,10 +264,13 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         pointRadiusMinPixels: this.props.editHandlePointRadiusMinPixels,
         pointRadiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
         getRadius: this.props.getEditHandlePointRadius,
-        getLineColor: this.props.getDrawLineColor(this.state.selectedFeatures[0]),
-        getLineWidth: this.props.getDrawLineWidth(this.state.selectedFeatures[0]),
-        getFillColor: this.props.getDrawFillColor(this.state.selectedFeatures[0]),
-        getLineDashArray: this.props.getDrawLineDashArray(this.state.selectedFeatures[0])
+        getLineColor: this.props.getDrawLineColor(this.state.selectedFeatures[0], this.props.mode),
+        getLineWidth: this.props.getDrawLineWidth(this.state.selectedFeatures[0], this.props.mode),
+        getFillColor: this.props.getDrawFillColor(this.state.selectedFeatures[0], this.props.mode),
+        getLineDashArray: this.props.getDrawLineDashArray(
+          this.state.selectedFeatures[0],
+          this.props.mode
+        )
       })
     );
 
@@ -491,22 +495,40 @@ export default class EditableGeoJsonLayer extends EditableLayer {
           }
         };
       } else if (mode === 'drawPolygon') {
-        // Draw a polygon containing all the points of the LineString,
-        // then the mouse position,
-        // then back to the starting position
-
+        // Requires two features, a non-stroked polygon for fill and a
+        // line string for the drawing feature
+        const lastIdx = selectedFeature.geometry.coordinates.length - 1;
         drawFeature = {
-          type: 'Feature',
-          geometry: {
-            type: 'Polygon',
-            coordinates: [
-              [
-                ...selectedFeature.geometry.coordinates,
-                currentPosition,
-                selectedFeature.geometry.coordinates[0]
-              ]
-            ]
-          }
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'Polygon',
+                coordinates: [
+                  [
+                    // Draw a polygon containing all the points of the LineString,
+                    // then the mouse position,
+                    // then back to the starting position
+                    ...selectedFeature.geometry.coordinates,
+                    currentPosition,
+                    selectedFeature.geometry.coordinates[0]
+                  ]
+                ]
+              }
+            },
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'LineString',
+                coordinates: [
+                  selectedFeature.geometry.coordinates[lastIdx],
+                  currentPosition,
+                  selectedFeature.geometry.coordinates[0]
+                ]
+              }
+            }
+          ]
         };
       }
     }

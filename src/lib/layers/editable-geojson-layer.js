@@ -522,7 +522,9 @@ export default class EditableGeoJsonLayer extends EditableLayer {
               geometry: {
                 type: 'LineString',
                 coordinates: [
-                  selectedFeature.geometry.coordinates[lastIdx],
+                  selectedFeature.geometry.coordinates[
+                    selectedFeature.geometry.coordinates.length - 1
+                  ],
                   currentPosition,
                   selectedFeature.geometry.coordinates[0]
                 ]

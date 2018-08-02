@@ -8,7 +8,9 @@ import { EditableGeoJsonLayer } from 'nebula.gl';
 
 const myFeatureCollection = {
   type: 'FeatureCollection',
-  features: [/* insert features here */]
+  features: [
+    /* insert features here */
+  ]
 };
 
 class App extends React.Component {
@@ -25,11 +27,7 @@ class App extends React.Component {
       mode: this.state.mode,
       selectedFeatureIndexes: this.state.selectedFeatureIndexes,
 
-      onEdit: ({
-        updatedData,
-        updatedMode,
-        updatedSelectedFeatureIndexes
-      }) => {
+      onEdit: ({ updatedData, updatedMode, updatedSelectedFeatureIndexes }) => {
         this.setState({
           data: updatedData,
           mode: updatedMode,
@@ -38,7 +36,7 @@ class App extends React.Component {
       }
     });
 
-    return (<DeckGL {...this.props.viewport} layers={[layer]} />);
+    return <DeckGL {...this.props.viewport} layers={[layer]} />;
   }
 }
 ```
@@ -61,7 +59,7 @@ A [GeoJSON](http://geojson.org) `FeatureCollection` object. The following types 
 * `MultiPolygon`
 * `GeometryCollection` is not supported.
 
-*Note: passing a single `Feature` is not supported. However, you can pass a `FeatureCollection` containing a single `Feature` and pass `selectedFeatureIndexes: [0]` to achieve the same result.*
+_Note: passing a single `Feature` is not supported. However, you can pass a `FeatureCollection` containing a single `Feature` and pass `selectedFeatureIndexes: [0]` to achieve the same result._
 
 #### `mode` (String, optional)
 
@@ -118,6 +116,7 @@ The `mode` property dictates what type of edits the user can perform and how to 
 * Default: `[]`
 
 * The `selectedFeatueIndexes` property distinguishes which features to treat as selected.
+
   * Features are identified by their index in the collection.
 
   * Selection of a feature causes style accessors to render a different style, defined in function such as `getLineColor` and `getFillColor`.
@@ -207,7 +206,22 @@ The following accessors function the same, but can accept additional arguments:
 
 The additional arguments (in order) are:
 
+* `feature`: the given feature
 * `isSelected`: indicates if the given feature is a selected feature
+* `mode`: the current value of the `mode` prop
+
+### Drawing Feature
+
+While drawing, portion of a feature which has not been "committed" yet can hold its own props. For a LineString, this would be the last line segment moving under the mouse. For a Polygon, this would be the last segment and the fill moving under the mouse. For Rectangles and Circles, this would be the whole feature during drawing. Define the properties with the following accessors:
+
+* `getDrawLineColor`
+* `getDrawFillColor`
+* `getDrawLineWidth`
+* `getDrawLineDashArray`
+
+The following accessors default to the same values as the existing feature accessors above. The arguments in order:
+
+* `feature`: the given feature
 * `mode`: the current value of the `mode` prop
 
 ### Edit Handles
@@ -310,7 +324,7 @@ The pointer went down on something rendered by this layer and the pointer starte
 * `dragStartScreenCoords` (Array): `[x, y]` screen pixel coordinates relative to the deck.gl canvas where the pointer went down.
 * `dragStartGroundCoords` (Array): `[lng, lat]` ground coordinates where the pointer went down.
 
-*Note: this method is not called if nothing was picked when the pointer went down*
+_Note: this method is not called if nothing was picked when the pointer went down_
 
 ### `onDragging`
 

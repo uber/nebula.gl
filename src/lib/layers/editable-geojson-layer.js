@@ -45,6 +45,12 @@ const defaultProps = {
   getLineDashArray: (feature, isSelected, mode) =>
     isSelected && mode !== 'view' ? [7, 4] : [0, 0],
 
+  // drawing line
+  getDrawLineDashArray: (f, mode) => [7, 4],
+  getDrawLineColor: (f, mode) => DEFAULT_SELECTED_LINE_COLOR,
+  getDrawFillColor: (f, mode) => DEFAULT_SELECTED_FILL_COLOR,
+  getDrawLineWidth: (f, mode) => (f && f.properties && f.properties.lineWidth) || 1,
+
   editHandleType: 'point',
 
   // point handles
@@ -241,9 +247,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       return [];
     }
 
-    const getLineDashArray = () =>
-      this.props.getLineDashArray(this.state.selectedFeature, true, this.props.mode);
-
     const layer = new GeoJsonLayer(
       this.getSubLayerProps({
         id: 'draw',
@@ -259,10 +262,11 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         pointRadiusScale: this.props.editHandlePointRadiusScale,
         pointRadiusMinPixels: this.props.editHandlePointRadiusMinPixels,
         pointRadiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
-        getLineColor: feature => this.props.getLineColor(feature, true),
-        getFillColor: feature => this.props.getFillColor(feature, true),
-        getLineDashArray,
-        getRadius: this.props.getEditHandlePointRadius
+        getRadius: this.props.getEditHandlePointRadius,
+        getLineColor: this.props.getDrawLineColor(this.state.selectedFeatures[0]),
+        getLineWidth: this.props.getDrawLineWidth(this.state.selectedFeatures[0]),
+        getFillColor: this.props.getDrawFillColor(this.state.selectedFeatures[0]),
+        getLineDashArray: this.props.getDrawLineDashArray(this.state.selectedFeatures[0])
       })
     );
 

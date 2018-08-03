@@ -45,6 +45,12 @@ const defaultProps = {
   getLineDashArray: (feature, isSelected, mode) =>
     isSelected && mode !== 'view' ? [7, 4] : [0, 0],
 
+  // drawing line
+  getDrawLineDashArray: (f, mode) => [7, 4],
+  getDrawLineColor: (f, mode) => DEFAULT_SELECTED_LINE_COLOR,
+  getDrawFillColor: (f, mode) => DEFAULT_SELECTED_FILL_COLOR,
+  getDrawLineWidth: (f, mode) => (f && f.properties && f.properties.lineWidth) || 1,
+
   editHandleType: 'point',
 
   // point handles
@@ -241,15 +247,13 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       return [];
     }
 
-    const getLineDashArray = () =>
-      this.props.getLineDashArray(this.state.selectedFeature, true, this.props.mode);
-
     const layer = new GeoJsonLayer(
       this.getSubLayerProps({
         id: 'draw',
         data: this.state.drawFeature,
         fp64: this.props.fp64,
         pickable: false,
+        stroked: this.props.mode !== 'drawPolygon',
         autoHighlight: false,
         lineWidthScale: this.props.lineWidthScale,
         lineWidthMinPixels: this.props.lineWidthMinPixels,
@@ -259,10 +263,14 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         pointRadiusScale: this.props.editHandlePointRadiusScale,
         pointRadiusMinPixels: this.props.editHandlePointRadiusMinPixels,
         pointRadiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
-        getLineColor: feature => this.props.getLineColor(feature, true),
-        getFillColor: feature => this.props.getFillColor(feature, true),
-        getLineDashArray,
-        getRadius: this.props.getEditHandlePointRadius
+        getRadius: this.props.getEditHandlePointRadius,
+        getLineColor: this.props.getDrawLineColor(this.state.selectedFeatures[0], this.props.mode),
+        getLineWidth: this.props.getDrawLineWidth(this.state.selectedFeatures[0], this.props.mode),
+        getFillColor: this.props.getDrawFillColor(this.state.selectedFeatures[0], this.props.mode),
+        getLineDashArray: this.props.getDrawLineDashArray(
+          this.state.selectedFeatures[0],
+          this.props.mode
+        )
       })
     );
 
@@ -487,22 +495,41 @@ export default class EditableGeoJsonLayer extends EditableLayer {
           }
         };
       } else if (mode === 'drawPolygon') {
-        // Draw a polygon containing all the points of the LineString,
-        // then the mouse position,
-        // then back to the starting position
-
+        // Requires two features, a non-stroked polygon for fill and a
+        // line string for the drawing feature
         drawFeature = {
-          type: 'Feature',
-          geometry: {
-            type: 'Polygon',
-            coordinates: [
-              [
-                ...selectedFeature.geometry.coordinates,
-                currentPosition,
-                selectedFeature.geometry.coordinates[0]
-              ]
-            ]
-          }
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'Polygon',
+                coordinates: [
+                  [
+                    // Draw a polygon containing all the points of the LineString,
+                    // then the mouse position,
+                    // then back to the starting position
+                    ...selectedFeature.geometry.coordinates,
+                    currentPosition,
+                    selectedFeature.geometry.coordinates[0]
+                  ]
+                ]
+              }
+            },
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'LineString',
+                coordinates: [
+                  selectedFeature.geometry.coordinates[
+                    selectedFeature.geometry.coordinates.length - 1
+                  ],
+                  currentPosition,
+                  selectedFeature.geometry.coordinates[0]
+                ]
+              }
+            }
+          ]
         };
       }
     }

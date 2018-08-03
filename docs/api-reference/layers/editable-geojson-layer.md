@@ -212,7 +212,7 @@ The additional arguments (in order) are:
 
 ### Drawing Feature
 
-While drawing, portion of a feature which has not been "committed" yet can hold its own props. For a LineString, this would be the last line segment moving under the mouse. For a Polygon, this would be the last segment and the fill moving under the mouse. For Rectangles and Circles, this would be the whole feature during drawing. Define the properties with the following accessors:
+While creating a new feature in any of the `draw` modes, portion of a feature which has not been "committed" yet can hold its own props. For a LineString, this would be the last line segment moving under the mouse. For a Polygon, this would be the last segment and the fill moving under the mouse. For Rectangles and Circles, this would be the whole feature during drawing. Define the properties with the following accessors:
 
 * `getDrawLineColor`
 * `getDrawFillColor`

@@ -8,8 +8,10 @@ import { StaticMap } from 'react-map-gl';
 import { EditableGeoJsonLayer } from 'nebula.gl';
 
 import sampleGeoJson from '../data/sample-geojson.json';
-
 import iconSheet from '../data/edit-handles.png';
+
+import JunctionScatterplotLayer from './custom-layers/junction-scatterplot-layer';
+import WorldIconLayer from './custom-layers/world-icon-layer';
 
 const initialViewport = {
   bearing: 0,
@@ -72,7 +74,7 @@ export default class Example extends Component<
       mode: 'modify',
       pointsRemovable: true,
       selectedFeatureIndexes: [],
-      editHandleType: 'point'
+      editHandleType: 'scatter'
     };
   }
 
@@ -177,17 +179,17 @@ export default class Example extends Component<
               onChange={() => this.setState({ pointsRemovable: !this.state.pointsRemovable })}
             />
           </dd>
-          <dt style={styles.toolboxTerm}>Use Icons</dt>
+          <dt style={styles.toolboxTerm}>Edit handle type</dt>
           <dd style={styles.toolboxDescription}>
-            <input
-              type="checkbox"
-              checked={this.state.editHandleType === 'icon'}
-              onChange={() =>
-                this.setState({
-                  editHandleType: this.state.editHandleType === 'icon' ? 'point' : 'icon'
-                })
-              }
-            />
+            <select
+              value={this.state.editHandleType}
+              onChange={event => this.setState({ editHandleType: event.target.value })}
+            >
+              <option value="scatter">ScatterplotLayer</option>
+              <option value="icon">IconLayer</option>
+              <option value="junction">JunctionsLayer</option>
+              <option value="world">WorldIconLayer</option>
+            </select>
           </dd>
           <dt style={styles.toolboxTerm}>Select Features</dt>
           <dd style={styles.toolboxDescription}>
@@ -203,8 +205,38 @@ export default class Example extends Component<
     );
   }
 
+  getCustomLayers() {
+    if (this.state.editHandleType === 'junction') {
+      return {
+        PointHandleLayer: {
+          Layer: JunctionScatterplotLayer,
+          id: 'junction',
+          props: {
+            getRadius: h => (h.type === 'existing' ? 14 : 10),
+            getFillColor: h =>
+              h.type === 'existing' ? [0xff, 0x80, 0x00, 0xff] : [0x0, 0x0, 0x0, 0x80],
+            getStrokeColor: h => [0x80, 0x80, 0x80, 0x80],
+            getInnerRadius: h => (h.type === 'existing' ? 10 : 7)
+          }
+        }
+      };
+    } else if (this.state.editHandleType === 'world') {
+      return {
+        IconHandleLayer: {
+          Layer: WorldIconLayer,
+          id: 'world',
+          props: {
+            sizeUnit: 'meter',
+            sizeScale: 2
+          }
+        }
+      };
+    }
+    return null;
+  }
+
   render() {
-    const { testFeatures, selectedFeatureIndexes, mode } = this.state;
+    const { testFeatures, selectedFeatureIndexes, mode, editHandleType } = this.state;
 
     const viewport = {
       ...this.state.viewport,
@@ -255,7 +287,10 @@ export default class Example extends Component<
       },
 
       // test using icons for edit handles
-      editHandleType: this.state.editHandleType,
+      editHandleType:
+        editHandleType === 'scatter' || editHandleType === 'junction'
+          ? 'point'
+          : editHandleType === 'icon' || editHandleType === 'world' ? 'icon' : null,
       editHandleIconAtlas: iconSheet,
       editHandleIconMapping: {
         intermediate: {
@@ -298,7 +333,8 @@ export default class Example extends Component<
 
       // customize drawing line style
       getDrawLineDashArray: (f, currMode) => [7, 4],
-      getDrawLineColor: (f, currMode) => [0x8f, 0x8f, 0x8f, 0xff]
+      getDrawLineColor: (f, currMode) => [0x8f, 0x8f, 0x8f, 0xff],
+      ...this.getCustomLayers()
     });
 
     return (

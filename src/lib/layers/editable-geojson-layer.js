@@ -73,14 +73,27 @@ const defaultProps = {
     handle.type === 'existing'
       ? DEFAULT_EDITING_EXISTING_POINT_COLOR
       : DEFAULT_EDITING_INTERMEDIATE_POINT_COLOR,
-  getEditHandleIconAngle: 0
+  getEditHandleIconAngle: 0,
+
+  // define different layers with different props
+  GeometryLayer: {
+    Layer: GeoJsonLayer,
+    props: {}
+  },
+  PointHandleLayer: {
+    Layer: ScatterplotLayer,
+    props: {}
+  },
+  IconHandleLayer: {
+    Layer: IconLayer,
+    props: {}
+  }
 };
 
 export default class EditableGeoJsonLayer extends EditableLayer {
   renderLayers() {
     const subLayerProps = this.getSubLayerProps({
-      id: 'geojson',
-
+      id: `${this.props.GeometryLayer.id || ''}geojson`,
       // Proxy most GeoJsonLayer props as-is
       data: this.props.data,
       fp64: this.props.fp64,
@@ -110,7 +123,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       }
     });
 
-    let layers = [new GeoJsonLayer(subLayerProps)];
+    let layers = [new this.props.GeometryLayer.Layer(subLayerProps)];
 
     layers = layers.concat(this.createPointLayers());
     layers = layers.concat(this.createDrawLayers());
@@ -203,16 +216,15 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
 
     const sharedProps = {
-      id: `${this.props.editHandleType}-edit-handles`,
       data: this.state.editHandles,
       fp64: this.props.fp64
     };
-
     const layer =
       this.props.editHandleType === 'icon'
-        ? new IconLayer(
+        ? new this.props.IconHandleLayer.Layer(
             this.getSubLayerProps({
               ...sharedProps,
+              id: `${this.props.IconHandleLayer.id || this.props.editHandleType}-edit-handles`,
               iconAtlas: this.props.editHandleIconAtlas,
               iconMapping: this.props.editHandleIconMapping,
               sizeScale: this.props.editHandleIconSizeScale,
@@ -220,25 +232,26 @@ export default class EditableGeoJsonLayer extends EditableLayer {
               getSize: this.props.getEditHandleIconSize,
               getColor: this.props.getEditHandleIconColor,
               getAngle: this.props.getEditHandleIconAngle,
+              getPosition: d => d.position,
 
-              getPosition: d => d.position
+              ...this.props.IconHandleLayer.props
             })
           )
         : this.props.editHandleType === 'point'
-          ? new ScatterplotLayer(
+          ? new this.props.PointHandleLayer.Layer(
               this.getSubLayerProps({
                 ...sharedProps,
-
-                // Proxy editing point props
+                id: `${this.props.PointHandleLayer.id || this.props.editHandleType}-edit-handles`,
                 radiusScale: this.props.editHandlePointRadiusScale,
                 radiusMinPixels: this.props.editHandlePointRadiusMinPixels,
                 radiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
                 getRadius: this.props.getEditHandlePointRadius,
-                getColor: this.props.getEditHandlePointColor
+                getColor: this.props.getEditHandlePointColor,
+
+                ...this.props.PointHandleLayer.props
               })
             )
           : null;
-
     return [layer];
   }
 
@@ -247,9 +260,9 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       return [];
     }
 
-    const layer = new GeoJsonLayer(
+    const layer = new this.props.GeometryLayer.Layer(
       this.getSubLayerProps({
-        id: 'draw',
+        id: `${this.props.GeometryLayer.id || ''}draw`,
         data: this.state.drawFeature,
         fp64: this.props.fp64,
         pickable: false,
@@ -264,13 +277,15 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         pointRadiusMinPixels: this.props.editHandlePointRadiusMinPixels,
         pointRadiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
         getRadius: this.props.getEditHandlePointRadius,
+
         getLineColor: this.props.getDrawLineColor(this.state.selectedFeatures[0], this.props.mode),
         getLineWidth: this.props.getDrawLineWidth(this.state.selectedFeatures[0], this.props.mode),
         getFillColor: this.props.getDrawFillColor(this.state.selectedFeatures[0], this.props.mode),
         getLineDashArray: this.props.getDrawLineDashArray(
           this.state.selectedFeatures[0],
           this.props.mode
-        )
+        ),
+        ...this.props.GeometryLayer.props
       })
     );
 

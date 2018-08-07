@@ -75,17 +75,20 @@ const defaultProps = {
       : DEFAULT_EDITING_INTERMEDIATE_POINT_COLOR,
   getEditHandleIconAngle: 0,
 
-  // define different layers with different props
+  // define different sublayers with different props
   GeometryLayer: {
     Layer: GeoJsonLayer,
+    id: 'default-geometry',
     props: {}
   },
   PointHandleLayer: {
     Layer: ScatterplotLayer,
+    id: 'default-point',
     props: {}
   },
   IconHandleLayer: {
     Layer: IconLayer,
+    id: 'default-icon',
     props: {}
   }
 };
@@ -93,7 +96,7 @@ const defaultProps = {
 export default class EditableGeoJsonLayer extends EditableLayer {
   renderLayers() {
     const subLayerProps = this.getSubLayerProps({
-      id: `${this.props.GeometryLayer.id || ''}geojson`,
+      id: `${this.props.GeometryLayer.id}-geojson`,
       // Proxy most GeoJsonLayer props as-is
       data: this.props.data,
       fp64: this.props.fp64,
@@ -224,7 +227,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         ? new this.props.IconHandleLayer.Layer(
             this.getSubLayerProps({
               ...sharedProps,
-              id: `${this.props.IconHandleLayer.id || this.props.editHandleType}-edit-handles`,
+              id: `${this.props.IconHandleLayer.id}-edit-handles`,
               iconAtlas: this.props.editHandleIconAtlas,
               iconMapping: this.props.editHandleIconMapping,
               sizeScale: this.props.editHandleIconSizeScale,
@@ -241,7 +244,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
           ? new this.props.PointHandleLayer.Layer(
               this.getSubLayerProps({
                 ...sharedProps,
-                id: `${this.props.PointHandleLayer.id || this.props.editHandleType}-edit-handles`,
+                id: `${this.props.PointHandleLayer.id}-edit-handles`,
                 radiusScale: this.props.editHandlePointRadiusScale,
                 radiusMinPixels: this.props.editHandlePointRadiusMinPixels,
                 radiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
@@ -262,7 +265,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
     const layer = new this.props.GeometryLayer.Layer(
       this.getSubLayerProps({
-        id: `${this.props.GeometryLayer.id || ''}draw`,
+        id: `${this.props.GeometryLayer.id}-draw`,
         data: this.state.drawFeature,
         fp64: this.props.fp64,
         pickable: false,

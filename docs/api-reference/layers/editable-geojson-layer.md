@@ -354,3 +354,29 @@ The pointer moved, regardless of whether the pointer is down, up, and whether or
 * `groundCoords` (Array): `[lng, lat]` ground coordinates where the pointer is now.
 * `isDragging` (Boolean): `true` if the pointer is moving but it is considered a drag, in this case you likely want to handle `onDragging`
 * `pointerDownPicks` (Array): An array containing [deck.gl Picking Info Objects](https://uber.github.io/deck.gl/#/documentation/developer-guide/adding-interactivity?section=what-can-be-picked-) for all objects that were under the pointer when it went down, or `null` if pointer is moving without pointer down.
+
+
+## Define Sublayers
+
+Three default sublayers make up the composite `EditableGeoJsonLayer`:
+
+1. `GeometryLayer` renders the geometries. Default: `GeoJsonLayer`
+2. `PointHandleLayer` renders the point edit handles. Default: `ScatterplotLayer`
+3. `IconHandleLayer` renders the icon edit handles. Default `IconLayer`
+
+All three sublayer defaults can be overridden with custom or experimental layers. Define an object prop that contains the `Layer` class object, an `id` and any addtional `props`. For instance:
+
+```
+PointHandleLayer: {
+  Layer: OutlinedScatterplotLayer,
+  id: 'outlined',
+  props: {
+    innerRadius: 5,
+    fillColor: [0x20, 0x40, 0x90, 0xc0],
+    strokeColor: [0x0, 0x0, 0x0, 0x80]
+  }
+}
+```
+
+This overrides `PointHandleLayer` with a new layer and three additional props. The sublayer will still receive props defined by the proxied `editHandlePoint` props. `id` is only required if the sublayer changes layer definitions depending on the state of the application.
+

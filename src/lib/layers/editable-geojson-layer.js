@@ -264,13 +264,10 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         pointRadiusMinPixels: this.props.editHandlePointRadiusMinPixels,
         pointRadiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
         getRadius: this.props.getEditHandlePointRadius,
-        getLineColor: this.props.getDrawLineColor(this.state.selectedFeatures[0], this.props.mode),
-        getLineWidth: this.props.getDrawLineWidth(this.state.selectedFeatures[0], this.props.mode),
-        getFillColor: this.props.getDrawFillColor(this.state.selectedFeatures[0], this.props.mode),
-        getLineDashArray: this.props.getDrawLineDashArray(
-          this.state.selectedFeatures[0],
-          this.props.mode
-        )
+        getLineColor: feature => this.props.getDrawLineColor(feature, this.props.mode),
+        getLineWidth: feature => this.props.getDrawLineWidth(feature, this.props.mode),
+        getFillColor: feature => this.props.getDrawFillColor(feature, this.props.mode),
+        getLineDashArray: feature => this.props.getDrawLineDashArray(feature, this.props.mode)
       })
     );
 
@@ -532,6 +529,10 @@ export default class EditableGeoJsonLayer extends EditableLayer {
           ]
         };
       }
+    }
+    if (selectedFeature && selectedFeature.properties) {
+      // inherit geojson properties from selected feature
+      drawFeature.properties = Object.assign({}, selectedFeature.properties);
     }
     return drawFeature;
   }

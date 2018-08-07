@@ -378,5 +378,5 @@ PointHandleLayer: {
 }
 ```
 
-This overrides `PointHandleLayer` with a new layer and three additional props. The sublayer will still receive props defined by the proxied `editHandlePoint` props. `id` is only required if the sublayer changes layer definitions depending on the state of the application.
+This overrides `PointHandleLayer` with a new layer and three additional props. The sublayer will still receive props defined by the proxied `editHandlePoint` props.
 

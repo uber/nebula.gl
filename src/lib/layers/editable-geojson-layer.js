@@ -215,7 +215,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         ...this.props.editHandleLayer.props
       })
     );
-    console.log(layer);
     return [layer];
   }
 

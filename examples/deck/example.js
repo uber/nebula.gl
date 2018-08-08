@@ -2,7 +2,7 @@
 
 import window from 'global/window';
 import React, { Component } from 'react';
-import DeckGL, { MapView, MapController } from 'deck.gl';
+import DeckGL, { MapView, MapController, IconLayer } from 'deck.gl';
 import { StaticMap } from 'react-map-gl';
 
 import { EditableGeoJsonLayer } from 'nebula.gl';
@@ -10,7 +10,7 @@ import { EditableGeoJsonLayer } from 'nebula.gl';
 import sampleGeoJson from '../data/sample-geojson.json';
 import iconSheet from '../data/edit-handles.png';
 
-import JunctionScatterplotLayer from './custom-layers/junction-scatterplot-layer';
+import OutlinedScatterplotLayer from './custom-layers/outlined-scatterplot-layer';
 import WorldIconLayer from './custom-layers/world-icon-layer';
 
 const initialViewport = {
@@ -187,7 +187,7 @@ export default class Example extends Component<
             >
               <option value="scatter">ScatterplotLayer</option>
               <option value="icon">IconLayer</option>
-              <option value="junction">JunctionsLayer</option>
+              <option value="outlined">OutlinedScatterplotLayer</option>
               <option value="world">WorldIconLayer</option>
             </select>
           </dd>
@@ -206,29 +206,66 @@ export default class Example extends Component<
   }
 
   getCustomLayers() {
-    if (this.state.editHandleType === 'junction') {
+    if (this.state.editHandleType === 'point') {
+      return null;
+    }
+    if (this.state.editHandleType === 'outlined') {
       return {
-        PointHandleLayer: {
-          Layer: JunctionScatterplotLayer,
-          id: 'junction',
+        editHandleLayer: {
+          Layer: OutlinedScatterplotLayer,
+          id: 'outlined',
           props: {
-            getRadius: h => (h.type === 'existing' ? 14 : 10),
+            getRadius: h => (h.type === 'existing' ? 10 : 7),
             getFillColor: h =>
               h.type === 'existing' ? [0xff, 0x80, 0x00, 0xff] : [0x0, 0x0, 0x0, 0x80],
             getStrokeColor: h => [0x80, 0x80, 0x80, 0x80],
-            getInnerRadius: h => (h.type === 'existing' ? 10 : 7)
+            getOuterRadius: h => (h.type === 'existing' ? 14 : 10)
           }
         }
       };
-    } else if (this.state.editHandleType === 'world') {
+    }
+
+    const iconProps = {
+      iconAtlas: iconSheet,
+      iconMapping: {
+        intermediate: {
+          x: 0,
+          y: 0,
+          width: 58,
+          height: 58,
+          mask: false
+        },
+        existing: {
+          x: 58,
+          y: 0,
+          width: 58,
+          height: 58,
+          mask: false
+        }
+      },
+      getIcon: handle => handle.type,
+      getSize: 40
+    };
+
+    if (this.state.editHandleType === 'world') {
       return {
-        IconHandleLayer: {
+        editHandleLayer: {
           Layer: WorldIconLayer,
           id: 'world',
           props: {
+            ...iconProps,
             sizeUnit: 'meter',
             sizeScale: 2
           }
+        }
+      };
+    }
+    if (this.state.editHandleType === 'icon') {
+      return {
+        editHandleLayer: {
+          Layer: IconLayer,
+          id: 'icon',
+          props: iconProps
         }
       };
     }
@@ -236,7 +273,7 @@ export default class Example extends Component<
   }
 
   render() {
-    const { testFeatures, selectedFeatureIndexes, mode, editHandleType } = this.state;
+    const { testFeatures, selectedFeatureIndexes, mode } = this.state;
 
     const viewport = {
       ...this.state.viewport,
@@ -285,33 +322,6 @@ export default class Example extends Component<
           selectedFeatureIndexes: updatedSelectedFeatureIndexes
         });
       },
-
-      // test using icons for edit handles
-      editHandleType:
-        editHandleType === 'scatter' || editHandleType === 'junction'
-          ? 'point'
-          : editHandleType === 'icon' || editHandleType === 'world' ? 'icon' : null,
-      editHandleIconAtlas: iconSheet,
-      editHandleIconMapping: {
-        intermediate: {
-          x: 0,
-          y: 0,
-          width: 58,
-          height: 58,
-          mask: false
-        },
-        existing: {
-          x: 58,
-          y: 0,
-          width: 58,
-          height: 58,
-          mask: false
-        }
-      },
-      getEditHandleIcon: d => d.type,
-      getEditHandleIconSize: 40,
-      getEditHandleIconColor: handle =>
-        handle.type === 'existing' ? [0xff, 0x80, 0x00, 0xff] : [0x0, 0x0, 0x0, 0x80],
 
       // Specify the same GeoJsonLayer props
       lineWidthMinPixels: 2,

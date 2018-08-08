@@ -1,7 +1,7 @@
 // @flow
 /* eslint-env browser */
 
-import { GeoJsonLayer, ScatterplotLayer, IconLayer } from 'deck.gl';
+import { GeoJsonLayer, ScatterplotLayer } from 'deck.gl';
 import bboxPolygon from '@turf/bbox-polygon';
 import circle from '@turf/circle';
 import distance from '@turf/distance';
@@ -63,32 +63,15 @@ const defaultProps = {
       : DEFAULT_EDITING_INTERMEDIATE_POINT_COLOR,
   getEditHandlePointRadius: handle => (handle.type === 'existing' ? 5 : 3),
 
-  // icon handles
-  editHandleIconAtlas: null,
-  editHandleIconMapping: null,
-  editHandleIconSizeScale: 1,
-  getEditHandleIcon: handle => handle.type,
-  getEditHandleIconSize: 10,
-  getEditHandleIconColor: handle =>
-    handle.type === 'existing'
-      ? DEFAULT_EDITING_EXISTING_POINT_COLOR
-      : DEFAULT_EDITING_INTERMEDIATE_POINT_COLOR,
-  getEditHandleIconAngle: 0,
-
   // define different sublayers with different props
-  GeometryLayer: {
+  geometryLayer: {
     Layer: GeoJsonLayer,
     id: 'default-geometry',
     props: {}
   },
-  PointHandleLayer: {
+  editHandleLayer: {
     Layer: ScatterplotLayer,
-    id: 'default-point',
-    props: {}
-  },
-  IconHandleLayer: {
-    Layer: IconLayer,
-    id: 'default-icon',
+    id: 'default-handle',
     props: {}
   }
 };
@@ -96,7 +79,7 @@ const defaultProps = {
 export default class EditableGeoJsonLayer extends EditableLayer {
   renderLayers() {
     const subLayerProps = this.getSubLayerProps({
-      id: `${this.props.GeometryLayer.id}-geojson`,
+      id: `${this.props.geometryLayer.id}-geojson`,
       // Proxy most GeoJsonLayer props as-is
       data: this.props.data,
       fp64: this.props.fp64,
@@ -126,7 +109,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       }
     });
 
-    let layers = [new this.props.GeometryLayer.Layer(subLayerProps)];
+    let layers = [new this.props.geometryLayer.Layer(subLayerProps)];
 
     layers = layers.concat(this.createPointLayers());
     layers = layers.concat(this.createDrawLayers());
@@ -218,43 +201,21 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       return [];
     }
 
-    const sharedProps = {
-      data: this.state.editHandles,
-      fp64: this.props.fp64
-    };
-    const layer =
-      this.props.editHandleType === 'icon'
-        ? new this.props.IconHandleLayer.Layer(
-            this.getSubLayerProps({
-              ...sharedProps,
-              id: `${this.props.IconHandleLayer.id}-edit-handles`,
-              iconAtlas: this.props.editHandleIconAtlas,
-              iconMapping: this.props.editHandleIconMapping,
-              sizeScale: this.props.editHandleIconSizeScale,
-              getIcon: this.props.getEditHandleIcon,
-              getSize: this.props.getEditHandleIconSize,
-              getColor: this.props.getEditHandleIconColor,
-              getAngle: this.props.getEditHandleIconAngle,
-              getPosition: d => d.position,
+    const layer = new this.props.editHandleLayer.Layer(
+      this.getSubLayerProps({
+        data: this.state.editHandles,
+        fp64: this.props.fp64,
+        id: `${this.props.editHandleLayer.id}-edit-handles`,
+        radiusScale: this.props.editHandlePointRadiusScale,
+        radiusMinPixels: this.props.editHandlePointRadiusMinPixels,
+        radiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
+        getRadius: this.props.getEditHandlePointRadius,
+        getColor: this.props.getEditHandlePointColor,
 
-              ...this.props.IconHandleLayer.props
-            })
-          )
-        : this.props.editHandleType === 'point'
-          ? new this.props.PointHandleLayer.Layer(
-              this.getSubLayerProps({
-                ...sharedProps,
-                id: `${this.props.PointHandleLayer.id}-edit-handles`,
-                radiusScale: this.props.editHandlePointRadiusScale,
-                radiusMinPixels: this.props.editHandlePointRadiusMinPixels,
-                radiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
-                getRadius: this.props.getEditHandlePointRadius,
-                getColor: this.props.getEditHandlePointColor,
-
-                ...this.props.PointHandleLayer.props
-              })
-            )
-          : null;
+        ...this.props.editHandleLayer.props
+      })
+    );
+    console.log(layer);
     return [layer];
   }
 
@@ -263,9 +224,9 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       return [];
     }
 
-    const layer = new this.props.GeometryLayer.Layer(
+    const layer = new this.props.geometryLayer.Layer(
       this.getSubLayerProps({
-        id: `${this.props.GeometryLayer.id}-draw`,
+        id: `${this.props.geometryLayer.id}-draw`,
         data: this.state.drawFeature,
         fp64: this.props.fp64,
         pickable: false,
@@ -288,7 +249,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
           this.state.selectedFeatures[0],
           this.props.mode
         ),
-        ...this.props.GeometryLayer.props
+        ...this.props.geometryLayer.props
       })
     );
 

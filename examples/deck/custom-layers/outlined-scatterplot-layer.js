@@ -2,7 +2,7 @@
 import { CompositeLayer, ScatterplotLayer } from 'deck.gl';
 
 export default class OutlinedScatterplotLayer extends CompositeLayer {
-  static layerName = 'JunctionScatterplotLayer';
+  static layerName = 'OutlinedScatterplotLayer';
   static defaultProps = {
     ...ScatterplotLayer.defaultProps,
     getFillColor: d => [0, 0, 0, 255],
@@ -11,7 +11,14 @@ export default class OutlinedScatterplotLayer extends CompositeLayer {
   };
 
   renderLayers() {
-    const { id, getFillColor, getStrokeColor, getOuterRadius, updateTriggers } = this.props;
+    const {
+      id,
+      getFillColor,
+      getStrokeColor,
+      getOuterRadius,
+      updateTriggers,
+      radiusMinPixels
+    } = this.props;
 
     // data needs to be passed explicitly after deck.gl 5.3
     return [
@@ -22,6 +29,7 @@ export default class OutlinedScatterplotLayer extends CompositeLayer {
         data: this.props.data,
         getColor: getStrokeColor,
         getRadius: getOuterRadius,
+        radiusMinPixels: radiusMinPixels + 2,
         updateTriggers: {
           ...updateTriggers,
           getColor: updateTriggers.getStrokeColor,

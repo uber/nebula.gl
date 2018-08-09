@@ -11,7 +11,7 @@ import sampleGeoJson from '../data/sample-geojson.json';
 import iconSheet from '../data/edit-handles.png';
 
 import OutlinedScatterplotLayer from './custom-layers/outlined-scatterplot-layer';
-import WorldIconLayer from './custom-layers/world-icon-layer';
+import OutlinedGeoJsonLayer from './custom-layers/outlined-geojson-layer';
 
 const initialViewport = {
   bearing: 0,
@@ -74,7 +74,8 @@ export default class Example extends Component<
       mode: 'modify',
       pointsRemovable: true,
       selectedFeatureIndexes: [],
-      editHandleType: 'scatter'
+      editHandleType: 'scatter',
+      lineType: 'default'
     };
   }
 
@@ -187,8 +188,17 @@ export default class Example extends Component<
             >
               <option value="scatter">ScatterplotLayer</option>
               <option value="icon">IconLayer</option>
-              <option value="outlined">OutlinedScatterplotLayer</option>
-              <option value="world">WorldIconLayer</option>
+              <option value="outlined-scatter">OutlinedScatterplotLayer</option>
+            </select>
+          </dd>
+          <dt style={styles.toolboxTerm}>Geometry type</dt>
+          <dd style={styles.toolboxDescription}>
+            <select
+              value={this.state.geometryType}
+              onChange={event => this.setState({ geometryType: event.target.value })}
+            >
+              <option value="geojson">GeoJsonLayer</option>
+              <option value="outlined-geojson">OutlinedGeoJsonLayer</option>
             </select>
           </dd>
           <dt style={styles.toolboxTerm}>Select Features</dt>
@@ -206,14 +216,33 @@ export default class Example extends Component<
   }
 
   getCustomLayers() {
-    if (this.state.editHandleType === 'point') {
-      return null;
-    }
-    if (this.state.editHandleType === 'outlined') {
+    // get geometry layer
+    const customLayers =
+      this.state.geometryType === 'outlined-geojson'
+        ? {
+            geometryLayer: {
+              Layer: OutlinedGeoJsonLayer,
+              id: 'outlined-geojson',
+              props: {
+                getLineWidth: d => 5,
+                getLineFillColor: d => [255, 255, 255, 255],
+                getLineStrokeWidth: d => 10
+              },
+              accessors: {
+                getLineStrokeColor: (d, ctx) =>
+                  ctx.isSelected ? [0x00, 0x20, 0x90, 0xff] : [0x20, 0x20, 0x20, 0xff]
+              }
+            }
+          }
+        : {};
+
+    // get edit handle layer
+    if (this.state.editHandleType === 'outlined-scatter') {
       return {
+        ...customLayers,
         editHandleLayer: {
           Layer: OutlinedScatterplotLayer,
-          id: 'outlined',
+          id: 'outlined-scatter',
           props: {
             getRadius: h => (h.type === 'existing' ? 10 : 7),
             getFillColor: h =>
@@ -224,52 +253,37 @@ export default class Example extends Component<
         }
       };
     }
-
-    const iconProps = {
-      iconAtlas: iconSheet,
-      iconMapping: {
-        intermediate: {
-          x: 0,
-          y: 0,
-          width: 58,
-          height: 58,
-          mask: false
-        },
-        existing: {
-          x: 58,
-          y: 0,
-          width: 58,
-          height: 58,
-          mask: false
-        }
-      },
-      getIcon: handle => handle.type,
-      getSize: 40
-    };
-
-    if (this.state.editHandleType === 'world') {
+    if (this.state.editHandleType === 'icon') {
       return {
+        ...customLayers,
         editHandleLayer: {
-          Layer: WorldIconLayer,
-          id: 'world',
+          Layer: IconLayer,
+          id: 'icon',
           props: {
-            ...iconProps,
-            sizeUnit: 'meter',
-            sizeScale: 2
+            iconAtlas: iconSheet,
+            iconMapping: {
+              intermediate: {
+                x: 0,
+                y: 0,
+                width: 58,
+                height: 58,
+                mask: false
+              },
+              existing: {
+                x: 58,
+                y: 0,
+                width: 58,
+                height: 58,
+                mask: false
+              }
+            },
+            getIcon: handle => handle.type,
+            getSize: handle => 40
           }
         }
       };
     }
-    if (this.state.editHandleType === 'icon') {
-      return {
-        editHandleLayer: {
-          Layer: IconLayer,
-          id: 'icon',
-          props: iconProps
-        }
-      };
-    }
-    return null;
+    return customLayers;
   }
 
   render() {
@@ -326,14 +340,14 @@ export default class Example extends Component<
       // Specify the same GeoJsonLayer props
       lineWidthMinPixels: 2,
       pointRadiusMinPixels: 5,
-      getLineDashArray: (f, isSelected, currMode) => [0, 0],
+      getLineDashArray: f => [0, 0],
 
       // Accessors receive an isSelected argument
-      getFillColor: (feature, isSelected) => {
-        return isSelected ? [0x20, 0x40, 0x90, 0xc0] : [0x20, 0x20, 0x20, 0x30];
+      getFillColor: (feature, ctx) => {
+        return ctx.isSelected ? [0x20, 0x40, 0x90, 0xc0] : [0x20, 0x20, 0x20, 0x30];
       },
-      getLineColor: (feature, isSelected) => {
-        return isSelected ? [0x00, 0x20, 0x90, 0xff] : [0x20, 0x20, 0x20, 0xff];
+      getLineColor: (feature, ctx) => {
+        return ctx.isSelected ? [0x00, 0x20, 0x90, 0xff] : [0x20, 0x20, 0x20, 0xff];
       },
 
       // Can customize editing points props
@@ -342,8 +356,9 @@ export default class Example extends Component<
       editHandlePointRadiusScale: 2,
 
       // customize drawing line style
-      getDrawLineDashArray: (f, currMode) => [7, 4],
-      getDrawLineColor: (f, currMode) => [0x8f, 0x8f, 0x8f, 0xff],
+      getDrawLineDashArray: () => [7, 4],
+      getDrawLineColor: () => [0x8f, 0x8f, 0x8f, 0xff],
+
       ...this.getCustomLayers()
     });
 

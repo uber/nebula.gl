@@ -35,21 +35,20 @@ const defaultProps = {
   pointRadiusMinPixels: 2,
   pointRadiusMaxPixels: Number.MAX_SAFE_INTEGER,
   lineDashJustified: false,
-  getLineColor: (feature, isSelected, mode) =>
-    isSelected ? DEFAULT_SELECTED_LINE_COLOR : DEFAULT_LINE_COLOR,
-  getFillColor: (feature, isSelected, mode) =>
-    isSelected ? DEFAULT_SELECTED_FILL_COLOR : DEFAULT_FILL_COLOR,
+  getLineColor: (feature, ctx) =>
+    ctx.isSelected ? DEFAULT_SELECTED_LINE_COLOR : DEFAULT_LINE_COLOR,
+  getFillColor: (feature, ctx) =>
+    ctx.isSelected ? DEFAULT_SELECTED_FILL_COLOR : DEFAULT_FILL_COLOR,
   getRadius: f =>
     (f && f.properties && f.properties.radius) || (f && f.properties && f.properties.size) || 1,
   getLineWidth: f => (f && f.properties && f.properties.lineWidth) || 1,
-  getLineDashArray: (feature, isSelected, mode) =>
-    isSelected && mode !== 'view' ? [7, 4] : [0, 0],
+  getLineDashArray: (feature, ctx) => (ctx.isSelected && ctx.mode !== 'view' ? [7, 4] : [0, 0]),
 
   // drawing line
-  getDrawLineDashArray: (f, mode) => [7, 4],
-  getDrawLineColor: (f, mode) => DEFAULT_SELECTED_LINE_COLOR,
-  getDrawFillColor: (f, mode) => DEFAULT_SELECTED_FILL_COLOR,
-  getDrawLineWidth: (f, mode) => (f && f.properties && f.properties.lineWidth) || 1,
+  getDrawLineDashArray: (f, ctx) => [7, 4],
+  getDrawLineColor: (f, ctx) => DEFAULT_SELECTED_LINE_COLOR,
+  getDrawFillColor: (f, ctx) => DEFAULT_SELECTED_FILL_COLOR,
+  getDrawLineWidth: (f, ctx) => (f && f.properties && f.properties.lineWidth) || 1,
 
   editHandleType: 'point',
 
@@ -67,12 +66,14 @@ const defaultProps = {
   geometryLayer: {
     Layer: GeoJsonLayer,
     id: 'default-geometry',
-    props: {}
+    props: {},
+    accessors: {}
   },
   editHandleLayer: {
     Layer: ScatterplotLayer,
     id: 'default-handle',
-    props: {}
+    props: {},
+    accessors: {}
   }
 };
 
@@ -106,14 +107,16 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         getRadius: [this.props.selectedFeatureIndexes, this.props.mode],
         getLineWidth: [this.props.selectedFeatureIndexes, this.props.mode],
         getLineDashArray: [this.props.selectedFeatureIndexes, this.props.mode]
-      }
-    });
+      },
 
+      // sublayer override props
+      ...this.props.geometryLayer.props,
+      ...this.updateAccessors(this.props.geometryLayer.accessors)
+    });
     let layers = [new this.props.geometryLayer.Layer(subLayerProps)];
 
     layers = layers.concat(this.createPointLayers());
     layers = layers.concat(this.createDrawLayers());
-
     return layers;
   }
 
@@ -173,7 +176,16 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     if (typeof accessor !== 'function') {
       return accessor;
     }
-    return (feature: Object) => accessor(feature, this.isFeatureSelected(feature), this.props.mode);
+    return (feature: Object) =>
+      accessor(feature, { isSelected: this.isFeatureSelected(feature), currMode: this.props.mode });
+  }
+
+  updateAccessors(accessors: Object) {
+    const awareAccessors = { ...accessors };
+    Object.keys(awareAccessors).forEach(
+      key => (awareAccessors[key] = this.selectionAwareAccessor(awareAccessors[key]))
+    );
+    return awareAccessors;
   }
 
   isFeatureSelected(feature: Object) {
@@ -212,7 +224,8 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         getRadius: this.props.getEditHandlePointRadius,
         getColor: this.props.getEditHandlePointColor,
 
-        ...this.props.editHandleLayer.props
+        ...this.props.editHandleLayer.props,
+        ...this.updateAccessors(this.props.editHandleLayer.accessors)
       })
     );
     return [layer];
@@ -241,14 +254,13 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         pointRadiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
         getRadius: this.props.getEditHandlePointRadius,
 
-        getLineColor: this.props.getDrawLineColor(this.state.selectedFeatures[0], this.props.mode),
-        getLineWidth: this.props.getDrawLineWidth(this.state.selectedFeatures[0], this.props.mode),
-        getFillColor: this.props.getDrawFillColor(this.state.selectedFeatures[0], this.props.mode),
-        getLineDashArray: this.props.getDrawLineDashArray(
-          this.state.selectedFeatures[0],
-          this.props.mode
-        ),
-        ...this.props.geometryLayer.props
+        getLineColor: this.selectionAwareAccessor(this.props.getDrawLineColor),
+        getLineWidth: this.selectionAwareAccessor(this.props.getDrawLineWidth),
+        getFillColor: this.selectionAwareAccessor(this.props.getDrawFillColor),
+        getLineDashArray: this.selectionAwareAccessor(this.props.getDrawLineDashArray),
+
+        ...this.props.geometryLayer.props,
+        ...this.updateAccessors(this.props.geometryLayer.accessors)
       })
     );
 

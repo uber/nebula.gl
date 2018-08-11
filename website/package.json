@@ -11,7 +11,12 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "nebula.gl": "^0.2.0",
+    "@deck.gl/core": "6.0.1",
+    "@deck.gl/experimental-layers": "6.0.1",
+    "@deck.gl/layers": "6.0.1",
+    "@deck.gl/react": "6.0.1",
+    "deck.gl": "6.0.1",
+    "nebula.gl": "0.3.1",
     "ocular": "0.5.5",
     "react-map-gl": "^3.2.7"
   }

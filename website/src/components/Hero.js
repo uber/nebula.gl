@@ -51,54 +51,45 @@ const styles = {
   }
 };
 
+const EMPTY = {
+  type: 'FeatureCollection',
+  features: []
+};
+
 class Hero extends Component {
   constructor() {
     super();
 
     this.state = {
       viewport: initialViewport,
-      testFeatures: sampleGeoJson,
-      mode: 'modify',
+      data: sampleGeoJson,
+      mode: 'view',
+      toolMode: 'view',
       pointsRemovable: true,
-      selectedFeatureIndex: null,
+      selectedFeatureIndexes: [],
       inbg: true
     };
   }
 
   componentDidMount() {
     window.addEventListener('resize', this._resize);
+    window.addEventListener('keydown', this._keydown);
   }
 
   componentWillUnmount() {
     window.removeEventListener('resize', this._resize);
+    window.removeEventListener('keydown', this._keydown);
   }
 
-  _incrementSelectedFeature() {
-    if (this.state.selectedFeatureIndex === null) {
-      this.setState({ selectedFeatureIndex: 0 });
-    } else {
+  _keydown = ({ key }) => {
+    if (key === 'Escape') {
       this.setState({
-        selectedFeatureIndex:
-          (this.state.selectedFeatureIndex + 1) % this.state.testFeatures.features.length
+        mode: 'view',
+        toolMode: 'view',
+        selectedFeatureIndexes: []
       });
     }
-  }
-
-  _decrementSelectedFeature() {
-    if (this.state.selectedFeatureIndex === null) {
-      this.setState({ selectedFeatureIndex: 0 });
-    } else {
-      this.setState({
-        selectedFeatureIndex:
-          (this.state.selectedFeatureIndex + this.state.testFeatures.features.length - 1) %
-          this.state.testFeatures.features.length
-      });
-    }
-  }
-
-  _deselectFeature() {
-    this.setState({ selectedFeatureIndex: null });
-  }
+  };
 
   _onLayerClick = info => {
     console.log('onLayerClick', info); // eslint-disable-line
@@ -112,11 +103,11 @@ class Hero extends Component {
       console.log(`select editing feature ${info.index}`); // eslint-disable-line
       // a feature was clicked
       // TODO: once https://github.com/uber/deck.gl/pull/1918 lands, this will work since it'll work with Multi* geometry types
-      this.setState({ selectedFeatureIndex: info.index });
+      this.setState({ selectedFeatureIndexes: [info.index], mode: 'modify', toolMode: 'modify' });
     } else {
       console.log('deselect editing feature'); // eslint-disable-line
       // open space was clicked, so stop editing
-      this.setState({ selectedFeatureIndex: null });
+      this.setState({ selectedFeatureIndexes: [] });
     }
   };
 
@@ -124,80 +115,62 @@ class Hero extends Component {
     this.forceUpdate();
   };
 
-  ____renderToolBox() {
+  renderToolBox() {
+    const TOOL_MODE_TO_MODE = {
+      view: 'view',
+      modify: 'modify',
+      new: 'view',
+      delete: 'view'
+    };
+    const setMode = toolMode => this.setState({ toolMode, mode: TOOL_MODE_TO_MODE[toolMode] });
+    const setModeNew = mode =>
+      this.setState({ mode, toolMode: 'new2', selectedFeatureIndexes: [] });
+    const isSelected = toolMode => (this.state.toolMode === toolMode ? 'selected' : '');
+    const isDisplay = toolMode => (this.state.toolMode === toolMode ? '' : 'none');
+
     return (
-      <div style={styles.toolbox}>
-        <dl style={styles.toolboxList}>
-          <dt style={styles.toolboxTerm}>Mode</dt>
-          <dd style={styles.toolboxDescription}>
-            <select
-              value={this.state.mode}
-              onChange={event => this.setState({ mode: event.target.value })}
-            >
-              <option value="view">view</option>
-              <option value="modify">modify</option>
-              <option value="drawLineString">drawLineString</option>
-            </select>
-          </dd>
-          <dt style={styles.toolboxTerm}>Allow removing points</dt>
-          <dd style={styles.toolboxDescription}>
-            <input
-              type="checkbox"
-              checked={this.state.pointsRemovable}
-              onChange={() => this.setState({ pointsRemovable: !this.state.pointsRemovable })}
-            />
-          </dd>
-          <dt style={styles.toolboxTerm}>Selected feature index</dt>
-          <dd style={styles.toolboxDescription}>
-            {this.state.selectedFeatureIndex}{' '}
-            <span style={{ float: 'right' }}>
-              <button
-                onClick={() => this._decrementSelectedFeature()}
-                title="Select previous feature"
-              >
-                -
-              </button>
-              <button
-                onClick={() => this._incrementSelectedFeature()}
-                title="Select previous feature"
-              >
-                +
-              </button>
-              <button onClick={() => this._deselectFeature()} title="Deselect feature">
-                Deselect
-              </button>
-            </span>
-          </dd>
-          <dt style={styles.toolboxTerm}>Selected feature type</dt>
-          <dd style={styles.toolboxDescription}>
-            {this.state.selectedFeatureIndex !== null
-              ? this.state.testFeatures.features[this.state.selectedFeatureIndex].geometry.type
-              : ''}
-          </dd>
-          <dt style={styles.toolboxTerm}>Feature count</dt>
-          <dd style={styles.toolboxDescription}>{this.state.testFeatures.features.length}</dd>
-        </dl>
+      <div className="HeroToolBox">
+        <a onClick={() => setMode('view')} className={isSelected('view')}>
+          Select
+        </a>
+        <a onClick={() => setMode('modify')} className={isSelected('modify')}>
+          Modify
+        </a>
+        <a onClick={() => setMode('new')} className={isSelected('new') + isSelected('new2')}>
+          New
+        </a>
+        <a onClick={() => setMode('delete')} className={isSelected('delete')}>
+          Delete
+        </a>
+        <hr />
+        <a onClick={() => this.setState({ data: EMPTY, selectedFeatureIndexes: [] })}>Clear</a>
+        <a onClick={() => this.fileLoad()}>Load</a>
+        <a onClick={() => this.fileSave()}>Save</a>
+
+        <div className="SubToolBox" style={{ top: 95, display: isDisplay('new') }}>
+          <a onClick={() => setModeNew('drawLineString')}>Line</a>
+          <a onClick={() => setModeNew('drawPolygon')}>Polygon</a>
+          <a onClick={() => setModeNew('drawRectangle')}>Rectangle</a>
+          <a onClick={() => setModeNew('drawCircle')}>Circle</a>
+        </div>
       </div>
     );
   }
 
-  renderToolBox() {
-    return (
-      <div className="HeroToolBox">
-        <a>Select</a>
-        <a>Modify</a>
-        <a>New</a>
-        <a>Delete</a>
-        <hr />
-        <a>Clear</a>
-        <a>Load</a>
-        <a>Save</a>
-      </div>
-    );
+  fileSave() {
+    const blob = new Blob([JSON.stringify(this.state.data)], { type: 'application/json' }); // eslint-disable-line
+    const a = document.createElement('a');
+    a.href = window.URL.createObjectURL(blob);
+    a.download = 'nebula.geojson';
+    a.click();
+  }
+
+  fileLoad() {
+    alert('Not implemented yet'); // eslint-disable-line
   }
 
   renderMap() {
-    const { testFeatures, selectedFeatureIndex } = this.state;
+    const { data, selectedFeatureIndexes } = this.state;
     const headerContent = document.getElementsByClassName('header-content')[0];
     let needsRefresh = false;
 
@@ -227,8 +200,8 @@ class Hero extends Component {
     };
 
     const editableGeoJsonLayer = new EditableGeoJsonLayer({
-      data: testFeatures,
-      selectedFeatureIndex,
+      data,
+      selectedFeatureIndexes,
       mode: this.state.mode,
       // TODO: remove fp64 and use deck new projection
       fp64: false,
@@ -238,7 +211,7 @@ class Hero extends Component {
       onEdit: ({
         updatedData,
         updatedMode,
-        updatedSelectedFeatureIndex,
+        updatedSelectedFeatureIndexes,
         editType,
         featureIndex,
         positionIndexes,
@@ -251,7 +224,7 @@ class Hero extends Component {
             'onEdit',
             editType,
             updatedMode,
-            updatedSelectedFeatureIndex,
+            updatedSelectedFeatureIndexes,
             featureIndex,
             positionIndexes,
             position
@@ -262,14 +235,16 @@ class Hero extends Component {
           return;
         }
         this.setState({
-          testFeatures: updatedData,
+          data: updatedData,
           mode: updatedMode,
-          selectedFeatureIndex: updatedSelectedFeatureIndex
+          selectedFeatureIndexes: updatedSelectedFeatureIndexes
         });
       },
 
       // Specify the same GeoJsonLayer props
-      lineWidthMinPixels: 2,
+      // Make things bigger to look good on home screen
+      lineWidthMinPixels: 4,
+      editHandlePointRadiusMinPixels: 8,
 
       // Accessors receive an isSelected argument
       getFillColor: (feature, isSelected) => {

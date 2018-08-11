@@ -49,7 +49,37 @@ header div.bg {
     background-color: #85C1E9;
   }
 
+  a.selected {
+    background-color: #CCC;
+  }
+
   hr {
     height: 5px;
+  }
+
+  .SubToolBox {
+    position: absolute;
+    right: 95px;
+    background: white;
+    padding: 4px;
+    border-radius: 4px;
+    border: 1px solid gray;
+    width: 120px;
+
+    a {
+      border: 1px solid gray;
+      width: 100%;
+      text-align: center;
+      font-size: 20px;
+      padding: 4px;
+      margin: 1px;
+      border-radius: 4px;
+      color: black;
+      transition: background-color 0.2s;
+    }
+
+    a:hover {
+      background-color: #85C1E9;
+    }
   }
 }

@@ -94,6 +94,15 @@ class Hero extends Component {
   _onLayerClick = info => {
     console.log('onLayerClick', info); // eslint-disable-line
 
+    if (this.state.toolMode === 'delete' && info) {
+      const features = [...this.state.data.features];
+      features.splice(info.index, 1);
+      const data = { ...this.state.data, features };
+
+      this.setState({ selectedFeatureIndexes: [], data });
+      return;
+    }
+
     if (this.state.mode !== 'view') {
       // don't change selection while editing
       return;
@@ -143,6 +152,8 @@ class Hero extends Component {
           Delete
         </a>
         <hr />
+        <a onClick={() => this.color()}>Color</a>
+        <hr />
         <a onClick={() => this.setState({ data: EMPTY, selectedFeatureIndexes: [] })}>Clear</a>
         <a onClick={() => this.fileLoad()}>Load</a>
         <a onClick={() => this.fileSave()}>Save</a>
@@ -157,6 +168,28 @@ class Hero extends Component {
     );
   }
 
+  color() {
+    const { selectedFeatureIndexes } = this.state;
+    if (selectedFeatureIndexes && selectedFeatureIndexes.length) {
+      const inputElement = document.createElement('input');
+      inputElement.type = 'color';
+      inputElement.addEventListener('change', () => {
+        const color = inputElement.value;
+        if (color.length === 7 && color.substring(0, 1) === '#') {
+          // convert from #123456 to array of numbers
+          const num = parseInt(color.substring(1), 16);
+          const fillColor = [16, 8, 0].map(sh => (num >> sh) & 0xff);
+
+          const features = [...this.state.data.features];
+          features[selectedFeatureIndexes[0]].properties.fillColor = fillColor;
+          const data = { ...this.state.data, features };
+          this.setState({ data });
+        }
+      });
+      inputElement.click();
+    }
+  }
+
   fileSave() {
     const blob = new Blob([JSON.stringify(this.state.data)], { type: 'application/json' }); // eslint-disable-line
     const a = document.createElement('a');
@@ -166,7 +199,28 @@ class Hero extends Component {
   }
 
   fileLoad() {
-    alert('Not implemented yet'); // eslint-disable-line
+    const inputElement = document.createElement('input');
+    inputElement.type = 'file';
+    inputElement.addEventListener('change', () => {
+      if (inputElement.files && inputElement.files[0]) {
+        // load geo-json
+        const reader = new FileReader(); // eslint-disable-line
+        reader.onloadend = () => {
+          let data = null;
+          try {
+            data = JSON.parse(reader.result);
+          } catch (e) {
+            alert(e); // eslint-disable-line
+          }
+
+          if (data) {
+            this.setState({ data });
+          }
+        };
+        reader.readAsBinaryString(inputElement.files[0]);
+      }
+    });
+    inputElement.click();
   }
 
   renderMap() {
@@ -245,9 +299,13 @@ class Hero extends Component {
       // Make things bigger to look good on home screen
       lineWidthMinPixels: 4,
       editHandlePointRadiusMinPixels: 8,
+      lineDashJustified: true,
 
       // Accessors receive an isSelected argument
       getFillColor: (feature, isSelected) => {
+        if (feature.properties.fillColor) {
+          return feature.properties.fillColor;
+        }
         return isSelected ? [0x20, 0x40, 0x90, 0xc0] : [0x20, 0x20, 0x20, 0x30];
       },
       getLineColor: (feature, isSelected) => {

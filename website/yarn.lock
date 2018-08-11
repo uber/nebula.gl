@@ -5095,9 +5095,9 @@ obuf@^1.0.0, obuf@^1.1.1:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/obuf/-/obuf-1.1.2.tgz#09bea3343d41859ebd446292d11c9d4db619084e"
 
-ocular@0.5.5:
-  version "0.5.5"
-  resolved "https://registry.yarnpkg.com/ocular/-/ocular-0.5.5.tgz#3672861e8fee3fa207dbff7c9217bac6b4b267d9"
+ocular@0.6.1:
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/ocular/-/ocular-0.6.1.tgz#382efd63cfbe884ed256909a335eaac894860f62"
   dependencies:
     autoprefixer-loader "^3.2.0"
     babel-core "^6.26.0"

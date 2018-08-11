@@ -4,7 +4,7 @@ import DeckGL from 'deck.gl';
 import PropTypes from 'prop-types';
 
 import type { Viewport } from '../types';
-import Nebula from './nebula';
+import Nebula from '../lib/nebula';
 
 type Props = {
   layers: Object[],

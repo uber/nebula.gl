@@ -3,8 +3,8 @@ import React from 'react';
 import Renderer from 'react-test-renderer';
 
 import { viewport } from '../../mocks';
-import Nebula from '../../../lib/nebula-react';
-import HtmlTooltipOverlay from '../../../lib/overlays/html-tooltip-overlay';
+import Nebula from '../../../react/nebula-react';
+import HtmlTooltipOverlay from '../../../react/overlays/html-tooltip-overlay';
 
 it('test HtmlTooltipOverlay no items shown', () => {
   const Component = (

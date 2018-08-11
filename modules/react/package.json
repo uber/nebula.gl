@@ -1,0 +1,61 @@
+{
+  "name": "nebula.gl-react",
+  "description": "React overlays for deck.gl and react-map-gl",
+  "license": "MIT",
+  "version": "0.3.1",
+  "author": "Georgios Karnas <georgios@uber.com>",
+  "keywords": [
+    "webgl",
+    "visualization",
+    "overlay",
+    "layer"
+  ],
+  "main": "dist/index.js",
+  "module": "dist-es6/index.js",
+  "files": [
+    "dist",
+    "dist-es6",
+    "src"
+  ],
+  "scripts": {
+    "build-clean": "rm -fr dist dist-es6 && mkdir -p dist dist-es6",
+    "build-es6": "rm -fr dist-es6 && babel src --out-dir dist-es6 --source-maps inline",
+    "build-es5": "rm -fr dist && babel src --out-dir dist --plugins=transform-es2015-modules-commonjs --source-maps inline",
+    "build": "npm run build-clean && npm run build-es6 && npm run build-es5",
+    "prepublish": "npm run build",
+    "publish-prod": "npm run build && npm run test && npm run test-dist && npm publish",
+    "publish-beta": "npm run build && npm run test && npm run test-dist && npm publish --tag beta",
+    "test": "npm run lint && npm run build && npm run flow && npm run jest",
+    "test-r": "npm run lint && npm run build && npm run test-node && (cd test/rendering-test && node node-rendering.js)",
+    "test-fast": "npm run test-node",
+    "test-ci": "npm run lint && node test/node-ci.js",
+    "test-cover": "NODE_ENV=test tape -r babel-register test/node.js && nyc report",
+    "test-node": "node test/node.js",
+    "test-dist": "node test/node-dist.js",
+    "test-browser": "webpack-dev-server --env.test --progress --hot --open",
+    "jest": "jest src",
+    "bench": "node test/bench/node.js",
+    "bench-browser": "webpack-dev-server --env.bench --progress --hot --open",
+    "test-rendering": "(cd test/rendering-test && webpack-dev-server --config webpack.config.test-rendering.js --progress --hot --open)"
+  },
+  "dependencies": {
+    "@deck.gl/experimental-layers": "^6.0.1",
+    "@turf/bbox": ">=4.0.0",
+    "@turf/bbox-polygon": ">=4.0.0",
+    "@turf/buffer": ">=4.0.0",
+    "@turf/circle": ">=4.0.0",
+    "@turf/difference": ">=4.0.0",
+    "@turf/distance": ">=4.0.0",
+    "@turf/helpers": ">=4.0.0",
+    "cubic-hermite-spline": "^1.0.1",
+    "deck.gl": "^6.0.1",
+    "geojson-types": "^2.0.1",
+    "global": ">=4.3.0",
+    "supercluster": ">=2.3.0",
+    "viewport-mercator-project": ">=5.0.0"
+  },
+  "peerDependencies": {
+    "react": "0.14.x - 16.x",
+    "react-dom": "0.14.x - 16.x"
+  }
+}

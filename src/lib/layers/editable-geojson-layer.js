@@ -60,27 +60,13 @@ const defaultProps = {
     handle.type === 'existing'
       ? DEFAULT_EDITING_EXISTING_POINT_COLOR
       : DEFAULT_EDITING_INTERMEDIATE_POINT_COLOR,
-  getEditHandlePointRadius: handle => (handle.type === 'existing' ? 5 : 3),
-
-  // define different sublayers with different props
-  geometryLayer: {
-    Layer: GeoJsonLayer,
-    id: 'default-geometry',
-    props: {},
-    accessors: {}
-  },
-  editHandleLayer: {
-    Layer: ScatterplotLayer,
-    id: 'default-handle',
-    props: {},
-    accessors: {}
-  }
+  getEditHandlePointRadius: handle => (handle.type === 'existing' ? 5 : 3)
 };
 
 export default class EditableGeoJsonLayer extends EditableLayer {
   renderLayers() {
     const subLayerProps = this.getSubLayerProps({
-      id: `${this.props.geometryLayer.id}-geojson`,
+      id: 'geojson',
       // Proxy most GeoJsonLayer props as-is
       data: this.props.data,
       fp64: this.props.fp64,
@@ -95,11 +81,11 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       pointRadiusMinPixels: this.props.pointRadiusMinPixels,
       pointRadiusMaxPixels: this.props.pointRadiusMaxPixels,
       lineDashJustified: this.props.lineDashJustified,
-      getLineColor: this.selectionAwareAccessor(this.props.getLineColor),
-      getFillColor: this.selectionAwareAccessor(this.props.getFillColor),
-      getRadius: this.selectionAwareAccessor(this.props.getRadius),
-      getLineWidth: this.selectionAwareAccessor(this.props.getLineWidth),
-      getLineDashArray: this.selectionAwareAccessor(this.props.getLineDashArray),
+      getLineColor: this.wrapAccessorWithContext(this.props.getLineColor),
+      getFillColor: this.wrapAccessorWithContext(this.props.getFillColor),
+      getRadius: this.wrapAccessorWithContext(this.props.getRadius),
+      getLineWidth: this.wrapAccessorWithContext(this.props.getLineWidth),
+      getLineDashArray: this.wrapAccessorWithContext(this.props.getLineDashArray),
 
       updateTriggers: {
         getLineColor: [this.props.selectedFeatureIndexes, this.props.mode],
@@ -107,13 +93,9 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         getRadius: [this.props.selectedFeatureIndexes, this.props.mode],
         getLineWidth: [this.props.selectedFeatureIndexes, this.props.mode],
         getLineDashArray: [this.props.selectedFeatureIndexes, this.props.mode]
-      },
-
-      // sublayer override props
-      ...this.props.geometryLayer.props,
-      ...this.updateAccessors(this.props.geometryLayer.accessors)
+      }
     });
-    let layers = [new this.props.geometryLayer.Layer(subLayerProps)];
+    let layers = [new GeoJsonLayer(subLayerProps)];
 
     layers = layers.concat(this.createPointLayers());
     layers = layers.concat(this.createDrawLayers());
@@ -172,20 +154,12 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     });
   }
 
-  selectionAwareAccessor(accessor: any) {
+  wrapAccessorWithContext(accessor: any) {
     if (typeof accessor !== 'function') {
       return accessor;
     }
     return (feature: Object) =>
       accessor(feature, { isSelected: this.isFeatureSelected(feature), currMode: this.props.mode });
-  }
-
-  updateAccessors(accessors: Object) {
-    const awareAccessors = { ...accessors };
-    Object.keys(awareAccessors).forEach(
-      key => (awareAccessors[key] = this.selectionAwareAccessor(awareAccessors[key]))
-    );
-    return awareAccessors;
   }
 
   isFeatureSelected(feature: Object) {
@@ -213,19 +187,16 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       return [];
     }
 
-    const layer = new this.props.editHandleLayer.Layer(
+    const layer = new ScatterplotLayer(
       this.getSubLayerProps({
         data: this.state.editHandles,
         fp64: this.props.fp64,
-        id: `${this.props.editHandleLayer.id}-edit-handles`,
+        id: 'edit-handles',
         radiusScale: this.props.editHandlePointRadiusScale,
         radiusMinPixels: this.props.editHandlePointRadiusMinPixels,
         radiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
         getRadius: this.props.getEditHandlePointRadius,
-        getColor: this.props.getEditHandlePointColor,
-
-        ...this.props.editHandleLayer.props,
-        ...this.updateAccessors(this.props.editHandleLayer.accessors)
+        getColor: this.props.getEditHandlePointColor
       })
     );
     return [layer];
@@ -236,9 +207,9 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       return [];
     }
 
-    const layer = new this.props.geometryLayer.Layer(
+    const layer = new GeoJsonLayer(
       this.getSubLayerProps({
-        id: `${this.props.geometryLayer.id}-draw`,
+        id: 'draw',
         data: this.state.drawFeature,
         fp64: this.props.fp64,
         pickable: false,
@@ -254,13 +225,10 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         pointRadiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
         getRadius: this.props.getEditHandlePointRadius,
 
-        getLineColor: this.selectionAwareAccessor(this.props.getDrawLineColor),
-        getLineWidth: this.selectionAwareAccessor(this.props.getDrawLineWidth),
-        getFillColor: this.selectionAwareAccessor(this.props.getDrawFillColor),
-        getLineDashArray: this.selectionAwareAccessor(this.props.getDrawLineDashArray),
-
-        ...this.props.geometryLayer.props,
-        ...this.updateAccessors(this.props.geometryLayer.accessors)
+        getLineColor: this.wrapAccessorWithContext(this.props.getDrawLineColor),
+        getLineWidth: this.wrapAccessorWithContext(this.props.getDrawLineWidth),
+        getFillColor: this.wrapAccessorWithContext(this.props.getDrawFillColor),
+        getLineDashArray: this.wrapAccessorWithContext(this.props.getDrawLineDashArray)
       })
     );
 

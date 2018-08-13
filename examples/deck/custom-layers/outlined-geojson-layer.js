@@ -5,6 +5,7 @@ export default class OutlinedGeoJsonLayer extends CompositeLayer {
   static layerName = 'OutlinedGeoJsonLayer';
   static defaultProps = {
     ...GeoJsonLayer.defaultProps,
+    fp64: true,
     getLineFillColor: d => [0, 0, 0, 255],
     getLineStrokeColor: d => [255, 255, 255, 255],
     getLineStrokeWidth: d => 1

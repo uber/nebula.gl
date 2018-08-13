@@ -5,6 +5,7 @@ export default class OutlinedScatterplotLayer extends CompositeLayer {
   static layerName = 'OutlinedScatterplotLayer';
   static defaultProps = {
     ...ScatterplotLayer.defaultProps,
+    fp64: true,
     getFillColor: d => [0, 0, 0, 255],
     getStrokeColor: d => [255, 255, 255, 255],
     getOuterRadius: d => 1

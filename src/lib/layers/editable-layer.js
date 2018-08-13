@@ -1,12 +1,12 @@
 // @flow
 /* eslint-env browser */
 
-import { CompositeLayer } from 'deck.gl';
+import ConfigurableCompositeLayer from './configurable-composite-layer';
 
 // Minimum number of pixels the pointer must move from the original pointer down to be considered dragging
 const MINIMUM_POINTER_MOVE_THRESHOLD_PIXELS = 7;
 
-export default class EditableLayer extends CompositeLayer {
+export default class EditableLayer extends ConfigurableCompositeLayer {
   // Overridable interaction event handlers
   onClick({ picks, screenCoords, groundCoords }: Object) {
     // default implementation - do nothing

@@ -215,35 +215,40 @@ export default class Example extends Component<
     );
   }
 
-  getCustomLayers() {
+  getLayerOverrides() {
     // get geometry layer
-    const customLayers =
+    const layerOverrides =
       this.state.geometryType === 'outlined-geojson'
         ? {
-            geometryLayer: {
+            ['geojson']: {
               Layer: OutlinedGeoJsonLayer,
-              id: 'outlined-geojson',
               props: {
                 getLineWidth: d => 5,
                 getLineFillColor: d => [255, 255, 255, 255],
-                getLineStrokeWidth: d => 10
+                getLineStrokeWidth: d => 10,
+                lineWidthMinPixels: 2,
+                pointRadiusMinPixels: 5,
+                getLineDashArray: f => [0, 0]
               },
               accessors: {
                 getLineStrokeColor: (d, ctx) =>
-                  ctx.isSelected ? [0x00, 0x20, 0x90, 0xff] : [0x20, 0x20, 0x20, 0xff]
+                  ctx.isSelected ? [0x00, 0x20, 0x90, 0xff] : [0x20, 0x20, 0x20, 0xff],
+                getFillColor: (feature, ctx) =>
+                  ctx.isSelected ? [0x20, 0x40, 0x90, 0xc0] : [0x20, 0x20, 0x20, 0x30]
               }
             }
           }
-        : {};
+        : null;
 
     // get edit handle layer
     if (this.state.editHandleType === 'outlined-scatter') {
       return {
-        ...customLayers,
-        editHandleLayer: {
+        ...layerOverrides,
+        ['edit-handles']: {
           Layer: OutlinedScatterplotLayer,
-          id: 'outlined-scatter',
           props: {
+            radiusScale: 2,
+            radiusMinPixels: 5,
             getRadius: h => (h.type === 'existing' ? 10 : 7),
             getFillColor: h =>
               h.type === 'existing' ? [0xff, 0x80, 0x00, 0xff] : [0x0, 0x0, 0x0, 0x80],
@@ -255,11 +260,11 @@ export default class Example extends Component<
     }
     if (this.state.editHandleType === 'icon') {
       return {
-        ...customLayers,
-        editHandleLayer: {
+        ...layerOverrides,
+        ['edit-handles']: {
           Layer: IconLayer,
-          id: 'icon',
           props: {
+            fp64: true,
             iconAtlas: iconSheet,
             iconMapping: {
               intermediate: {
@@ -283,7 +288,7 @@ export default class Example extends Component<
         }
       };
     }
-    return customLayers;
+    return layerOverrides;
   }
 
   render() {
@@ -359,7 +364,7 @@ export default class Example extends Component<
       getDrawLineDashArray: () => [7, 4],
       getDrawLineColor: () => [0x8f, 0x8f, 0x8f, 0xff],
 
-      ...this.getCustomLayers()
+      layerOverrides: this.getLayerOverrides()
     });
 
     return (

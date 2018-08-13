@@ -207,8 +207,9 @@ The following accessors function the same, but can accept additional arguments:
 The additional arguments (in order) are:
 
 * `feature`: the given feature
-* `isSelected`: indicates if the given feature is a selected feature
-* `mode`: the current value of the `mode` prop
+* `ctx`: context object that contains:
+*   `isSelected`: indicates if the given feature is a selected feature
+*   `mode`: the current value of the `mode` prop
 
 ### Drawing Feature
 
@@ -218,11 +219,6 @@ While creating a new feature in any of the `draw` modes, portion of a feature wh
 * `getDrawFillColor`
 * `getDrawLineWidth`
 * `getDrawLineDashArray`
-
-The following accessors default to the same values as the existing feature accessors above. The arguments in order:
-
-* `feature`: the given feature
-* `mode`: the current value of the `mode` prop
 
 ### Edit Handles
 
@@ -308,26 +304,34 @@ The pointer moved, regardless of whether the pointer is down, up, and whether or
 * `pointerDownPicks` (Array): An array containing [deck.gl Picking Info Objects](https://uber.github.io/deck.gl/#/documentation/developer-guide/adding-interactivity?section=what-can-be-picked-) for all objects that were under the pointer when it went down, or `null` if pointer is moving without pointer down.
 
 
-## Define Sublayers
+## Override SubLayers
 
 Three default sublayers make up the composite `EditableGeoJsonLayer`:
 
-1. `geometryLayer` renders the geometries. Default: `GeoJsonLayer`
-2. `editHandleLayer` renders the edit handles. Default: `ScatterplotLayer`
+1. Layer with `id: geojson` renders the geometry. Default: `GeoJsonLayer`
+2. Layer with `id: edit-handles` renders the edit handles. Default: `ScatterplotLayer`
+3. Layer with `id: draw` renders the geometry during a `draw` mode which has not been "committed" yet. This includes the last segment of a line during `drawLineString` and the fill during `drawPolygon`.  Default: `GeoJsonLayer`
 
-All three sublayer defaults can be overridden with custom or experimental layers. Define an object prop that contains the `Layer` class object, an `id` and any addtional `props`. For instance:
+All three sublayer defaults can be overridden with custom or experimental layers. Define a prop object that contains a `Layer` class object, `props`, and `accessors`. The key should be the `id` of the layer to override. For instance:
 
-```
-editHandleLayer: {
-  Layer: OutlinedScatterplotLayer,
-  id: 'outlined',
-  props: {
-    innerRadius: 5,
-    fillColor: [0x20, 0x40, 0x90, 0xc0],
-    strokeColor: [0x0, 0x0, 0x0, 0x80]
+```javascript
+{
+  'geojson': {
+    Layer: OutlinedGeoJsonLayer,
+    props: {
+      getLineWidth: d => 5,
+      getLineFillColor: d => [255, 255, 255, 255],
+      getLineStrokeWidth: d => 10,
+    },
+    accessors: {
+      getLineStrokeColor: (d, ctx) =>
+        ctx.isSelected ? [0x00, 0x20, 0x90, 0xff] : [0x20, 0x20, 0x20, 0xff],
+      getFillColor: (feature, ctx) =>
+        ctx.isSelected ? [0x20, 0x40, 0x90, 0xc0] : [0x20, 0x20, 0x20, 0x30]
+    }
   }
 }
 ```
 
-This overrides `editHandleLayer` with a new layer and three additional props. The sublayer will still receive props defined by the proxied `editHandlePoint` props.
+Accessors will be aware of a `ctx` object in addition to the feature, which contains the `currMode`, the current mode, and `isSelected`, the selected status of the feature.
 

@@ -1,19 +1,127 @@
 import React, { Component } from 'react';
-import DeckGL, { MapView, MapController } from 'deck.gl';
+import DeckGL, { MapView, MapController, GeoJsonLayer, ScatterplotLayer } from 'deck.gl';
 import { StaticMap } from 'react-map-gl';
 import { EditableGeoJsonLayer } from 'nebula.gl';
 import window from 'global/window';
 import document from 'global/document';
 
 import { PROJECT_NAME, PROJECT_DESC } from 'config';
-import sampleGeoJson from '../../../examples/data/sample-geojson.json';
+
+const DATA_URL =
+  'https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_admin_1_states_provinces_shp.geojson';
+
+function processInitialData(data) {
+  // add color and elevation to states
+  data.features.forEach(state => {
+    state.properties.fillColor = [
+      Math.round(Math.random() * 255),
+      Math.round(Math.random() * 255),
+      Math.round(Math.random() * 255),
+      0xff
+    ];
+    state.properties.elevation = Math.round(1 + Math.random() * 10) * 10000;
+  });
+  return data;
+}
+
+const LIGHT_SETTINGS = {
+  lightsPosition: [0, 80, 190000, -125, 80, 190000],
+  ambientRatio: 0.3,
+  diffuseRatio: 0.6,
+  specularRatio: 0.2,
+  lightsStrength: [1.0, 0.0, 1.0, 0.0],
+  numberOfLights: 2
+};
+
+class EditableGeoJsonLayer2 extends EditableGeoJsonLayer {
+  renderLayers() {
+    const subLayerProps = this.getSubLayerProps({
+      id: 'geojson',
+
+      // Proxy most GeoJsonLayer props as-is
+      data: this.props.data,
+      fp64: this.props.fp64,
+      filled: this.props.filled,
+      stroked: this.props.stroked,
+      lineWidthScale: this.props.lineWidthScale,
+      lineWidthMinPixels: this.props.lineWidthMinPixels,
+      lineWidthMaxPixels: this.props.lineWidthMaxPixels,
+      lineJointRounded: this.props.lineJointRounded,
+      lineMiterLimit: this.props.lineMiterLimit,
+      pointRadiusScale: this.props.pointRadiusScale,
+      pointRadiusMinPixels: this.props.pointRadiusMinPixels,
+      pointRadiusMaxPixels: this.props.pointRadiusMaxPixels,
+      lineDashJustified: this.props.lineDashJustified,
+      getLineColor: this.selectionAwareAccessor(this.props.getLineColor),
+      getFillColor: this.selectionAwareAccessor(this.props.getFillColor),
+      getRadius: this.selectionAwareAccessor(this.props.getRadius),
+      getLineWidth: this.selectionAwareAccessor(this.props.getLineWidth),
+      getLineDashArray: this.selectionAwareAccessor(this.props.getLineDashArray),
+
+      extruded: this.props.extruded,
+      getElevation: f => (f && f.properties && f.properties.elevation) || 150000,
+      lightSettings: LIGHT_SETTINGS,
+      // opacity: 1,
+
+      updateTriggers: {
+        getLineColor: [this.props.selectedFeatureIndexes, this.props.mode],
+        getFillColor: [this.props.selectedFeatureIndexes, this.props.mode],
+        getRadius: [this.props.selectedFeatureIndexes, this.props.mode],
+        getLineWidth: [this.props.selectedFeatureIndexes, this.props.mode],
+        getLineDashArray: [this.props.selectedFeatureIndexes, this.props.mode]
+      }
+    });
+
+    let layers = [new GeoJsonLayer(subLayerProps)];
+
+    layers = layers.concat(this.createPointLayers());
+    layers = layers.concat(this.createDrawLayers());
+
+    return layers;
+  }
+
+  createPointLayers() {
+    if (!this.state.editHandles.length) {
+      return [];
+    }
+
+    const sharedProps = {
+      id: `${this.props.editHandleType}-edit-handles`,
+      data: this.state.editHandles,
+      fp64: this.props.fp64
+    };
+
+    const layer =
+      this.props.editHandleType === 'point'
+        ? new ScatterplotLayer(
+            this.getSubLayerProps({
+              ...sharedProps,
+
+              // Proxy editing point props
+              radiusScale: this.props.editHandlePointRadiusScale,
+              radiusMinPixels: this.props.editHandlePointRadiusMinPixels,
+              radiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
+              getRadius: this.props.getEditHandlePointRadius,
+              getColor: this.props.getEditHandlePointColor,
+
+              parameters: {
+                depthTest: false,
+                blend: false
+              }
+            })
+          )
+        : null;
+
+    return [layer];
+  }
+}
 
 const initialViewport = {
   bearing: 0,
-  latitude: 37.76,
-  longitude: -122.44,
-  pitch: 0,
-  zoom: 10
+  latitude: 50.73,
+  longitude: -98,
+  pitch: 60,
+  zoom: 3
 };
 
 const styles = {
@@ -62,18 +170,31 @@ class Hero extends Component {
 
     this.state = {
       viewport: initialViewport,
-      data: sampleGeoJson,
+      data: EMPTY,
       mode: 'view',
       toolMode: 'view',
       pointsRemovable: true,
       selectedFeatureIndexes: [],
-      inbg: true
+      inbg: true,
+      stats: {
+        features: 0,
+        points: 0
+      },
+      extrude: false
     };
   }
 
   componentDidMount() {
     window.addEventListener('resize', this._resize);
     window.addEventListener('keydown', this._keydown);
+
+    window.fetch(DATA_URL).then(response => {
+      response.text().then(json => {
+        const data = processInitialData(JSON.parse(json));
+        this.setState({ data });
+        this.calcStats(data);
+      });
+    });
   }
 
   componentWillUnmount() {
@@ -164,8 +285,30 @@ class Hero extends Component {
           <a onClick={() => setModeNew('drawRectangle')}>Rectangle</a>
           <a onClick={() => setModeNew('drawCircle')}>Circle</a>
         </div>
+
+        <hr />
+        <div onClick={() => this.calcStats(this.state.data)}>
+          {this.state.stats.features} features<br />
+          {this.state.stats.points} points
+        </div>
+
+        <hr />
+        <div>
+          <input
+            type="checkbox"
+            checked={this.state.extrude}
+            onChange={event => this.setState({ extrude: event.target.checked })}
+          />Extrude
+        </div>
       </div>
     );
+  }
+
+  calcStats(data) {
+    const { features } = data;
+    let points = 0;
+    features.forEach(f => (points += f.geometry.coordinates.flatten(9).length >> 1));
+    this.setState({ stats: { features: features.length, points } });
   }
 
   color() {
@@ -181,6 +324,9 @@ class Hero extends Component {
           const fillColor = [16, 8, 0].map(sh => (num >> sh) & 0xff);
 
           const features = [...this.state.data.features];
+          if (!features[selectedFeatureIndexes[0]].properties) {
+            features[selectedFeatureIndexes[0]].properties = {};
+          }
           features[selectedFeatureIndexes[0]].properties.fillColor = fillColor;
           const data = { ...this.state.data, features };
           this.setState({ data });
@@ -215,6 +361,7 @@ class Hero extends Component {
 
           if (data) {
             this.setState({ data });
+            this.calcStats(data);
           }
         };
         reader.readAsBinaryString(inputElement.files[0]);
@@ -253,13 +400,14 @@ class Hero extends Component {
       width: window.innerWidth
     };
 
-    const editableGeoJsonLayer = new EditableGeoJsonLayer({
+    const editableGeoJsonLayer = new EditableGeoJsonLayer2({
       data,
       selectedFeatureIndexes,
       mode: this.state.mode,
       // TODO: remove fp64 and use deck new projection
       fp64: false,
-      autoHighlight: true,
+      autoHighlight: false,
+      extruded: this.state.extrude,
 
       // Editing callbacks
       onEdit: ({
@@ -297,16 +445,17 @@ class Hero extends Component {
 
       // Specify the same GeoJsonLayer props
       // Make things bigger to look good on home screen
-      lineWidthMinPixels: 4,
-      editHandlePointRadiusMinPixels: 8,
+      lineWidthMinPixels: 2,
+      editHandlePointRadiusMinPixels: 4,
+      editHandlePointRadiusScale: 200,
       lineDashJustified: true,
 
       // Accessors receive an isSelected argument
       getFillColor: (feature, isSelected) => {
-        if (feature.properties.fillColor) {
+        if (feature && feature.properties && feature.properties.fillColor) {
           return feature.properties.fillColor;
         }
-        return isSelected ? [0x20, 0x40, 0x90, 0xc0] : [0x20, 0x20, 0x20, 0x30];
+        return isSelected ? [0x00, 0x00, 0xff, 0x90] : [0xf0, 0xf0, 0xf0, 0x70];
       },
       getLineColor: (feature, isSelected) => {
         return isSelected ? [0x00, 0x20, 0x90, 0xff] : [0x20, 0x20, 0x20, 0xff];
@@ -327,7 +476,7 @@ class Hero extends Component {
           onLayerClick={this._onLayerClick}
           onViewStateChange={({ viewState }) => this.setState({ viewport: viewState })}
         >
-          <StaticMap {...viewport} />
+          <StaticMap {...viewport} mapStyle={'mapbox://styles/mapbox/dark-v9'} />
         </DeckGL>
         {this.renderToolBox()}
       </div>

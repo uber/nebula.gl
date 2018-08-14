@@ -10,16 +10,26 @@ import { PROJECT_NAME, PROJECT_DESC } from 'config';
 const DATA_URL =
   'https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_admin_1_states_provinces_shp.geojson';
 
+const DEMO_COLORS = [
+  '#2761A6',
+  '#339DC0',
+  '#53B9C2',
+  '#91D2BA',
+  '#CBEAB6',
+  '#FFFEDB',
+  '#90D1B9',
+  '#287FB5'
+];
+
 function processInitialData(data) {
   // add color and elevation to states
+  let color = 0;
+  let elevation = 1;
   data.features.forEach(state => {
-    state.properties.fillColor = [
-      Math.round(Math.random() * 255),
-      Math.round(Math.random() * 255),
-      Math.round(Math.random() * 255),
-      0xff
-    ];
-    state.properties.elevation = Math.round(1 + Math.random() * 10) * 10000;
+    const num = parseInt(DEMO_COLORS[color++ % DEMO_COLORS.length].substring(1), 16);
+    const fillColor = [16, 8, 0].map(sh => (num >> sh) & 0xff);
+    state.properties.fillColor = fillColor;
+    state.properties.elevation = Math.round(1 + elevation++ % 10) * 10000;
   });
   return data;
 }
@@ -300,7 +310,25 @@ class Hero extends Component {
             type="checkbox"
             checked={this.state.extrude}
             onChange={event => this.setState({ extrude: event.target.checked })}
-          />Extrude
+          />Extrude<br />
+          <input
+            type="checkbox"
+            checked={this.state.viewport.pitch > 0}
+            onChange={event =>
+              this.setState({
+                viewport: { ...this.state.viewport, pitch: event.target.checked ? 60 : 0 }
+              })
+            }
+          />Tilt
+          <button
+            onClick={() =>
+              this.setState({
+                viewport: { ...this.state.viewport, bearing: this.state.viewport.bearing + 90 }
+              })
+            }
+          >
+            &diams;
+          </button>
         </div>
       </div>
     );
@@ -465,7 +493,7 @@ class Hero extends Component {
 
       // Can customize editing points props
       getEditHandlePointColor: handle =>
-        handle.type === 'existing' ? [0xff, 0x80, 0x00, 0xff] : [0x0, 0x0, 0x0, 0x80]
+        handle.type === 'existing' ? [0xff, 0xff, 0xff, 0xff] : [0x0, 0x0, 0x0, 0x80]
     });
 
     return (

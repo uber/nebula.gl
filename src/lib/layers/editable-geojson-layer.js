@@ -264,9 +264,12 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         pointRadiusMinPixels: this.props.editHandlePointRadiusMinPixels,
         pointRadiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
         getRadius: this.props.getEditHandlePointRadius,
-        getLineColor: feature => this.props.getDrawLineColor(feature, this.props.mode),
-        getLineWidth: feature => this.props.getDrawLineWidth(feature, this.props.mode),
-        getFillColor: feature => this.props.getDrawFillColor(feature, this.props.mode),
+        getLineColor: feature =>
+          this.props.getDrawLineColor(feature, this.state.selectedFeatures[0], this.props.mode),
+        getLineWidth: feature =>
+          this.props.getDrawLineWidth(feature, this.state.selectedFeatures[0], this.props.mode),
+        getFillColor: feature =>
+          this.props.getDrawFillColor(feature, this.state.selectedFeatures[0], this.props.mode),
         getLineDashArray: feature => this.props.getDrawLineDashArray(feature, this.props.mode)
       })
     );
@@ -460,8 +463,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
           geometry: {
             type: 'LineString',
             coordinates: [startPosition, endPosition]
-          },
-          properties: selectedFeature.properties || {}
+          }
         };
       } else if (mode === 'drawRectangle') {
         const corner1 = ((selectedFeature.geometry.coordinates: any): Array<number>);
@@ -471,15 +473,11 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         const maxX = Math.max(corner1[0], corner2[0]);
         const maxY = Math.max(corner1[1], corner2[1]);
 
-        drawFeature = Object.assign({}, bboxPolygon([minX, minY, maxX, maxY]), {
-          properties: selectedFeature.properties || {}
-        });
+        drawFeature = bboxPolygon([minX, minY, maxX, maxY]);
       } else if (mode === 'drawCircle') {
         const center = ((selectedFeature.geometry.coordinates: any): Array<number>);
         const radius = Math.max(distance(selectedFeature, groundCoords || center), 0.001);
-        drawFeature = Object.assign({}, circle(center, radius), {
-          properties: selectedFeature.properties || {}
-        });
+        drawFeature = circle(center, radius);
       }
     } else if (selectedFeature.geometry.type === 'LineString') {
       const lastPositionOfLineString =
@@ -494,8 +492,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
           geometry: {
             type: 'LineString',
             coordinates: [lastPositionOfLineString, currentPosition]
-          },
-          properties: selectedFeature.properties || {}
+          }
         };
       } else if (mode === 'drawPolygon') {
         // Requires two features, a non-stroked polygon for fill and a
@@ -517,8 +514,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
                     selectedFeature.geometry.coordinates[0]
                   ]
                 ]
-              },
-              properties: selectedFeature.properties || {}
+              }
             },
             {
               type: 'Feature',
@@ -531,8 +527,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
                   currentPosition,
                   selectedFeature.geometry.coordinates[0]
                 ]
-              },
-              properties: selectedFeature.properties || {}
+              }
             }
           ]
         };

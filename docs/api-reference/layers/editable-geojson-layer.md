@@ -221,7 +221,8 @@ While creating a new feature in any of the `draw` modes, portion of a feature wh
 
 The following accessors default to the same values as the existing feature accessors above. The arguments in order:
 
-* `feature`: the given feature
+* `feature`: the segment/polygon that represents the "uncommitted" feature
+* `selectedFeature`: the "committed" feature which is being drawn/extended
 * `mode`: the current value of the `mode` prop
 
 ### Edit Handles

@@ -281,7 +281,7 @@ export default class Example extends Component<
       // Specify the same GeoJsonLayer props
       lineWidthMinPixels: 2,
       pointRadiusMinPixels: 5,
-      getLineDashArray: (f, isSelected, currMode) => [0, 0],
+      getLineDashArray: () => [0, 0],
 
       // Accessors receive an isSelected argument
       getFillColor: (feature, isSelected) => {
@@ -297,8 +297,8 @@ export default class Example extends Component<
       editHandlePointRadiusScale: 2,
 
       // customize drawing line style
-      getDrawLineDashArray: (f, currMode) => [7, 4],
-      getDrawLineColor: (f, currMode) => [0x8f, 0x8f, 0x8f, 0xff]
+      getDrawLineDashArray: () => [7, 4],
+      getDrawLineColor: () => [0x8f, 0x8f, 0x8f, 0xff]
     });
 
     return (

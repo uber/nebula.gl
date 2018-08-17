@@ -264,13 +264,14 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         pointRadiusMinPixels: this.props.editHandlePointRadiusMinPixels,
         pointRadiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
         getRadius: this.props.getEditHandlePointRadius,
-        getLineColor: this.props.getDrawLineColor(this.state.selectedFeatures[0], this.props.mode),
-        getLineWidth: this.props.getDrawLineWidth(this.state.selectedFeatures[0], this.props.mode),
-        getFillColor: this.props.getDrawFillColor(this.state.selectedFeatures[0], this.props.mode),
-        getLineDashArray: this.props.getDrawLineDashArray(
-          this.state.selectedFeatures[0],
-          this.props.mode
-        )
+        getLineColor: feature =>
+          this.props.getDrawLineColor(feature, this.state.selectedFeatures[0], this.props.mode),
+        getLineWidth: feature =>
+          this.props.getDrawLineWidth(feature, this.state.selectedFeatures[0], this.props.mode),
+        getFillColor: feature =>
+          this.props.getDrawFillColor(feature, this.state.selectedFeatures[0], this.props.mode),
+        getLineDashArray: feature =>
+          this.props.getDrawLineDashArray(feature, this.state.selectedFeatures[0], this.props.mode)
       })
     );
 

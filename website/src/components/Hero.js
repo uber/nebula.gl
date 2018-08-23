@@ -99,6 +99,8 @@ class EditableGeoJsonLayer2 extends EditableGeoJsonLayer {
 
               // Proxy editing point props
               radiusScale: this.props.editHandlePointRadiusScale,
+              outline: this.props.editHandlePointOutline,
+              strokeWidth: this.props.editHandlePointStrokeWidth,
               radiusMinPixels: this.props.editHandlePointRadiusMinPixels,
               radiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
               getRadius: this.props.getEditHandlePointRadius,

@@ -55,6 +55,8 @@ const defaultProps = {
 
   // point handles
   editHandlePointRadiusScale: 1,
+  editHandlePointOutline: false,
+  editHandlePointStrokeWidth: 1,
   editHandlePointRadiusMinPixels: 4,
   editHandlePointRadiusMaxPixels: Number.MAX_SAFE_INTEGER,
   getEditHandlePointColor: handle =>
@@ -231,6 +233,8 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
                 // Proxy editing point props
                 radiusScale: this.props.editHandlePointRadiusScale,
+                outline: this.props.editHandlePointOutline,
+                strokeWidth: this.props.editHandlePointStrokeWidth,
                 radiusMinPixels: this.props.editHandlePointRadiusMinPixels,
                 radiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
                 getRadius: this.props.getEditHandlePointRadius,
@@ -261,6 +265,8 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         lineJointRounded: this.props.lineJointRounded,
         lineMiterLimit: this.props.lineMiterLimit,
         pointRadiusScale: this.props.editHandlePointRadiusScale,
+        outline: this.props.editHandlePointOutline,
+        strokeWidth: this.props.editHandlePointStrokeWidth,
         pointRadiusMinPixels: this.props.editHandlePointRadiusMinPixels,
         pointRadiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
         getRadius: this.props.getEditHandlePointRadius,

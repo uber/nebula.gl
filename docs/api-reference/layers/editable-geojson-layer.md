@@ -111,6 +111,18 @@ The `mode` property dictates what type of edits the user can perform and how to 
 
   * If multiple features are selected, the user will be prevented from drawing.
 
+* `drawEllipseByBoundingBox`: user can draw a new ellipse shape `Polygon` feature by clicking two corners of bounding box.
+
+  * The center of ellipse will be center of two corners of bounding box.
+
+  * If no feature is selected, clicking will create a new `Point` feature and select it (by passing its index as `updatedSelectedFeatureIndexes`).
+
+  * If a `Point` feature is selected, clicking will convert it to a `Polygon` whose two opposing corners are the original point and the position clicked.
+
+  * If a `LineString` feature is selected, the user will be prevented from drawing a rectangle.
+
+  * If multiple features are selected, the user will be prevented from drawing.
+
 #### `selectedFeaturesIndexes` (Array, optional)
 
 * Default: `[]`

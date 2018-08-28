@@ -4,7 +4,10 @@
 import { GeoJsonLayer, ScatterplotLayer, IconLayer } from 'deck.gl';
 import bboxPolygon from '@turf/bbox-polygon';
 import circle from '@turf/circle';
+import ellipse from '@turf/ellipse';
 import distance from '@turf/distance';
+import center from '@turf/center';
+import { point, featureCollection as fc } from '@turf/helpers';
 import type { GeoJsonFeature } from '../../types';
 import { EditableFeatureCollection } from '../editable-feature-collection';
 import EditableLayer from './editable-layer';
@@ -302,7 +305,8 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       this.props.mode === 'drawPolygon' ||
       this.props.mode === 'drawRectangle' ||
       this.props.mode === 'drawCircleFromCenter' ||
-      this.props.mode === 'drawCircleByBoundingBox'
+      this.props.mode === 'drawCircleByBoundingBox' ||
+      this.props.mode === 'drawEllipse'
     ) {
       if (!selectedFeatures.length) {
         this.handleDrawNewPoint(groundCoords);
@@ -337,6 +341,14 @@ export default class EditableGeoJsonLayer extends EditableLayer {
           this.props.mode === 'drawCircleByBoundingBox'
         ) {
           this.handleDrawCircle(
+            selectedFeatures[0],
+            selectedFeatureIndexes[0],
+            groundCoords,
+            picks
+          );
+        }
+        if (this.props.mode === 'drawEllipse') {
+          this.handleDrawEllipse(
             selectedFeatures[0],
             selectedFeatureIndexes[0],
             groundCoords,
@@ -425,7 +437,8 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       this.props.mode === 'drawPolygon' ||
       this.props.mode === 'drawRectangle' ||
       this.props.mode === 'drawCircleFromCenter' ||
-      this.props.mode === 'drawCircleByBoundingBox'
+      this.props.mode === 'drawCircleByBoundingBox' ||
+      this.props.mode === 'drawEllipse'
     ) {
       const selectedFeature =
         this.state.selectedFeatures.length === 1 ? this.state.selectedFeatures[0] : null;
@@ -487,15 +500,37 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
         drawFeature = bboxPolygon([minX, minY, maxX, maxY]);
       } else if (mode === 'drawCircleFromCenter') {
-        const center = ((selectedFeature.geometry.coordinates: any): Array<number>);
+        const centerCoordinates = ((selectedFeature.geometry.coordinates: any): Array<number>);
         const radius = Math.max(distance(selectedFeature, groundCoords || center), 0.001);
-        drawFeature = circle(center, radius);
+        drawFeature = circle(centerCoordinates, radius);
       } else if (mode === 'drawCircleByBoundingBox') {
-        const center = (selectedFeature.geometry.coordinates.map(
+        const centerCoordinates = (selectedFeature.geometry.coordinates.map(
           (p, i) => (groundCoords && (p + groundCoords[i]) / 2) || p
         ): Array<number>);
         const radius = Math.max(distance(selectedFeature, center || selectedFeature), 0.001);
-        drawFeature = circle(center, radius);
+        drawFeature = circle(centerCoordinates, radius);
+      } else if (mode === 'drawEllipse') {
+        const corner1 = ((selectedFeature.geometry.coordinates: any): Array<number>);
+        const corner2 = groundCoords || corner1;
+
+        const minX = Math.min(corner1[0], corner2[0]);
+        const minY = Math.min(corner1[1], corner2[1]);
+        const maxX = Math.max(corner1[0], corner2[0]);
+        const maxY = Math.max(corner1[1], corner2[1]);
+
+        const polygonPoints = bboxPolygon([minX, minY, maxX, maxY]).geometry.coordinates[0];
+        const ellipseCenter = center(fc([point(corner1), point(corner2)]));
+
+        const xSemiAxis = Math.max(
+          distance(point(polygonPoints[0]), point(polygonPoints[1])),
+          0.001
+        );
+        const ySemiAxis = Math.max(
+          distance(point(polygonPoints[0]), point(polygonPoints[3])),
+          0.001
+        );
+
+        drawFeature = ellipse(ellipseCenter, xSemiAxis, ySemiAxis);
       }
     } else if (selectedFeature.geometry.type === 'LineString') {
       const lastPositionOfLineString =
@@ -771,6 +806,42 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }
 
   handleDrawCircle(
+    selectedFeature: GeoJsonFeature,
+    featureIndex: number,
+    groundCoords: number[],
+    picks: Object[]
+  ) {
+    let featureCollection = this.state.editableFeatureCollection;
+    let positionIndexes;
+
+    let updatedMode = this.props.mode;
+
+    if (selectedFeature.geometry.type === 'Point') {
+      positionIndexes = null;
+      featureCollection = featureCollection.replaceGeometry(
+        featureIndex,
+        this.state.drawFeature.geometry
+      );
+      updatedMode = 'modify';
+    } else {
+      console.warn(`Unsupported geometry type: ${selectedFeature.geometry.type}`); // eslint-disable-line
+      return;
+    }
+
+    const updatedData = featureCollection.getObject();
+
+    this.props.onEdit({
+      updatedData,
+      updatedMode,
+      updatedSelectedFeatureIndexes: this.props.selectedFeatureIndexes,
+      editType: 'addPosition',
+      featureIndex,
+      positionIndexes,
+      position: groundCoords
+    });
+  }
+
+  handleDrawEllipse(
     selectedFeature: GeoJsonFeature,
     featureIndex: number,
     groundCoords: number[],

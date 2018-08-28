@@ -54,6 +54,8 @@
     "@turf/difference": ">=4.0.0",
     "@turf/distance": ">=4.0.0",
     "@turf/helpers": ">=4.0.0",
+    "@turf/center": ">=4.0.0",
+    "@turf/ellipse": ">=4.0.0",
     "cubic-hermite-spline": "^1.0.1",
     "deck.gl": "^6.0.3",
     "geojson-types": "^2.0.1",

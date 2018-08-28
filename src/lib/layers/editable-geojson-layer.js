@@ -488,9 +488,9 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         const radius = Math.max(distance(selectedFeature, groundCoords || center), 0.001);
         drawFeature = circle(center, radius);
       } else if (mode === 'drawCircle2') {
-        const center = selectedFeature.geometry.coordinates.map(
+        const center = (selectedFeature.geometry.coordinates.map(
           (p, i) => (groundCoords && (p + groundCoords[i]) / 2) || p
-        );
+        ): Array<number>);
         const radius = Math.max(distance(selectedFeature, center || selectedFeature), 0.001);
         drawFeature = circle(center, radius);
       }
@@ -768,42 +768,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }
 
   handleDrawCircle(
-    selectedFeature: GeoJsonFeature,
-    featureIndex: number,
-    groundCoords: number[],
-    picks: Object[]
-  ) {
-    let featureCollection = this.state.editableFeatureCollection;
-    let positionIndexes;
-
-    let updatedMode = this.props.mode;
-
-    if (selectedFeature.geometry.type === 'Point') {
-      positionIndexes = null;
-      featureCollection = featureCollection.replaceGeometry(
-        featureIndex,
-        this.state.drawFeature.geometry
-      );
-      updatedMode = 'modify';
-    } else {
-      console.warn(`Unsupported geometry type: ${selectedFeature.geometry.type}`); // eslint-disable-line
-      return;
-    }
-
-    const updatedData = featureCollection.getObject();
-
-    this.props.onEdit({
-      updatedData,
-      updatedMode,
-      updatedSelectedFeatureIndexes: this.props.selectedFeatureIndexes,
-      editType: 'addPosition',
-      featureIndex,
-      positionIndexes,
-      position: groundCoords
-    });
-  }
-
-  handleDrawCircle2(
     selectedFeature: GeoJsonFeature,
     featureIndex: number,
     groundCoords: number[],

@@ -306,7 +306,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       this.props.mode === 'drawRectangle' ||
       this.props.mode === 'drawCircleFromCenter' ||
       this.props.mode === 'drawCircleByBoundingBox' ||
-      this.props.mode === 'drawEllipse'
+      this.props.mode === 'drawEllipseByBoundingBox'
     ) {
       if (!selectedFeatures.length) {
         this.handleDrawNewPoint(groundCoords);
@@ -347,8 +347,8 @@ export default class EditableGeoJsonLayer extends EditableLayer {
             picks
           );
         }
-        if (this.props.mode === 'drawEllipse') {
-          this.handleDrawEllipse(
+        if (this.props.mode === 'drawEllipseByBoundingBox') {
+          this.handleDrawEllipseByBoundingBox(
             selectedFeatures[0],
             selectedFeatureIndexes[0],
             groundCoords,
@@ -438,7 +438,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       this.props.mode === 'drawRectangle' ||
       this.props.mode === 'drawCircleFromCenter' ||
       this.props.mode === 'drawCircleByBoundingBox' ||
-      this.props.mode === 'drawEllipse'
+      this.props.mode === 'drawEllipseByBoundingBox'
     ) {
       const selectedFeature =
         this.state.selectedFeatures.length === 1 ? this.state.selectedFeatures[0] : null;
@@ -509,7 +509,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         ): Array<number>);
         const radius = Math.max(distance(selectedFeature, center || selectedFeature), 0.001);
         drawFeature = circle(centerCoordinates, radius);
-      } else if (mode === 'drawEllipse') {
+      } else if (mode === 'drawEllipseByBoundingBox') {
         const corner1 = ((selectedFeature.geometry.coordinates: any): Array<number>);
         const corner2 = groundCoords || corner1;
 
@@ -841,7 +841,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     });
   }
 
-  handleDrawEllipse(
+  handleDrawEllipseByBoundingBox(
     selectedFeature: GeoJsonFeature,
     featureIndex: number,
     groundCoords: number[],

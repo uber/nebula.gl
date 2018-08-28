@@ -124,12 +124,18 @@
   dependencies:
     "@turf/helpers" "6.x"
 
-"@turf/bbox@6.x", "@turf/bbox@>=4.0.0":
+"@turf/bbox@>=4.0.0":
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/@turf/bbox/-/bbox-6.0.1.tgz#b966075771475940ee1c16be2a12cf389e6e923a"
   dependencies:
     "@turf/helpers" "6.x"
     "@turf/meta" "6.x"
+
+"@turf/bbox@^4.7.3":
+  version "4.7.3"
+  resolved "https://registry.yarnpkg.com/@turf/bbox/-/bbox-4.7.3.tgz#e3ad4f10a7e9b41b522880d33083198199059067"
+  dependencies:
+    "@turf/meta" "^4.7.3"
 
 "@turf/bbox@^5.1.5":
   version "5.1.5"
@@ -150,19 +156,19 @@
     d3-geo "1.7.1"
     turf-jsts "*"
 
+"@turf/center@^4.7.3":
+  version "4.7.3"
+  resolved "https://registry.yarnpkg.com/@turf/center/-/center-4.7.3.tgz#744e5c652a7b1bbd0e1ee3f05e30dde43e2a35a4"
+  dependencies:
+    "@turf/bbox" "^4.7.3"
+    "@turf/helpers" "^4.7.3"
+
 "@turf/center@^5.1.5":
   version "5.1.5"
   resolved "https://registry.yarnpkg.com/@turf%2fcenter/-/center-5.1.5.tgz#44ab2cd954f63c0d37757f7158a99c3ef5114b80"
   dependencies:
     "@turf/bbox" "^5.1.5"
     "@turf/helpers" "^5.1.5"
-
-"@turf/center@^6.0.1":
-  version "6.0.1"
-  resolved "https://registry.yarnpkg.com/@turf/center/-/center-6.0.1.tgz#40a17d0a170df5bba09ad93e133b904d8eb14601"
-  dependencies:
-    "@turf/bbox" "6.x"
-    "@turf/helpers" "6.x"
 
 "@turf/centroid@^5.1.5":
   version "5.1.5"
@@ -221,6 +227,10 @@
   version "6.1.4"
   resolved "https://registry.yarnpkg.com/@turf/helpers/-/helpers-6.1.4.tgz#d6fd7ebe6782dd9c87dca5559bda5c48ae4c3836"
 
+"@turf/helpers@^4.7.3":
+  version "4.7.3"
+  resolved "https://registry.yarnpkg.com/@turf/helpers/-/helpers-4.7.3.tgz#bc312ac43cab3c532a483151c4c382c5649429e9"
+
 "@turf/helpers@^5.1.5":
   version "5.1.5"
   resolved "https://registry.yarnpkg.com/@turf%2fhelpers/-/helpers-5.1.5.tgz#153405227ab933d004a5bb9641a9ed999fcbe0cf"
@@ -242,6 +252,10 @@
   resolved "https://registry.yarnpkg.com/@turf/meta/-/meta-6.0.2.tgz#eb92951126d24a613ac1b7b99d733fcc20fd30cf"
   dependencies:
     "@turf/helpers" "6.x"
+
+"@turf/meta@^4.7.3":
+  version "4.7.4"
+  resolved "https://registry.yarnpkg.com/@turf/meta/-/meta-4.7.4.tgz#6de2f1e9890b8f64b669e4b47c09b20893063977"
 
 "@turf/meta@^5.1.5":
   version "5.2.0"

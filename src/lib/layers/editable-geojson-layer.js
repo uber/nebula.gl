@@ -301,7 +301,8 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       this.props.mode === 'drawLineString' ||
       this.props.mode === 'drawPolygon' ||
       this.props.mode === 'drawRectangle' ||
-      this.props.mode === 'drawCircle'
+      this.props.mode === 'drawCircleFromCenter' ||
+      this.props.mode === 'drawCircleByBoundingBox'
     ) {
       if (!selectedFeatures.length) {
         this.handleDrawNewPoint(groundCoords);
@@ -331,7 +332,10 @@ export default class EditableGeoJsonLayer extends EditableLayer {
             picks
           );
         }
-        if (this.props.mode === 'drawCircle') {
+        if (
+          this.props.mode === 'drawCircleFromCenter' ||
+          this.props.mode === 'drawCircleByBoundingBox'
+        ) {
           this.handleDrawCircle(
             selectedFeatures[0],
             selectedFeatureIndexes[0],
@@ -420,7 +424,8 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       this.props.mode === 'drawLineString' ||
       this.props.mode === 'drawPolygon' ||
       this.props.mode === 'drawRectangle' ||
-      this.props.mode === 'drawCircle'
+      this.props.mode === 'drawCircleFromCenter' ||
+      this.props.mode === 'drawCircleByBoundingBox'
     ) {
       const selectedFeature =
         this.state.selectedFeatures.length === 1 ? this.state.selectedFeatures[0] : null;
@@ -481,9 +486,15 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         const maxY = Math.max(corner1[1], corner2[1]);
 
         drawFeature = bboxPolygon([minX, minY, maxX, maxY]);
-      } else if (mode === 'drawCircle') {
+      } else if (mode === 'drawCircleFromCenter') {
         const center = ((selectedFeature.geometry.coordinates: any): Array<number>);
         const radius = Math.max(distance(selectedFeature, groundCoords || center), 0.001);
+        drawFeature = circle(center, radius);
+      } else if (mode === 'drawCircleByBoundingBox') {
+        const center = (selectedFeature.geometry.coordinates.map(
+          (p, i) => (groundCoords && (p + groundCoords[i]) / 2) || p
+        ): Array<number>);
+        const radius = Math.max(distance(selectedFeature, center || selectedFeature), 0.001);
         drawFeature = circle(center, radius);
       }
     } else if (selectedFeature.geometry.type === 'LineString') {

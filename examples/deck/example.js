@@ -166,7 +166,8 @@ export default class Example extends Component<
               <option value="drawLineString">drawLineString</option>
               <option value="drawPolygon">drawPolygon</option>
               <option value="drawRectangle">drawRectangle</option>
-              <option value="drawCircle">drawCircle</option>
+              <option value="drawCircleFromCenter">drawCircleFromCenter</option>
+              <option value="drawCircleByBoundingBox">drawCircleByBoundingBox</option>
             </select>
           </dd>
           <dt style={styles.toolboxTerm}>Allow removing points</dt>

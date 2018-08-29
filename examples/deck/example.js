@@ -166,6 +166,7 @@ export default class Example extends Component<
               <option value="drawLineString">drawLineString</option>
               <option value="drawPolygon">drawPolygon</option>
               <option value="drawRectangle">drawRectangle</option>
+              <option value="drawRectangleUsing3Points">drawRectangleUsing3Points</option>
               <option value="drawCircleFromCenter">drawCircleFromCenter</option>
               <option value="drawCircleByBoundingBox">drawCircleByBoundingBox</option>
               <option value="drawEllipseByBoundingBox">drawEllipseByBoundingBox</option>

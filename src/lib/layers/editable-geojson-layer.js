@@ -7,6 +7,9 @@ import circle from '@turf/circle';
 import ellipse from '@turf/ellipse';
 import distance from '@turf/distance';
 import center from '@turf/center';
+import destination from '@turf/destination';
+import bearing from '@turf/bearing';
+import pointToLineDistance from '@turf/point-to-line-distance';
 import { point, featureCollection as fc } from '@turf/helpers';
 import type { GeoJsonFeature } from '../../types';
 import { EditableFeatureCollection } from '../editable-feature-collection';
@@ -304,6 +307,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       this.props.mode === 'drawLineString' ||
       this.props.mode === 'drawPolygon' ||
       this.props.mode === 'drawRectangle' ||
+      this.props.mode === 'drawRectangleUsing3Points' ||
       this.props.mode === 'drawCircleFromCenter' ||
       this.props.mode === 'drawCircleByBoundingBox' ||
       this.props.mode === 'drawEllipseByBoundingBox'
@@ -330,6 +334,14 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         }
         if (this.props.mode === 'drawRectangle') {
           this.handleDrawRectangle(
+            selectedFeatures[0],
+            selectedFeatureIndexes[0],
+            groundCoords,
+            picks
+          );
+        }
+        if (this.props.mode === 'drawRectangleUsing3Points') {
+          this.handleDrawRectangleUsing3Points(
             selectedFeatures[0],
             selectedFeatureIndexes[0],
             groundCoords,
@@ -436,6 +448,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       this.props.mode === 'drawLineString' ||
       this.props.mode === 'drawPolygon' ||
       this.props.mode === 'drawRectangle' ||
+      this.props.mode === 'drawRectangleUsing3Points' ||
       this.props.mode === 'drawCircleFromCenter' ||
       this.props.mode === 'drawCircleByBoundingBox' ||
       this.props.mode === 'drawEllipseByBoundingBox'
@@ -478,7 +491,11 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         }
       };
     } else if (selectedFeature.geometry.type === 'Point') {
-      if (mode === 'drawLineString' || mode === 'drawPolygon') {
+      if (
+        mode === 'drawLineString' ||
+        mode === 'drawPolygon' ||
+        mode === 'drawRectangleUsing3Points'
+      ) {
         // Draw an extension line starting from the point
         const startPosition = selectedFeature.geometry.coordinates;
         const endPosition = groundCoords || startPosition;
@@ -501,13 +518,19 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         drawFeature = bboxPolygon([minX, minY, maxX, maxY]);
       } else if (mode === 'drawCircleFromCenter') {
         const centerCoordinates = ((selectedFeature.geometry.coordinates: any): Array<number>);
-        const radius = Math.max(distance(selectedFeature, groundCoords || center), 0.001);
+        const radius = Math.max(
+          distance(selectedFeature, groundCoords || centerCoordinates),
+          0.001
+        );
         drawFeature = circle(centerCoordinates, radius);
       } else if (mode === 'drawCircleByBoundingBox') {
         const centerCoordinates = (selectedFeature.geometry.coordinates.map(
           (p, i) => (groundCoords && (p + groundCoords[i]) / 2) || p
         ): Array<number>);
-        const radius = Math.max(distance(selectedFeature, center || selectedFeature), 0.001);
+        const radius = Math.max(
+          distance(selectedFeature, centerCoordinates || selectedFeature),
+          0.001
+        );
         drawFeature = circle(centerCoordinates, radius);
       } else if (mode === 'drawEllipseByBoundingBox') {
         const corner1 = ((selectedFeature.geometry.coordinates: any): Array<number>);
@@ -583,6 +606,35 @@ export default class EditableGeoJsonLayer extends EditableLayer {
               }
             }
           ]
+        };
+      } else if (mode === 'drawRectangleUsing3Points') {
+        const [p1, p2] = selectedFeature.geometry.coordinates;
+        const pt = point(currentPosition);
+        const options = { units: 'miles' };
+        const ddistance = pointToLineDistance(pt, selectedFeature, options);
+
+        const bearing2 = bearing(p2, pt);
+        const bearing1 = bearing2 > 0 ? bearing(p1, p2) - 90 : bearing(p1, p2) - 270;
+
+        const destination1 = destination(p1, ddistance, bearing1, options);
+        const destination2 = destination(p2, ddistance, bearing1, options);
+
+        drawFeature = {
+          type: 'Feature',
+          geometry: {
+            type: 'Polygon',
+            coordinates: [
+              [
+                // Draw a polygon containing all the points of the LineString,
+                // then the mouse position,
+                // then back to the starting position
+                ...selectedFeature.geometry.coordinates,
+                destination2.geometry.coordinates,
+                destination1.geometry.coordinates,
+                p1
+              ]
+            ]
+          }
         };
       }
     }
@@ -701,6 +753,45 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     this.props.onEdit({
       updatedData,
       updatedMode: this.props.mode,
+      updatedSelectedFeatureIndexes: this.props.selectedFeatureIndexes,
+      editType: 'addPosition',
+      featureIndex,
+      positionIndexes,
+      position: groundCoords
+    });
+  }
+
+  handleDrawRectangleUsing3Points(
+    selectedFeature: GeoJsonFeature,
+    featureIndex: number,
+    groundCoords: number[],
+    picks: Object[]
+  ) {
+    let featureCollection = this.state.editableFeatureCollection;
+    let positionIndexes;
+
+    let updatedMode = this.props.mode;
+
+    if (selectedFeature.geometry.type === 'Point') {
+      positionIndexes = [1];
+      // Upgrade from Point to LineString
+      featureCollection = featureCollection.replaceGeometry(featureIndex, {
+        type: 'LineString',
+        coordinates: [selectedFeature.geometry.coordinates, groundCoords]
+      });
+    } else {
+      // They clicked the first position of the LineString, so close the polygon
+      featureCollection = featureCollection.replaceGeometry(
+        featureIndex,
+        this.state.drawFeature.geometry
+      );
+      updatedMode = 'modify';
+    }
+    const updatedData = featureCollection.getObject();
+
+    this.props.onEdit({
+      updatedData,
+      updatedMode,
       updatedSelectedFeatureIndexes: this.props.selectedFeatureIndexes,
       editType: 'addPosition',
       featureIndex,

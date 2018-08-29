@@ -619,9 +619,9 @@ export default class EditableGeoJsonLayer extends EditableLayer {
           lineBearing - Math.abs(bearing(p1, pt)) > 0 ? lineBearing - 90 : lineBearing - 270;
 
         // Get coordinates for the point p3 and p4 which are perpendicular to the lineString
-        // Add the distance as the current position moves away from the lineStrig
-        const p3 = destination(p1, ddistance, orthogonalBearing, options);
-        const p4 = destination(p2, ddistance, orthogonalBearing, options);
+        // Add the distance as the current position moves away from the lineString
+        const p3 = destination(p2, ddistance, orthogonalBearing, options);
+        const p4 = destination(p1, ddistance, orthogonalBearing, options);
 
         drawFeature = {
           type: 'Feature',

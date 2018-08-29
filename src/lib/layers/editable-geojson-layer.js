@@ -501,13 +501,19 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         drawFeature = bboxPolygon([minX, minY, maxX, maxY]);
       } else if (mode === 'drawCircleFromCenter') {
         const centerCoordinates = ((selectedFeature.geometry.coordinates: any): Array<number>);
-        const radius = Math.max(distance(selectedFeature, groundCoords || center), 0.001);
+        const radius = Math.max(
+          distance(selectedFeature, groundCoords || centerCoordinates),
+          0.001
+        );
         drawFeature = circle(centerCoordinates, radius);
       } else if (mode === 'drawCircleByBoundingBox') {
         const centerCoordinates = (selectedFeature.geometry.coordinates.map(
           (p, i) => (groundCoords && (p + groundCoords[i]) / 2) || p
         ): Array<number>);
-        const radius = Math.max(distance(selectedFeature, center || selectedFeature), 0.001);
+        const radius = Math.max(
+          distance(selectedFeature, centerCoordinates || selectedFeature),
+          0.001
+        );
         drawFeature = circle(centerCoordinates, radius);
       } else if (mode === 'drawEllipseByBoundingBox') {
         const corner1 = ((selectedFeature.geometry.coordinates: any): Array<number>);

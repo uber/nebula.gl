@@ -612,12 +612,16 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         const pt = point(currentPosition);
         const options = { units: 'miles' };
         const ddistance = pointToLineDistance(pt, selectedFeature, options);
+        const lineBearing = bearing(p1, p2);
 
-        const bearing2 = bearing(p2, pt);
-        const bearing1 = bearing2 > 0 ? bearing(p1, p2) - 90 : bearing(p1, p2) - 270;
+        // Bearing to draw perpendicular to the line string
+        const orthogonalBearing =
+          lineBearing - Math.abs(bearing(p1, pt)) > 0 ? lineBearing - 90 : lineBearing - 270;
 
-        const destination1 = destination(p1, ddistance, bearing1, options);
-        const destination2 = destination(p2, ddistance, bearing1, options);
+        // Get coordinates for the point p3 and p4 which are perpendicular to the lineString
+        // Add the distance as the current position moves away from the lineStrig
+        const p3 = destination(p1, ddistance, orthogonalBearing, options);
+        const p4 = destination(p2, ddistance, orthogonalBearing, options);
 
         drawFeature = {
           type: 'Feature',
@@ -626,11 +630,11 @@ export default class EditableGeoJsonLayer extends EditableLayer {
             coordinates: [
               [
                 // Draw a polygon containing all the points of the LineString,
-                // then the mouse position,
+                // then the points orthogonal to the lineString,
                 // then back to the starting position
                 ...selectedFeature.geometry.coordinates,
-                destination2.geometry.coordinates,
-                destination1.geometry.coordinates,
+                p3.geometry.coordinates,
+                p4.geometry.coordinates,
                 p1
               ]
             ]
@@ -780,7 +784,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         coordinates: [selectedFeature.geometry.coordinates, groundCoords]
       });
     } else {
-      // They clicked the first position of the LineString, so close the polygon
+      // Draw the rectangle with the drawFeature geometry
       featureCollection = featureCollection.replaceGeometry(
         featureIndex,
         this.state.drawFeature.geometry

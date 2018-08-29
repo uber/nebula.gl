@@ -7,6 +7,9 @@ import circle from '@turf/circle';
 import ellipse from '@turf/ellipse';
 import distance from '@turf/distance';
 import center from '@turf/center';
+import destination from '@turf/destination';
+import bearing from '@turf/bearing';
+import pointToLineDistance from '@turf/point-to-line-distance';
 import { point, featureCollection as fc } from '@turf/helpers';
 import type { GeoJsonFeature } from '../../types';
 import { EditableFeatureCollection } from '../editable-feature-collection';
@@ -304,6 +307,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       this.props.mode === 'drawLineString' ||
       this.props.mode === 'drawPolygon' ||
       this.props.mode === 'drawRectangle' ||
+      this.props.mode === 'drawRectangleUsing3Points' ||
       this.props.mode === 'drawCircleFromCenter' ||
       this.props.mode === 'drawCircleByBoundingBox' ||
       this.props.mode === 'drawEllipseByBoundingBox'
@@ -330,6 +334,14 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         }
         if (this.props.mode === 'drawRectangle') {
           this.handleDrawRectangle(
+            selectedFeatures[0],
+            selectedFeatureIndexes[0],
+            groundCoords,
+            picks
+          );
+        }
+        if (this.props.mode === 'drawRectangleUsing3Points') {
+          this.handleDrawRectangleUsing3Points(
             selectedFeatures[0],
             selectedFeatureIndexes[0],
             groundCoords,
@@ -436,6 +448,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       this.props.mode === 'drawLineString' ||
       this.props.mode === 'drawPolygon' ||
       this.props.mode === 'drawRectangle' ||
+      this.props.mode === 'drawRectangleUsing3Points' ||
       this.props.mode === 'drawCircleFromCenter' ||
       this.props.mode === 'drawCircleByBoundingBox' ||
       this.props.mode === 'drawEllipseByBoundingBox'
@@ -478,7 +491,11 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         }
       };
     } else if (selectedFeature.geometry.type === 'Point') {
-      if (mode === 'drawLineString' || mode === 'drawPolygon') {
+      if (
+        mode === 'drawLineString' ||
+        mode === 'drawPolygon' ||
+        mode === 'drawRectangleUsing3Points'
+      ) {
         // Draw an extension line starting from the point
         const startPosition = selectedFeature.geometry.coordinates;
         const endPosition = groundCoords || startPosition;
@@ -589,6 +606,39 @@ export default class EditableGeoJsonLayer extends EditableLayer {
               }
             }
           ]
+        };
+      } else if (mode === 'drawRectangleUsing3Points') {
+        const [p1, p2] = selectedFeature.geometry.coordinates;
+        const pt = point(currentPosition);
+        const options = { units: 'miles' };
+        const ddistance = pointToLineDistance(pt, selectedFeature, options);
+        const lineBearing = bearing(p1, p2);
+
+        // Bearing to draw perpendicular to the line string
+        const orthogonalBearing =
+          lineBearing - Math.abs(bearing(p1, pt)) > 0 ? lineBearing - 90 : lineBearing - 270;
+
+        // Get coordinates for the point p3 and p4 which are perpendicular to the lineString
+        // Add the distance as the current position moves away from the lineString
+        const p3 = destination(p2, ddistance, orthogonalBearing, options);
+        const p4 = destination(p1, ddistance, orthogonalBearing, options);
+
+        drawFeature = {
+          type: 'Feature',
+          geometry: {
+            type: 'Polygon',
+            coordinates: [
+              [
+                // Draw a polygon containing all the points of the LineString,
+                // then the points orthogonal to the lineString,
+                // then back to the starting position
+                ...selectedFeature.geometry.coordinates,
+                p3.geometry.coordinates,
+                p4.geometry.coordinates,
+                p1
+              ]
+            ]
+          }
         };
       }
     }
@@ -707,6 +757,45 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     this.props.onEdit({
       updatedData,
       updatedMode: this.props.mode,
+      updatedSelectedFeatureIndexes: this.props.selectedFeatureIndexes,
+      editType: 'addPosition',
+      featureIndex,
+      positionIndexes,
+      position: groundCoords
+    });
+  }
+
+  handleDrawRectangleUsing3Points(
+    selectedFeature: GeoJsonFeature,
+    featureIndex: number,
+    groundCoords: number[],
+    picks: Object[]
+  ) {
+    let featureCollection = this.state.editableFeatureCollection;
+    let positionIndexes;
+
+    let updatedMode = this.props.mode;
+
+    if (selectedFeature.geometry.type === 'Point') {
+      positionIndexes = [1];
+      // Upgrade from Point to LineString
+      featureCollection = featureCollection.replaceGeometry(featureIndex, {
+        type: 'LineString',
+        coordinates: [selectedFeature.geometry.coordinates, groundCoords]
+      });
+    } else {
+      // Draw the rectangle with the drawFeature geometry
+      featureCollection = featureCollection.replaceGeometry(
+        featureIndex,
+        this.state.drawFeature.geometry
+      );
+      updatedMode = 'modify';
+    }
+    const updatedData = featureCollection.getObject();
+
+    this.props.onEdit({
+      updatedData,
+      updatedMode,
       updatedSelectedFeatureIndexes: this.props.selectedFeatureIndexes,
       editType: 'addPosition',
       featureIndex,

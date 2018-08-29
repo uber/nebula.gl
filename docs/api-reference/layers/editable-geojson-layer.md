@@ -101,6 +101,16 @@ The `mode` property dictates what type of edits the user can perform and how to 
 
   * If multiple features are selected, the user will be prevented from drawing.
 
+* `drawRectangleUsing3Points`: user can draw a new rectanglular `Polygon` feature by clicking three  corners of the rectangle.
+
+  * If no feature is selected, clicking will create a new `Point` feature and select it (by passing its index as `updatedSelectedFeatureIndexes`).
+
+  * If a `Point` feature is selected, clicking will convert it to a `LineString` and add the clicked position to it.
+
+  * If a `LineString` feature is selected, clicking will draw the rectangle.
+
+  * If multiple features are selected, the user will be prevented from drawing.
+
 * `drawCircleFromCenter`: user can draw a new circular `Polygon` feature by clicking the center then along the ring.
 
   * If no feature is selected, clicking will create a new `Point` feature and select it (by passing its index as `updatedSelectedFeatureIndexes`).

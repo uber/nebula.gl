@@ -101,11 +101,21 @@ The `mode` property dictates what type of edits the user can perform and how to 
 
   * If multiple features are selected, the user will be prevented from drawing.
 
-* `drawCircle`: user can draw a new circular `Polygon` feature by clicking the center then along the ring.
+* `drawCircleFromCenter`: user can draw a new circular `Polygon` feature by clicking the center then along the ring.
 
   * If no feature is selected, clicking will create a new `Point` feature and select it (by passing its index as `updatedSelectedFeatureIndexes`).
 
   * If a `Point` feature is selected, clicking will convert it to a `Polygon` whose center is the original point and radius is the distance to the clicked position.
+
+  * If a `LineString` feature is selected, the user will be prevented from drawing a circle.
+
+  * If multiple features are selected, the user will be prevented from drawing.
+
+* `drawCircleByBoundingBox`: user can draw a new circular `Polygon` feature by clicking the two corners of bounding box.
+
+  * If no feature is selected, clicking will create a new `Point` feature and select it (by passing its index as `updatedSelectedFeatureIndexes`).
+
+  * If a `Point` feature is selected, clicking will convert it to a `Polygon` whose radius is the center of two corners of bounding box.
 
   * If a `LineString` feature is selected, the user will be prevented from drawing a circle.
 

@@ -301,6 +301,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         );
       }
     } else if (
+      this.props.mode === 'drawPoint' ||
       this.props.mode === 'drawLineString' ||
       this.props.mode === 'drawPolygon' ||
       this.props.mode === 'drawRectangle' ||

@@ -92,8 +92,14 @@ export default class Example extends Component<
 
   _onLayerClick = info => {
     console.log('onLayerClick', info); // eslint-disable-line
+    const { mode } = this.state;
 
-    if (this.state.mode !== 'view') {
+    if (mode === 'drawPoint') {
+      // TODO why is info.index *always* 0 for a new feature?
+      this.setState({ selectedFeatureIndexes: [] });
+    }
+
+    if (mode !== 'view') {
       // don't change selection while editing
       return;
     }
@@ -163,6 +169,7 @@ export default class Example extends Component<
             >
               <option value="view">view</option>
               <option value="modify">modify</option>
+              <option value="drawPoint">drawPoint</option>
               <option value="drawLineString">drawLineString</option>
               <option value="drawPolygon">drawPolygon</option>
               <option value="drawRectangle">drawRectangle</option>

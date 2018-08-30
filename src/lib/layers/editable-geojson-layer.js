@@ -614,9 +614,15 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         const ddistance = pointToLineDistance(pt, selectedFeature, options);
         const lineBearing = bearing(p1, p2);
 
+        // Check if current point is to the left or right of line
+        // Line from A=(x1,y1) to B=(x2,y2) a point P=(x,y)
+        // then (x−x1)(y2−y1)−(y−y1)(x2−x1)
+        const isPointToLeftOfLine =
+          (currentPosition[0] - p1[0]) * (p2[1] - p1[1]) -
+          (currentPosition[1] - p1[1]) * (p2[0] - p1[0]);
+
         // Bearing to draw perpendicular to the line string
-        const orthogonalBearing =
-          lineBearing - Math.abs(bearing(p1, pt)) > 0 ? lineBearing - 90 : lineBearing - 270;
+        const orthogonalBearing = isPointToLeftOfLine < 0 ? lineBearing - 90 : lineBearing - 270;
 
         // Get coordinates for the point p3 and p4 which are perpendicular to the lineString
         // Add the distance as the current position moves away from the lineString

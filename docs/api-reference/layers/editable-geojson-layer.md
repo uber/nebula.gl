@@ -71,6 +71,10 @@ The `mode` property dictates what type of edits the user can perform and how to 
 
 * `modify`: user can move existing points, add intermediate points along lines, and remove points.
 
+* `drawPoint`: user can draw a `Point` feature by clicking positions to add.
+
+  * If no feature is selected, clicking will create a new `Point` feature.
+
 * `drawLineString`: user can draw a `LineString` feature by clicking positions to add.
 
   * If no feature is selected, clicking will create a new feature `Point` feature and select it (by passing its index as `updatedSelectedFeatureIndexes`).

@@ -273,6 +273,12 @@ Edit handles are the points rendered on a feature to indicate interactive capabi
 
 Edit handle objects can be represented by either points or icons. `editHandlePoint...` are proxies for the [`ScatterplotLayer`](https://github.com/uber/deck.gl/blob/master/docs/layers/scatterplot-layer.md#properties) props, and `editHandleIcon...` are proxies for the [`IconLayer`](https://github.com/uber/deck.gl/blob/master/docs/layers/icon-layer.md#properties) props.
 
+#### `editHandleParameters` (Object, optional)
+
+* Default: `{}`
+
+* Set luma.gl parameters for handles (eg. depthTest, blend)
+
 #### `editHandlePointRadiusScale` (Number, optional)
 
 * Default: `1`

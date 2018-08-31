@@ -1,14 +1,15 @@
 import window from 'global/window';
 import React, { Component } from 'react';
 import MapGL from 'react-map-gl';
+import DeckGL from 'deck.gl';
+import { featureCollection, point } from '@turf/helpers';
+
 import {
   Nebula,
-  Feature,
   HtmlOverlay,
   HtmlOverlayItem,
   HtmlClusterOverlay,
-  EditableJunctionsLayer,
-  EditablePolygonsLayer
+  EditableGeoJsonLayer
 } from 'nebula.gl';
 
 class Example extends Component {
@@ -17,11 +18,11 @@ class Example extends Component {
     this.state = {
       viewport: {
         bearing: 0,
-        height: 300,
+        height: 400,
         latitude: 37.77919,
         longitude: -122.41914,
         pitch: 0,
-        width: 600,
+        width: 800,
         zoom: 17
       }
     };
@@ -43,10 +44,11 @@ class Example extends Component {
           <Nebula
             ref={nebula => (this.nebula = nebula || this.nebula)}
             viewport={this.state.viewport}
-            layers={this.getNebulaLayers()}
+            layers={[]}
           >
             {this.getNebulaContents()}
           </Nebula>
+          <DeckGL {...this.state.viewport} layers={this.getNebulaLayers()} />
         </MapGL>
       </div>
     );
@@ -62,6 +64,11 @@ class SFCityHall extends HtmlOverlay {
         coordinates={[-122.41914, 37.77919]}
       >
         SF City Hall
+        <br />
+        <img
+          src="https://upload.wikimedia.org/wikipedia/commons/1/18/SFCityHall.png"
+          style={{ width: 153, height: 100 }}
+        />
       </HtmlOverlayItem>
     ];
   }
@@ -125,35 +132,8 @@ export class EditPointsExample extends Example {
   constructor() {
     super();
     this.state.viewport.zoom = 10;
-    this.data = [];
-
-    this.layer = new EditableJunctionsLayer({
-      getData: () => this.data,
-      toNebulaFeature: data => {
-        const style = {
-          outlineColor: [0, 0, 0],
-          fillColor: data.edited ? [1, 0, 0] : [0, 0, 1],
-          pointRadiusMeters: 100,
-          outlineRadiusMeters: 100
-        };
-        const geoJson = {
-          type: 'Feature',
-          properties: {},
-          geometry: {
-            type: 'Point',
-            coordinates: data.coordinates
-          }
-        };
-        return new Feature(geoJson, style);
-      },
-      on: {
-        editEnd: (event, info) => {
-          // Update object after edit has finished
-          this.data[info.id].coordinates = info.feature.geoJson.geometry.coordinates;
-          this.data[info.id].edited = true;
-        }
-      }
-    });
+    this.state.data = [];
+    this.state.selectedFeatureIndexes = [];
 
     window
       .fetch(
@@ -161,49 +141,46 @@ export class EditPointsExample extends Example {
       )
       .then(response => {
         response.json().then(json => {
-          json.forEach(({ coordinates }) =>
-            this.data.push({ coordinates, id: this.data.length, edited: false })
-          );
-          // Refresh after fetching data
-          this.nebula.updateAllDeckObjects();
+          this.setState({
+            data: featureCollection(json.map(({ coordinates }) => point(coordinates)))
+          });
         });
       });
   }
 
   getNebulaLayers() {
-    return [this.layer];
+    const layer = new EditableGeoJsonLayer({
+      id: 'edit-points-example',
+      data: this.state.data,
+
+      mode: 'modify',
+      selectedFeatureIndexes: this.state.selectedFeatureIndexes,
+      getRadius: 400,
+      getFillColor: () => [0, 0, 255, 255],
+
+      getEditHandlePointColor: () => [255, 0, 0, 200],
+      getEditHandlePointRadius: () => 350,
+
+      // Editing callbacks
+      onEdit: ({ updatedData, editType }) => {
+        this.setState({
+          data: updatedData
+        });
+      },
+
+      onClick: ({ index }) => this.setState({ selectedFeatureIndexes: [index] })
+    });
+
+    return [layer];
   }
 }
 
 export class EditPolygonsExample extends Example {
   constructor() {
     super();
-    this.state.viewport.zoom = 10;
-    this.data = [];
-
-    this.layer = new EditablePolygonsLayer({
-      getData: () => this.data,
-      toNebulaFeature: data => {
-        const style = {
-          outlineColor: [0, 0, 0, 0.8],
-          fillColor: data.edited ? [1, 0, 0, 0.5] : [0, 0, 1, 0.5],
-          lineWidthMeters: 50
-        };
-        return new Feature(data.geoJson, style);
-      },
-      on: {
-        mousedown: event => {
-          this.layer.selectedPolygonId = event.data.id;
-          this.layer.selectedSubPolygonIndex = event.metadata.index;
-          this.nebula.updateAllDeckObjects();
-        },
-        editEnd: (event, info) => {
-          // Update object after edit has finished
-          this.data[info.id].geoJson = info.feature.geoJson;
-          this.data[info.id].edited = true;
-        }
-      }
-    });
+    this.state.viewport.zoom = 7;
+    this.state.data = [];
+    this.state.selectedFeatureIndexes = [];
 
     window
       .fetch(
@@ -211,20 +188,156 @@ export class EditPolygonsExample extends Example {
       )
       .then(response => {
         response.json().then(json => {
-          json.features.filter(feature => feature.geometry.type === 'Polygon').forEach(feature =>
-            this.data.push({
-              geoJson: feature,
-              id: this.data.length,
-              edited: false
-            })
-          );
-          // Refresh after fetching data
-          this.nebula.updateAllDeckObjects();
+          this.setState({ data: json });
         });
       });
   }
 
   getNebulaLayers() {
-    return [this.layer];
+    const layer = new EditableGeoJsonLayer({
+      id: 'edit-polygons-example',
+      data: this.state.data,
+
+      mode: 'modify',
+      selectedFeatureIndexes: this.state.selectedFeatureIndexes,
+      getRadius: 400,
+      getFillColor: () => [0, 0, 200, 200],
+
+      getEditHandlePointColor: ({ type }) =>
+        type === 'existing' ? [255, 0, 0, 200] : [0, 255, 0, 200],
+      getEditHandlePointRadius: () => 500,
+
+      // Editing callbacks
+      onEdit: ({ updatedData, editType }) => {
+        this.setState({
+          data: updatedData
+        });
+      },
+
+      onClick: ({ index }) => this.setState({ selectedFeatureIndexes: [index] })
+    });
+
+    return [layer];
+  }
+}
+
+class WorldHeritage extends HtmlClusterOverlay {
+  getAllObjects() {
+    return this.props.data;
+  }
+
+  getObjectCoordinates(object) {
+    return [object.lng, object.lat];
+  }
+
+  renderObject(coordinates, object) {
+    if (this.getZoom() > 8) {
+      // show all details
+      return (
+        <HtmlOverlayItem
+          style={{ background: 'red', padding: 8, color: 'white', maxWidth: 300 }}
+          key={object.name}
+          coordinates={coordinates}
+        >
+          <center>{object.title}</center>
+          <div
+            style={{ fontSize: 12, lineHeight: '12px', maxWidth: 300 }}
+            dangerouslySetInnerHTML={{ __html: object.description }}
+          />
+        </HtmlOverlayItem>
+      );
+    } else if (this.getZoom() > 5) {
+      // show title
+      return (
+        <HtmlOverlayItem
+          style={{
+            background: 'red',
+            padding: 4,
+            color: 'white',
+            fontSize: 12,
+            lineHeight: '10px',
+            maxWidth: 300
+          }}
+          key={object.name}
+          coordinates={coordinates}
+        >
+          {object.title}
+        </HtmlOverlayItem>
+      );
+    }
+
+    // just small square
+    return (
+      <HtmlOverlayItem
+        style={{ background: 'red', padding: 4 }}
+        key={object.name}
+        coordinates={coordinates}
+      />
+    );
+  }
+
+  renderCluster(coordinates, clusterId, pointCount) {
+    return (
+      <HtmlOverlayItem
+        style={{
+          background: 'blue',
+          padding: 4,
+          color: 'white',
+          width: 40,
+          height: 40,
+          borderRadius: 20,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+        key={clusterId}
+        coordinates={coordinates}
+      >
+        {pointCount}
+      </HtmlOverlayItem>
+    );
+  }
+}
+
+export class WorldHeritageExample extends Example {
+  DATA_URL = 'https://cors-anywhere.herokuapp.com/http://whc.unesco.org/en/list/georss/';
+
+  constructor() {
+    super();
+    this.state.viewport.zoom = 3;
+
+    window.fetch(this.DATA_URL).then(response => {
+      response.text().then(text => {
+        const parser = new window.DOMParser();
+        const xmlDoc = parser.parseFromString(text, 'text/xml');
+
+        const data = Array.from(xmlDoc.getElementsByTagName('item')).map(item => {
+          const title = item.getElementsByTagName('title')[0].textContent;
+          const description = item.getElementsByTagName('description')[0].textContent;
+          const link = item.getElementsByTagName('link')[0].textContent;
+          const lat = item.getElementsByTagName('geo:lat')[0].textContent;
+          const lng = item.getElementsByTagName('geo:long')[0].textContent;
+
+          return {
+            title,
+            description,
+            link,
+            lat,
+            lng
+          };
+        });
+
+        this.setState({ data });
+      });
+    });
+  }
+
+  getNebulaContents() {
+    const { data } = this.state;
+    if (data) {
+      return <WorldHeritage data={data} />;
+    }
+
+    return <div>Loading...</div>;
   }
 }

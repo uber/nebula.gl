@@ -33,6 +33,10 @@ export default [
           {
             name: 'Clustering',
             markdown: require('../../docs/examples/overlay-clustering.md')
+          },
+          {
+            name: 'World Heritage',
+            markdown: require('../../docs/examples/world-heritage.md')
           }
         ]
       },

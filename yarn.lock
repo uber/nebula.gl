@@ -124,7 +124,7 @@
   dependencies:
     "@turf/helpers" "6.x"
 
-"@turf/bbox@6.x", "@turf/bbox@>=4.0.0":
+"@turf/bbox@*", "@turf/bbox@6.x", "@turf/bbox@>=4.0.0":
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/@turf/bbox/-/bbox-6.0.1.tgz#b966075771475940ee1c16be2a12cf389e6e923a"
   dependencies:
@@ -250,6 +250,24 @@
   dependencies:
     "@turf/helpers" "^5.1.5"
 
+"@turf/line-intersect@6.x":
+  version "6.0.2"
+  resolved "https://registry.yarnpkg.com/@turf/line-intersect/-/line-intersect-6.0.2.tgz#b45b7a4e7e08c39a0e4e91099580ed377ef7335f"
+  dependencies:
+    "@turf/helpers" "6.x"
+    "@turf/invariant" "6.x"
+    "@turf/line-segment" "6.x"
+    "@turf/meta" "6.x"
+    geojson-rbush "3.x"
+
+"@turf/line-segment@6.x":
+  version "6.0.2"
+  resolved "https://registry.yarnpkg.com/@turf/line-segment/-/line-segment-6.0.2.tgz#e280bcde70d28b694028ec1623dc406c928e59b6"
+  dependencies:
+    "@turf/helpers" "6.x"
+    "@turf/invariant" "6.x"
+    "@turf/meta" "6.x"
+
 "@turf/meta@6.x":
   version "6.0.2"
   resolved "https://registry.yarnpkg.com/@turf/meta/-/meta-6.0.2.tgz#eb92951126d24a613ac1b7b99d733fcc20fd30cf"
@@ -261,6 +279,18 @@
   resolved "https://registry.yarnpkg.com/@turf%2fmeta/-/meta-5.2.0.tgz#3b1ad485ee0c3b0b1775132a32c384d53e4ba53d"
   dependencies:
     "@turf/helpers" "^5.1.5"
+
+"@turf/nearest-point-on-line@^6.0.2":
+  version "6.0.2"
+  resolved "https://registry.yarnpkg.com/@turf/nearest-point-on-line/-/nearest-point-on-line-6.0.2.tgz#4b2c1177595d9a1743af76905a9013ced03bc0dc"
+  dependencies:
+    "@turf/bearing" "6.x"
+    "@turf/destination" "6.x"
+    "@turf/distance" "6.x"
+    "@turf/helpers" "6.x"
+    "@turf/invariant" "6.x"
+    "@turf/line-intersect" "6.x"
+    "@turf/meta" "6.x"
 
 "@turf/point-to-line-distance@>=4.0.0":
   version "6.0.0"
@@ -3070,6 +3100,15 @@ generate-object-property@^1.1.0:
   dependencies:
     is-property "^1.0.0"
 
+geojson-rbush@3.x:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/geojson-rbush/-/geojson-rbush-3.1.1.tgz#dd40bdd26e92813d888d7b489e8d2980695a49b4"
+  dependencies:
+    "@turf/bbox" "*"
+    "@turf/helpers" "6.x"
+    "@turf/meta" "6.x"
+    rbush "*"
+
 geojson-types@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/geojson-types/-/geojson-types-2.0.1.tgz#91040649b7ad39b2904643bd9ad51e5e86d524e3"
@@ -5524,6 +5563,10 @@ querystringify@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/querystringify/-/querystringify-1.0.0.tgz#6286242112c5b712fa654e526652bf6a13ff05cb"
 
+quickselect@^1.0.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/quickselect/-/quickselect-1.1.1.tgz#852e412ce418f237ad5b660d70cffac647ae94c2"
+
 randomatic@^1.1.3:
   version "1.1.7"
   resolved "https://registry.yarnpkg.com/randomatic/-/randomatic-1.1.7.tgz#c7abe9cc8b87c0baa876b19fde83fd464797e38c"
@@ -5560,6 +5603,12 @@ raw-body@2.3.2:
 raw-loader@^0.5.1:
   version "0.5.1"
   resolved "https://registry.yarnpkg.com/raw-loader/-/raw-loader-0.5.1.tgz#0c3d0beaed8a01c966d9787bf778281252a979aa"
+
+rbush@*:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/rbush/-/rbush-2.0.2.tgz#bb6005c2731b7ba1d5a9a035772927d16a614605"
+  dependencies:
+    quickselect "^1.0.1"
 
 rc@^1.1.7:
   version "1.2.6"

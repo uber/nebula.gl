@@ -202,7 +202,7 @@ export class EditableFeatureCollection {
    *
    * @param featureIndex The index of the feature to get edit handles
    */
-  getEditHandles(featureIndex: number) {
+  getEditHandles(featureIndex: number, includeIntermediateOverride: boolean = false) {
     let handles = [];
 
     const geometry = this.featureCollection.features[featureIndex].geometry;
@@ -222,7 +222,7 @@ export class EditableFeatureCollection {
       case 'MultiPoint':
       case 'LineString':
         // positions are nested 1 level
-        const includeIntermediate = geometry.type !== 'MultiPoint';
+        const includeIntermediate = geometry.type !== 'MultiPoint' && !includeIntermediateOverride;
         handles = handles.concat(
           getEditHandles(geometry.coordinates, [], includeIntermediate, featureIndex)
         );
@@ -232,7 +232,7 @@ export class EditableFeatureCollection {
         // positions are nested 2 levels
         for (let a = 0; a < geometry.coordinates.length; a++) {
           handles = handles.concat(
-            getEditHandles(geometry.coordinates[a], [a], true, featureIndex)
+            getEditHandles(geometry.coordinates[a], [a], !includeIntermediateOverride, featureIndex)
           );
         }
         break;
@@ -241,7 +241,12 @@ export class EditableFeatureCollection {
         for (let a = 0; a < geometry.coordinates.length; a++) {
           for (let b = 0; b < geometry.coordinates[a].length; b++) {
             handles = handles.concat(
-              getEditHandles(geometry.coordinates[a][b], [a, b], true, featureIndex)
+              getEditHandles(
+                geometry.coordinates[a][b],
+                [a, b],
+                !includeIntermediateOverride,
+                featureIndex
+              )
             );
           }
         }

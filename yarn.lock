@@ -280,7 +280,7 @@
   dependencies:
     "@turf/helpers" "^5.1.5"
 
-"@turf/nearest-point-on-line@^6.0.2":
+"@turf/nearest-point-on-line@>=4.0.0":
   version "6.0.2"
   resolved "https://registry.yarnpkg.com/@turf/nearest-point-on-line/-/nearest-point-on-line-6.0.2.tgz#4b2c1177595d9a1743af76905a9013ced03bc0dc"
   dependencies:

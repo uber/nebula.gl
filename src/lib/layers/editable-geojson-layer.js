@@ -23,17 +23,12 @@ const DEFAULT_SELECTED_FILL_COLOR = [0x90, 0x90, 0x90, 0x90];
 const DEFAULT_EDITING_EXISTING_POINT_COLOR = [0xc0, 0x0, 0x0, 0xff];
 const DEFAULT_EDITING_INTERMEDIATE_POINT_COLOR = [0x0, 0x0, 0x0, 0x80];
 
-// add point constants
-const ADD_POINT_SCHEME_DEFAULT = 'default';
-const ADD_POINT_SCHEME_EXACT = 'exact';
-
 const defaultProps = {
   mode: 'modify',
 
   // Edit and interaction events
   onEdit: () => {},
 
-  addPointScheme: ADD_POINT_SCHEME_DEFAULT,
   // expressed in meters
   tolerance: 0,
   pickable: true,
@@ -153,8 +148,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
   updateState({ props, oldProps, changeFlags }: Object) {
     super.updateState({ props, changeFlags });
-    const { addPointScheme } = props;
-    const includeIntermediateOverride = addPointScheme === ADD_POINT_SCHEME_EXACT;
 
     let editableFeatureCollection = this.state.editableFeatureCollection;
     if (changeFlags.dataChanged) {
@@ -170,9 +163,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     let editHandles = [];
     if (selectedFeatures.length && props.mode !== 'view') {
       props.selectedFeatureIndexes.forEach(index => {
-        editHandles = editHandles.concat(
-          editableFeatureCollection.getEditHandles(index, includeIntermediateOverride)
-        );
+        editHandles = editHandles.concat(editableFeatureCollection.getEditHandles(index));
       });
     }
 
@@ -354,7 +345,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
   onClick({ picks, screenCoords, groundCoords }: Object) {
     const { selectedFeatures } = this.state;
-    const { selectedFeatureIndexes, tolerance, addPointScheme } = this.props;
+    const { selectedFeatureIndexes, tolerance } = this.props;
     const editHandleInfo = this.getPickedEditHandle(picks);
 
     if (this.props.mode === 'modify') {
@@ -364,11 +355,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
           editHandleInfo.object.featureIndex,
           editHandleInfo.object.positionIndexes
         );
-      } else if (
-        addPointScheme === ADD_POINT_SCHEME_EXACT &&
-        selectedFeatures &&
-        selectedFeatures.length === 1
-      ) {
+      } else if (selectedFeatures && selectedFeatures.length === 1) {
         // a GeoJSON point representing where the user clicked on screen
         const clickPoint = point(groundCoords);
         // the GeoJSON point on the selected feature determined to be the
@@ -465,28 +452,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     groundCoords,
     dragStartScreenCoords,
     dragStartGroundCoords
-  }: Object) {
-    const { addPointScheme } = this.props;
-    const { selectedFeatures } = this.state;
-    const editHandleInfo = this.getPickedEditHandle(picks);
-
-    if (!selectedFeatures.length) {
-      return;
-    }
-
-    if (editHandleInfo) {
-      if (
-        addPointScheme === ADD_POINT_SCHEME_DEFAULT &&
-        editHandleInfo.object.type === 'intermediate'
-      ) {
-        this.handleAddIntermediatePosition(
-          editHandleInfo.object.featureIndex,
-          editHandleInfo.object.positionIndexes,
-          groundCoords
-        );
-      }
-    }
-  }
+  }: Object) {}
 
   onDragging({
     picks,
@@ -1101,4 +1067,3 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
 EditableGeoJsonLayer.layerName = 'EditableGeoJsonLayer';
 EditableGeoJsonLayer.defaultProps = defaultProps;
-EditableGeoJsonLayer.ADD_POINT_SCEHME_EXACT = ADD_POINT_SCHEME_EXACT;

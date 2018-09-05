@@ -318,28 +318,34 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     return [layer];
   }
 
-  // find the point in the feature nearest to the clickPoint,
+  // find the point in the feature nearest to the reference point,
   // regardless of the feature type
-  findNearestPoint(clickPoint: Object, feature: Object) {
+  findNearestPoint(referencePoint: Object, features: Array, selectedFeatureIndexes: Array) {
     let snapPoint = null;
     let positionIndexes = [];
+    let featureIndex = null;
 
-    this.recursivelyDiscoverGeoJSONLineStrings(
-      [],
-      feature.geometry.coordinates,
-      (currentPositionIndexes, lineStringAsArray) => {
-        const lineStringAsFeature = lineString(lineStringAsArray);
-        const candidateSnapPoint = nearestPointOnLine(lineStringAsFeature, clickPoint);
-        if (!snapPoint || candidateSnapPoint.properties.dist < snapPoint.properties.dist) {
-          snapPoint = candidateSnapPoint;
-          positionIndexes = [...currentPositionIndexes, snapPoint.properties.index + 1];
+    selectedFeatureIndexes.forEach(selectedFeatureIndex => {
+      const feature = features[selectedFeatureIndex];
+      this.recursivelyDiscoverGeoJSONLineStrings(
+        [],
+        feature.geometry.coordinates,
+        (currentPositionIndexes, lineStringAsArray) => {
+          const lineStringAsFeature = lineString(lineStringAsArray);
+          const candidateSnapPoint = nearestPointOnLine(lineStringAsFeature, referencePoint);
+          if (!snapPoint || candidateSnapPoint.properties.dist < snapPoint.properties.dist) {
+            snapPoint = candidateSnapPoint;
+            positionIndexes = [...currentPositionIndexes, snapPoint.properties.index + 1];
+            featureIndex = selectedFeatureIndex;
+          }
         }
-      }
-    );
+      );
+    });
 
     return {
       snapPoint,
-      positionIndexes
+      positionIndexes,
+      featureIndex
     };
   }
 
@@ -375,23 +381,10 @@ export default class EditableGeoJsonLayer extends EditableLayer {
           editHandleInfo.object.featureIndex,
           editHandleInfo.object.positionIndexes
         );
-      } else if (selectedFeatures && selectedFeatures.length === 1) {
-        // a GeoJSON point representing where the user clicked on screen
-        const clickPoint = point(this.state.hintPoint[0].position);
-        // the GeoJSON point on the selected feature determined to be the
-        // closest to the clicked point and its corresponding position indexes
-        const { snapPoint, positionIndexes } = this.findNearestPoint(
-          clickPoint,
-          selectedFeatures[0]
-        );
+      } else if (selectedFeatures && selectedFeatures.length) {
+        const { position, positionIndexes, featureIndex } = this.state.hintPoint[0];
 
-        if (snapPoint) {
-          this.handleAddIntermediatePosition(
-            selectedFeatureIndexes[0],
-            positionIndexes,
-            snapPoint.geometry.coordinates
-          );
-        }
+        this.handleAddIntermediatePosition(featureIndex, positionIndexes, position);
       }
     } else if (
       this.props.mode === 'drawLineString' ||
@@ -518,6 +511,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
   onPointerMove({ screenCoords, groundCoords, isDragging, pointerDownPicks, sourceEvent }: Object) {
     const { selectedFeatures } = this.state;
+    const { data: { features }, selectedFeatureIndexes } = this.props;
     if (
       this.props.mode === 'drawLineString' ||
       this.props.mode === 'drawPolygon' ||
@@ -539,12 +533,16 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       this.setState({
         hintPoint: []
       });
-    } else if (this.props.mode === 'modify' && selectedFeatures.length === 1) {
+    } else if (this.props.mode === 'modify' && selectedFeatures.length) {
       // a GeoJSON point representing where the user clicked on screen
-      const clickPoint = point(groundCoords);
+      const referencePoint = point(groundCoords);
       // the GeoJSON point on the selected feature determined to be the
       // closest to the clicked point and its corresponding position indexes
-      const { snapPoint, positionIndexes } = this.findNearestPoint(clickPoint, selectedFeatures[0]);
+      const { snapPoint, positionIndexes, featureIndex } = this.findNearestPoint(
+        referencePoint,
+        features,
+        selectedFeatureIndexes
+      );
 
       if (snapPoint) {
         this.setState({
@@ -552,7 +550,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
             {
               position: snapPoint.geometry.coordinates,
               positionIndexes,
-              featureIndex: snapPoint.properties.index,
+              featureIndex,
               type: 'intermediate'
             }
           ]

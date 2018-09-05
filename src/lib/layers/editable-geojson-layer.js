@@ -313,7 +313,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     let snapPoint = null;
     let positionIndexes = [];
 
-    this.findNearestPointRecursiveHelper(
+    this.recursivelyDiscoverGeoJSONLineStrings(
       [],
       feature.geometry.coordinates,
       (currentPositionIndexes, lineStringAsArray) => {
@@ -336,12 +336,14 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   // and invokes the supplied callback on each array that
   // that could be interpreted as a LineString (i.e. contains elements
   // formatted as array tuples representing the actual coordinates)
-  findNearestPointRecursiveHelper(positionIndexes: number[], array: any[], cb: Function) {
+  recursivelyDiscoverGeoJSONLineStrings(positionIndexes: number[], array: any[], cb: Function) {
     if (!Array.isArray(array[0])) {
       return true;
     }
     array.some((item, index) => {
-      if (this.findNearestPointRecursiveHelper([...positionIndexes, index], array[index], cb)) {
+      if (
+        this.recursivelyDiscoverGeoJSONLineStrings([...positionIndexes, index], array[index], cb)
+      ) {
         cb(positionIndexes, array);
         return true;
       }

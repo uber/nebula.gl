@@ -24,3 +24,19 @@ A suite of 3D-enabled data editing overlays, suitable for deck.gl.
 6.  `export MapboxAccessToken='<Add your key>'`
 7.  `yarn start-local`
 8.  You can view/edit geometry.
+
+## Important note: Only public NPM registries must be used; follow these steps to enable simple switching between NPM registries using npmrc:
+
+1. `npm i -g npmrc`
+2. `npmrc`
+3. `npmrc -c public`
+4. `npmrc public`
+# you'll now use public npm
+
+# regenerate your lock file
+5. `cd examples/deck`
+6. `rm yarn.lock`
+7, `yarn`
+
+# switch back to internal
+8. `npmrc default`

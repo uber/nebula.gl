@@ -553,7 +553,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
               position: snapPoint.geometry.coordinates,
               positionIndexes,
               featureIndex: snapPoint.properties.index,
-              type: 'existing'
+              type: 'intermediate'
             }
           ]
         });

@@ -307,6 +307,49 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     return [layer];
   }
 
+  // find the point in the feature nearest to the clickPoint,
+  // regardless of the feature type
+  findNearestPoint(clickPoint: Object, feature: Object) {
+    let snapPoint = null;
+    let positionIndexes = [];
+
+    this.findNearestPointRecursiveHelper(
+      [],
+      feature.geometry.coordinates,
+      (currentPositionIndexes, lineStringAsArray) => {
+        const lineStringAsFeature = lineString(lineStringAsArray);
+        const candidateSnapPoint = nearestPointOnLine(lineStringAsFeature, clickPoint);
+        if (!snapPoint || candidateSnapPoint.properties.dist < snapPoint.properties.dist) {
+          snapPoint = candidateSnapPoint;
+          positionIndexes = [...currentPositionIndexes, snapPoint.properties.index + 1];
+        }
+      }
+    );
+
+    return {
+      snapPoint,
+      positionIndexes
+    };
+  }
+
+  // recursively introspects a GeoJSON feature coordinate hierarchy
+  // and invokes the supplied callback on each array that
+  // that could be interpreted as a LineString (i.e. contains elements
+  // formatted as array tuples representing the actual coordinates)
+  findNearestPointRecursiveHelper(positionIndexes: number[], array: any[], cb: Function) {
+    if (!Array.isArray(array[0])) {
+      return true;
+    }
+    array.some((item, index) => {
+      if (this.findNearestPointRecursiveHelper([...positionIndexes, index], array[index], cb)) {
+        cb(positionIndexes, array);
+        return true;
+      }
+      return false;
+    });
+    return false;
+  }
+
   onClick({ picks, screenCoords, groundCoords }: Object) {
     const { selectedFeatures } = this.state;
     const { selectedFeatureIndexes, tolerance, addPointScheme } = this.props;
@@ -324,43 +367,26 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         selectedFeatures &&
         selectedFeatures.length === 1
       ) {
-        let positionIndexes = null;
-        const selectedFeatureType = selectedFeatures[0].geometry.type;
         // a GeoJSON point representing where the user clicked on screen
         const clickPoint = point(groundCoords);
-        // the GeoJSON point on the selected feature determined to be the closest to the clicked point
-        let snapPoint = null;
-        if (selectedFeatureType === 'LineString') {
-          snapPoint = nearestPointOnLine(selectedFeatures[0], clickPoint);
-          positionIndexes = [snapPoint.properties.index + 1];
-        } else if (selectedFeatureType === 'Polygon') {
-          // since there is no nearestPointOnPolygon in turf, decompose each line in the polygon into a LineString
-          selectedFeatures[0].geometry.coordinates.forEach((array, index) => {
-            const tempLineString = lineString(array);
-            const tempSnapPoint = nearestPointOnLine(tempLineString, clickPoint);
-            if (!snapPoint || tempSnapPoint.properties.dist < snapPoint.properties.dist) {
-              snapPoint = tempSnapPoint;
-              positionIndexes = [index];
-            }
-          });
-          positionIndexes = positionIndexes &&
-            snapPoint && [...positionIndexes, snapPoint.properties.index + 1];
-        } else {
-          // TODO add support for MultiLineString / MultiPolygon
-          throw new Error(
-            `Selected feature type ${selectedFeatureType} is not support for 'exact' point adding`
-          );
-        }
+        // the GeoJSON point on the selected feature determined to be the
+        // closest to the clicked point and its corresponding position indexes
+        const { snapPoint, positionIndexes } = this.findNearestPoint(
+          clickPoint,
+          selectedFeatures[0]
+        );
 
-        if (snapPoint && positionIndexes) {
-          // click occurred directly on a feature or within distance tolerance
-          if ((picks && picks.length > 0) || snapPoint.properties.dist < tolerance / 1000) {
-            this.handleAddIntermediatePosition(
-              selectedFeatureIndexes[0],
-              positionIndexes,
-              snapPoint.geometry.coordinates
-            );
-          }
+        // click occurred directly on a feature or within distance tolerance
+        if (
+          snapPoint &&
+          positionIndexes &&
+          ((picks && picks.length > 0) || snapPoint.properties.dist < tolerance / 1000)
+        ) {
+          this.handleAddIntermediatePosition(
+            selectedFeatureIndexes[0],
+            positionIndexes,
+            snapPoint.geometry.coordinates
+          );
         }
       }
     } else if (

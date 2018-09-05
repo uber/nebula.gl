@@ -320,7 +320,11 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
   // find the point in the feature nearest to the reference point,
   // regardless of the feature type
-  findNearestPoint(referencePoint: Object, features: Array, selectedFeatureIndexes: Array) {
+  findNearestPoint(
+    referencePoint: Object,
+    features: Array<any>,
+    selectedFeatureIndexes: Array<any>
+  ) {
     let snapPoint = null;
     let positionIndexes = [];
     let featureIndex = null;

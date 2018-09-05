@@ -29,8 +29,7 @@ const defaultProps = {
   // Edit and interaction events
   onEdit: () => {},
 
-  // expressed in meters
-  tolerance: 0,
+  showHintPoint: true,
   pickable: true,
   fp64: false,
   filled: true,
@@ -126,6 +125,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
     layers = layers.concat(this.createPointLayers());
     layers = layers.concat(this.createDrawLayers());
+    layers = layers.concat(this.createHintPointLayer());
 
     return layers;
   }
@@ -137,7 +137,8 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       editableFeatureCollection: null,
       selectedFeatures: [],
       editHandles: [],
-      drawFeature: null
+      drawFeature: null,
+      hintPoint: []
     });
   }
 
@@ -174,11 +175,14 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       drawFeature = this.getDrawFeature(selectedFeature, props.mode, null);
     }
 
+    const hintPoint = selectedFeatures.length ? this.state.hintPoint : [];
+
     this.setState({
       editableFeatureCollection,
       selectedFeatures,
       editHandles,
-      drawFeature
+      drawFeature,
+      hintPoint
     });
   }
 
@@ -207,6 +211,38 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
 
     return info;
+  }
+
+  createScatterplotLayer(overrides: Object) {
+    return new ScatterplotLayer(
+      this.getSubLayerProps({
+        // Proxy editing point props
+        radiusScale: this.props.editHandlePointRadiusScale,
+        outline: this.props.editHandlePointOutline,
+        strokeWidth: this.props.editHandlePointStrokeWidth,
+        radiusMinPixels: this.props.editHandlePointRadiusMinPixels,
+        radiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
+        getRadius: this.props.getEditHandlePointRadius,
+        getColor: this.props.getEditHandlePointColor,
+        parameters: this.props.editHandleParameters,
+        ...overrides
+      })
+    );
+  }
+
+  createHintPointLayer() {
+    if (!this.props.showHintPoint || !this.state.hintPoint.length) {
+      return [];
+    }
+
+    return [
+      this.createScatterplotLayer({
+        pickable: false,
+        id: `hint-point`,
+        data: this.state.hintPoint,
+        fp64: this.props.fp64
+      })
+    ];
   }
 
   createPointLayers() {
@@ -238,25 +274,9 @@ export default class EditableGeoJsonLayer extends EditableLayer {
               parameters: this.props.editHandleParameters
             })
           )
-        : this.props.editHandleType === 'point'
-          ? new ScatterplotLayer(
-              this.getSubLayerProps({
-                ...sharedProps,
+        : this.props.editHandleType === 'point' ? this.createScatterplotLayer(sharedProps) : null;
 
-                // Proxy editing point props
-                radiusScale: this.props.editHandlePointRadiusScale,
-                outline: this.props.editHandlePointOutline,
-                strokeWidth: this.props.editHandlePointStrokeWidth,
-                radiusMinPixels: this.props.editHandlePointRadiusMinPixels,
-                radiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
-                getRadius: this.props.getEditHandlePointRadius,
-                getColor: this.props.getEditHandlePointColor,
-
-                parameters: this.props.editHandleParameters
-              })
-            )
-          : null;
-
+    // return layers;
     return [layer];
   }
 
@@ -345,7 +365,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
   onClick({ picks, screenCoords, groundCoords }: Object) {
     const { selectedFeatures } = this.state;
-    const { selectedFeatureIndexes, tolerance } = this.props;
+    const { selectedFeatureIndexes } = this.props;
     const editHandleInfo = this.getPickedEditHandle(picks);
 
     if (this.props.mode === 'modify') {
@@ -357,7 +377,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         );
       } else if (selectedFeatures && selectedFeatures.length === 1) {
         // a GeoJSON point representing where the user clicked on screen
-        const clickPoint = point(groundCoords);
+        const clickPoint = point(this.state.hintPoint[0].position);
         // the GeoJSON point on the selected feature determined to be the
         // closest to the clicked point and its corresponding position indexes
         const { snapPoint, positionIndexes } = this.findNearestPoint(
@@ -365,12 +385,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
           selectedFeatures[0]
         );
 
-        // click occurred directly on a feature or within distance tolerance
-        if (
-          snapPoint &&
-          positionIndexes &&
-          ((picks && picks.length > 0) || snapPoint.properties.dist < tolerance / 1000)
-        ) {
+        if (snapPoint) {
           this.handleAddIntermediatePosition(
             selectedFeatureIndexes[0],
             positionIndexes,
@@ -502,6 +517,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }
 
   onPointerMove({ screenCoords, groundCoords, isDragging, pointerDownPicks, sourceEvent }: Object) {
+    const { selectedFeatures } = this.state;
     if (
       this.props.mode === 'drawLineString' ||
       this.props.mode === 'drawPolygon' ||
@@ -511,11 +527,37 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       this.props.mode === 'drawCircleByBoundingBox' ||
       this.props.mode === 'drawEllipseByBoundingBox'
     ) {
-      const selectedFeature =
-        this.state.selectedFeatures.length === 1 ? this.state.selectedFeatures[0] : null;
+      const selectedFeature = selectedFeatures.length === 1 ? selectedFeatures[0] : null;
       const drawFeature = this.getDrawFeature(selectedFeature, this.props.mode, groundCoords);
 
       this.setState({ drawFeature });
+
+      // TODO: figure out how to properly update state from a pointer event handler
+      this.setLayerNeedsUpdate();
+    } else if (isDragging) {
+      // hide the hint point while dragging
+      this.setState({
+        hintPoint: []
+      });
+    } else if (this.props.mode === 'modify' && selectedFeatures.length === 1) {
+      // a GeoJSON point representing where the user clicked on screen
+      const clickPoint = point(groundCoords);
+      // the GeoJSON point on the selected feature determined to be the
+      // closest to the clicked point and its corresponding position indexes
+      const { snapPoint, positionIndexes } = this.findNearestPoint(clickPoint, selectedFeatures[0]);
+
+      if (snapPoint) {
+        this.setState({
+          hintPoint: [
+            {
+              position: snapPoint.geometry.coordinates,
+              positionIndexes,
+              featureIndex: snapPoint.properties.index,
+              type: 'existing'
+            }
+          ]
+        });
+      }
 
       // TODO: figure out how to properly update state from a pointer event handler
       this.setLayerNeedsUpdate();

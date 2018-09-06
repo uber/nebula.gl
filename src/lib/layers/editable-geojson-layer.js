@@ -277,7 +277,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
           )
         : this.props.editHandleType === 'point' ? this.createScatterplotLayer(sharedProps) : null;
 
-    // return layers;
     return [layer];
   }
 
@@ -608,7 +607,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
   }
 
-  getDistanceBetweenPoints(a: Array<number>, b: Array<number>) {
+  getPixelDistanceBetweenPoints(a: Array<number>, b: Array<number>) {
     return Math.sqrt(Math.pow(b[0] - a[0], 2) + Math.pow(b[1] - a[1], 2));
   }
 
@@ -617,7 +616,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     let isWithinMaxDistance = true;
     if (hintPointMaxDistance) {
       const snapPointScreenCoords = this.context.viewport.project(snapPoint.geometry.coordinates);
-      const distanceFromPointerToSnapPointPixels = this.getDistanceBetweenPoints(
+      const distanceFromPointerToSnapPointPixels = this.getPixelDistanceBetweenPoints(
         screenCoords,
         snapPointScreenCoords
       );

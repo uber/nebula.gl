@@ -11,6 +11,7 @@ import destination from '@turf/destination';
 import bearing from '@turf/bearing';
 import pointToLineDistance from '@turf/point-to-line-distance';
 import nearestPointOnLine from '@turf/nearest-point-on-line';
+import math from 'mathjs';
 import { point, featureCollection as fc, lineString } from '@turf/helpers';
 import type { GeoJsonFeature } from '../../types';
 import { EditableFeatureCollection } from '../editable-feature-collection';
@@ -29,6 +30,7 @@ const defaultProps = {
   // Edit and interaction events
   onEdit: () => {},
 
+  hintPointMaxDistance: 0,
   showHintPoint: true,
   pickable: true,
   fp64: false,
@@ -374,7 +376,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }
 
   onClick({ picks, screenCoords, groundCoords }: Object) {
-    const { selectedFeatures } = this.state;
+    const { selectedFeatures, hintPoint } = this.state;
     const { selectedFeatureIndexes } = this.props;
     const editHandleInfo = this.getPickedEditHandle(picks);
 
@@ -385,9 +387,8 @@ export default class EditableGeoJsonLayer extends EditableLayer {
           editHandleInfo.object.featureIndex,
           editHandleInfo.object.positionIndexes
         );
-      } else if (selectedFeatures && selectedFeatures.length) {
-        const { position, positionIndexes, featureIndex } = this.state.hintPoint[0];
-
+      } else if (selectedFeatures && selectedFeatures.length && hintPoint.length) {
+        const { position, positionIndexes, featureIndex } = hintPoint[0];
         this.handleAddIntermediatePosition(featureIndex, positionIndexes, position);
       }
     } else if (
@@ -548,7 +549,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         selectedFeatureIndexes
       );
 
-      if (snapPoint) {
+      if (snapPoint && this.isPointerWithinHintPointMaxDistance(screenCoords, snapPoint)) {
         this.setState({
           hintPoint: [
             {
@@ -558,6 +559,10 @@ export default class EditableGeoJsonLayer extends EditableLayer {
               type: 'intermediate'
             }
           ]
+        });
+      } else {
+        this.setState({
+          hintPoint: []
         });
       }
 
@@ -573,6 +578,20 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         sourceEvent.stopPropagation();
       }
     }
+  }
+
+  isPointerWithinHintPointMaxDistance(screenCoords: Array<any>, snapPoint: Object) {
+    const { hintPointMaxDistance } = this.props;
+    let isWithinMaxDistance = true;
+    if (hintPointMaxDistance) {
+      const snapPointScreenCoords = this.context.viewport.project(snapPoint.geometry.coordinates);
+      const distanceFromPointerToSnapPointPixels = math.distance(
+        screenCoords,
+        snapPointScreenCoords
+      );
+      isWithinMaxDistance = distanceFromPointerToSnapPointPixels <= hintPointMaxDistance;
+    }
+    return isWithinMaxDistance;
   }
 
   getDrawFeature(selectedFeature: ?GeoJsonFeature, mode: string, groundCoords: ?(number[])) {

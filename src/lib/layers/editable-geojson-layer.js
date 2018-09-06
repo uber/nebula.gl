@@ -11,7 +11,6 @@ import destination from '@turf/destination';
 import bearing from '@turf/bearing';
 import pointToLineDistance from '@turf/point-to-line-distance';
 import nearestPointOnLine from '@turf/nearest-point-on-line';
-import math from 'mathjs';
 import { point, featureCollection as fc, lineString } from '@turf/helpers';
 import type { GeoJsonFeature } from '../../types';
 import { EditableFeatureCollection } from '../editable-feature-collection';
@@ -609,12 +608,16 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
   }
 
+  getDistanceBetweenPoints(a: Array<number>, b: Array<number>) {
+    return Math.sqrt(Math.pow(b[0] - a[0], 2) + Math.pow(b[1] - a[1], 2));
+  }
+
   isPointerWithinHintPointMaxDistance(screenCoords: Array<any>, snapPoint: Object) {
     const { hintPointMaxDistance } = this.props;
     let isWithinMaxDistance = true;
     if (hintPointMaxDistance) {
       const snapPointScreenCoords = this.context.viewport.project(snapPoint.geometry.coordinates);
-      const distanceFromPointerToSnapPointPixels = math.distance(
+      const distanceFromPointerToSnapPointPixels = this.getDistanceBetweenPoints(
         screenCoords,
         snapPointScreenCoords
       );

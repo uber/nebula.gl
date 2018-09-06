@@ -465,7 +465,36 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     groundCoords,
     dragStartScreenCoords,
     dragStartGroundCoords
-  }: Object) {}
+  }: Object) {
+    // alternative method to forcing the user to click to add a new point;
+    // the following allows a drag initiation to create a new point and
+    // drag it without explicitliy selecting it
+    if (!this.getPickedEditHandle(picks) && this.state.hintPoint.length) {
+      const { featureIndex, positionIndexes, position } = this.state.hintPoint[0];
+      this.handleAddIntermediatePosition(featureIndex, positionIndexes, position);
+
+      // explicitly pick the newly created point
+      const pick = this.context.layerManager.pickObject({
+        x: screenCoords[0],
+        y: screenCoords[1],
+        mode: 'query',
+        layers: [this.props.id],
+        radius: 10,
+        viewports: [this.context.viewport]
+      });
+
+      // update the state so that the onDragging() handler fires and enables
+      // dragging of the newly created point
+      this.setState({
+        _editableLayerState: {
+          ...this.state._editableLayerState,
+          pointerDownPicks: pick,
+          pointerDownScreenCoords: screenCoords,
+          pointerDownGroundCoords: position
+        }
+      });
+    }
+  }
 
   onDragging({
     picks,

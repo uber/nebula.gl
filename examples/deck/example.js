@@ -222,6 +222,7 @@ export default class Example extends Component<
       mode,
       fp64: true,
       autoHighlight: true,
+      hintPointMaxDistance: 100,
 
       // Editing callbacks
       onEdit: ({

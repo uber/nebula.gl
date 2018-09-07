@@ -158,10 +158,16 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
 
     let editHandles = [];
+    const { screenCoords, groundCoords } = this.state;
     if (selectedFeatures.length && props.mode !== 'view') {
-      props.selectedFeatureIndexes.forEach(index => {
-        editHandles = editHandles.concat(editableFeatureCollection.getEditHandles(index));
-      });
+      editHandles = editableFeatureCollection.getEditHandles(
+        props.selectedFeatureIndexes,
+        this.context.viewport.project,
+        {
+          screenCoords,
+          groundCoords
+        }
+      );
     }
 
     let drawFeature = this.state.drawFeature;
@@ -449,6 +455,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }
 
   onPointerMove({ screenCoords, groundCoords, isDragging, pointerDownPicks, sourceEvent }: Object) {
+    this.setState({ screenCoords, groundCoords });
     if (
       this.props.mode === 'drawLineString' ||
       this.props.mode === 'drawPolygon' ||

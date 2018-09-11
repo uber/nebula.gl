@@ -11,6 +11,9 @@ export default class EditableLayer extends CompositeLayer {
   onClick({ picks, screenCoords, groundCoords }: Object) {
     // default implementation - do nothing
   }
+  onDoubleClick({ groundCoords }: Object) {
+    // default implementation - do nothing
+  }
 
   onStartDragging({
     picks,
@@ -89,6 +92,10 @@ export default class EditableLayer extends CompositeLayer {
         'pointerup',
         this.state._editableLayerState.pointerHandlers.onPointerUp
       );
+      this.context.gl.canvas.removeEventListener(
+        'dblclick',
+        this.state._editableLayerState.pointerHandlers.onDoubleClick
+      );
     }
     this.state._editableLayerState.pointerHandlers = null;
   }
@@ -97,7 +104,8 @@ export default class EditableLayer extends CompositeLayer {
     this.state._editableLayerState.pointerHandlers = {
       onPointerMove: this._onPointerMove.bind(this),
       onPointerDown: this._onPointerDown.bind(this),
-      onPointerUp: this._onPointerUp.bind(this)
+      onPointerUp: this._onPointerUp.bind(this),
+      onDoubleClick: this._onDoubleClick.bind(this)
     };
 
     this.context.gl.canvas.addEventListener(
@@ -112,6 +120,18 @@ export default class EditableLayer extends CompositeLayer {
       'pointerup',
       this.state._editableLayerState.pointerHandlers.onPointerUp
     );
+    this.context.gl.canvas.addEventListener(
+      'dblclick',
+      this.state._editableLayerState.pointerHandlers.onDoubleClick
+    );
+  }
+
+  _onDoubleClick(event: Object) {
+    const screenCoords = this.getScreenCoords(event);
+    const groundCoords = this.getGroundCoords(screenCoords);
+    this.onDoubleClick({
+      groundCoords
+    });
   }
 
   _onPointerDown(event: Object) {

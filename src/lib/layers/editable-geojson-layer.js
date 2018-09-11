@@ -295,6 +295,43 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     return [layer];
   }
 
+  onDoubleClick({ groundCoords }: Object) {
+    const { selectedFeatures } = this.state;
+    const { selectedFeatureIndexes } = this.props;
+    const selectedFeature = selectedFeatures[0];
+    const featureIndex = selectedFeatureIndexes[0];
+    let featureCollection = this.state.editableFeatureCollection;
+
+    if (
+      this.props.mode === 'drawPolygon' &&
+      selectedFeatures.length === 1 &&
+      selectedFeature.geometry.type === 'LineString' &&
+      selectedFeature.geometry.coordinates.length > 5
+    ) {
+      const { coordinates } = selectedFeature.geometry;
+      // close the polygon.
+      featureCollection = featureCollection.replaceGeometry(featureIndex, {
+        type: 'Polygon',
+        // when double clicked, there will be additional 2 pointer up/down events fired.
+        // Remove those 2 unnecessary points from coordinates.
+        // Issue #69 dblclick event is also firing 2 additional pointer up/down events
+        coordinates: [[...coordinates.slice(0, coordinates.length - 2), coordinates[0]]]
+      });
+      const updatedMode = 'modify';
+      const updatedData = featureCollection.getObject();
+
+      this.props.onEdit({
+        updatedData,
+        updatedMode,
+        updatedSelectedFeatureIndexes: this.props.selectedFeatureIndexes,
+        editType: 'addPosition',
+        featureIndex,
+        positionIndexes: undefined,
+        position: groundCoords
+      });
+    }
+  }
+
   onClick({ picks, screenCoords, groundCoords }: Object) {
     const { selectedFeatures } = this.state;
     const { selectedFeatureIndexes } = this.props;

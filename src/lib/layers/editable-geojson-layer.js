@@ -450,6 +450,19 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }
 
   onPointerMove({ screenCoords, groundCoords, isDragging, pointerDownPicks, sourceEvent }: Object) {
+    if (this.props.mode === 'modify') {
+      const picks = this.context.layerManager.pickObject({
+        x: screenCoords[0],
+        y: screenCoords[1],
+        mode: 'query',
+        layers: [this.props.id],
+        radius: 10,
+        viewports: [this.context.viewport]
+      });
+
+      this.setState({ pointerMovePicks: picks });
+    }
+
     if (
       this.props.mode === 'drawLineString' ||
       this.props.mode === 'drawPolygon' ||
@@ -1010,6 +1023,31 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
   getPickedEditHandle(picks: Object[]) {
     return picks.find(pick => pick.isEditingHandle);
+  }
+
+  getCursor({ isDragging }: { isDragging: boolean }) {
+    const mode = this.props.mode;
+    if (mode.startsWith('draw')) {
+      return 'cell';
+    }
+
+    const picks = this.state.pointerMovePicks;
+    if (mode === 'modify' && picks && picks.length > 0) {
+      const existingHandlePicked = picks.some(
+        pick => pick.isEditingHandle && pick.object.type === 'existing'
+      );
+      const intermediateHandlePicked = picks.some(
+        pick => pick.isEditingHandle && pick.object.type === 'intermediate'
+      );
+      if (existingHandlePicked) {
+        return 'move';
+      }
+      if (intermediateHandlePicked) {
+        return 'cell';
+      }
+    }
+
+    return isDragging ? 'grabbing' : 'grab';
   }
 }
 

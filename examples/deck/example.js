@@ -310,6 +310,7 @@ export default class Example extends Component<
         <link href="https://api.mapbox.com/mapbox-gl-js/v0.44.0/mapbox-gl.css" rel="stylesheet" />
         <DeckGL
           {...viewport}
+          getCursor={editableGeoJsonLayer.getCursor.bind(editableGeoJsonLayer)}
           layers={[editableGeoJsonLayer]}
           views={new MapView({ id: 'basemap', controller: MapController })}
           onLayerClick={this._onLayerClick}

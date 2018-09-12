@@ -215,6 +215,12 @@ Consider the user removed the third position from a `Polygon`'s first ring, and 
 
 Defaulted to `true` for interactivity.
 
+#### `drawAtFront` (Boolean, optional)
+
+* Default: `false`
+
+When value is set to `true`, and the `mode` prop is `drawLineString`, will render the drawing feature at the "beginning" of the line, i.e. relative to the start of the coordinates array.
+
 ### GeoJsonLayer Options
 
 The following properties from [GeoJsonLayer](https://uber.github.io/deck.gl/#/documentation/deckgl-api-reference/layers/geojson-layer) are supported and function the same:

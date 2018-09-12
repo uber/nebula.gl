@@ -41,6 +41,7 @@ const defaultProps = {
   pointRadiusMinPixels: 2,
   pointRadiusMaxPixels: Number.MAX_SAFE_INTEGER,
   lineDashJustified: false,
+  drawAtFront: false,
   getLineColor: (feature, isSelected, mode) =>
     isSelected ? DEFAULT_SELECTED_LINE_COLOR : DEFAULT_LINE_COLOR,
   getFillColor: (feature, isSelected, mode) =>
@@ -562,9 +563,10 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         drawFeature = ellipse(ellipseCenter, xSemiAxis, ySemiAxis);
       }
     } else if (selectedFeature.geometry.type === 'LineString') {
-      const lastPositionOfLineString =
-        selectedFeature.geometry.coordinates[selectedFeature.geometry.coordinates.length - 1];
-      const currentPosition = groundCoords || lastPositionOfLineString;
+      const positionOfLineString = this.props.drawAtFront
+        ? selectedFeature.geometry.coordinates[0]
+        : selectedFeature.geometry.coordinates[selectedFeature.geometry.coordinates.length - 1];
+      const currentPosition = groundCoords || positionOfLineString;
 
       if (mode === 'drawLineString') {
         // Draw a single line extending beyond the last point
@@ -573,7 +575,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
           type: 'Feature',
           geometry: {
             type: 'LineString',
-            coordinates: [lastPositionOfLineString, currentPosition]
+            coordinates: [positionOfLineString, currentPosition]
           }
         };
       } else if (mode === 'drawPolygon') {
@@ -741,6 +743,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     groundCoords: number[],
     picks: Object[]
   ) {
+    const { drawAtFront } = this.props;
     let featureCollection = this.state.editableFeatureCollection;
     let positionIndexes;
 
@@ -753,7 +756,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         coordinates: [selectedFeature.geometry.coordinates, groundCoords]
       });
     } else if (selectedFeature.geometry.type === 'LineString') {
-      positionIndexes = [selectedFeature.geometry.coordinates.length];
+      positionIndexes = [drawAtFront ? 0 : selectedFeature.geometry.coordinates.length];
       featureCollection = featureCollection.addPosition(
         featureIndex,
         positionIndexes,

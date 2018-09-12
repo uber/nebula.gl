@@ -295,7 +295,9 @@ class Hero extends Component {
           <a onClick={() => setModeNew('drawLineString')}>Line</a>
           <a onClick={() => setModeNew('drawPolygon')}>Polygon</a>
           <a onClick={() => setModeNew('drawRectangle')}>Rectangle</a>
-          <a onClick={() => setModeNew('drawCircle')}>Circle</a>
+          <a onClick={() => setModeNew('drawRectangleUsing3Points')}>Rect 3X</a>
+          <a onClick={() => setModeNew('drawCircleFromCenter')}>Circle</a>
+          <a onClick={() => setModeNew('drawEllipseByBoundingBox')}>Ellipse</a>
         </div>
 
         <hr />

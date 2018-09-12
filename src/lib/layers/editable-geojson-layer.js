@@ -58,6 +58,7 @@ const defaultProps = {
   getDrawLineWidth: (f, mode) => (f && f.properties && f.properties.lineWidth) || 1,
 
   editHandleType: 'point',
+  editHandleParameters: {},
 
   // point handles
   editHandlePointRadiusScale: 1,
@@ -229,7 +230,9 @@ export default class EditableGeoJsonLayer extends EditableLayer {
               getColor: this.props.getEditHandleIconColor,
               getAngle: this.props.getEditHandleIconAngle,
 
-              getPosition: d => d.position
+              getPosition: d => d.position,
+
+              parameters: this.props.editHandleParameters
             })
           )
         : this.props.editHandleType === 'point'
@@ -244,7 +247,9 @@ export default class EditableGeoJsonLayer extends EditableLayer {
                 radiusMinPixels: this.props.editHandlePointRadiusMinPixels,
                 radiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
                 getRadius: this.props.getEditHandlePointRadius,
-                getColor: this.props.getEditHandlePointColor
+                getColor: this.props.getEditHandlePointColor,
+
+                parameters: this.props.editHandleParameters
               })
             )
           : null;
@@ -304,6 +309,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         );
       }
     } else if (
+      this.props.mode === 'drawPoint' ||
       this.props.mode === 'drawLineString' ||
       this.props.mode === 'drawPolygon' ||
       this.props.mode === 'drawRectangle' ||

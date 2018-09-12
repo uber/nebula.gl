@@ -71,6 +71,10 @@ The `mode` property dictates what type of edits the user can perform and how to 
 
 * `modify`: user can move existing points, add intermediate points along lines, and remove points.
 
+* `drawPoint`: user can draw a `Point` feature by clicking positions to add.
+
+  * If no feature is selected, clicking will create a new `Point` feature.
+
 * `drawLineString`: user can draw a `LineString` feature by clicking positions to add.
 
   * If no feature is selected, clicking will create a new feature `Point` feature and select it (by passing its index as `updatedSelectedFeatureIndexes`).
@@ -282,6 +286,12 @@ Edit handles are the points rendered on a feature to indicate interactive capabi
 * `icons`: Edit handles rendered as provided icons
 
 Edit handle objects can be represented by either points or icons. `editHandlePoint...` are proxies for the [`ScatterplotLayer`](https://github.com/uber/deck.gl/blob/master/docs/layers/scatterplot-layer.md#properties) props, and `editHandleIcon...` are proxies for the [`IconLayer`](https://github.com/uber/deck.gl/blob/master/docs/layers/icon-layer.md#properties) props.
+
+#### `editHandleParameters` (Object, optional)
+
+* Default: `{}`
+
+* Set luma.gl parameters for handles (eg. depthTest, blend)
 
 #### `editHandlePointRadiusScale` (Number, optional)
 

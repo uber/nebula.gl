@@ -89,6 +89,10 @@ export default class EditableLayer extends CompositeLayer {
         'pointerup',
         this.state._editableLayerState.pointerHandlers.onPointerUp
       );
+      this.context.gl.canvas.removeEventListener(
+        'keypress',
+        this.state._editableLayerState.pointerHandlers.onKeyPress
+      );
     }
     this.state._editableLayerState.pointerHandlers = null;
   }
@@ -97,7 +101,8 @@ export default class EditableLayer extends CompositeLayer {
     this.state._editableLayerState.pointerHandlers = {
       onPointerMove: this._onPointerMove.bind(this),
       onPointerDown: this._onPointerDown.bind(this),
-      onPointerUp: this._onPointerUp.bind(this)
+      onPointerUp: this._onPointerUp.bind(this),
+      onKeyPress: this._onKeyPress.bind(this)
     };
 
     this.context.gl.canvas.addEventListener(
@@ -111,6 +116,10 @@ export default class EditableLayer extends CompositeLayer {
     this.context.gl.canvas.addEventListener(
       'pointerup',
       this.state._editableLayerState.pointerHandlers.onPointerUp
+    );
+    this.context.gl.canvas.addEventListener(
+      'keypress',
+      this.state._editableLayerState.pointerHandlers.onKeyPress
     );
   }
 
@@ -193,6 +202,14 @@ export default class EditableLayer extends CompositeLayer {
         dragStartGroundCoords: pointerDownGroundCoords
       });
     }
+  }
+
+  onKeyPress(key: string) {
+    // default implementation - do nothing
+  }
+
+  _onKeyPress({ key }: Object) {
+    this.onKeyPress(key);
   }
 
   _onPointerUp(event: Object) {

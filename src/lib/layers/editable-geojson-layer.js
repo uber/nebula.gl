@@ -82,7 +82,12 @@ const defaultProps = {
     handle.type === 'existing'
       ? DEFAULT_EDITING_EXISTING_POINT_COLOR
       : DEFAULT_EDITING_INTERMEDIATE_POINT_COLOR,
-  getEditHandleIconAngle: 0
+  getEditHandleIconAngle: 0,
+
+  // edit handle removal behavior
+  editHandleRemoveOnKeyPress: false,
+  editHandleRemoveOnKeyPressTriggerKey: 'd',
+  editHandleTarget: null
 };
 
 export default class EditableGeoJsonLayer extends EditableLayer {
@@ -295,34 +300,64 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     return [layer];
   }
 
+  onKeyPress(key: string) {
+    const {
+      mode,
+      data: { features },
+      editHandleTarget,
+      editHandleRemoveOnKeyPress,
+      editHandleRemoveOnKeyPressTriggerKey
+    } = this.props;
+    if (
+      editHandleRemoveOnKeyPress &&
+      key === editHandleRemoveOnKeyPressTriggerKey &&
+      (mode === 'modify' || mode === 'drawLineString') &&
+      editHandleTarget
+    ) {
+      const { featureIndex, positionIndexes } = editHandleTarget;
+      this.handleRemovePosition(features[featureIndex], featureIndex, positionIndexes);
+    }
+  }
+
   onClick({ picks, screenCoords, groundCoords }: Object) {
     const { selectedFeatures } = this.state;
-    const { selectedFeatureIndexes } = this.props;
+    const { selectedFeatureIndexes, mode, data, editHandleRemoveOnKeyPress } = this.props;
     const editHandleInfo = this.getPickedEditHandle(picks);
 
-    if (this.props.mode === 'modify') {
+    if (mode === 'modify') {
       if (editHandleInfo && editHandleInfo.object.type === 'existing') {
-        this.handleRemovePosition(
-          this.props.data.features[editHandleInfo.object.featureIndex],
-          editHandleInfo.object.featureIndex,
-          editHandleInfo.object.positionIndexes
-        );
+        const { featureIndex, positionIndexes } = editHandleInfo.object;
+
+        if (editHandleRemoveOnKeyPress) {
+          // just notify the app which edit handle was clicked, it may then opt in to passing it back to nebula
+          this.props.onEdit({
+            updatedData: data,
+            updatedMode: mode,
+            updatedSelectedFeatureIndexes: selectedFeatureIndexes,
+            editType: 'clickPosition',
+            featureIndex,
+            positionIndexes,
+            position: groundCoords
+          });
+        } else {
+          this.handleRemovePosition(data.features[featureIndex], featureIndex, positionIndexes);
+        }
       }
     } else if (
-      this.props.mode === 'drawPoint' ||
-      this.props.mode === 'drawLineString' ||
-      this.props.mode === 'drawPolygon' ||
-      this.props.mode === 'drawRectangle' ||
-      this.props.mode === 'drawRectangleUsing3Points' ||
-      this.props.mode === 'drawCircleFromCenter' ||
-      this.props.mode === 'drawCircleByBoundingBox' ||
-      this.props.mode === 'drawEllipseByBoundingBox'
+      mode === 'drawPoint' ||
+      mode === 'drawLineString' ||
+      mode === 'drawPolygon' ||
+      mode === 'drawRectangle' ||
+      mode === 'drawRectangleUsing3Points' ||
+      mode === 'drawCircleFromCenter' ||
+      mode === 'drawCircleByBoundingBox' ||
+      mode === 'drawEllipseByBoundingBox'
     ) {
       if (!selectedFeatures.length) {
         this.handleDrawNewPoint(groundCoords);
       } else if (selectedFeatures.length === 1) {
         // can only draw feature while one is selected
-        if (this.props.mode === 'drawLineString') {
+        if (mode === 'drawLineString') {
           this.handleDrawLineString(
             selectedFeatures[0],
             selectedFeatureIndexes[0],
@@ -330,7 +365,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
             picks
           );
         }
-        if (this.props.mode === 'drawPolygon') {
+        if (mode === 'drawPolygon') {
           this.handleDrawPolygon(
             selectedFeatures[0],
             selectedFeatureIndexes[0],
@@ -338,7 +373,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
             picks
           );
         }
-        if (this.props.mode === 'drawRectangle') {
+        if (mode === 'drawRectangle') {
           this.handleDrawRectangle(
             selectedFeatures[0],
             selectedFeatureIndexes[0],
@@ -346,7 +381,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
             picks
           );
         }
-        if (this.props.mode === 'drawRectangleUsing3Points') {
+        if (mode === 'drawRectangleUsing3Points') {
           this.handleDrawRectangleUsing3Points(
             selectedFeatures[0],
             selectedFeatureIndexes[0],
@@ -354,10 +389,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
             picks
           );
         }
-        if (
-          this.props.mode === 'drawCircleFromCenter' ||
-          this.props.mode === 'drawCircleByBoundingBox'
-        ) {
+        if (mode === 'drawCircleFromCenter' || mode === 'drawCircleByBoundingBox') {
           this.handleDrawCircle(
             selectedFeatures[0],
             selectedFeatureIndexes[0],
@@ -365,7 +397,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
             picks
           );
         }
-        if (this.props.mode === 'drawEllipseByBoundingBox') {
+        if (mode === 'drawEllipseByBoundingBox') {
           this.handleDrawEllipseByBoundingBox(
             selectedFeatures[0],
             selectedFeatureIndexes[0],

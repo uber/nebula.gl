@@ -204,7 +204,7 @@ export default class EditableLayer extends CompositeLayer {
     }
   }
 
-  onKeyPress(key) {
+  onKeyPress(key: string) {
     // default implementation - do nothing
   }
 

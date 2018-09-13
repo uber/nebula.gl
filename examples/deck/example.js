@@ -171,6 +171,7 @@ export default class Example extends Component<
               <option value="drawCircleFromCenter">drawCircleFromCenter</option>
               <option value="drawCircleByBoundingBox">drawCircleByBoundingBox</option>
               <option value="drawEllipseByBoundingBox">drawEllipseByBoundingBox</option>
+              <option value="drawEllipseUsing3Points">drawEllipseUsing3Points</option>
             </select>
           </dd>
           <dt style={styles.toolboxTerm}>Allow removing points</dt>

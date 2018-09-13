@@ -316,7 +316,8 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       this.props.mode === 'drawRectangleUsing3Points' ||
       this.props.mode === 'drawCircleFromCenter' ||
       this.props.mode === 'drawCircleByBoundingBox' ||
-      this.props.mode === 'drawEllipseByBoundingBox'
+      this.props.mode === 'drawEllipseByBoundingBox' ||
+      this.props.mode === 'drawEllipseUsing3Points'
     ) {
       if (!selectedFeatures.length) {
         this.handleDrawNewPoint(groundCoords);
@@ -346,7 +347,10 @@ export default class EditableGeoJsonLayer extends EditableLayer {
             picks
           );
         }
-        if (this.props.mode === 'drawRectangleUsing3Points') {
+        if (
+          this.props.mode === 'drawRectangleUsing3Points' ||
+          this.props.mode === 'drawEllipseUsing3Points'
+        ) {
           this.handleDrawRectangleUsing3Points(
             selectedFeatures[0],
             selectedFeatureIndexes[0],
@@ -457,7 +461,8 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       this.props.mode === 'drawRectangleUsing3Points' ||
       this.props.mode === 'drawCircleFromCenter' ||
       this.props.mode === 'drawCircleByBoundingBox' ||
-      this.props.mode === 'drawEllipseByBoundingBox'
+      this.props.mode === 'drawEllipseByBoundingBox' ||
+      this.props.mode === 'drawEllipseUsing3Points'
     ) {
       const selectedFeature =
         this.state.selectedFeatures.length === 1 ? this.state.selectedFeatures[0] : null;
@@ -500,7 +505,8 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       if (
         mode === 'drawLineString' ||
         mode === 'drawPolygon' ||
-        mode === 'drawRectangleUsing3Points'
+        mode === 'drawRectangleUsing3Points' ||
+        mode === 'drawEllipseUsing3Points'
       ) {
         // Draw an extension line starting from the point
         const startPosition = selectedFeature.geometry.coordinates;
@@ -652,6 +658,15 @@ export default class EditableGeoJsonLayer extends EditableLayer {
             ]
           }
         };
+      } else if (mode === 'drawEllipseUsing3Points') {
+        const [p1, p2] = selectedFeature.geometry.coordinates;
+
+        const ellipseCenter = center(fc([point(p1), point(p2)]));
+        const xSemiAxis = Math.max(distance(ellipseCenter, point(currentPosition)), 0.001);
+        const ySemiAxis = Math.max(distance(p1, p2), 0.001) / 2;
+        const options = { angle: bearing(p1, p2) };
+
+        drawFeature = ellipse(ellipseCenter, xSemiAxis, ySemiAxis, options);
       }
     }
     return drawFeature;

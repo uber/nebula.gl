@@ -179,6 +179,8 @@ The `onEdit` event is the core event provided by this layer and must be handled 
 
   * `movePosition`: A position was moved.
 
+  * `clickPosition`: A position was clicked.
+
   * `addPosition`: A position was added (either at the beginning, middle, or end of a feature's coordinates). Note: this may result in a feature being "upgraded" from one type to another (e.g. `Point` to `LineString` or `LineString` to `Polygon`).
 
   * `removePosition`: A position was removed. Note: this may result in a feature being "downgraded" from one type to another (e.g. `Polygon` to `LineString` or `LineString` to `Point`). It also may result in multiple positions being removed in order to maintain valid GeoJSON (e.g. removing a point from a triangular hole will remove the hole entirely).
@@ -350,6 +352,24 @@ The height of each edit handle, in pixels.
 * Default: `0`
 
 The rotating angle of each object, in degrees.
+
+#### `editHandleRemoveOnKeyPress` (Boolean, optional)
+
+* Default `false`
+
+Setting this prop to `true` allows an edit handle to be removed when a key is pressed (the default way of removing an edit handle is simply to click it).
+
+#### `editHandleRemoveOnKeyPressTriggerKey` (String, optional)
+
+* Default `'d'`
+
+Specifies the key to trigger the removal of an edit handle.
+
+#### `editHandleTarget` (Object, optional)
+
+* Default `null`
+
+Allows a consuming application to specify an edit handle to be removed when a key is pressed and  `editHandleRemoveOnKeyPress` is `true`. The actual edit handle instance is provided to the application in the `onEdit` callback when the `editType` is `clickPosition`.
 
 ## Methods
 

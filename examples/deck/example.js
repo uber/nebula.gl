@@ -193,6 +193,18 @@ export default class Example extends Component<
               }
             />
           </dd>
+          <dt style={styles.toolboxTerm}>Remove Point On Key Press</dt>
+          <dd style={styles.toolboxDescription}>
+            <input
+              type="checkbox"
+              checked={this.state.editHandleRemoveOnKeyPress}
+              onChange={() =>
+                this.setState({
+                  editHandleRemoveOnKeyPress: !this.state.editHandleRemoveOnKeyPress
+                })
+              }
+            />
+          </dd>
           <dt style={styles.toolboxTerm}>Select Features</dt>
           <dd style={styles.toolboxDescription}>
             <input
@@ -208,7 +220,13 @@ export default class Example extends Component<
   }
 
   render() {
-    const { testFeatures, selectedFeatureIndexes, mode } = this.state;
+    const {
+      testFeatures,
+      selectedFeatureIndexes,
+      mode,
+      editHandleRemoveOnKeyPress,
+      editHandleTarget
+    } = this.state;
 
     const viewport = {
       ...this.state.viewport,
@@ -223,6 +241,8 @@ export default class Example extends Component<
       mode,
       fp64: true,
       autoHighlight: true,
+      editHandleRemoveOnKeyPress,
+      editHandleTarget,
 
       // Editing callbacks
       onEdit: ({
@@ -250,6 +270,14 @@ export default class Example extends Component<
         if (editType === 'removePosition' && !this.state.pointsRemovable) {
           // reject the edit
           return;
+        }
+        if (editType === 'clickPosition') {
+          this.setState({
+            editHandleTarget: {
+              featureIndex,
+              positionIndexes
+            }
+          });
         }
         this.setState({
           testFeatures: updatedData,

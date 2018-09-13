@@ -41,9 +41,6 @@ const defaultProps = {
   pointRadiusMinPixels: 2,
   pointRadiusMaxPixels: Number.MAX_SAFE_INTEGER,
   lineDashJustified: false,
-  removePositionOnKeyPress: false,
-  removePositionTriggerKey: 'd',
-  targetPosition: null,
   getLineColor: (feature, isSelected, mode) =>
     isSelected ? DEFAULT_SELECTED_LINE_COLOR : DEFAULT_LINE_COLOR,
   getFillColor: (feature, isSelected, mode) =>
@@ -85,7 +82,12 @@ const defaultProps = {
     handle.type === 'existing'
       ? DEFAULT_EDITING_EXISTING_POINT_COLOR
       : DEFAULT_EDITING_INTERMEDIATE_POINT_COLOR,
-  getEditHandleIconAngle: 0
+  getEditHandleIconAngle: 0,
+
+  // edit handle removal behavior
+  editHandleRemoveOnKeyPress: false,
+  editHandleRemoveOnKeyPressTriggerKey: 'd',
+  editHandleTarget: null
 };
 
 export default class EditableGeoJsonLayer extends EditableLayer {
@@ -302,31 +304,31 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     const {
       mode,
       data: { features },
-      targetPosition,
-      removePositionOnKeyPress,
-      removePositionTriggerKey
+      editHandleTarget,
+      editHandleRemoveOnKeyPress,
+      editHandleRemoveOnKeyPressTriggerKey
     } = this.props;
     if (
-      removePositionOnKeyPress &&
-      key === removePositionTriggerKey &&
+      editHandleRemoveOnKeyPress &&
+      key === editHandleRemoveOnKeyPressTriggerKey &&
       (mode === 'modify' || mode === 'drawLineString') &&
-      targetPosition
+      editHandleTarget
     ) {
-      const { featureIndex, positionIndexes } = targetPosition;
+      const { featureIndex, positionIndexes } = editHandleTarget;
       this.handleRemovePosition(features[featureIndex], featureIndex, positionIndexes);
     }
   }
 
   onClick({ picks, screenCoords, groundCoords }: Object) {
     const { selectedFeatures } = this.state;
-    const { selectedFeatureIndexes, mode, data, removePositionOnKeyPress } = this.props;
+    const { selectedFeatureIndexes, mode, data, editHandleRemoveOnKeyPress } = this.props;
     const editHandleInfo = this.getPickedEditHandle(picks);
 
     if (mode === 'modify') {
       if (editHandleInfo && editHandleInfo.object.type === 'existing') {
         const { featureIndex, positionIndexes } = editHandleInfo.object;
 
-        if (removePositionOnKeyPress) {
+        if (editHandleRemoveOnKeyPress) {
           // just notify the app which edit handle was clicked, it may then opt in to passing it back to nebula
           this.props.onEdit({
             updatedData: data,

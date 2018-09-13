@@ -1,10 +1,14 @@
 // @flow
 /* eslint-env browser */
 
+import window from 'global/window';
 import { CompositeLayer } from 'deck.gl';
 
 // Minimum number of pixels the pointer must move from the original pointer down to be considered dragging
 const MINIMUM_POINTER_MOVE_THRESHOLD_PIXELS = 7;
+
+// To detect the double-click event, pointer events will have delay
+const POINTER_EVENT_DELAY = 450;
 
 export default class EditableLayer extends CompositeLayer {
   // Overridable interaction event handlers
@@ -64,7 +68,11 @@ export default class EditableLayer extends CompositeLayer {
         pointerDownGroundCoords: null,
         // Is the pointer dragging (pointer down + moved at least MINIMUM_POINTER_MOVE_THRESHOLD_PIXELS)
         isDragging: false
-      }
+      },
+      pointerUpCounter: 0,
+      pointerUpTimer: null,
+      pointerDownCounter: 0,
+      pointerDownTimer: null
     });
   }
 
@@ -92,10 +100,6 @@ export default class EditableLayer extends CompositeLayer {
         'pointerup',
         this.state._editableLayerState.pointerHandlers.onPointerUp
       );
-      this.context.gl.canvas.removeEventListener(
-        'dblclick',
-        this.state._editableLayerState.pointerHandlers.onDoubleClick
-      );
     }
     this.state._editableLayerState.pointerHandlers = null;
   }
@@ -103,9 +107,8 @@ export default class EditableLayer extends CompositeLayer {
   _addPointerHandlers() {
     this.state._editableLayerState.pointerHandlers = {
       onPointerMove: this._onPointerMove.bind(this),
-      onPointerDown: this._onPointerDown.bind(this),
-      onPointerUp: this._onPointerUp.bind(this),
-      onDoubleClick: this._onDoubleClick.bind(this)
+      onPointerDown: this._onDelayedPointerDown.bind(this),
+      onPointerUp: this._onDelayedPointerUp.bind(this)
     };
 
     this.context.gl.canvas.addEventListener(
@@ -120,10 +123,6 @@ export default class EditableLayer extends CompositeLayer {
       'pointerup',
       this.state._editableLayerState.pointerHandlers.onPointerUp
     );
-    this.context.gl.canvas.addEventListener(
-      'dblclick',
-      this.state._editableLayerState.pointerHandlers.onDoubleClick
-    );
   }
 
   _onDoubleClick(event: Object) {
@@ -132,6 +131,23 @@ export default class EditableLayer extends CompositeLayer {
     this.onDoubleClick({
       groundCoords
     });
+  }
+
+  _onDelayedPointerDown(event: Object) {
+    this.setState({ pointerDownCounter: this.state.pointerDownCounter + 1 });
+    const pointerDownTimer = window.setTimeout(
+      function _temp() {
+        if (this.state.pointerDownCounter > 1) {
+          this._onDoubleClick(event);
+          window.clearTimeout(this.state.pointerDownTimer);
+        } else {
+          this._onPointerDown(event);
+        }
+        this.setState({ pointerDownCounter: 0 });
+      }.bind(this),
+      POINTER_EVENT_DELAY
+    );
+    this.setState({ pointerDownTimer });
   }
 
   _onPointerDown(event: Object) {
@@ -213,6 +229,23 @@ export default class EditableLayer extends CompositeLayer {
         dragStartGroundCoords: pointerDownGroundCoords
       });
     }
+  }
+
+  _onDelayedPointerUp(event: Object) {
+    this.setState({ pointerUpCounter: this.state.pointerUpCounter + 1 });
+    const pointerUpTimer = window.setTimeout(
+      function _temp() {
+        if (this.state.pointerUpCounter > 1) {
+          window.clearTimeout(this.state.pointerUpTimer);
+          // do nothing here, as double-click handled in pointer down events
+        } else {
+          this._onPointerUp(event);
+        }
+        this.setState({ pointerUpCounter: 0 });
+      }.bind(this),
+      POINTER_EVENT_DELAY
+    );
+    this.setState({ pointerUpTimer });
   }
 
   _onPointerUp(event: Object) {

@@ -306,16 +306,13 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       this.props.mode === 'drawPolygon' &&
       selectedFeatures.length === 1 &&
       selectedFeature.geometry.type === 'LineString' &&
-      selectedFeature.geometry.coordinates.length > 5
+      selectedFeature.geometry.coordinates.length > 2
     ) {
       const { coordinates } = selectedFeature.geometry;
       // close the polygon.
       featureCollection = featureCollection.replaceGeometry(featureIndex, {
         type: 'Polygon',
-        // when double clicked, there will be additional 2 pointer up/down events fired.
-        // Remove those 2 unnecessary points from coordinates.
-        // Issue #69 dblclick event is also firing 2 additional pointer up/down events
-        coordinates: [[...coordinates.slice(0, coordinates.length - 2), coordinates[0]]]
+        coordinates: [[...coordinates, coordinates[0]]]
       });
       const updatedMode = 'modify';
       const updatedData = featureCollection.getObject();

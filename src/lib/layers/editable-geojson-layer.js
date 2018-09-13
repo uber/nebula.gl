@@ -662,11 +662,11 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         const [p1, p2] = selectedFeature.geometry.coordinates;
 
         const ellipseCenter = center(fc([point(p1), point(p2)]));
-        const xSemiAxis = Math.max(distance(p1, p2), 0.001) / 2;
-        const ySemiAxis = Math.max(distance(ellipseCenter, point(currentPosition)), 0.001);
+        const xSemiAxis = Math.max(distance(ellipseCenter, point(currentPosition)), 0.001);
+        const ySemiAxis = Math.max(distance(p1, p2), 0.001) / 2;
+        const options = { angle: bearing(p1, p2) };
 
-        // TODO: xSemiAxis and ySemiAxis need to swap based on angle of first 2 pts
-        drawFeature = ellipse(ellipseCenter, xSemiAxis, ySemiAxis);
+        drawFeature = ellipse(ellipseCenter, xSemiAxis, ySemiAxis, options);
       }
     }
     return drawFeature;

@@ -2,11 +2,11 @@
 import type { Position } from 'geojson-types';
 
 export function toDegree(radian: number): number {
-  return radian * 180 / Math.PI;
+  return (radian * 180) / Math.PI;
 }
 
 export function toRadian(angle: number): number {
-  return angle * Math.PI / 180;
+  return (angle * Math.PI) / 180;
 }
 
 /**

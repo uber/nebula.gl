@@ -4,13 +4,13 @@ import { convertE7Array, toDegree, toRadian } from '../../lib/math';
 it('test toDegree()', () => {
   expect(toDegree(Math.PI / 4)).toBe(45);
   expect(toDegree(Math.PI / 2)).toBe(90);
-  expect(toDegree(Math.PI * 3 / 2)).toBe(270);
+  expect(toDegree((Math.PI * 3) / 2)).toBe(270);
 });
 
 it('test toRadian()', () => {
   expect(toRadian(45)).toBe(Math.PI / 4);
   expect(toRadian(90)).toBe(Math.PI / 2);
-  expect(toRadian(270)).toBe(Math.PI * 3 / 2);
+  expect(toRadian(270)).toBe((Math.PI * 3) / 2);
 });
 
 it('test convertE7Array()', () => {

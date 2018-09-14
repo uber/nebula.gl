@@ -143,7 +143,9 @@ export default class Example extends Component<
   }
 
   _renderAllCheckboxes() {
-    const { testFeatures: { features } } = this.state;
+    const {
+      testFeatures: { features }
+    } = this.state;
     const checkboxes = [];
     for (let i = 0; i < features.length; ++i) {
       checkboxes.push(this._renderCheckbox(i, features[i].geometry.type));

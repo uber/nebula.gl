@@ -159,7 +159,10 @@ export default class Nebula {
   }
 
   _handleDeckGLEvent(event: Object) {
-    const { deckgl, props: { onMapMouseEvent, selectionType } } = this;
+    const {
+      deckgl,
+      props: { onMapMouseEvent, selectionType }
+    } = this;
     let sendMapEvent = true;
     let cursor = 'auto';
 

@@ -93,6 +93,8 @@ The `mode` property dictates what type of edits the user can perform and how to 
 
   * If a `LineString` feature is selected, clicking will add the clicked position to it. If that clicked position is the first position, the feature will be converted to a `Polygon` feature.
 
+  * If a `LineString` feature is selected, after having 3 points any where double-click the feature will be converted to a `Polygon` feature by closing the shape to first position.
+
   * If multiple features are selected, the user will be prevented from drawing.
 
 * `drawRectangle`: user can draw a new rectanglular `Polygon` feature by clicking two opposing corners of the rectangle.

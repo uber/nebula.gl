@@ -1,5 +1,14 @@
 // @flow
+import nearestPointOnLine from '@turf/nearest-point-on-line';
+import nearestPoint from '@turf/nearest-point';
+import {
+  lineString as toLineString,
+  point as toPoint,
+  featureCollection as toFeatureCollection
+} from '@turf/helpers';
 import type { GeoJsonGeometry } from '../types';
+
+const MAX_INTERMEDIATE_PIXEL_DISTANCE = 50;
 
 type FeatureCollection = {
   features: Array<Object>
@@ -200,54 +209,124 @@ export class EditableFeatureCollection {
   /**
    * Returns a flat array of positions for the given feature along with their indexes into the feature's geometry's coordinates.
    *
-   * @param featureIndex The index of the feature to get edit handles
+   * @param featureIndexes The indexes of the features to get edit handles
+   * @param project Projection method to convert geographic coordinates to screen coordinates
+   * @param pointerPosition Object containg screen and ground coordinates for the location of the pointer
    */
-  getEditHandles(featureIndex: number) {
+  getEditHandles(featureIndexes: Array<number>, project?: Function, pointerPosition?: Object) {
+    const { screenCoords, groundCoords } = pointerPosition || {};
     let handles = [];
+    const lineStringTupleArray = [];
 
-    const geometry = this.featureCollection.features[featureIndex].geometry;
+    featureIndexes.forEach(featureIndex => {
+      const geometry = this.featureCollection.features[featureIndex].geometry;
 
-    switch (geometry.type) {
-      case 'Point':
-        // positions are not nested
-        handles = [
-          {
-            position: geometry.coordinates,
-            positionIndexes: [],
+      switch (geometry.type) {
+        case 'Point':
+          // positions are not nested
+          handles = [
+            ...handles,
+            {
+              position: geometry.coordinates,
+              positionIndexes: [],
+              featureIndex,
+              type: 'existing'
+            }
+          ];
+          break;
+        case 'MultiPoint':
+        case 'LineString':
+          // positions are nested 1 level
+          lineStringTupleArray.push({
             featureIndex,
-            type: 'existing'
+            coordinates: geometry.coordinates,
+            positionIndexPrefix: []
+          });
+          break;
+        case 'Polygon':
+        case 'MultiLineString':
+          // positions are nested 2 levels
+          for (let a = 0; a < geometry.coordinates.length; a++) {
+            lineStringTupleArray.push({
+              featureIndex,
+              coordinates: geometry.coordinates[a],
+              positionIndexPrefix: [a]
+            });
           }
-        ];
-        break;
-      case 'MultiPoint':
-      case 'LineString':
-        // positions are nested 1 level
-        const includeIntermediate = geometry.type !== 'MultiPoint';
-        handles = handles.concat(
-          getEditHandles(geometry.coordinates, [], includeIntermediate, featureIndex)
+          break;
+        case 'MultiPolygon':
+          // positions are nested 3 levels
+          for (let a = 0; a < geometry.coordinates.length; a++) {
+            for (let b = 0; b < geometry.coordinates[a].length; b++) {
+              lineStringTupleArray.push({
+                featureIndex,
+                coordinates: geometry.coordinates[a][b],
+                positionIndexPrefix: [a, b]
+              });
+            }
+          }
+          break;
+        default:
+          throw Error(`Unhandled geometry type: ${geometry.type}`);
+      }
+    });
+
+    let intermediatePoint = null;
+    // the index of tuple array of the line / feature closest to the reference point
+    let tupleIndex = null;
+
+    const referencePoint = groundCoords && toPoint(groundCoords);
+
+    lineStringTupleArray.forEach(({ featureIndex, coordinates, positionIndexPrefix }, i) => {
+      if (referencePoint) {
+        // calculate the intermediate point location by determining the closest linestring segment
+        const lineStringFeature = toLineString(coordinates);
+        const candidateIntermediatePoint = nearestPointOnLine(lineStringFeature, referencePoint);
+        const nearestControlPoint = nearestPoint(
+          referencePoint,
+          toFeatureCollection(coordinates.map(c => toPoint(c)))
         );
-        break;
-      case 'Polygon':
-      case 'MultiLineString':
-        // positions are nested 2 levels
-        for (let a = 0; a < geometry.coordinates.length; a++) {
-          handles = handles.concat(
-            getEditHandles(geometry.coordinates[a], [a], true, featureIndex)
-          );
+
+        if (
+          // find the best candidate point
+          (!intermediatePoint ||
+            candidateIntermediatePoint.properties.dist < intermediatePoint.properties.dist) &&
+          // prohibit intermediate point from displaying when it is too close to an edit handle
+          project &&
+          getPixelDistanceBetweenPoints(
+            project(candidateIntermediatePoint.geometry.coordinates),
+            project(nearestControlPoint.geometry.coordinates)
+          ) > 10
+        ) {
+          intermediatePoint = candidateIntermediatePoint;
+          tupleIndex = i;
         }
-        break;
-      case 'MultiPolygon':
-        // positions are nested 3 levels
-        for (let a = 0; a < geometry.coordinates.length; a++) {
-          for (let b = 0; b < geometry.coordinates[a].length; b++) {
-            handles = handles.concat(
-              getEditHandles(geometry.coordinates[a][b], [a, b], true, featureIndex)
-            );
-          }
+      }
+
+      // convert the linestring / coordinates to edit handles
+      handles = [...handles, ...getEditHandles(coordinates, positionIndexPrefix, featureIndex)];
+    });
+
+    // add the lone intermediate point
+    if (
+      intermediatePoint &&
+      tupleIndex !== null &&
+      project &&
+      // display the intermediate point when it is "close" to the line
+      getPixelDistanceBetweenPoints(project(intermediatePoint.geometry.coordinates), screenCoords) <
+        MAX_INTERMEDIATE_PIXEL_DISTANCE
+    ) {
+      const { geometry: { coordinates: position }, properties: { index } } = intermediatePoint;
+      const { positionIndexPrefix, featureIndex } = lineStringTupleArray[tupleIndex];
+      handles = [
+        ...handles,
+        {
+          position,
+          positionIndexes: [...positionIndexPrefix, index + 1],
+          featureIndex,
+          type: 'intermediate'
         }
-        break;
-      default:
-        throw Error(`Unhandled geometry type: ${geometry.type}`);
+      ];
     }
 
     return handles;
@@ -489,21 +568,9 @@ function removeHoleIfNecessary(polygon: Array<any>, holeIndex: number) {
   return false;
 }
 
-function getIntermediatePosition(
-  position1: Array<number>,
-  position2: Array<number>
-): Array<number> {
-  const intermediatePosition = [];
-  for (let dimension = 0; dimension < position1.length; dimension++) {
-    intermediatePosition.push((position1[dimension] + position2[dimension]) / 2.0);
-  }
-  return intermediatePosition;
-}
-
 function getEditHandles(
   coordinates: Array<Array<number>>,
   positionIndexPrefix: Array<number>,
-  includeIntermediate: boolean,
   featureIndex: number
 ) {
   const editHandles = [];
@@ -515,17 +582,10 @@ function getEditHandles(
       featureIndex,
       type: 'existing'
     });
-
-    if (includeIntermediate && i < coordinates.length - 1) {
-      // add intermediate position after every position except the last one
-      const nextPosition = coordinates[i + 1];
-      editHandles.push({
-        position: getIntermediatePosition(position, nextPosition),
-        positionIndexes: [...positionIndexPrefix, i + 1],
-        featureIndex,
-        type: 'intermediate'
-      });
-    }
   }
   return editHandles;
+}
+
+function getPixelDistanceBetweenPoints(a: Array<number>, b: Array<number>) {
+  return Math.sqrt(Math.pow(b[0] - a[0], 2) + Math.pow(b[1] - a[1], 2));
 }

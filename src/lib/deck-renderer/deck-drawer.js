@@ -68,7 +68,7 @@ export default class DeckDrawer {
 
     const [x1, y1] = this.mousePoints[0];
     const [x2, y2] = this.mousePoints[1];
-    const pickingInfos = this.nebula.deckgl.queryVisibleObjects({
+    const pickingInfos = this.nebula.deckgl.pickObjects({
       x: Math.min(x1, x2),
       y: Math.min(y1, y2),
       width: Math.abs(x2 - x1),
@@ -80,7 +80,7 @@ export default class DeckDrawer {
   }
 
   _selectPolygonObjects() {
-    const pickingInfos = this.nebula.deckgl.queryVisibleObjects({
+    const pickingInfos = this.nebula.deckgl.pickObjects({
       ...this._getBoundingBox(),
       layerIds: [LAYER_ID_PICK, ...this._getLayerIds()]
     });
@@ -162,26 +162,17 @@ export default class DeckDrawer {
     return turfBboxPolygon(turfBbox(buffer)).geometry.coordinates;
   }
 
-  _getPolygon = (o: Object): any => {
-    const { coordsToLngLatOffset } = this.nebula.projector;
-
-    if (Array.isArray(o.polygon[0][0])) {
-      // complex polygon with holes
-      return o.polygon.map(a => a.map(coordsToLngLatOffset));
-    }
-
-    // simple polygon
-    return o.polygon.map(coordsToLngLatOffset);
-  };
-
   render() {
     const data = [];
     const dataPick = [];
 
     if (!this.usePolygon && this.landPoints.length === 2) {
-      const [x1, y1] = this.landPoints[0];
-      const [x2, y2] = this.landPoints[1];
-      const selPolygon = [[x1, y1], [x1, y2], [x2, y2], [x2, y1], [x1, y1]];
+      // Use mouse points instead of land points so we get the right shape
+      // no matter what bearing is.
+      const [[x1, y1], [x2, y2]] = this.mousePoints;
+      const selPolygon = [[x1, y1], [x1, y2], [x2, y2], [x2, y1], [x1, y1]].map(mousePos =>
+        this.nebula.unprojectMousePosition(mousePos)
+      );
       data.push({
         polygon: selPolygon,
         lineColor: POLYGON_LINE_COLOR,
@@ -194,7 +185,7 @@ export default class DeckDrawer {
         fillColor: POLYGON_FILL_COLOR
       });
 
-      // Hack: use a polygon to hide the outside, because queryVisibleObjects()
+      // Hack: use a polygon to hide the outside, because pickObjects()
       // does not support polygons
       if (this.landPoints.length >= 3) {
         const landPointsPoly = polygon([[...this.landPoints, this.landPoints[0]]]);
@@ -242,20 +233,22 @@ export default class DeckDrawer {
         lineWidthMaxPixels: POLYGON_LINE_WIDTH,
         lineDashJustified: true,
         getLineDashArray: x => POLYGON_DASHES,
-        coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS,
-        coordinateOrigin: this.nebula.projector.lngLat,
-        getPolygon: this._getPolygon
+        getLineColor: obj => obj.lineColor || [0, 0, 0, 255],
+        getFillColor: obj => obj.fillColor || [0, 0, 0, 255],
+        coordinateSystem: COORDINATE_SYSTEM.LNGLAT_EXPERIMENTAL,
+        getPolygon: o => o.polygon
       }),
       new PolygonLayer({
         id: LAYER_ID_PICK,
         data: dataPick,
+        getLineColor: obj => obj.lineColor || [0, 0, 0, 255],
+        getFillColor: obj => obj.fillColor || [0, 0, 0, 255],
         fp64: false,
         opacity: 1.0,
         stroked: false,
         pickable: true,
-        coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS,
-        coordinateOrigin: this.nebula.projector.lngLat,
-        getPolygon: this._getPolygon
+        coordinateSystem: COORDINATE_SYSTEM.LNGLAT_EXPERIMENTAL,
+        getPolygon: o => o.polygon
       })
     ];
   }

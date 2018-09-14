@@ -28,7 +28,7 @@ export default class NebulaLayer extends EventEmitter {
     }
   }
 
-  render(config: Object) {
+  render(config: Object): mixed {
     return null;
   }
 }

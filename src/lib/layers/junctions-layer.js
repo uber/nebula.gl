@@ -25,7 +25,7 @@ export default class JunctionsLayer extends NebulaLayer {
       opacity: 1,
       fp64: false,
       pickable: true,
-      getPosition: nf => nebula.projector.coordsToLngLatOffset(nf.geoJson.geometry.coordinates),
+      getPosition: nf => nf.geoJson.geometry.coordinates,
       getFillColor: nf => toDeckColor(nf.style.fillColor) || defaultColor,
       getStrokeColor: nf =>
         toDeckColor(nf.style.outlineColor) || toDeckColor(nf.style.fillColor) || defaultColor,
@@ -36,9 +36,8 @@ export default class JunctionsLayer extends NebulaLayer {
         blend: false
       },
 
-      coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS,
-      coordinateOrigin: nebula.projector.lngLat,
-      updateTriggers: { all: `${updateTrigger}_${nebula.projector.lngLat}` },
+      coordinateSystem: COORDINATE_SYSTEM.LNGLAT_EXPERIMENTAL,
+      updateTriggers: { all: updateTrigger },
 
       nebulaLayer: this
     });

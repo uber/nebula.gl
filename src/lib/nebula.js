@@ -6,7 +6,6 @@ import { WebMercatorViewport } from 'deck.gl';
 
 import DeckDrawer from './deck-renderer/deck-drawer';
 import LayerMouseEvent from './layer-mouse-event';
-import Projector from './projector';
 import NebulaLayer from './nebula-layer';
 
 const LOGGER_PREFIX = 'Nebula: ';
@@ -14,12 +13,10 @@ const LOGGER_PREFIX = 'Nebula: ';
 export default class Nebula {
   init(props: Object) {
     this.props = props;
-    this.projector = new Projector(this.props.viewport);
     this.wmViewport = new WebMercatorViewport(this.props.viewport);
 
-    // TODO: Properly use pointer events
-    // ['click', 'dblclick', 'mousemove', 'mouseup', 'mousedown'].forEach(name =>
-    ['click', 'dblclick', 'pointermove', 'pointerup', 'pointerdown'].forEach(name =>
+    // TODO: Properly use pointer events: ['click', 'dblclick', 'pointermove', 'pointerup', 'pointerdown']
+    ['click', 'dblclick', 'mousemove', 'mouseup', 'mousedown'].forEach(name =>
       document.addEventListener(name, this._onMouseEvent, true)
     );
   }
@@ -27,18 +24,11 @@ export default class Nebula {
   updateProps(newProps: Object) {
     this.props = newProps;
     const { viewport } = this.props;
-    const { projector } = this;
-
-    if (projector.shouldChangeCenter(viewport)) {
-      this.log(`Changing center to [${viewport.longitude}, ${viewport.latitude}]`);
-      projector.setCenterFromViewport(viewport);
-    }
 
     this.wmViewport = new WebMercatorViewport(viewport);
   }
 
   props: Object;
-  projector: Projector;
   deckgl: Object | null;
   mainContainer: Object | null;
   deckglMouseOverInfo: ?Object;
@@ -150,18 +140,18 @@ export default class Nebula {
     this._handleDeckGLEvent(proxyEvent);
   };
 
-  allowEvent(lngLat: [number, number], event: Object): boolean {
-    return true;
+  getMouseGroundPosition(event: Object) {
+    return this.wmViewport.unproject([event.offsetX, event.offsetY]);
   }
 
-  _getMouseGroundPosition(event: Object) {
-    return this.wmViewport.unproject([event.offsetX, event.offsetY]);
+  unprojectMousePosition(mousePosition: [number, number]): [number, number] {
+    return this.wmViewport.unproject(mousePosition);
   }
 
   _handleDeckGLEvent(event: Object) {
     const {
       deckgl,
-      props: { onMapMouseEvent, selectionType }
+      props: { onMapMouseEvent, selectionType, eventFilter }
     } = this;
     let sendMapEvent = true;
     let cursor = 'auto';
@@ -169,8 +159,8 @@ export default class Nebula {
     if (event && deckgl && selectionType) {
       if (!this._deckDrawer) this._deckDrawer = new DeckDrawer(this);
 
-      const lngLat = this._getMouseGroundPosition(event);
-      if (!this.allowEvent(lngLat, event)) return;
+      const lngLat = this.getMouseGroundPosition(event);
+      if (eventFilter && !eventFilter(lngLat, event)) return;
 
       const drawerResult = this._deckDrawer.handleEvent(event, lngLat, selectionType);
       if (drawerResult.redraw) this.forceUpdate();
@@ -183,7 +173,7 @@ export default class Nebula {
         .filter(l => l && l.props && l.props.nebulaLayer && l.props.nebulaLayer.enablePicking)
         .map(l => l.id);
 
-      const pickingInfo = deckgl.queryObject({
+      const pickingInfo = deckgl.pickObject({
         x: event.offsetX,
         y: event.offsetY,
         radius: 5,
@@ -194,9 +184,19 @@ export default class Nebula {
         sendMapEvent = false;
 
         const { index, lngLat } = pickingInfo;
-        if (!this.allowEvent(lngLat, event)) return;
+        if (eventFilter && !eventFilter(lngLat, event)) return;
 
         const { layer: deckLayer, object } = pickingInfo;
+
+        if (
+          deckLayer &&
+          deckLayer.props &&
+          deckLayer.props.nebulaLayer &&
+          deckLayer.props.nebulaLayer.eventHandler
+        ) {
+          deckLayer.props.nebulaLayer.eventHandler(event, pickingInfo);
+        }
+
         const original =
           object.original ||
           (deckLayer.props.nebulaLayer &&
@@ -226,8 +226,8 @@ export default class Nebula {
     if (sendMapEvent) {
       this.deckglMouseOverInfo = null;
 
-      const lngLat = this._getMouseGroundPosition(event);
-      if (!this.allowEvent(lngLat, event)) return;
+      const lngLat = this.getMouseGroundPosition(event);
+      if (eventFilter && !eventFilter(lngLat, event)) return;
 
       // send to layers first
       const nebulaMouseEvent = new LayerMouseEvent(event, {
@@ -237,6 +237,13 @@ export default class Nebula {
       this.getAllLayers()
         .filter(layer => layer && layer.usesMapEvents)
         .forEach(layer => layer.emit('mapMouseEvent', nebulaMouseEvent));
+
+      this.getAllLayers()
+        .filter(
+          layer =>
+            layer && layer.props && layer.props.nebulaLayer && layer.props.nebulaLayer.mapMouseEvent
+        )
+        .forEach(layer => layer.props.nebulaLayer.mapMouseEvent(nebulaMouseEvent, layer));
 
       if (onMapMouseEvent) {
         onMapMouseEvent(event, lngLat);

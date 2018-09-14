@@ -11,6 +11,7 @@ export type LayerMouseEventResult = {
 export type Color = [number, number, number, number];
 
 export type Style = {
+  dashArray?: number[],
   fillColor?: Color,
   lineColor?: Color,
   lineWidthMeters?: number,

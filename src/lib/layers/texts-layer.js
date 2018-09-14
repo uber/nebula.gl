@@ -27,15 +27,14 @@ export default class TextsLayer extends NebulaLayer {
       pickable: false,
 
       getText: nf => nf.style.text,
-      getPosition: nf => nebula.projector.coordsToLngLatOffset(nf.geoJson.geometry.coordinates),
+      getPosition: nf => nf.geoJson.geometry.coordinates,
       getColor: nf => toDeckColor(nf.style.fillColor) || defaultColor,
 
       // TODO: layer should offer option to scale with zoom
       sizeScale: 1 / Math.pow(2, 20 - zoom),
 
-      coordinateSystem: COORDINATE_SYSTEM.LNGLAT_OFFSETS,
-      coordinateOrigin: nebula.projector.lngLat,
-      updateTriggers: { all: `${updateTrigger}_${nebula.projector.lngLat}` },
+      coordinateSystem: COORDINATE_SYSTEM.LNGLAT_EXPERIMENTAL,
+      updateTriggers: { all: updateTrigger },
 
       nebulaLayer: this
     });

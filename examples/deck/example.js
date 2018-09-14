@@ -194,6 +194,18 @@ export default class Example extends Component<
               }
             />
           </dd>
+          <dt style={styles.toolboxTerm}>Draw LineString At Front</dt>
+          <dd style={styles.toolboxDescription}>
+            <input
+              type="checkbox"
+              checked={this.state.drawAtFront}
+              onChange={() =>
+                this.setState({
+                  drawAtFront: !this.state.drawAtFront
+                })
+              }
+            />
+          </dd>
           <dt style={styles.toolboxTerm}>Select Features</dt>
           <dd style={styles.toolboxDescription}>
             <input
@@ -209,7 +221,7 @@ export default class Example extends Component<
   }
 
   render() {
-    const { testFeatures, selectedFeatureIndexes, mode } = this.state;
+    const { testFeatures, selectedFeatureIndexes, mode, drawAtFront } = this.state;
 
     const viewport = {
       ...this.state.viewport,
@@ -224,6 +236,7 @@ export default class Example extends Component<
       mode,
       fp64: true,
       autoHighlight: true,
+      drawAtFront,
 
       // Editing callbacks
       onEdit: ({

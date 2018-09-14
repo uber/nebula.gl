@@ -306,7 +306,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       this.props.mode === 'drawPolygon' &&
       selectedFeatures.length === 1 &&
       selectedFeature.geometry.type === 'LineString' &&
-      selectedFeature.geometry.coordinates.length > 5
+      selectedFeature.geometry.coordinates.length > 4
     ) {
       const { coordinates } = selectedFeature.geometry;
       // close the polygon.

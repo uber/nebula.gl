@@ -45,7 +45,7 @@ export default class EditableLayer extends CompositeLayer {
     // default implementation - do nothing
   }
 
-  onPointerMove({ screenCoords, groundCoords, isDragging, sourceEvent }: Object) {
+  onPointerMove({ screenCoords, groundCoords, isDragging, sourceEvent, keyHolded }: Object) {
     // default implementation - do nothing
   }
 
@@ -54,6 +54,9 @@ export default class EditableLayer extends CompositeLayer {
   initializeState() {
     this.setState({
       _editableLayerState: {
+        // Key press event handlers
+        keyHandlers: null,
+        keyHolded: '',
         // Pointer event handlers
         pointerHandlers: null,
         // Picked objects at the time the pointer went down
@@ -70,12 +73,15 @@ export default class EditableLayer extends CompositeLayer {
 
   finalizeState() {
     this._removePointerHandlers();
+    this._removeKeyHandlers();
   }
 
   updateState({ props, changeFlags }: Object) {
     // unsubscribe previous layer instance's handlers
     this._removePointerHandlers();
     this._addPointerHandlers();
+    this._removeKeyHandlers();
+    this._addKeyHandlers();
   }
 
   _removePointerHandlers() {
@@ -98,6 +104,20 @@ export default class EditableLayer extends CompositeLayer {
       );
     }
     this.state._editableLayerState.pointerHandlers = null;
+  }
+
+  _removeKeyHandlers() {
+    if (this.state._editableLayerState.keyHandlers) {
+      this.context.gl.canvas.removeEventListener(
+        'keydown',
+        this.state._editableLayerState.keyHandlers.onKeydown
+      );
+      this.context.gl.canvas.removeEventListener(
+        'keyup',
+        this.state._editableLayerState.keyHandlers.onKeyup
+      );
+    }
+    this.state._editableLayerState.keyHandlers = null;
   }
 
   _addPointerHandlers() {
@@ -124,6 +144,40 @@ export default class EditableLayer extends CompositeLayer {
       'dblclick',
       this.state._editableLayerState.pointerHandlers.onDoubleClick
     );
+  }
+
+  _addKeyHandlers() {
+    this.state._editableLayerState.keyHandlers = {
+      onKeyDown: this._onKeyDown.bind(this),
+      onKeyUp: this._onKeyUp.bind(this)
+    };
+
+    this.context.gl.canvas.addEventListener(
+      'keydown',
+      this.state._editableLayerState.keyHandlers.onKeyDown
+    );
+    this.context.gl.canvas.addEventListener(
+      'keyup',
+      this.state._editableLayerState.keyHandlers.onKeyUp
+    );
+  }
+
+  _onKeyDown(event: Object) {
+    this.setState({
+      _editableLayerState: {
+        ...this.state._editableLayerState,
+        keyHolded: event.key
+      }
+    });
+  }
+
+  _onKeyUp(event: Object) {
+    this.setState({
+      _editableLayerState: {
+        ...this.state._editableLayerState,
+        keyHolded: ''
+      }
+    });
   }
 
   _onDoubleClick(event: Object) {
@@ -169,6 +223,7 @@ export default class EditableLayer extends CompositeLayer {
     } = this.state._editableLayerState;
 
     let { isDragging } = this.state._editableLayerState;
+    const { keyHolded } = this.state._editableLayerState;
 
     if (pointerDownPicks && pointerDownPicks.length > 0) {
       // Pointer went down on something and is moving
@@ -201,7 +256,8 @@ export default class EditableLayer extends CompositeLayer {
       groundCoords,
       isDragging,
       pointerDownPicks,
-      sourceEvent: event
+      sourceEvent: event,
+      keyHolded
     });
 
     if (isDragging) {

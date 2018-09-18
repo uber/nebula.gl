@@ -9,6 +9,7 @@ import distance from '@turf/distance';
 import center from '@turf/center';
 import destination from '@turf/destination';
 import bearing from '@turf/bearing';
+import turftransformRotate from '@turf/transform-rotate';
 import pointToLineDistance from '@turf/point-to-line-distance';
 import { point, featureCollection as fc } from '@turf/helpers';
 import type { GeoJsonFeature } from '../../types';
@@ -491,7 +492,14 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
   }
 
-  onPointerMove({ screenCoords, groundCoords, isDragging, pointerDownPicks, sourceEvent }: Object) {
+  onPointerMove({
+    screenCoords,
+    groundCoords,
+    isDragging,
+    pointerDownPicks,
+    sourceEvent,
+    keyHolded
+  }: Object) {
     if (this.props.mode === 'modify') {
       const picks = this.context.layerManager.pickObject({
         x: screenCoords[0],
@@ -532,6 +540,9 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         // Stop propagation to prevent map panning while dragging an edit handle
         sourceEvent.stopPropagation();
       }
+    }
+    if (this.props.mode === 'transform' && keyHolded === 'Control') {
+      this.handleTransformRotate(screenCoords, groundCoords);
     }
   }
 
@@ -722,6 +733,39 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       }
     }
     return drawFeature;
+  }
+
+  handleTransformRotate(screenCoords: number[], groundCoords: number[]) {
+    const picks = this.context.layerManager.pickObject({
+      x: screenCoords[0],
+      y: screenCoords[1],
+      mode: 'query',
+      layers: [this.props.id],
+      radius: 100,
+      viewports: [this.context.viewport]
+    });
+    // do nothing when mouse position far away from any point
+    if (!picks || !picks.length || !picks[0].object.position) {
+      return;
+    }
+    const featureIndex = this.props.selectedFeatureIndexes[0];
+    const feature = this.state.selectedFeatures[0];
+    const options = { pivot: picks[0].object.position };
+    const rotatedFeature = turftransformRotate(feature, 2, options);
+
+    const updatedData = this.state.editableFeatureCollection
+      .replaceGeometry(featureIndex, rotatedFeature.geometry)
+      .getObject();
+
+    this.props.onEdit({
+      updatedData,
+      updatedMode: this.props.mode,
+      updatedSelectedFeatureIndexes: this.props.selectedFeatureIndexes,
+      editType: 'transformPosition',
+      featureIndex,
+      positionIndexes: this.props.positionIndexes,
+      position: groundCoords
+    });
   }
 
   handleMovePosition(featureIndex: number, positionIndexes: number, groundCoords: number[]) {

@@ -71,6 +71,8 @@ The `mode` property dictates what type of edits the user can perform and how to 
 
 * `modify`: user can move existing points, add intermediate points along lines, and remove points.
 
+* `transform`: user can tranform rotate feature by ctrl key hold + mouse move near the desired point. The point will be used as pivot to rotate shape. 
+
 * `drawPoint`: user can draw a `Point` feature by clicking positions to add.
 
   * If no feature is selected, clicking will create a new `Point` feature.

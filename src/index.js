@@ -20,3 +20,9 @@ export { default as HtmlTooltipOverlay } from './lib/overlays/html-tooltip-overl
 export { default as HtmlClusterOverlay } from './lib/overlays/html-cluster-overlay';
 
 export { default as NebulaCore } from './lib/nebula';
+
+// Utils
+export { toDeckColor } from './lib/utils';
+
+// Types
+export type { Color, Style } from './types';

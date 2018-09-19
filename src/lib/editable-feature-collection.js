@@ -1,8 +1,21 @@
 // @flow
-import type { GeoJsonGeometry } from '../types';
 
-type FeatureCollection = {
-  features: Array<Object>
+import type {
+  FeatureCollection,
+  Geometry,
+  Position,
+  LineString,
+  Polygon,
+  MultiLineString,
+  MultiPolygon,
+  PolygonCoordinates
+} from '../geojson-types.js';
+
+export type EditHandle = {
+  position: Position,
+  positionIndexes: number[],
+  featureIndex: number,
+  type: 'existing' | 'intermediate'
 };
 
 export class EditableFeatureCollection {
@@ -28,40 +41,23 @@ export class EditableFeatureCollection {
    */
   replacePosition(
     featureIndex: number,
-    positionIndexes: Array<number>,
-    updatedPosition: Array<number>
+    positionIndexes: number[],
+    updatedPosition: Position
   ): EditableFeatureCollection {
-    const featureToUpdate = this.featureCollection.features[featureIndex];
-    const isPolygonal =
-      featureToUpdate.geometry.type === 'Polygon' ||
-      featureToUpdate.geometry.type === 'MultiPolygon';
+    const geometry = this.featureCollection.features[featureIndex].geometry;
 
-    const updatedCoordinates = immutablyReplacePosition(
-      featureToUpdate.geometry.coordinates,
-      positionIndexes,
-      updatedPosition,
-      isPolygonal
-    );
-
-    const updatedFeature = {
-      ...featureToUpdate,
-      geometry: {
-        ...featureToUpdate.geometry,
-        coordinates: updatedCoordinates
-      }
+    const isPolygonal = geometry.type === 'Polygon' || geometry.type === 'MultiPolygon';
+    const updatedGeometry: any = {
+      ...geometry,
+      coordinates: immutablyReplacePosition(
+        geometry.coordinates,
+        positionIndexes,
+        updatedPosition,
+        isPolygonal
+      )
     };
 
-    // Immutably replace the feature being edited in the featureCollection
-    const updatedFeatureCollection = {
-      ...this.featureCollection,
-      features: [
-        ...this.featureCollection.features.slice(0, featureIndex),
-        updatedFeature,
-        ...this.featureCollection.features.slice(featureIndex + 1)
-      ]
-    };
-
-    return new EditableFeatureCollection(updatedFeatureCollection);
+    return this.replaceGeometry(featureIndex, updatedGeometry);
   }
 
   /**
@@ -73,51 +69,26 @@ export class EditableFeatureCollection {
    *
    * @returns A new `EditableFeatureCollection` with the given coordinate removed. Does not modify this `EditableFeatureCollection`.
    */
-  removePosition(featureIndex: number, positionIndexes: Array<number>): EditableFeatureCollection {
-    const featureToUpdate = this.featureCollection.features[featureIndex];
-    if (featureToUpdate.geometry.type === 'Point') {
+  removePosition(featureIndex: number, positionIndexes: number[]): EditableFeatureCollection {
+    const geometry = this.featureCollection.features[featureIndex].geometry;
+
+    if (geometry.type === 'Point') {
       throw Error(`Can't remove a position from a Point or there'd be nothing left`);
     }
-    if (
-      featureToUpdate.geometry.type === 'MultiPoint' &&
-      featureToUpdate.geometry.coordinates.length < 2
-    ) {
+    if (geometry.type === 'MultiPoint' && geometry.coordinates.length < 2) {
       throw Error(`Can't remove the last point of a MultiPoint or there'd be nothing left`);
     }
-    const isPolygonal =
-      featureToUpdate.geometry.type === 'Polygon' ||
-      featureToUpdate.geometry.type === 'MultiPolygon';
 
-    const updatedCoordinates = immutablyRemovePosition(
-      featureToUpdate.geometry.coordinates,
-      positionIndexes,
-      isPolygonal
-    );
-
-    const updatedGeometry = {
-      ...featureToUpdate.geometry,
-      coordinates: updatedCoordinates
+    const isPolygonal = geometry.type === 'Polygon' || geometry.type === 'MultiPolygon';
+    const updatedGeometry: any = {
+      ...geometry,
+      coordinates: immutablyRemovePosition(geometry.coordinates, positionIndexes, isPolygonal)
     };
 
     // Handle cases where geometry type is "downgraded"
     downgradeGeometryIfNecessary(updatedGeometry);
 
-    const updatedFeature = {
-      ...featureToUpdate,
-      geometry: updatedGeometry
-    };
-
-    // Immutably replace the feature being edited in the featureCollection
-    const updatedFeatureCollection = {
-      ...this.featureCollection,
-      features: [
-        ...this.featureCollection.features.slice(0, featureIndex),
-        updatedFeature,
-        ...this.featureCollection.features.slice(featureIndex + 1)
-      ]
-    };
-
-    return new EditableFeatureCollection(updatedFeatureCollection);
+    return this.replaceGeometry(featureIndex, updatedGeometry);
   }
 
   /**
@@ -132,48 +103,30 @@ export class EditableFeatureCollection {
    */
   addPosition(
     featureIndex: number,
-    positionIndexes: Array<number>,
-    positionToAdd: Array<number>
+    positionIndexes: number[],
+    positionToAdd: Position
   ): EditableFeatureCollection {
-    const featureToUpdate = this.featureCollection.features[featureIndex];
+    const geometry = this.featureCollection.features[featureIndex].geometry;
 
-    if (featureToUpdate.geometry.type === 'Point') {
+    if (geometry.type === 'Point') {
       throw new Error('Unable to add a position to a Point feature');
     }
 
-    const isPolygonal =
-      featureToUpdate.geometry.type === 'Polygon' ||
-      featureToUpdate.geometry.type === 'MultiPolygon';
-
-    const updatedCoordinates = immutablyAddPosition(
-      featureToUpdate.geometry.coordinates,
-      positionIndexes,
-      positionToAdd,
-      isPolygonal
-    );
-
-    const updatedFeature = {
-      ...featureToUpdate,
-      geometry: {
-        ...featureToUpdate.geometry,
-        coordinates: updatedCoordinates
-      }
+    const isPolygonal = geometry.type === 'Polygon' || geometry.type === 'MultiPolygon';
+    const updatedGeometry: any = {
+      ...geometry,
+      coordinates: immutablyAddPosition(
+        geometry.coordinates,
+        positionIndexes,
+        positionToAdd,
+        isPolygonal
+      )
     };
 
-    // Immutably replace the feature being edited in the featureCollection
-    const updatedFeatureCollection = {
-      ...this.featureCollection,
-      features: [
-        ...this.featureCollection.features.slice(0, featureIndex),
-        updatedFeature,
-        ...this.featureCollection.features.slice(featureIndex + 1)
-      ]
-    };
-
-    return new EditableFeatureCollection(updatedFeatureCollection);
+    return this.replaceGeometry(featureIndex, updatedGeometry);
   }
 
-  replaceGeometry(featureIndex: number, geometry: GeoJsonGeometry) {
+  replaceGeometry(featureIndex: number, geometry: Geometry): EditableFeatureCollection {
     const updatedFeature = {
       ...this.featureCollection.features[featureIndex],
       geometry
@@ -189,7 +142,7 @@ export class EditableFeatureCollection {
     return new EditableFeatureCollection(updatedFeatureCollection);
   }
 
-  addFeature(feature: Object) {
+  addFeature(feature: Object): EditableFeatureCollection {
     const updatedFeatureCollection = {
       ...this.featureCollection,
       features: [...this.featureCollection.features, feature]
@@ -202,7 +155,7 @@ export class EditableFeatureCollection {
    *
    * @param featureIndex The index of the feature to get edit handles
    */
-  getEditHandles(featureIndex: number) {
+  getEditHandles(featureIndex: number): EditHandle[] {
     let handles = [];
 
     const geometry = this.featureCollection.features[featureIndex].geometry;
@@ -255,11 +208,11 @@ export class EditableFeatureCollection {
 }
 
 function immutablyReplacePosition(
-  coordinates: Array<any>,
-  positionIndexes: Array<number>,
-  updatedPosition: Array<number>,
+  coordinates: any,
+  positionIndexes: number[],
+  updatedPosition: Position,
   isPolygonal: boolean
-): Array<any> {
+): any {
   if (!positionIndexes) {
     return coordinates;
   }
@@ -299,10 +252,10 @@ function immutablyReplacePosition(
 }
 
 function immutablyRemovePosition(
-  coordinates: Array<any>,
-  positionIndexes: Array<number>,
+  coordinates: any,
+  positionIndexes: number[],
   isPolygonal: boolean
-): Array<any> {
+): any {
   if (!positionIndexes) {
     return coordinates;
   }
@@ -345,11 +298,11 @@ function immutablyRemovePosition(
 }
 
 function immutablyAddPosition(
-  coordinates: Array<any>,
-  positionIndexes: Array<number>,
-  positionToAdd: Array<number>,
+  coordinates: any,
+  positionIndexes: number[],
+  positionToAdd: Position,
   isPolygonal: boolean
-): Array<any> {
+): any {
   if (!positionIndexes) {
     return coordinates;
   }
@@ -357,14 +310,6 @@ function immutablyAddPosition(
     throw Error('Must specify the index of the position to remove');
   }
   if (positionIndexes.length === 1) {
-    if (isPolygonal && (positionIndexes[0] < 1 || positionIndexes[0] > coordinates.length - 1)) {
-      // TODO: test this case
-      throw Error(
-        `Invalid position index for polygon: ${
-          positionIndexes[0]
-        }. Points must be added to a Polygon between the first and last point.`
-      );
-    }
     const updated = [
       ...coordinates.slice(0, positionIndexes[0]),
       positionToAdd,
@@ -386,7 +331,7 @@ function immutablyAddPosition(
   ];
 }
 
-function downgradeGeometryIfNecessary(geometry: GeoJsonGeometry) {
+function downgradeGeometryIfNecessary(geometry: Geometry) {
   switch (geometry.type) {
     case 'LineString':
       downgradeLineStringIfNecessary(geometry);
@@ -406,20 +351,24 @@ function downgradeGeometryIfNecessary(geometry: GeoJsonGeometry) {
   }
 }
 
-function downgradeLineStringIfNecessary(geometry: GeoJsonGeometry) {
+function downgradeLineStringIfNecessary(geometry: LineString) {
   if (geometry.coordinates.length === 1) {
     // Only one position left, so convert to a Point
+    // $FlowFixMe: just do it flow
     geometry.type = 'Point';
+    // $FlowFixMe: just do it flow
     geometry.coordinates = geometry.coordinates[0];
   }
 }
 
-function downgradePolygonIfNecessary(geometry: GeoJsonGeometry) {
+function downgradePolygonIfNecessary(geometry: Polygon) {
   const polygon = geometry.coordinates;
   const outerRing = polygon[0];
   // If the outer ring is no longer a polygon, convert the whole thing to a LineString
   if (outerRing.length <= 3) {
+    // $FlowFixMe: just do it flow
     geometry.type = 'LineString';
+    // $FlowFixMe: just do it flow
     geometry.coordinates = outerRing.slice(0, outerRing.length - 1);
     return;
   }
@@ -433,10 +382,12 @@ function downgradePolygonIfNecessary(geometry: GeoJsonGeometry) {
   }
 }
 
-function downgradeMultiLineStringIfNecessary(geometry: GeoJsonGeometry) {
+function downgradeMultiLineStringIfNecessary(geometry: MultiLineString) {
   if (geometry.coordinates.length === 1 && geometry.coordinates[0].length === 1) {
     // Only one position left, so convert to a Point
+    // $FlowFixMe: just do it flow
     geometry.type = 'Point';
+    // $FlowFixMe: just do it flow
     geometry.coordinates = geometry.coordinates[0][0];
     return;
   }
@@ -451,11 +402,13 @@ function downgradeMultiLineStringIfNecessary(geometry: GeoJsonGeometry) {
   }
 }
 
-function downgradeMultiPolygonIfNecessary(geometry: GeoJsonGeometry) {
+function downgradeMultiPolygonIfNecessary(geometry: MultiPolygon) {
   if (geometry.coordinates.length === 1) {
     const outerRing = geometry.coordinates[0][0];
     if (outerRing.length <= 3) {
+      // $FlowFixMe: just do it flow
       geometry.type = 'LineString';
+      // $FlowFixMe: just do it flow
       geometry.coordinates = outerRing.slice(0, outerRing.length - 1);
       return;
     }
@@ -480,7 +433,7 @@ function downgradeMultiPolygonIfNecessary(geometry: GeoJsonGeometry) {
   }
 }
 
-function removeHoleIfNecessary(polygon: Array<any>, holeIndex: number) {
+function removeHoleIfNecessary(polygon: PolygonCoordinates, holeIndex: number) {
   const hole = polygon[holeIndex];
   if (hole.length <= 3) {
     polygon.splice(holeIndex, 1);
@@ -489,23 +442,20 @@ function removeHoleIfNecessary(polygon: Array<any>, holeIndex: number) {
   return false;
 }
 
-function getIntermediatePosition(
-  position1: Array<number>,
-  position2: Array<number>
-): Array<number> {
-  const intermediatePosition = [];
-  for (let dimension = 0; dimension < position1.length; dimension++) {
-    intermediatePosition.push((position1[dimension] + position2[dimension]) / 2.0);
-  }
+function getIntermediatePosition(position1: Position, position2: Position): Position {
+  const intermediatePosition = [
+    (position1[0] + position2[0]) / 2.0,
+    (position1[1] + position2[1]) / 2.0
+  ];
   return intermediatePosition;
 }
 
 function getEditHandles(
-  coordinates: Array<Array<number>>,
-  positionIndexPrefix: Array<number>,
+  coordinates: any[],
+  positionIndexPrefix: number[],
   includeIntermediate: boolean,
   featureIndex: number
-) {
+): EditHandle[] {
   const editHandles = [];
   for (let i = 0; i < coordinates.length; i++) {
     const position = coordinates[i];

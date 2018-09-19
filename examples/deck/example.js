@@ -70,7 +70,7 @@ export default class Example extends Component<
     this.state = {
       viewport: initialViewport,
       testFeatures: sampleGeoJson,
-      mode: 'modify',
+      mode: 'drawLineString',
       pointsRemovable: true,
       selectedFeatureIndexes: [],
       editHandleType: 'point',
@@ -282,35 +282,23 @@ export default class Example extends Component<
       drawAtFront,
 
       // Editing callbacks
-      onEdit: ({
-        updatedData,
-        updatedMode,
-        updatedSelectedFeatureIndexes,
-        editType,
-        featureIndex,
-        positionIndexes,
-        position
-      }) => {
+      onEdit: ({ updatedData, editType, featureIndex, positionIndexes, position }) => {
+        let updatedSelectedFeatureIndexes = this.state.selectedFeatureIndexes;
         if (editType !== 'movePosition') {
           // Don't log moves since they're really chatty
           // eslint-disable-next-line
-          console.log(
-            'onEdit',
-            editType,
-            updatedMode,
-            updatedSelectedFeatureIndexes,
-            featureIndex,
-            positionIndexes,
-            position
-          );
+          console.log('onEdit', editType, featureIndex, positionIndexes, position);
         }
         if (editType === 'removePosition' && !this.state.pointsRemovable) {
           // reject the edit
           return;
         }
+        if (editType === 'addFeature' && this.state.mode === 'drawLineString') {
+          // Switch to extending the line string
+          updatedSelectedFeatureIndexes = [featureIndex];
+        }
         this.setState({
           testFeatures: updatedData,
-          mode: updatedMode,
           selectedFeatureIndexes: updatedSelectedFeatureIndexes
         });
       },

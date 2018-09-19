@@ -34,7 +34,7 @@ Introduce two new props: `tentativeFeature` and `onTentativeFeatureUpdate` to ho
 new EditableGeoJsonLayer({
   data: this.state.data,
   onEdit: ({updatedData}) =>
-    this.setState({updatedData: data}), // just as onEdit functions today
+    this.setState({data: updatedData}), // just as onEdit functions today
 
   // optional: if caller wants to customize tentative feature handling
   tentativeFeature: this.state.tentativeFeature,

@@ -11,9 +11,9 @@ import destination from '@turf/destination';
 import bearing from '@turf/bearing';
 import pointToLineDistance from '@turf/point-to-line-distance';
 import { point, featureCollection as fc } from '@turf/helpers';
-import type { GeoJsonFeature } from '../../types';
-import { EditableFeatureCollection } from '../editable-feature-collection';
-import EditableLayer from './editable-layer';
+import type { Feature } from '../../geojson-types.js';
+import { EditableFeatureCollection } from '../editable-feature-collection.js';
+import EditableLayer from './editable-layer.js';
 
 const DEFAULT_LINE_COLOR = [0x0, 0x0, 0x0, 0xff];
 const DEFAULT_FILL_COLOR = [0x0, 0x0, 0x0, 0x90];
@@ -120,7 +120,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       }
     });
 
-    let layers = [new GeoJsonLayer(subLayerProps)];
+    let layers: any = [new GeoJsonLayer(subLayerProps)];
 
     layers = layers.concat(this.createPointLayers());
     layers = layers.concat(this.createDrawLayers());
@@ -535,7 +535,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
   }
 
-  getDrawFeature(selectedFeature: ?GeoJsonFeature, mode: string, groundCoords: ?(number[])) {
+  getDrawFeature(selectedFeature: ?Feature, mode: string, groundCoords: ?(number[])) {
     let drawFeature = null;
 
     if (!selectedFeature && !groundCoords) {
@@ -776,11 +776,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     });
   }
 
-  handleRemovePosition(
-    selectedFeature: GeoJsonFeature,
-    featureIndex: number,
-    positionIndexes: number
-  ) {
+  handleRemovePosition(selectedFeature: Feature, featureIndex: number, positionIndexes: number) {
     let updatedData;
     try {
       updatedData = this.state.editableFeatureCollection
@@ -803,7 +799,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }
 
   handleDrawLineString(
-    selectedFeature: GeoJsonFeature,
+    selectedFeature: Feature,
     featureIndex: number,
     groundCoords: number[],
     picks: Object[]
@@ -846,7 +842,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }
 
   handleDrawRectangleUsing3Points(
-    selectedFeature: GeoJsonFeature,
+    selectedFeature: Feature,
     featureIndex: number,
     groundCoords: number[],
     picks: Object[]
@@ -885,7 +881,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }
 
   handleDrawPolygon(
-    selectedFeature: GeoJsonFeature,
+    selectedFeature: Feature,
     featureIndex: number,
     groundCoords: number[],
     picks: Object[]
@@ -945,7 +941,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }
 
   handleDrawRectangle(
-    selectedFeature: GeoJsonFeature,
+    selectedFeature: Feature,
     featureIndex: number,
     groundCoords: number[],
     picks: Object[]
@@ -981,7 +977,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }
 
   handleDrawCircle(
-    selectedFeature: GeoJsonFeature,
+    selectedFeature: Feature,
     featureIndex: number,
     groundCoords: number[],
     picks: Object[]
@@ -1017,7 +1013,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }
 
   handleDrawEllipseByBoundingBox(
-    selectedFeature: GeoJsonFeature,
+    selectedFeature: Feature,
     featureIndex: number,
     groundCoords: number[],
     picks: Object[]

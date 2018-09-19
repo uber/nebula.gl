@@ -72,16 +72,21 @@ export default class Example extends Component<
       mode: 'modify',
       pointsRemovable: true,
       selectedFeatureIndexes: [],
-      editHandleType: 'point'
+      editHandleType: 'point',
+      keyHolded: ''
     };
   }
 
   componentDidMount() {
     window.addEventListener('resize', this._resize);
+    window.addEventListener('keydown', this._onKeyDown);
+    window.addEventListener('keyup', this._onKeyUp);
   }
 
   componentWillUnmount() {
     window.removeEventListener('resize', this._resize);
+    window.removeEventListener('keydown', this._onKeyDown);
+    window.removeEventListener('keyup', this._onKeyUp);
   }
 
   _onChangeViewport = (viewport: Object) => {
@@ -112,6 +117,14 @@ export default class Example extends Component<
 
   _resize = () => {
     this.forceUpdate();
+  };
+
+  _onKeyDown = (event: Object) => {
+    this.setState({ keyHolded: event.key });
+  };
+
+  _onKeyUp = (event: Object) => {
+    this.setState({ keyHolded: '' });
   };
 
   _renderCheckbox(index, featureType) {
@@ -223,7 +236,7 @@ export default class Example extends Component<
   }
 
   render() {
-    const { testFeatures, selectedFeatureIndexes, mode, drawAtFront } = this.state;
+    const { testFeatures, selectedFeatureIndexes, mode, drawAtFront, keyHolded } = this.state;
 
     const viewport = {
       ...this.state.viewport,
@@ -236,6 +249,11 @@ export default class Example extends Component<
       data: testFeatures,
       selectedFeatureIndexes,
       mode,
+      modeConfig: {
+        action: keyHolded === 'Control' ? 'transformRotate' : 'none',
+        usePickAsPivot: true,
+        pivot: undefined
+      },
       fp64: true,
       autoHighlight: true,
       drawAtFront,

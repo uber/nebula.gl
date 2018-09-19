@@ -9,6 +9,7 @@ import distance from '@turf/distance';
 import center from '@turf/center';
 import destination from '@turf/destination';
 import bearing from '@turf/bearing';
+import turfTransformRotate from '@turf/transform-rotate';
 import pointToLineDistance from '@turf/point-to-line-distance';
 import { point, featureCollection as fc } from '@turf/helpers';
 import type { GeoJsonFeature } from '../../types';
@@ -533,6 +534,13 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         sourceEvent.stopPropagation();
       }
     }
+    if (
+      this.props.mode === 'modify' &&
+      this.props.modeConfig &&
+      this.props.modeConfig.action === 'transformRotate'
+    ) {
+      this.handleTransformRotate(screenCoords, groundCoords);
+    }
   }
 
   getDrawFeature(selectedFeature: ?GeoJsonFeature, mode: string, groundCoords: ?(number[])) {
@@ -722,6 +730,46 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       }
     }
     return drawFeature;
+  }
+
+  handleTransformRotate(screenCoords: number[], groundCoords: number[]) {
+    const { modeConfig } = this.props;
+    let pivot;
+
+    if (modeConfig && modeConfig.usePickAsPivot) {
+      const picks = this.context.layerManager.pickObject({
+        x: screenCoords[0],
+        y: screenCoords[1],
+        mode: 'query',
+        layers: [this.props.id],
+        radius: 100,
+        viewports: [this.context.viewport]
+      });
+      // do nothing when mouse position far away from any point
+      if (!picks || !picks.length || !picks[0].object.position) {
+        return;
+      }
+      pivot = picks[0].object.position;
+    } else {
+      pivot = modeConfig.pivot;
+    }
+    const featureIndex = this.props.selectedFeatureIndexes[0];
+    const feature = this.state.selectedFeatures[0];
+    const rotatedFeature = turfTransformRotate(feature, 2, { pivot });
+
+    const updatedData = this.state.editableFeatureCollection
+      .replaceGeometry(featureIndex, rotatedFeature.geometry)
+      .getObject();
+
+    this.props.onEdit({
+      updatedData,
+      updatedMode: this.props.mode,
+      updatedSelectedFeatureIndexes: this.props.selectedFeatureIndexes,
+      editType: 'transformPosition',
+      featureIndex,
+      positionIndexes: this.props.positionIndexes,
+      position: groundCoords
+    });
   }
 
   handleMovePosition(featureIndex: number, positionIndexes: number, groundCoords: number[]) {

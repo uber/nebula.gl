@@ -159,6 +159,16 @@ The `mode` property dictates what type of edits the user can perform and how to 
 
   * If multiple features are selected, the user will be prevented from drawing.
 
+
+#### `modeConfig` (Object, optional)
+
+* If action: `transformRotate` means the feature will be transform rotated by default the pivot as centroid.
+
+* If pivot: [120, 5] means the point is used as pivot for rotate. if the value is null or undefined then pivot is centroid.
+
+* If usePickAsPivot: true, means the pivot will be nearest point of feature for mouse pointer position. pivot value is ignored.
+
+
 #### `selectedFeaturesIndexes` (Array, optional)
 
 * Default: `[]`

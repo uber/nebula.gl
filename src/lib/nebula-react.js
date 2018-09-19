@@ -85,7 +85,6 @@ export default class NebulaReact extends Component<Props> {
   }
 
   nebula: Nebula;
-  mainContainer: ?Object;
 
   updateAllDeckObjects() {
     this.nebula.updateAllDeckObjects();
@@ -105,7 +104,7 @@ export default class NebulaReact extends Component<Props> {
         : styles.canvasContainer;
 
     return (
-      <div style={style} ref={div => (this.mainContainer = div)}>
+      <div style={style} ref={div => this.nebula.setMainContainer(div)}>
         <DeckGL
           ref={deckgl => this.nebula.setDeck(deckgl)}
           width={width}

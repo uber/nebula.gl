@@ -302,4 +302,10 @@ export default class Nebula {
       this.deckgl = deckgl;
     }
   }
+
+  setMainContainer(mainContainer: Object | null) {
+    if (mainContainer) {
+      this.mainContainer = mainContainer;
+    }
+  }
 }

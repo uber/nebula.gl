@@ -1,4 +1,5 @@
-// @flow-ignore
+// @flow
+/* eslint-env jest */
 /* eslint-disable max-nested-callbacks */
 
 import { EditableFeatureCollection } from '../../lib/editable-feature-collection';
@@ -514,7 +515,7 @@ describe('EditableFeatureCollection', () => {
         features: [polygonFeature]
       });
 
-      expect(() => features.addPosition(0, [1, 0])).toThrow(
+      expect(() => features.addPosition(0, [1, 0], [9, 9])).toThrow(
         'Invalid position index for polygon: 0. Points must be added to a Polygon between the first and last point.'
       );
     });
@@ -525,7 +526,7 @@ describe('EditableFeatureCollection', () => {
         features: [polygonFeature]
       });
 
-      expect(() => features.addPosition(0, [1, 5])).toThrow(
+      expect(() => features.addPosition(0, [1, 5], [9, 9])).toThrow(
         'Invalid position index for polygon: 5. Points must be added to a Polygon between the first and last point.'
       );
     });

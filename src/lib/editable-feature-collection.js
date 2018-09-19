@@ -1,8 +1,13 @@
 // @flow
-import type { GeoJsonGeometry } from '../types';
 
-type FeatureCollection = {
-  features: Array<Object>
+import { fromJS } from 'immutable';
+import type { FeatureCollection, Geometry, Position, Polygon } from '../geojson-types.js';
+
+export type EditHandle = {
+  position: Position,
+  positionIndexes: number[],
+  featureIndex: number,
+  type: 'existing' | 'intermediate'
 };
 
 export class EditableFeatureCollection {
@@ -29,26 +34,19 @@ export class EditableFeatureCollection {
   replacePosition(
     featureIndex: number,
     positionIndexes: Array<number>,
-    updatedPosition: Array<number>
+    updatedPosition: Position
   ): EditableFeatureCollection {
     const featureToUpdate = this.featureCollection.features[featureIndex];
-    const isPolygonal =
-      featureToUpdate.geometry.type === 'Polygon' ||
-      featureToUpdate.geometry.type === 'MultiPolygon';
 
-    const updatedCoordinates = immutablyReplacePosition(
-      featureToUpdate.geometry.coordinates,
+    const updatedGeometry: any = immutablyReplacePosition(
+      featureToUpdate.geometry,
       positionIndexes,
-      updatedPosition,
-      isPolygonal
+      updatedPosition
     );
 
-    const updatedFeature = {
+    const updatedFeature: any = {
       ...featureToUpdate,
-      geometry: {
-        ...featureToUpdate.geometry,
-        coordinates: updatedCoordinates
-      }
+      geometry: updatedGeometry
     };
 
     // Immutably replace the feature being edited in the featureCollection
@@ -94,7 +92,7 @@ export class EditableFeatureCollection {
       isPolygonal
     );
 
-    const updatedGeometry = {
+    const updatedGeometry: any = {
       ...featureToUpdate.geometry,
       coordinates: updatedCoordinates
     };
@@ -133,7 +131,7 @@ export class EditableFeatureCollection {
   addPosition(
     featureIndex: number,
     positionIndexes: Array<number>,
-    positionToAdd: Array<number>
+    positionToAdd: Position
   ): EditableFeatureCollection {
     const featureToUpdate = this.featureCollection.features[featureIndex];
 
@@ -152,7 +150,7 @@ export class EditableFeatureCollection {
       isPolygonal
     );
 
-    const updatedFeature = {
+    const updatedFeature: any = {
       ...featureToUpdate,
       geometry: {
         ...featureToUpdate.geometry,
@@ -173,7 +171,7 @@ export class EditableFeatureCollection {
     return new EditableFeatureCollection(updatedFeatureCollection);
   }
 
-  replaceGeometry(featureIndex: number, geometry: GeoJsonGeometry) {
+  replaceGeometry(featureIndex: number, geometry: Geometry) {
     const updatedFeature = {
       ...this.featureCollection.features[featureIndex],
       geometry
@@ -202,7 +200,7 @@ export class EditableFeatureCollection {
    *
    * @param featureIndex The index of the feature to get edit handles
    */
-  getEditHandles(featureIndex: number) {
+  getEditHandles(featureIndex: number): EditHandle[] {
     let handles = [];
 
     const geometry = this.featureCollection.features[featureIndex].geometry;
@@ -254,48 +252,31 @@ export class EditableFeatureCollection {
   }
 }
 
-function immutablyReplacePosition(
-  coordinates: Array<any>,
-  positionIndexes: Array<number>,
-  updatedPosition: Array<number>,
-  isPolygonal: boolean
-): Array<any> {
-  if (!positionIndexes) {
-    return coordinates;
-  }
-  if (positionIndexes.length === 0) {
-    return updatedPosition;
-  }
-  if (positionIndexes.length === 1) {
-    const updated = [
-      ...coordinates.slice(0, positionIndexes[0]),
-      updatedPosition,
-      ...coordinates.slice(positionIndexes[0] + 1)
-    ];
+function immutablyReplacePosition<T: Geometry>(
+  geometry: T,
+  positionIndexes: number[],
+  updatedPosition: Position
+): T {
+  let updatedGeometry = fromJS(geometry);
+  updatedGeometry = updatedGeometry.setIn(['coordinates', ...positionIndexes], updatedPosition);
 
-    if (
-      isPolygonal &&
-      (positionIndexes[0] === 0 || positionIndexes[0] === coordinates.length - 1)
-    ) {
+  const isPolygonal = geometry.type === 'Polygon' || geometry.type === 'MultiPolygon';
+  if (isPolygonal) {
+    const lastPositionIndex = positionIndexes[positionIndexes.length - 1];
+    const ringIndexes = positionIndexes.slice(0, -1);
+    const affectedRing = updatedGeometry.getIn(['coordinates', ...ringIndexes]);
+    if (lastPositionIndex === 0 || lastPositionIndex === affectedRing.count() - 1) {
       // for polygons, the first point is repeated at the end of the array
       // so, update it on both ends of the array
-      updated[0] = updatedPosition;
-      updated[coordinates.length - 1] = updatedPosition;
+      updatedGeometry = updatedGeometry.setIn(['coordinates', ...ringIndexes, 0], updatedPosition);
+      updatedGeometry = updatedGeometry.setIn(
+        ['coordinates', ...ringIndexes, affectedRing.count() - 1],
+        updatedPosition
+      );
     }
-    return updated;
   }
-
-  // recursively update inner array
-  return [
-    ...coordinates.slice(0, positionIndexes[0]),
-    immutablyReplacePosition(
-      coordinates[positionIndexes[0]],
-      positionIndexes.slice(1, positionIndexes.length),
-      updatedPosition,
-      isPolygonal
-    ),
-    ...coordinates.slice(positionIndexes[0] + 1)
-  ];
+  // $FlowFixMe: Position should satisfy number[]...
+  return updatedGeometry.toJS();
 }
 
 function immutablyRemovePosition(
@@ -347,7 +328,7 @@ function immutablyRemovePosition(
 function immutablyAddPosition(
   coordinates: Array<any>,
   positionIndexes: Array<number>,
-  positionToAdd: Array<number>,
+  positionToAdd: Position,
   isPolygonal: boolean
 ): Array<any> {
   if (!positionIndexes) {
@@ -386,7 +367,7 @@ function immutablyAddPosition(
   ];
 }
 
-function downgradeGeometryIfNecessary(geometry: GeoJsonGeometry) {
+function downgradeGeometryIfNecessary(geometry: Geometry) {
   switch (geometry.type) {
     case 'LineString':
       downgradeLineStringIfNecessary(geometry);
@@ -406,20 +387,24 @@ function downgradeGeometryIfNecessary(geometry: GeoJsonGeometry) {
   }
 }
 
-function downgradeLineStringIfNecessary(geometry: GeoJsonGeometry) {
+function downgradeLineStringIfNecessary(geometry: Geometry): void {
   if (geometry.coordinates.length === 1) {
     // Only one position left, so convert to a Point
+    // $FlowFixMe: just do it flow
     geometry.type = 'Point';
+    // $FlowFixMe: just do it flow
     geometry.coordinates = geometry.coordinates[0];
   }
 }
 
-function downgradePolygonIfNecessary(geometry: GeoJsonGeometry) {
+function downgradePolygonIfNecessary(geometry: Polygon) {
   const polygon = geometry.coordinates;
   const outerRing = polygon[0];
   // If the outer ring is no longer a polygon, convert the whole thing to a LineString
   if (outerRing.length <= 3) {
+    // $FlowFixMe: just do it flow
     geometry.type = 'LineString';
+    // $FlowFixMe: just do it flow
     geometry.coordinates = outerRing.slice(0, outerRing.length - 1);
     return;
   }
@@ -433,10 +418,12 @@ function downgradePolygonIfNecessary(geometry: GeoJsonGeometry) {
   }
 }
 
-function downgradeMultiLineStringIfNecessary(geometry: GeoJsonGeometry) {
+function downgradeMultiLineStringIfNecessary(geometry: Geometry) {
   if (geometry.coordinates.length === 1 && geometry.coordinates[0].length === 1) {
     // Only one position left, so convert to a Point
+    // $FlowFixMe: just do it flow
     geometry.type = 'Point';
+    // $FlowFixMe: just do it flow
     geometry.coordinates = geometry.coordinates[0][0];
     return;
   }
@@ -444,6 +431,7 @@ function downgradeMultiLineStringIfNecessary(geometry: GeoJsonGeometry) {
     const lineString = geometry.coordinates[lineStringIndex];
     if (lineString.length === 1) {
       // Only a single position left on this LineString, so remove it (can't have Point in MultiLineString)
+      // $FlowFixMe: just do it flow
       geometry.coordinates.splice(lineStringIndex, 1);
       // Keep the index the same
       lineStringIndex--;
@@ -451,27 +439,36 @@ function downgradeMultiLineStringIfNecessary(geometry: GeoJsonGeometry) {
   }
 }
 
-function downgradeMultiPolygonIfNecessary(geometry: GeoJsonGeometry) {
+function downgradeMultiPolygonIfNecessary(geometry: Geometry) {
   if (geometry.coordinates.length === 1) {
+    // $FlowFixMe: just do it flow
     const outerRing = geometry.coordinates[0][0];
+    // $FlowFixMe: just do it flow
     if (outerRing.length <= 3) {
+      // $FlowFixMe: just do it flow
       geometry.type = 'LineString';
+      // $FlowFixMe: just do it flow
       geometry.coordinates = outerRing.slice(0, outerRing.length - 1);
       return;
     }
   }
   for (let polygonIndex = 0; polygonIndex < geometry.coordinates.length; polygonIndex++) {
     const polygon = geometry.coordinates[polygonIndex];
+    // $FlowFixMe: just do it flow
     const outerRing = polygon[0];
 
     // If the outer ring is no longer a polygon, remove the whole polygon
+    // $FlowFixMe: just do it flow
     if (outerRing.length <= 3) {
+      // $FlowFixMe: just do it flow
       geometry.coordinates.splice(polygonIndex, 1);
       // It was removed, so keep the index the same
       polygonIndex--;
     }
 
+    // $FlowFixMe: just do it flow
     for (let holeIndex = 1; holeIndex < polygon.length; holeIndex++) {
+      // $FlowFixMe: just do it flow
       if (removeHoleIfNecessary(polygon, holeIndex)) {
         // It was removed, so keep the index the same
         holeIndex--;
@@ -489,23 +486,20 @@ function removeHoleIfNecessary(polygon: Array<any>, holeIndex: number) {
   return false;
 }
 
-function getIntermediatePosition(
-  position1: Array<number>,
-  position2: Array<number>
-): Array<number> {
-  const intermediatePosition = [];
-  for (let dimension = 0; dimension < position1.length; dimension++) {
-    intermediatePosition.push((position1[dimension] + position2[dimension]) / 2.0);
-  }
+function getIntermediatePosition(position1: Position, position2: Position): Position {
+  const intermediatePosition = [
+    (position1[0] + position2[0]) / 2.0,
+    (position1[1] + position2[1]) / 2.0
+  ];
   return intermediatePosition;
 }
 
 function getEditHandles(
-  coordinates: Array<Array<number>>,
+  coordinates: any[],
   positionIndexPrefix: Array<number>,
   includeIntermediate: boolean,
   featureIndex: number
-) {
+): EditHandle[] {
   const editHandles = [];
   for (let i = 0; i < coordinates.length; i++) {
     const position = coordinates[i];

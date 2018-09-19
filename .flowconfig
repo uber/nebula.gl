@@ -1,6 +1,7 @@
 [ignore]
 <PROJECT_ROOT>/examples/.*
 
+<PROJECT_ROOT>/node_modules/immutable/.*
 <PROJECT_ROOT>/node_modules/jsonlint-lines-primitives/.*
 <PROJECT_ROOT>/website/node_modules/.*
 

@@ -5,10 +5,15 @@
 export type Position = [number, number];
 export type PointCoordinates = Position;
 export type LineStringCoordinates = PointCoordinates[];
-export type PolygonCoordinates = LineStringCoordinates[];
+export type PolygonCoordinates = any[];
 export type MultiPointCoordinates = PointCoordinates[];
-export type MultiLineStringCoordinates = LineStringCoordinates[];
-export type MultiPolygonCoordinates = PolygonCoordinates[];
+export type MultiLineStringCoordinates = any[];
+export type MultiPolygonCoordinates = any[];
+
+// TODO: the downgrade functions are causing these types to fail. After removing downgrade functionality, reinstate these types
+// export type PolygonCoordinates = LineStringCoordinates[];
+// export type MultiLineStringCoordinates = LineStringCoordinates[];
+// export type MultiPolygonCoordinates = PolygonCoordinates[];
 
 export type AnyCoordinates =
   | PointCoordinates

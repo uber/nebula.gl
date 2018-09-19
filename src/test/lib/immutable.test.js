@@ -17,7 +17,7 @@ describe('immutable', () => {
     // expect(list1.setIn([3, 0], 999).toJS()).toEqual([0, 1, 2, [999, 4]]);
     // expect(list1.updateIn([3, 0], 999).toJS()).toEqual([0, 1, 2, [999, 4]]);
 
-    let list2 = fromJS([[1, 2, 3], [11, 22, 33]]);
+    let list2: any = fromJS([[1, 2, 3], [11, 22, 33]]);
 
     list2 = list2.setIn([1, 2], 333);
     expect(list2.toJS()).toEqual([[1, 2, 3], [11, 22, 333]]);

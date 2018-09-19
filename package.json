@@ -63,7 +63,7 @@
     "deck.gl": "^6.0.3",
     "geojson-types": "^2.0.1",
     "global": ">=4.3.0",
-    "immutable": "^3.8.2",
+    "immutable": "^4.0.0-rc.9",
     "supercluster": ">=2.3.0",
     "viewport-mercator-project": ">=5.0.0"
   },

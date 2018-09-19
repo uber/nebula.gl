@@ -1,8 +1,8 @@
 [ignore]
-<PROJECT_ROOT>/examples/.*
+.*/examples/.*
 
-<PROJECT_ROOT>/node_modules/jsonlint-lines-primitives/.*
-<PROJECT_ROOT>/website/node_modules/.*
+.*/node_modules/jsonlint-lines-primitives/.*
+.*/website/node_modules/.*
 
 [include]
 
@@ -15,5 +15,5 @@
 [strict]
 
 [version]
-0.66.0
+0.81.0
 

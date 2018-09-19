@@ -7,6 +7,7 @@
 [include]
 
 [libs]
+<PROJECT_ROOT>/flow-typed
 
 [lints]
 

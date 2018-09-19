@@ -11,16 +11,14 @@ export type EditHandle = {
 };
 
 export class EditableFeatureCollection {
-  featureCollection: FeatureCollection;
   _featureCollection: any;
 
   constructor(featureCollection: FeatureCollection) {
-    this.featureCollection = featureCollection;
     this._featureCollection = fromJS(featureCollection);
   }
 
   getObject(): FeatureCollection {
-    return (this._featureCollection.toJS(): any);
+    return this._featureCollection.toJS();
   }
 
   /**

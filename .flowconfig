@@ -7,6 +7,7 @@
 [include]
 
 [libs]
+<PROJECT_ROOT>/flow-typed
 
 [lints]
 
@@ -15,5 +16,5 @@
 [strict]
 
 [version]
-0.66.0
+0.81.0
 

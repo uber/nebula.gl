@@ -1,17 +1,15 @@
 // @flow
 import React, { Component } from 'react';
 import DeckGL from 'deck.gl';
+import { NebulaCore } from 'nebula.gl';
 import PropTypes from 'prop-types';
-
-import type { Viewport } from '../types';
-import Nebula from '../lib/nebula';
 
 type Props = {
   layers: Object[],
   onSelection?: (selectedFeatures: Object[]) => void,
   selectionType?: number,
   onMapMouseEvent?: Function,
-  viewport: Viewport,
+  viewport: Object,
   eventFilter?: Function,
   logger?: Object,
   children?: any,
@@ -46,7 +44,7 @@ export default class NebulaReact extends Component<Props> {
   }
 
   componentWillMount() {
-    this.nebula = new Nebula();
+    this.nebula = new NebulaCore();
     this.nebula.init(this.props);
     this.nebula.forceUpdate = () => this.forceUpdate();
   }
@@ -84,7 +82,7 @@ export default class NebulaReact extends Component<Props> {
     });
   }
 
-  nebula: Nebula;
+  nebula: NebulaCore;
 
   updateAllDeckObjects() {
     this.nebula.updateAllDeckObjects();

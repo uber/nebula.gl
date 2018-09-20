@@ -1,5 +1,4 @@
 // @flow
-
 // PURE JS BINDINGS
 
 export { ArrowStyles, DEFAULT_ARROWS, MAX_ARROWS } from './lib/style';
@@ -22,14 +21,3 @@ export { toDeckColor } from './lib/utils';
 
 // Types
 export type { Color, Style } from './types';
-
-// REACT BINDINGS
-// TODO - Should be separated into `modules/react`
-
-export { default as Nebula } from './react/nebula-react';
-
-export { default as NebulaOverlay } from './react/overlays/nebula-overlay';
-export { default as HtmlOverlay } from './react/overlays/html-overlay';
-export { default as HtmlOverlayItem } from './react/overlays/html-overlay-item';
-export { default as HtmlTooltipOverlay } from './react/overlays/html-tooltip-overlay';
-export { default as HtmlClusterOverlay } from './react/overlays/html-cluster-overlay';

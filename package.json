@@ -1,5 +1,4 @@
 {
-  "name": "nebula.gl",
   "description": "A suite of 3D-enabled data editing layers for deck.gl",
   "license": "MIT",
   "private": "true",

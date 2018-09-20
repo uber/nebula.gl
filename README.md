@@ -2,6 +2,9 @@
   <a href="https://npmjs.org/package/nebula.gl">
     <img src="https://img.shields.io/npm/v/nebula.gl.svg" alt="version" />
   </a>
+  <a href="https://npmjs.org/package/nebula.gl-react">
+    <img src="https://img.shields.io/npm/v/nebula.gl-react.svg" alt="version" />
+  </a>
   <a href="https://travis-ci.org/uber/nebula.gl">
     <img src="https://img.shields.io/travis/uber/nebula.gl/master.svg" alt="build" />
   </a>

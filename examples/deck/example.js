@@ -4,6 +4,7 @@ import window from 'global/window';
 import React, { Component } from 'react';
 import DeckGL, { MapView, MapController } from 'deck.gl';
 import { StaticMap } from 'react-map-gl';
+import circle from '@turf/circle';
 
 import { EditableGeoJsonLayer } from 'nebula.gl';
 
@@ -127,6 +128,23 @@ export default class Example extends Component<
     this.setState({ keyHolded: '' });
   };
 
+  _loadSample = (type: string) => {
+    if (type === 'mixed') {
+      this.setState({
+        testFeatures: sampleGeoJson,
+        selectedFeatureIndexes: []
+      });
+    } else if (type === 'complex') {
+      this.setState({
+        testFeatures: {
+          type: 'FeatureCollection',
+          features: [circle([-122.45, 37.77], 5, { steps: 10000 })]
+        },
+        selectedFeatureIndexes: []
+      });
+    }
+  };
+
   _renderCheckbox(index, featureType) {
     const { selectedFeatureIndexes } = this.state;
     return (
@@ -170,6 +188,11 @@ export default class Example extends Component<
     return (
       <div style={styles.toolbox}>
         <dl style={styles.toolboxList}>
+          <dt style={styles.toolboxTerm}>Load sample data</dt>
+          <dd style={styles.toolboxDescription}>
+            <button onClick={() => this._loadSample('mixed')}>Mixed</button>
+            <button onClick={() => this._loadSample('complex')}>Complex</button>
+          </dd>
           <dt style={styles.toolboxTerm}>Mode</dt>
           <dd style={styles.toolboxDescription}>
             <select

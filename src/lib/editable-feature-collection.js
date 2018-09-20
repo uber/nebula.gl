@@ -4,7 +4,6 @@ import type {
   FeatureCollection,
   Geometry,
   Position,
-  LineString,
   Polygon,
   MultiLineString,
   MultiPolygon,
@@ -75,8 +74,52 @@ export class EditableFeatureCollection {
     if (geometry.type === 'Point') {
       throw Error(`Can't remove a position from a Point or there'd be nothing left`);
     }
-    if (geometry.type === 'MultiPoint' && geometry.coordinates.length < 2) {
+    if (
+      geometry.type === 'MultiPoint' &&
+      // only 1 point left
+      geometry.coordinates.length < 2
+    ) {
       throw Error(`Can't remove the last point of a MultiPoint or there'd be nothing left`);
+    }
+    if (
+      geometry.type === 'LineString' &&
+      // only 2 positions
+      geometry.coordinates.length < 3
+    ) {
+      throw Error(`Can't remove position. LineString must have at least two positions`);
+    }
+    if (
+      geometry.type === 'Polygon' &&
+      // outer ring is a triangle
+      geometry.coordinates[0].length < 5 &&
+      // trying to remove from outer ring
+      positionIndexes[0] === 0
+    ) {
+      throw Error(`Can't remove position. Polygon's outer ring must have at least four positions`);
+    }
+    if (
+      geometry.type === 'MultiLineString' &&
+      // only 1 LineString left
+      geometry.coordinates.length === 1 &&
+      // only 2 positions
+      geometry.coordinates[0].length < 3
+    ) {
+      throw Error(`Can't remove position. MultiLineString must have at least two positions`);
+    }
+    if (
+      geometry.type === 'MultiPolygon' &&
+      // only 1 polygon left
+      geometry.coordinates.length === 1 &&
+      // outer ring is a triangle
+      geometry.coordinates[0][0].length < 5 &&
+      // trying to remove from first polygon
+      positionIndexes[0] === 0 &&
+      // trying to remove from outer ring
+      positionIndexes[1] === 0
+    ) {
+      throw Error(
+        `Can't remove position. MultiPolygon's outer ring must have at least four positions`
+      );
     }
 
     const isPolygonal = geometry.type === 'Polygon' || geometry.type === 'MultiPolygon';
@@ -85,8 +128,8 @@ export class EditableFeatureCollection {
       coordinates: immutablyRemovePosition(geometry.coordinates, positionIndexes, isPolygonal)
     };
 
-    // Handle cases where geometry type is "downgraded"
-    downgradeGeometryIfNecessary(updatedGeometry);
+    // Handle cases where incomplete geometries need pruned (e.g. holes that were triangles)
+    pruneGeometryIfNecessary(updatedGeometry);
 
     return this.replaceGeometry(featureIndex, updatedGeometry);
   }
@@ -331,19 +374,16 @@ function immutablyAddPosition(
   ];
 }
 
-function downgradeGeometryIfNecessary(geometry: Geometry) {
+function pruneGeometryIfNecessary(geometry: Geometry) {
   switch (geometry.type) {
-    case 'LineString':
-      downgradeLineStringIfNecessary(geometry);
-      break;
     case 'Polygon':
-      downgradePolygonIfNecessary(geometry);
+      prunePolygonIfNecessary(geometry);
       break;
     case 'MultiLineString':
-      downgradeMultiLineStringIfNecessary(geometry);
+      pruneMultiLineStringIfNecessary(geometry);
       break;
     case 'MultiPolygon':
-      downgradeMultiPolygonIfNecessary(geometry);
+      pruneMultiPolygonIfNecessary(geometry);
       break;
     default:
       // Not downgradable
@@ -351,27 +391,8 @@ function downgradeGeometryIfNecessary(geometry: Geometry) {
   }
 }
 
-function downgradeLineStringIfNecessary(geometry: LineString) {
-  if (geometry.coordinates.length === 1) {
-    // Only one position left, so convert to a Point
-    // $FlowFixMe: just do it flow
-    geometry.type = 'Point';
-    // $FlowFixMe: just do it flow
-    geometry.coordinates = geometry.coordinates[0];
-  }
-}
-
-function downgradePolygonIfNecessary(geometry: Polygon) {
+function prunePolygonIfNecessary(geometry: Polygon) {
   const polygon = geometry.coordinates;
-  const outerRing = polygon[0];
-  // If the outer ring is no longer a polygon, convert the whole thing to a LineString
-  if (outerRing.length <= 3) {
-    // $FlowFixMe: just do it flow
-    geometry.type = 'LineString';
-    // $FlowFixMe: just do it flow
-    geometry.coordinates = outerRing.slice(0, outerRing.length - 1);
-    return;
-  }
 
   // If any hole is no longer a polygon, remove the hole entirely
   for (let holeIndex = 1; holeIndex < polygon.length; holeIndex++) {
@@ -382,15 +403,7 @@ function downgradePolygonIfNecessary(geometry: Polygon) {
   }
 }
 
-function downgradeMultiLineStringIfNecessary(geometry: MultiLineString) {
-  if (geometry.coordinates.length === 1 && geometry.coordinates[0].length === 1) {
-    // Only one position left, so convert to a Point
-    // $FlowFixMe: just do it flow
-    geometry.type = 'Point';
-    // $FlowFixMe: just do it flow
-    geometry.coordinates = geometry.coordinates[0][0];
-    return;
-  }
+function pruneMultiLineStringIfNecessary(geometry: MultiLineString) {
   for (let lineStringIndex = 0; lineStringIndex < geometry.coordinates.length; lineStringIndex++) {
     const lineString = geometry.coordinates[lineStringIndex];
     if (lineString.length === 1) {
@@ -402,17 +415,7 @@ function downgradeMultiLineStringIfNecessary(geometry: MultiLineString) {
   }
 }
 
-function downgradeMultiPolygonIfNecessary(geometry: MultiPolygon) {
-  if (geometry.coordinates.length === 1) {
-    const outerRing = geometry.coordinates[0][0];
-    if (outerRing.length <= 3) {
-      // $FlowFixMe: just do it flow
-      geometry.type = 'LineString';
-      // $FlowFixMe: just do it flow
-      geometry.coordinates = outerRing.slice(0, outerRing.length - 1);
-      return;
-    }
-  }
+function pruneMultiPolygonIfNecessary(geometry: MultiPolygon) {
   for (let polygonIndex = 0; polygonIndex < geometry.coordinates.length; polygonIndex++) {
     const polygon = geometry.coordinates[polygonIndex];
     const outerRing = polygon[0];

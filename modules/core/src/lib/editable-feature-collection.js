@@ -2,6 +2,7 @@
 
 import type {
   FeatureCollection,
+  Feature,
   Geometry,
   Position,
   Polygon,
@@ -17,8 +18,21 @@ export type EditHandle = {
   type: 'existing' | 'intermediate'
 };
 
+export type EditAction = {
+  updatedData: FeatureCollection,
+  editType: string,
+  featureIndex: number,
+  positionIndexes: ?(number[]),
+  position: ?Position
+};
+
 export class EditableFeatureCollection {
   featureCollection: FeatureCollection;
+  _tentativeFeature: ?Feature;
+  _mode: string;
+  _selectedFeatureIndexes: number[];
+  _selectedFeature: ?Feature;
+  _drawAtFront: boolean;
 
   constructor(featureCollection: FeatureCollection) {
     this.featureCollection = featureCollection;
@@ -255,6 +269,155 @@ export class EditableFeatureCollection {
 
     return handles;
   }
+
+  getTentativeFeature(): ?Feature {
+    return this._tentativeFeature;
+  }
+
+  setMode(mode: string): void {
+    if (this._mode === mode) {
+      return;
+    }
+
+    this._mode = mode;
+    this._setTentativeFeature(null);
+  }
+
+  setSelectedFeatureIndexes(indexes: number[]): void {
+    if (this._selectedFeatureIndexes === indexes) {
+      return;
+    }
+
+    this._selectedFeatureIndexes = indexes;
+    this._setTentativeFeature(null);
+
+    this._selectedFeature = null;
+    if (indexes.length === 1) {
+      this._selectedFeature = this.featureCollection.features[indexes[0]];
+    }
+  }
+
+  setDrawAtFront(drawAtFront: boolean): void {
+    if (this._drawAtFront === drawAtFront) {
+      return;
+    }
+
+    this._drawAtFront = drawAtFront;
+    this._setTentativeFeature(null);
+  }
+
+  _setTentativeFeature(tentativeFeature: ?Feature) {
+    // console.log('Setting tentative feature', JSON.stringify(tentativeFeature));
+    this._tentativeFeature = tentativeFeature;
+  }
+
+  onClick(groundCoords: Position): ?EditAction {
+    if (this._mode === 'drawLineString') {
+      return this._handleClickDrawLineString(groundCoords);
+    }
+    return null;
+  }
+
+  _handleClickDrawLineString(groundCoords: Position): ?EditAction {
+    let editAction: ?EditAction;
+    const selectedFeatureIndexes = this._selectedFeatureIndexes;
+    const selectedFeature = this._selectedFeature;
+    const tentativeFeature = this._tentativeFeature;
+
+    if (!tentativeFeature) {
+      // Start a new feature
+      this._setTentativeFeature({
+        type: 'Feature',
+        geometry: {
+          type: 'LineString',
+          coordinates: [groundCoords, groundCoords]
+        }
+      });
+    } else if (this._mode === 'drawLineString') {
+      if (!selectedFeature) {
+        const updatedData = this.addFeature({
+          type: 'Feature',
+          properties: {},
+          geometry: tentativeFeature.geometry
+        }).getFeatureCollection();
+
+        editAction = {
+          updatedData,
+          editType: 'addFeature',
+          featureIndex: updatedData.features.length - 1,
+          positionIndexes: [1],
+          position: groundCoords
+        };
+      } else if (selectedFeature.geometry.type === 'LineString') {
+        let positionIndexes = [selectedFeature.geometry.coordinates.length];
+        if (this._drawAtFront) {
+          positionIndexes = [0];
+        }
+        const featureIndex = selectedFeatureIndexes[0];
+        const updatedData = this.addPosition(
+          featureIndex,
+          positionIndexes,
+          groundCoords
+        ).getFeatureCollection();
+
+        editAction = {
+          updatedData,
+          editType: 'addPosition',
+          featureIndex,
+          positionIndexes,
+          position: groundCoords
+        };
+      } else {
+        console.warn(`Unsupported geometry type: ${selectedFeature.geometry.type}`); // eslint-disable-line
+      }
+    }
+
+    return editAction;
+  }
+
+  onPointerMove(groundCoords: ?Position): void {
+    if (this._mode === 'drawLineString') {
+      this._handlePointerMoveForDrawLineString(groundCoords);
+    } else {
+      this._setTentativeFeature(null);
+    }
+  }
+
+  _handlePointerMoveForDrawLineString(groundCoords: ?Position) {
+    let startPosition: ?Position = null;
+    const selectedFeature = this._selectedFeature;
+    const tentativeFeature = this._tentativeFeature;
+
+    if (selectedFeature && selectedFeature.geometry.type === 'LineString') {
+      // Draw an extension line starting from one end of the selected LineString
+      startPosition =
+        selectedFeature.geometry.coordinates[selectedFeature.geometry.coordinates.length - 1];
+      if (this._drawAtFront) {
+        startPosition = selectedFeature.geometry.coordinates[0];
+      }
+    } else if (tentativeFeature) {
+      // Draw an extension line starting from the first clicked point
+      if (tentativeFeature.geometry.type === 'LineString') {
+        startPosition = tentativeFeature.geometry.coordinates[0];
+      } else {
+        // eslint-disable-next-line
+        console.warn(`Unexpected tentative feature type ${tentativeFeature.geometry.type}`);
+      }
+    }
+
+    if (startPosition) {
+      const endPosition = groundCoords || startPosition;
+
+      this._setTentativeFeature({
+        type: 'Feature',
+        properties: {},
+        geometry: {
+          type: 'LineString',
+          coordinates: [startPosition, endPosition]
+        }
+      });
+    }
+  }
 }
 
 function immutablyReplacePosition(
@@ -489,3 +652,10 @@ function getEditHandles(
   }
   return editHandles;
 }
+
+// function assert(condition, message) {
+//   if (!condition) {
+//     console.error(`Assertion error: ${message}`); // eslint-disable-line
+//     throw Error(message);
+//   }
+// }

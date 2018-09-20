@@ -12,8 +12,9 @@ import bearing from '@turf/bearing';
 import turfTransformRotate from '@turf/transform-rotate';
 import pointToLineDistance from '@turf/point-to-line-distance';
 import { point, featureCollection as fc } from '@turf/helpers';
-import type { Feature } from '../../geojson-types.js';
 import { EditableFeatureCollection } from '../editable-feature-collection.js';
+import type { EditAction } from '../editable-feature-collection.js';
+import type { AnyGeoJson, Feature, Position } from '../../geojson-types.js';
 import EditableLayer from './editable-layer.js';
 
 const DEFAULT_LINE_COLOR = [0x0, 0x0, 0x0, 0xff];
@@ -87,7 +88,28 @@ const defaultProps = {
   getEditHandleIconAngle: 0
 };
 
+type Props = {
+  onEdit: EditAction => void,
+  // TODO
+  [string]: any
+};
+
+type State = {
+  editableFeatureCollection: EditableFeatureCollection,
+  tentativeFeature: ?Feature,
+  drawFeature: ?AnyGeoJson,
+  editHandles: any[],
+  selectedFeatures: Feature[],
+  pointerMovePicks: any[]
+};
+
 export default class EditableGeoJsonLayer extends EditableLayer {
+  state: State;
+
+  props: Props;
+
+  setState: ($Shape<State>) => void;
+
   renderLayers() {
     const subLayerProps = this.getSubLayerProps({
       id: 'geojson',
@@ -145,10 +167,21 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
   // TODO: figure out how to properly update state from an outside event handler
   shouldUpdateState({ props, oldProps, context, oldContext, changeFlags }: Object) {
+    if (changeFlags.stateChanged) {
+      return true;
+    }
     return true;
   }
 
-  updateState({ props, oldProps, changeFlags }: Object) {
+  updateState({
+    props,
+    oldProps,
+    changeFlags
+  }: {
+    props: Props,
+    oldProps: Props,
+    changeFlags: any
+  }) {
     super.updateState({ props, changeFlags });
 
     const editableFeatureCollection = this.state.editableFeatureCollection;
@@ -174,6 +207,10 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       // If the props are different, recalculate the draw feature
       const selectedFeature = selectedFeatures.length === 1 ? selectedFeatures[0] : null;
       drawFeature = this.getDrawFeature(selectedFeature, props.mode, null);
+
+      editableFeatureCollection.setMode(props.mode);
+      editableFeatureCollection.setSelectedFeatureIndexes(props.selectedFeatureIndexes);
+      this.updateTentativeFeature();
     }
 
     this.setState({
@@ -263,41 +300,95 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }
 
   createDrawLayers() {
-    if (!this.state.drawFeature) {
+    if (!this.state.drawFeature && !this.state.tentativeFeature) {
       return [];
     }
 
-    const layer = new GeoJsonLayer(
-      this.getSubLayerProps({
-        id: 'draw',
-        data: this.state.drawFeature,
-        fp64: this.props.fp64,
-        pickable: false,
-        stroked: this.props.mode !== 'drawPolygon',
-        autoHighlight: false,
-        lineWidthScale: this.props.lineWidthScale,
-        lineWidthMinPixels: this.props.lineWidthMinPixels,
-        lineWidthMaxPixels: this.props.lineWidthMaxPixels,
-        lineJointRounded: this.props.lineJointRounded,
-        lineMiterLimit: this.props.lineMiterLimit,
-        pointRadiusScale: this.props.editHandlePointRadiusScale,
-        outline: this.props.editHandlePointOutline,
-        strokeWidth: this.props.editHandlePointStrokeWidth,
-        pointRadiusMinPixels: this.props.editHandlePointRadiusMinPixels,
-        pointRadiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
-        getRadius: this.props.getEditHandlePointRadius,
-        getLineColor: feature =>
-          this.props.getDrawLineColor(feature, this.state.selectedFeatures[0], this.props.mode),
-        getLineWidth: feature =>
-          this.props.getDrawLineWidth(feature, this.state.selectedFeatures[0], this.props.mode),
-        getFillColor: feature =>
-          this.props.getDrawFillColor(feature, this.state.selectedFeatures[0], this.props.mode),
-        getLineDashArray: feature =>
-          this.props.getDrawLineDashArray(feature, this.state.selectedFeatures[0], this.props.mode)
-      })
-    );
+    const layers = [];
 
-    return [layer];
+    const tentativeFeature = this.state.tentativeFeature;
+    if (tentativeFeature) {
+      layers.push(
+        new GeoJsonLayer(
+          this.getSubLayerProps({
+            id: 'tentative',
+            data: tentativeFeature,
+            fp64: this.props.fp64,
+            pickable: false,
+            stroked: true,
+            autoHighlight: false,
+            lineWidthScale: this.props.lineWidthScale,
+            lineWidthMinPixels: this.props.lineWidthMinPixels,
+            lineWidthMaxPixels: this.props.lineWidthMaxPixels,
+            lineJointRounded: this.props.lineJointRounded,
+            lineMiterLimit: this.props.lineMiterLimit,
+            pointRadiusScale: this.props.editHandlePointRadiusScale,
+            outline: this.props.editHandlePointOutline,
+            strokeWidth: this.props.editHandlePointStrokeWidth,
+            pointRadiusMinPixels: this.props.editHandlePointRadiusMinPixels,
+            pointRadiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
+            getRadius: this.props.getEditHandlePointRadius,
+            getLineColor: feature =>
+              this.props.getDrawLineColor(feature, this.state.selectedFeatures[0], this.props.mode),
+            getLineWidth: feature =>
+              this.props.getDrawLineWidth(feature, this.state.selectedFeatures[0], this.props.mode),
+            getFillColor: feature =>
+              this.props.getDrawFillColor(feature, this.state.selectedFeatures[0], this.props.mode),
+            getLineDashArray: feature =>
+              this.props.getDrawLineDashArray(
+                feature,
+                this.state.selectedFeatures[0],
+                this.props.mode
+              )
+          })
+        )
+      );
+    }
+
+    layers.push(
+      new GeoJsonLayer(
+        this.getSubLayerProps({
+          id: 'draw',
+          data: this.state.drawFeature,
+          fp64: this.props.fp64,
+          pickable: false,
+          stroked: this.props.mode !== 'drawPolygon',
+          autoHighlight: false,
+          lineWidthScale: this.props.lineWidthScale,
+          lineWidthMinPixels: this.props.lineWidthMinPixels,
+          lineWidthMaxPixels: this.props.lineWidthMaxPixels,
+          lineJointRounded: this.props.lineJointRounded,
+          lineMiterLimit: this.props.lineMiterLimit,
+          pointRadiusScale: this.props.editHandlePointRadiusScale,
+          outline: this.props.editHandlePointOutline,
+          strokeWidth: this.props.editHandlePointStrokeWidth,
+          pointRadiusMinPixels: this.props.editHandlePointRadiusMinPixels,
+          pointRadiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
+          getRadius: this.props.getEditHandlePointRadius,
+          getLineColor: feature =>
+            this.props.getDrawLineColor(feature, this.state.selectedFeatures[0], this.props.mode),
+          getLineWidth: feature =>
+            this.props.getDrawLineWidth(feature, this.state.selectedFeatures[0], this.props.mode),
+          getFillColor: feature =>
+            this.props.getDrawFillColor(feature, this.state.selectedFeatures[0], this.props.mode),
+          getLineDashArray: feature =>
+            this.props.getDrawLineDashArray(
+              feature,
+              this.state.selectedFeatures[0],
+              this.props.mode
+            )
+        })
+      )
+    );
+    return layers;
+  }
+
+  updateTentativeFeature() {
+    const tentativeFeature = this.state.editableFeatureCollection.getTentativeFeature();
+    if (tentativeFeature !== this.state.tentativeFeature) {
+      this.setState({ tentativeFeature });
+      this.setLayerNeedsUpdate();
+    }
   }
 
   onDoubleClick({ groundCoords }: Object) {
@@ -342,17 +433,19 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     const { selectedFeatureIndexes } = this.props;
     const editHandleInfo = this.getPickedEditHandle(picks);
 
-    if (this.props.mode === 'modify') {
-      if (editHandleInfo && editHandleInfo.object.type === 'existing') {
-        this.handleRemovePosition(
-          this.props.data.features[editHandleInfo.object.featureIndex],
-          editHandleInfo.object.featureIndex,
-          editHandleInfo.object.positionIndexes
-        );
-      }
+    let editAction = null;
+
+    if (editHandleInfo && editHandleInfo.object.type === 'existing') {
+      this.handleRemovePosition(
+        this.props.data.features[editHandleInfo.object.featureIndex],
+        editHandleInfo.object.featureIndex,
+        editHandleInfo.object.positionIndexes
+      );
+    } else if (this.props.mode === 'drawLineString') {
+      editAction = this.state.editableFeatureCollection.onClick(groundCoords);
+      this.updateTentativeFeature();
     } else if (
       this.props.mode === 'drawPoint' ||
-      this.props.mode === 'drawLineString' ||
       this.props.mode === 'drawPolygon' ||
       this.props.mode === 'drawRectangle' ||
       this.props.mode === 'drawRectangleUsing3Points' ||
@@ -420,6 +513,10 @@ export default class EditableGeoJsonLayer extends EditableLayer {
           );
         }
       }
+    }
+
+    if (editAction) {
+      this.props.onEdit(editAction);
     }
   }
 
@@ -514,8 +611,10 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       }
     }
 
+    this.state.editableFeatureCollection.onPointerMove(groundCoords);
+    this.updateTentativeFeature();
+
     if (
-      this.props.mode === 'drawLineString' ||
       this.props.mode === 'drawPolygon' ||
       this.props.mode === 'drawRectangle' ||
       this.props.mode === 'drawRectangleUsing3Points' ||
@@ -543,15 +642,14 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
   }
 
-  getDrawFeature(selectedFeature: ?Feature, mode: string, groundCoords: ?(number[])) {
-    let drawFeature = null;
-
-    if (!selectedFeature && !groundCoords) {
-      // Need a mouse position in order to draw a single point
-      return null;
-    }
+  getDrawFeature(selectedFeature: ?Feature, mode: string, groundCoords: ?Position): ?AnyGeoJson {
+    let drawFeature: ?AnyGeoJson = null;
 
     if (!selectedFeature) {
+      if (!groundCoords) {
+        // Need a mouse position in order to draw a single point
+        return null;
+      }
       // Start with a point
       drawFeature = {
         type: 'Feature',
@@ -701,6 +799,11 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         const p3 = destination(p2, ddistance, orthogonalBearing, options);
         const p4 = destination(p1, ddistance, orthogonalBearing, options);
 
+        if (selectedFeature.geometry.type !== 'LineString') {
+          // This shouldn't happen, but flow needs the type guard right before using it, grr...
+          return null;
+        }
+
         drawFeature = {
           type: 'Feature',
           geometry: {
@@ -732,7 +835,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     return drawFeature;
   }
 
-  handleTransformRotate(screenCoords: number[], groundCoords: number[]) {
+  handleTransformRotate(screenCoords: number[], groundCoords: Position) {
     const { modeConfig } = this.props;
     let pivot;
 
@@ -772,7 +875,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     });
   }
 
-  handleMovePosition(featureIndex: number, positionIndexes: number, groundCoords: number[]) {
+  handleMovePosition(featureIndex: number, positionIndexes: number[], groundCoords: Position) {
     const updatedData = this.state.editableFeatureCollection
       .replacePosition(featureIndex, positionIndexes, groundCoords)
       .getFeatureCollection();
@@ -788,7 +891,11 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     });
   }
 
-  handleFinishMovePosition(featureIndex: number, positionIndexes: number, groundCoords: number[]) {
+  handleFinishMovePosition(
+    featureIndex: number,
+    positionIndexes: number[],
+    groundCoords: Position
+  ) {
     const updatedData = this.state.editableFeatureCollection
       .replacePosition(featureIndex, positionIndexes, groundCoords)
       .getFeatureCollection();
@@ -806,8 +913,8 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
   handleAddIntermediatePosition(
     featureIndex: number,
-    positionIndexes: number,
-    groundCoords: number[]
+    positionIndexes: number[],
+    groundCoords: Position
   ) {
     const updatedData = this.state.editableFeatureCollection
       .addPosition(featureIndex, positionIndexes, groundCoords)
@@ -824,7 +931,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     });
   }
 
-  handleRemovePosition(selectedFeature: Feature, featureIndex: number, positionIndexes: number) {
+  handleRemovePosition(selectedFeature: Feature, featureIndex: number, positionIndexes: number[]) {
     let updatedData;
     try {
       updatedData = this.state.editableFeatureCollection
@@ -841,7 +948,8 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         updatedSelectedFeatureIndexes: this.props.selectedFeatureIndexes,
         editType: 'removePosition',
         featureIndex,
-        positionIndexes
+        positionIndexes,
+        position: null
       });
     }
   }
@@ -849,7 +957,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   handleDrawLineString(
     selectedFeature: Feature,
     featureIndex: number,
-    groundCoords: number[],
+    groundCoords: Position,
     picks: Object[]
   ) {
     const { drawAtFront } = this.props;
@@ -892,7 +1000,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   handleDrawRectangleUsing3Points(
     selectedFeature: Feature,
     featureIndex: number,
-    groundCoords: number[],
+    groundCoords: Position,
     picks: Object[]
   ) {
     let featureCollection = this.state.editableFeatureCollection;
@@ -911,6 +1019,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       // Draw the rectangle with the drawFeature geometry
       featureCollection = featureCollection.replaceGeometry(
         featureIndex,
+        // $FlowFixMe: it's ok, I know drawFeature will be there
         this.state.drawFeature.geometry
       );
       updatedMode = 'modify';
@@ -931,7 +1040,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   handleDrawPolygon(
     selectedFeature: Feature,
     featureIndex: number,
-    groundCoords: number[],
+    groundCoords: Position,
     picks: Object[]
   ) {
     let featureCollection = this.state.editableFeatureCollection;
@@ -957,6 +1066,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         featureCollection = featureCollection.replaceGeometry(featureIndex, {
           type: 'Polygon',
           coordinates: [
+            // $FlowFixMe: just do it
             [...selectedFeature.geometry.coordinates, selectedFeature.geometry.coordinates[0]]
           ]
         });
@@ -991,7 +1101,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   handleDrawRectangle(
     selectedFeature: Feature,
     featureIndex: number,
-    groundCoords: number[],
+    groundCoords: Position,
     picks: Object[]
   ) {
     let featureCollection = this.state.editableFeatureCollection;
@@ -1003,6 +1113,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       positionIndexes = null;
       featureCollection = featureCollection.replaceGeometry(
         featureIndex,
+        // $FlowFixMe: it's ok, I know drawFeature will be there
         this.state.drawFeature.geometry
       );
       updatedMode = 'modify';
@@ -1027,7 +1138,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   handleDrawCircle(
     selectedFeature: Feature,
     featureIndex: number,
-    groundCoords: number[],
+    groundCoords: Position,
     picks: Object[]
   ) {
     let featureCollection = this.state.editableFeatureCollection;
@@ -1039,6 +1150,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       positionIndexes = null;
       featureCollection = featureCollection.replaceGeometry(
         featureIndex,
+        // $FlowFixMe: it's ok, I know drawFeature will be there
         this.state.drawFeature.geometry
       );
       updatedMode = 'modify';
@@ -1063,7 +1175,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   handleDrawEllipseByBoundingBox(
     selectedFeature: Feature,
     featureIndex: number,
-    groundCoords: number[],
+    groundCoords: Position,
     picks: Object[]
   ) {
     let featureCollection = this.state.editableFeatureCollection;
@@ -1075,6 +1187,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       positionIndexes = null;
       featureCollection = featureCollection.replaceGeometry(
         featureIndex,
+        // $FlowFixMe: it's ok, I know drawFeature will be there
         this.state.drawFeature.geometry
       );
       updatedMode = 'modify';
@@ -1096,7 +1209,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     });
   }
 
-  handleDrawNewPoint(groundCoords: number[]) {
+  handleDrawNewPoint(groundCoords: Position) {
     // Starts off as a point (since LineString requires at least 2 positions)
     const newFeature = {
       type: 'Feature',

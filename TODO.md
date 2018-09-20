@@ -1,0 +1,3 @@
+
+delete updatedMode
+delete updatedSelectedFeatureIndexes

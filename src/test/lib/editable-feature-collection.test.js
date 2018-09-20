@@ -87,24 +87,24 @@ beforeEach(() => {
   };
 });
 
-describe('getObject()', () => {
+describe('getFeatureCollection()', () => {
   it('can get real object', () => {
     const editable = new EditableFeatureCollection(featureCollection);
 
-    expect(editable.getObject()).toBe(featureCollection);
+    expect(editable.getFeatureCollection()).toBe(featureCollection);
   });
 });
 
 describe('replacePosition()', () => {
   it(`doesn't mutate original`, () => {
-    const features = new EditableFeatureCollection({
+    const leaveMeAlone = {
       type: 'FeatureCollection',
       features: [pointFeature]
-    });
-    const updatedFeatures = features.replacePosition(0, [], [10, 20]);
+    };
+    const features = new EditableFeatureCollection(leaveMeAlone);
+    features.replacePosition(0, [], [10, 20]);
 
-    expect(updatedFeatures).not.toBe(features);
-    expect(pointFeature.geometry.coordinates).toEqual([1, 2]);
+    expect(leaveMeAlone.features[0].geometry.coordinates).toEqual([1, 2]);
   });
 
   it('replaces position in Point', () => {
@@ -112,9 +112,9 @@ describe('replacePosition()', () => {
       type: 'FeatureCollection',
       features: [pointFeature]
     });
-    const updatedFeatures = features.replacePosition(0, [], [10, 20]);
+    features.replacePosition(0, [], [10, 20]);
 
-    const actualCoordinates = updatedFeatures.getObject().features[0].geometry.coordinates;
+    const actualCoordinates = features.getFeatureCollection().features[0].geometry.coordinates;
     const expectedCoordinates = [10, 20];
 
     expect(actualCoordinates).toEqual(expectedCoordinates);
@@ -125,9 +125,9 @@ describe('replacePosition()', () => {
       type: 'FeatureCollection',
       features: [lineStringFeature]
     });
-    const updatedFeatures = features.replacePosition(0, [0], [10, 20]);
+    features.replacePosition(0, [0], [10, 20]);
 
-    const actualCoordinates = updatedFeatures.getObject().features[0].geometry.coordinates;
+    const actualCoordinates = features.getFeatureCollection().features[0].geometry.coordinates;
     const expectedCoordinates = [[10, 20], [2, 3], [3, 4]];
 
     expect(actualCoordinates).toEqual(expectedCoordinates);
@@ -138,11 +138,9 @@ describe('replacePosition()', () => {
       type: 'FeatureCollection',
       features: [polygonFeature]
     });
-    const updatedFeatures = features
-      .replacePosition(0, [0, 1], [1.1, -1.1])
-      .replacePosition(0, [1, 2], [0.6, 0.6]);
+    features.replacePosition(0, [0, 1], [1.1, -1.1]).replacePosition(0, [1, 2], [0.6, 0.6]);
 
-    const actualCoordinates = updatedFeatures.getObject().features[0].geometry.coordinates;
+    const actualCoordinates = features.getFeatureCollection().features[0].geometry.coordinates;
     const expectedCoordinates = [
       [[-1, -1], [1.1, -1.1], [1, 1], [-1, 1], [-1, -1]],
       [[-0.5, -0.5], [-0.5, 0.5], [0.6, 0.6], [0.5, -0.5], [-0.5, -0.5]]
@@ -156,9 +154,9 @@ describe('replacePosition()', () => {
       type: 'FeatureCollection',
       features: [polygonFeature]
     });
-    const updatedFeatures = features.replacePosition(0, [0, 0], [-1.1, -1.1]);
+    features.replacePosition(0, [0, 0], [-1.1, -1.1]);
 
-    const actualCoordinates = updatedFeatures.getObject().features[0].geometry.coordinates;
+    const actualCoordinates = features.getFeatureCollection().features[0].geometry.coordinates;
     const expectedCoordinates = [
       [[-1.1, -1.1], [1, -1], [1, 1], [-1, 1], [-1.1, -1.1]],
       [[-0.5, -0.5], [-0.5, 0.5], [0.5, 0.5], [0.5, -0.5], [-0.5, -0.5]]
@@ -172,9 +170,9 @@ describe('replacePosition()', () => {
       type: 'FeatureCollection',
       features: [polygonFeature]
     });
-    const updatedFeatures = features.replacePosition(0, [0, 4], [-1.1, -1.1]);
+    features.replacePosition(0, [0, 4], [-1.1, -1.1]);
 
-    const actualCoordinates = updatedFeatures.getObject().features[0].geometry.coordinates;
+    const actualCoordinates = features.getFeatureCollection().features[0].geometry.coordinates;
     const expectedCoordinates = [
       [[-1.1, -1.1], [1, -1], [1, 1], [-1, 1], [-1.1, -1.1]],
       [[-0.5, -0.5], [-0.5, 0.5], [0.5, 0.5], [0.5, -0.5], [-0.5, -0.5]]
@@ -186,14 +184,14 @@ describe('replacePosition()', () => {
 
 describe('removePosition()', () => {
   it(`doesn't mutate original`, () => {
-    const features = new EditableFeatureCollection({
+    const leaveMeAlone = {
       type: 'FeatureCollection',
       features: [lineStringFeature]
-    });
-    const updatedFeatures = features.removePosition(0, [0]);
+    };
+    const features = new EditableFeatureCollection(leaveMeAlone);
+    features.removePosition(0, [0]);
 
-    expect(updatedFeatures).not.toBe(features);
-    expect(lineStringFeature.geometry.coordinates).toEqual([[1, 2], [2, 3], [3, 4]]);
+    expect(leaveMeAlone.features[0].geometry.coordinates).toEqual([[1, 2], [2, 3], [3, 4]]);
   });
 
   it('throws exception when attempting to remove Point', () => {
@@ -212,9 +210,9 @@ describe('removePosition()', () => {
       type: 'FeatureCollection',
       features: [lineStringFeature]
     });
-    const updatedFeatures = features.removePosition(0, [0]);
+    features.removePosition(0, [0]);
 
-    const actualCoordinates = updatedFeatures.getObject().features[0].geometry.coordinates;
+    const actualCoordinates = features.getFeatureCollection().features[0].geometry.coordinates;
     const expectedCoordinates = [[2, 3], [3, 4]];
 
     expect(actualCoordinates).toEqual(expectedCoordinates);
@@ -225,9 +223,9 @@ describe('removePosition()', () => {
       type: 'FeatureCollection',
       features: [polygonFeature]
     });
-    const updatedFeatures = features.removePosition(0, [0, 1]).removePosition(0, [1, 3]);
+    features.removePosition(0, [0, 1]).removePosition(0, [1, 3]);
 
-    const actualCoordinates = updatedFeatures.getObject().features[0].geometry.coordinates;
+    const actualCoordinates = features.getFeatureCollection().features[0].geometry.coordinates;
     const expectedCoordinates = [
       [[-1, -1], [1, 1], [-1, 1], [-1, -1]],
       [[-0.5, -0.5], [-0.5, 0.5], [0.5, 0.5], [-0.5, -0.5]]
@@ -241,9 +239,9 @@ describe('removePosition()', () => {
       type: 'FeatureCollection',
       features: [polygonFeature]
     });
-    const updatedFeatures = features.removePosition(0, [1, 0]);
+    features.removePosition(0, [1, 0]);
 
-    const actualCoordinates = updatedFeatures.getObject().features[0].geometry.coordinates;
+    const actualCoordinates = features.getFeatureCollection().features[0].geometry.coordinates;
     const expectedCoordinates = [
       [[-1, -1], [1, -1], [1, 1], [-1, 1], [-1, -1]],
       [[-0.5, 0.5], [0.5, 0.5], [0.5, -0.5], [-0.5, 0.5]]
@@ -257,9 +255,9 @@ describe('removePosition()', () => {
       type: 'FeatureCollection',
       features: [polygonFeature]
     });
-    const updatedFeatures = features.removePosition(0, [1, 4]);
+    features.removePosition(0, [1, 4]);
 
-    const actualCoordinates = updatedFeatures.getObject().features[0].geometry.coordinates;
+    const actualCoordinates = features.getFeatureCollection().features[0].geometry.coordinates;
     const expectedCoordinates = [
       [[-1, -1], [1, -1], [1, 1], [-1, 1], [-1, -1]],
       [[0.5, -0.5], [-0.5, 0.5], [0.5, 0.5], [0.5, -0.5]]
@@ -300,9 +298,9 @@ describe('removePosition()', () => {
       type: 'FeatureCollection',
       features: [polygonFeature]
     });
-    const updatedFeatures = features.removePosition(0, [1, 1]).removePosition(0, [1, 1]);
+    features.removePosition(0, [1, 1]).removePosition(0, [1, 1]);
 
-    const actualGeometry = updatedFeatures.getObject().features[0].geometry;
+    const actualGeometry = features.getFeatureCollection().features[0].geometry;
     const expectedGeometry = {
       type: 'Polygon',
       coordinates: [[[-1, -1], [1, -1], [1, 1], [-1, 1], [-1, -1]]]
@@ -316,9 +314,9 @@ describe('removePosition()', () => {
       type: 'FeatureCollection',
       features: [multiLineStringFeature]
     });
-    const updatedFeatures = features.removePosition(0, [1, 0]).removePosition(0, [1, 0]);
+    features.removePosition(0, [1, 0]).removePosition(0, [1, 0]);
 
-    const actualGeometry = updatedFeatures.getObject().features[0].geometry;
+    const actualGeometry = features.getFeatureCollection().features[0].geometry;
     const expectedGeometry = {
       type: 'MultiLineString',
       coordinates: [[[1, 2], [2, 3], [3, 4]]]
@@ -349,9 +347,9 @@ describe('removePosition()', () => {
       type: 'FeatureCollection',
       features: [multiPolygonFeature]
     });
-    const updatedFeatures = features.removePosition(0, [1, 0, 0]).removePosition(0, [1, 0, 0]);
+    features.removePosition(0, [1, 0, 0]).removePosition(0, [1, 0, 0]);
 
-    const actualGeometry = updatedFeatures.getObject().features[0].geometry;
+    const actualGeometry = features.getFeatureCollection().features[0].geometry;
     const expectedGeometry = {
       type: 'MultiPolygon',
       coordinates: [multiPolygonFeature.geometry.coordinates[0]]
@@ -365,9 +363,9 @@ describe('removePosition()', () => {
       type: 'FeatureCollection',
       features: [multiPolygonFeature]
     });
-    const updatedFeatures = features.removePosition(0, [0, 1, 0]).removePosition(0, [0, 1, 0]);
+    features.removePosition(0, [0, 1, 0]).removePosition(0, [0, 1, 0]);
 
-    const actualGeometry = updatedFeatures.getObject().features[0].geometry;
+    const actualGeometry = features.getFeatureCollection().features[0].geometry;
     const expectedGeometry = {
       type: 'MultiPolygon',
       coordinates: [
@@ -399,14 +397,14 @@ describe('removePosition()', () => {
 
 describe('addPosition()', () => {
   it(`doesn't mutate original`, () => {
-    const features = new EditableFeatureCollection({
+    const leaveMeAlone = {
       type: 'FeatureCollection',
       features: [lineStringFeature]
-    });
-    const updatedFeatures = features.addPosition(0, [1], [2, 3]);
+    };
+    const features = new EditableFeatureCollection(leaveMeAlone);
+    features.addPosition(0, [1], [2, 3]);
 
-    expect(updatedFeatures).not.toBe(features);
-    expect(lineStringFeature.geometry.coordinates).toEqual([[1, 2], [2, 3], [3, 4]]);
+    expect(leaveMeAlone.features[0].geometry.coordinates).toEqual([[1, 2], [2, 3], [3, 4]]);
   });
 
   it('throws exception when attempting to add position to Point', () => {
@@ -425,9 +423,9 @@ describe('addPosition()', () => {
       type: 'FeatureCollection',
       features: [lineStringFeature]
     });
-    const updatedFeatures = features.addPosition(0, [0], [10, 20]);
+    features.addPosition(0, [0], [10, 20]);
 
-    const actualCoordinates = updatedFeatures.getObject().features[0].geometry.coordinates;
+    const actualCoordinates = features.getFeatureCollection().features[0].geometry.coordinates;
     const expectedCoordinates = [[10, 20], [1, 2], [2, 3], [3, 4]];
 
     expect(actualCoordinates).toEqual(expectedCoordinates);
@@ -438,9 +436,9 @@ describe('addPosition()', () => {
       type: 'FeatureCollection',
       features: [lineStringFeature]
     });
-    const updatedFeatures = features.addPosition(0, [1], [10, 20]);
+    features.addPosition(0, [1], [10, 20]);
 
-    const actualCoordinates = updatedFeatures.getObject().features[0].geometry.coordinates;
+    const actualCoordinates = features.getFeatureCollection().features[0].geometry.coordinates;
     const expectedCoordinates = [[1, 2], [10, 20], [2, 3], [3, 4]];
 
     expect(actualCoordinates).toEqual(expectedCoordinates);
@@ -451,9 +449,9 @@ describe('addPosition()', () => {
       type: 'FeatureCollection',
       features: [lineStringFeature]
     });
-    const updatedFeatures = features.addPosition(0, [3], [10, 20]);
+    features.addPosition(0, [3], [10, 20]);
 
-    const actualCoordinates = updatedFeatures.getObject().features[0].geometry.coordinates;
+    const actualCoordinates = features.getFeatureCollection().features[0].geometry.coordinates;
     const expectedCoordinates = [[1, 2], [2, 3], [3, 4], [10, 20]];
 
     expect(actualCoordinates).toEqual(expectedCoordinates);
@@ -464,11 +462,9 @@ describe('addPosition()', () => {
       type: 'FeatureCollection',
       features: [polygonFeature]
     });
-    const updatedFeatures = features
-      .addPosition(0, [0, 1], [0, -1])
-      .addPosition(0, [1, 4], [0, -0.5]);
+    features.addPosition(0, [0, 1], [0, -1]).addPosition(0, [1, 4], [0, -0.5]);
 
-    const actualCoordinates = updatedFeatures.getObject().features[0].geometry.coordinates;
+    const actualCoordinates = features.getFeatureCollection().features[0].geometry.coordinates;
     const expectedCoordinates = [
       [[-1, -1], [0, -1], [1, -1], [1, 1], [-1, 1], [-1, -1]],
       [[-0.5, -0.5], [-0.5, 0.5], [0.5, 0.5], [0.5, -0.5], [0, -0.5], [-0.5, -0.5]]
@@ -480,13 +476,14 @@ describe('addPosition()', () => {
 
 describe('addFeature()', () => {
   it(`doesn't mutate original`, () => {
-    const features = new EditableFeatureCollection({
+    const leaveMeAlone = {
       type: 'FeatureCollection',
       features: []
-    });
+    };
+    const features = new EditableFeatureCollection(leaveMeAlone);
     features.addFeature(pointFeature);
 
-    expect(features.getObject().features.length).toEqual(0);
+    expect(leaveMeAlone.features.length).toEqual(0);
   });
 
   it('adds feature to empty array', () => {
@@ -494,7 +491,7 @@ describe('addFeature()', () => {
       type: 'FeatureCollection',
       features: []
     });
-    const actualFeatures = features.addFeature(pointFeature).getObject();
+    const actualFeatures = features.addFeature(pointFeature).getFeatureCollection();
 
     const expectedFeatures = {
       type: 'FeatureCollection',
@@ -509,7 +506,7 @@ describe('addFeature()', () => {
       type: 'FeatureCollection',
       features: [multiPointFeature]
     });
-    const actualFeatures = features.addFeature(multiLineStringFeature).getObject();
+    const actualFeatures = features.addFeature(multiLineStringFeature).getFeatureCollection();
 
     const expectedFeatures = {
       type: 'FeatureCollection',

@@ -320,7 +320,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         coordinates: [[...coordinates.slice(0, coordinates.length - 2), coordinates[0]]]
       });
       const updatedMode = 'modify';
-      const updatedData = featureCollection.getObject();
+      const updatedData = featureCollection.getFeatureCollection();
 
       this.props.onEdit({
         updatedData,
@@ -759,7 +759,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
     const updatedData = this.state.editableFeatureCollection
       .replaceGeometry(featureIndex, rotatedFeature.geometry)
-      .getObject();
+      .getFeatureCollection();
 
     this.props.onEdit({
       updatedData,
@@ -775,7 +775,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   handleMovePosition(featureIndex: number, positionIndexes: number, groundCoords: number[]) {
     const updatedData = this.state.editableFeatureCollection
       .replacePosition(featureIndex, positionIndexes, groundCoords)
-      .getObject();
+      .getFeatureCollection();
 
     this.props.onEdit({
       updatedData,
@@ -791,7 +791,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   handleFinishMovePosition(featureIndex: number, positionIndexes: number, groundCoords: number[]) {
     const updatedData = this.state.editableFeatureCollection
       .replacePosition(featureIndex, positionIndexes, groundCoords)
-      .getObject();
+      .getFeatureCollection();
 
     this.props.onEdit({
       updatedData,
@@ -811,7 +811,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   ) {
     const updatedData = this.state.editableFeatureCollection
       .addPosition(featureIndex, positionIndexes, groundCoords)
-      .getObject();
+      .getFeatureCollection();
 
     this.props.onEdit({
       updatedData,
@@ -829,7 +829,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     try {
       updatedData = this.state.editableFeatureCollection
         .removePosition(featureIndex, positionIndexes)
-        .getObject();
+        .getFeatureCollection();
     } catch (error) {
       // This happens if user attempts to remove the last point
     }
@@ -876,7 +876,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       return;
     }
 
-    const updatedData = featureCollection.getObject();
+    const updatedData = featureCollection.getFeatureCollection();
 
     this.props.onEdit({
       updatedData,
@@ -915,7 +915,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       );
       updatedMode = 'modify';
     }
-    const updatedData = featureCollection.getObject();
+    const updatedData = featureCollection.getFeatureCollection();
 
     this.props.onEdit({
       updatedData,
@@ -975,7 +975,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       return;
     }
 
-    const updatedData = featureCollection.getObject();
+    const updatedData = featureCollection.getFeatureCollection();
 
     this.props.onEdit({
       updatedData,
@@ -1011,7 +1011,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       return;
     }
 
-    const updatedData = featureCollection.getObject();
+    const updatedData = featureCollection.getFeatureCollection();
 
     this.props.onEdit({
       updatedData,
@@ -1047,7 +1047,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       return;
     }
 
-    const updatedData = featureCollection.getObject();
+    const updatedData = featureCollection.getFeatureCollection();
 
     this.props.onEdit({
       updatedData,
@@ -1083,7 +1083,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       return;
     }
 
-    const updatedData = featureCollection.getObject();
+    const updatedData = featureCollection.getFeatureCollection();
 
     this.props.onEdit({
       updatedData,
@@ -1106,7 +1106,9 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       }
     };
 
-    const updatedData = this.state.editableFeatureCollection.addFeature(newFeature).getObject();
+    const updatedData = this.state.editableFeatureCollection
+      .addFeature(newFeature)
+      .getFeatureCollection();
     const featureIndex = this.props.data.features.length;
 
     this.props.onEdit({

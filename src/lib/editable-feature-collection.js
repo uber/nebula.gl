@@ -24,7 +24,14 @@ export class EditableFeatureCollection {
     this.featureCollection = featureCollection;
   }
 
-  getObject(): FeatureCollection {
+  setFeatureCollection(featureCollection: $Shape<FeatureCollection>) {
+    this.featureCollection = {
+      ...this.featureCollection,
+      ...featureCollection
+    };
+  }
+
+  getFeatureCollection() {
     return this.featureCollection;
   }
 
@@ -174,23 +181,23 @@ export class EditableFeatureCollection {
       ...this.featureCollection.features[featureIndex],
       geometry
     };
-    const updatedFeatureCollection = {
-      ...this.featureCollection,
+
+    this.setFeatureCollection({
       features: [
         ...this.featureCollection.features.slice(0, featureIndex),
         updatedFeature,
         ...this.featureCollection.features.slice(featureIndex + 1)
       ]
-    };
-    return new EditableFeatureCollection(updatedFeatureCollection);
+    });
+    return this;
   }
 
   addFeature(feature: Object): EditableFeatureCollection {
-    const updatedFeatureCollection = {
-      ...this.featureCollection,
+    this.setFeatureCollection({
       features: [...this.featureCollection.features, feature]
-    };
-    return new EditableFeatureCollection(updatedFeatureCollection);
+    });
+
+    return this;
   }
 
   /**

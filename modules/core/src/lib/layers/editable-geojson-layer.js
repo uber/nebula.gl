@@ -170,7 +170,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
 
     let drawFeature = this.state.drawFeature;
-    if (props !== oldProps) {
+    if (changeFlags.propsOrDataChanged) {
       // If the props are different, recalculate the draw feature
       const selectedFeature = selectedFeatures.length === 1 ? selectedFeatures[0] : null;
       drawFeature = this.getDrawFeature(selectedFeature, props.mode, null);

@@ -10,7 +10,7 @@ const resolve = require('path').resolve;
 const webpack = require('webpack');
 
 const LIB_DIR = resolve(__dirname, '..');
-const SRC_DIR = resolve(LIB_DIR, './src');
+const SRC_DIR = resolve(LIB_DIR, './modules/core/src');
 
 // Support for hot reloading changes to the nebula.gl library:
 function makeLocalDevConfig(EXAMPLE_DIR = LIB_DIR) {

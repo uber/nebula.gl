@@ -1,8 +1,8 @@
 {
   "name": "nebula.gl",
-  "description": "A suite of 3D-enabled data editing overlays, suitable for deck.gl",
+  "description": "A suite of 3D-enabled data editing layers for deck.gl",
   "license": "MIT",
-  "version": "0.4.3",
+  "private": "true",
   "author": "Georgios Karnas <georgios@uber.com>",
   "keywords": [
     "webgl",
@@ -10,27 +10,24 @@
     "overlay",
     "layer"
   ],
-  "main": "dist/index.js",
-  "module": "dist-es6/index.js",
-  "files": [
-    "dist",
-    "dist-es6",
-    "src"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/uber/nebula.gl"
+  },
+  "workspaces": [
+    "modules/*"
   ],
   "scripts": {
-    "start": "(cd examples/layer-browser && (path-exists node_modules || npm i) && npm run start-local)",
-    "build-clean": "rm -fr dist dist-es6 && mkdir -p dist dist-es6",
-    "build-es6": "rm -fr dist-es6 && babel src --out-dir dist-es6 --source-maps inline",
-    "build-es5": "rm -fr dist && babel src --out-dir dist --plugins=transform-es2015-modules-commonjs --source-maps inline",
-    "build": "npm run build-clean && npm run build-es6 && npm run build-es5",
+    "start": "open http://neb.gl/#/documentation/overview",
+    "build": "(cd modules/core && npm run build)",
     "cover": "NODE_ENV=test nyc --reporter html --reporter cobertura --reporter=lcov npm run test-cover",
-    "pretty": "prettier --write \"{src,examples,test}/**/*.js\" --loglevel warn",
+    "pretty": "prettier --write \"{modules,examples,test}/**/*.js\" --loglevel warn",
     "lint": "prettier-check \"{src,examples,test}/**/*.js\" && eslint src test examples #&& npm run lint-yarn",
     "lint-yarn": "!(grep -q unpm.u yarn.lock) && echo 'Lockfile valid.' || (echo 'Please rebuild yarn file using public npmrc' && false)",
     "flow": "flow",
     "prepublish": "npm run build",
-    "publish-prod": "npm run build && npm run test && npm run test-dist && npm publish",
-    "publish-beta": "npm run build && npm run test && npm run test-dist && npm publish --tag beta",
+    "publish-prod": "(cd modules/core && npm run publish-prod)",
+    "publish-beta": "(cd modules/core && npm run publish-beta)",
     "test": "npm run lint && npm run build && npm run flow && npm run jest",
     "test-r": "npm run lint && npm run build && npm run test-node && (cd test/rendering-test && node node-rendering.js)",
     "test-fast": "npm run test-node",

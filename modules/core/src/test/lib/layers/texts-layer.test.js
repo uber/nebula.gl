@@ -3,7 +3,7 @@ import React from 'react';
 import Renderer from 'react-test-renderer';
 
 import { viewport } from '../../mocks';
-import Nebula from '../../../lib/nebula-react';
+import Nebula from '../../../react/nebula-react';
 import TextsLayer from '../../../lib/layers/texts-layer';
 
 it('test TextsLayer', () => {

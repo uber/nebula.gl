@@ -67,7 +67,7 @@ const defaultProps = {
   editHandlePointOutline: false,
   editHandlePointStrokeWidth: 1,
   editHandlePointRadiusMinPixels: 4,
-  editHandlePointRadiusMaxPixels: Number.MAX_SAFE_INTEGER,
+  editHandlePointRadiusMaxPixels: 8,
   getEditHandlePointColor: handle =>
     handle.type === 'existing'
       ? DEFAULT_EDITING_EXISTING_POINT_COLOR

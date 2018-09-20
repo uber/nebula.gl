@@ -72,6 +72,7 @@ export default class Example extends Component<
       testFeatures: sampleGeoJson,
       mode: 'drawLineString',
       pointsRemovable: true,
+      drawAtFront: false,
       selectedFeatureIndexes: [],
       editHandleType: 'point',
       keyHolded: ''

@@ -203,7 +203,7 @@ The `onEdit` event is the core event provided by this layer and must be handled 
 
   * `addPosition`: A position was added (either at the beginning, middle, or end of a feature's coordinates). Note: this may result in a feature being "upgraded" from one type to another (e.g. `Point` to `LineString` or `LineString` to `Polygon`).
 
-  * `removePosition`: A position was removed. Note: this may result in a feature being "downgraded" from one type to another (e.g. `Polygon` to `LineString` or `LineString` to `Point`). It also may result in multiple positions being removed in order to maintain valid GeoJSON (e.g. removing a point from a triangular hole will remove the hole entirely).
+  * `removePosition`: A position was removed. Note: it may result in multiple positions being removed in order to maintain valid GeoJSON (e.g. removing a point from a triangular hole will remove the hole entirely).
 
   * `addFeature`: A new feature was added. Its index is reflected in `featureIndex`
 

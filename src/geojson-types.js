@@ -4,11 +4,11 @@
 
 export type Position = [number, number];
 export type PointCoordinates = Position;
-export type LineStringCoordinates = PointCoordinates[];
-export type PolygonCoordinates = LineStringCoordinates[];
-export type MultiPointCoordinates = PointCoordinates[];
-export type MultiLineStringCoordinates = LineStringCoordinates[];
-export type MultiPolygonCoordinates = PolygonCoordinates[];
+export type LineStringCoordinates = Position[];
+export type PolygonCoordinates = Position[][];
+export type MultiPointCoordinates = Position[];
+export type MultiLineStringCoordinates = Position[][];
+export type MultiPolygonCoordinates = Position[][][];
 
 export type AnyCoordinates =
   | PointCoordinates

@@ -133,7 +133,10 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     super.initializeState();
 
     this.setState({
-      editableFeatureCollection: null,
+      editableFeatureCollection: new EditableFeatureCollection({
+        type: 'FeatureCollection',
+        features: []
+      }),
       selectedFeatures: [],
       editHandles: [],
       drawFeature: null
@@ -148,9 +151,9 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   updateState({ props, oldProps, changeFlags }: Object) {
     super.updateState({ props, changeFlags });
 
-    let editableFeatureCollection = this.state.editableFeatureCollection;
+    const editableFeatureCollection = this.state.editableFeatureCollection;
     if (changeFlags.dataChanged) {
-      editableFeatureCollection = new EditableFeatureCollection(props.data);
+      editableFeatureCollection.setFeatureCollection(props.data);
     }
 
     let selectedFeatures = [];

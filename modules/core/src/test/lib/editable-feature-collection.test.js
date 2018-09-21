@@ -523,8 +523,9 @@ describe('getEditHandles()', () => {
       type: 'FeatureCollection',
       features: [pointFeature]
     });
+    features.setSelectedFeatureIndexes([0]);
 
-    const actual = features.getEditHandles(0);
+    const actual = features.getEditHandles();
     const expected = [{ featureIndex: 0, position: [1, 2], positionIndexes: [], type: 'existing' }];
 
     expect(actual).toEqual(expected);
@@ -535,8 +536,9 @@ describe('getEditHandles()', () => {
       type: 'FeatureCollection',
       features: [lineStringFeature]
     });
+    features.setSelectedFeatureIndexes([0]);
 
-    const actual = features.getEditHandles(0);
+    const actual = features.getEditHandles();
     const expected = [
       { featureIndex: 0, position: [1, 2], positionIndexes: [0], type: 'existing' },
       { featureIndex: 0, position: [1.5, 2.5], positionIndexes: [1], type: 'intermediate' },
@@ -553,8 +555,9 @@ describe('getEditHandles()', () => {
       type: 'FeatureCollection',
       features: [polygonFeature]
     });
+    features.setSelectedFeatureIndexes([0]);
 
-    const actual = features.getEditHandles(0);
+    const actual = features.getEditHandles();
     const expected = [
       { featureIndex: 0, position: [-1, -1], positionIndexes: [0, 0], type: 'existing' },
       { featureIndex: 0, position: [0, -1], positionIndexes: [0, 1], type: 'intermediate' },
@@ -584,8 +587,9 @@ describe('getEditHandles()', () => {
       type: 'FeatureCollection',
       features: [multiPointFeature]
     });
+    features.setSelectedFeatureIndexes([0]);
 
-    const actual = features.getEditHandles(0);
+    const actual = features.getEditHandles();
     const expected = [
       { featureIndex: 0, position: [1, 2], positionIndexes: [0], type: 'existing' },
       { featureIndex: 0, position: [3, 4], positionIndexes: [1], type: 'existing' }
@@ -599,8 +603,9 @@ describe('getEditHandles()', () => {
       type: 'FeatureCollection',
       features: [multiLineStringFeature]
     });
+    features.setSelectedFeatureIndexes([0]);
 
-    const actual = features.getEditHandles(0);
+    const actual = features.getEditHandles();
     const expected = [
       { featureIndex: 0, position: [1, 2], positionIndexes: [0, 0], type: 'existing' },
       { featureIndex: 0, position: [1.5, 2.5], positionIndexes: [0, 1], type: 'intermediate' },
@@ -622,8 +627,9 @@ describe('getEditHandles()', () => {
       type: 'FeatureCollection',
       features: [multiPolygonFeature]
     });
+    features.setSelectedFeatureIndexes([0]);
 
-    const actual = features.getEditHandles(0);
+    const actual = features.getEditHandles();
     const expected = [
       { featureIndex: 0, position: [-1, -1], positionIndexes: [0, 0, 0], type: 'existing' },
       { featureIndex: 0, position: [0, -1], positionIndexes: [0, 0, 1], type: 'intermediate' },
@@ -657,16 +663,22 @@ describe('getEditHandles()', () => {
     expect(actual).toEqual(expected);
   });
 
-  it('gets edit handles for MultiPoint in multi-feature collection', () => {
+  it('gets edit handles for all selected features in collection', () => {
     const features = new EditableFeatureCollection({
       type: 'FeatureCollection',
-      features: [lineStringFeature, multiPointFeature]
+      features: [lineStringFeature, pointFeature, multiPointFeature]
     });
+    features.setSelectedFeatureIndexes([0, 2]);
 
-    const actual = features.getEditHandles(1);
+    const actual = features.getEditHandles();
     const expected = [
-      { featureIndex: 1, position: [1, 2], positionIndexes: [0], type: 'existing' },
-      { featureIndex: 1, position: [3, 4], positionIndexes: [1], type: 'existing' }
+      { featureIndex: 0, position: [1, 2], positionIndexes: [0], type: 'existing' },
+      { featureIndex: 0, position: [1.5, 2.5], positionIndexes: [1], type: 'intermediate' },
+      { featureIndex: 0, position: [2, 3], positionIndexes: [1], type: 'existing' },
+      { featureIndex: 0, position: [2.5, 3.5], positionIndexes: [2], type: 'intermediate' },
+      { featureIndex: 0, position: [3, 4], positionIndexes: [2], type: 'existing' },
+      { featureIndex: 2, position: [1, 2], positionIndexes: [0], type: 'existing' },
+      { featureIndex: 2, position: [3, 4], positionIndexes: [1], type: 'existing' }
     ];
 
     expect(actual).toEqual(expected);

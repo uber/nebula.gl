@@ -3,6 +3,9 @@
 import bboxPolygon from '@turf/bbox-polygon';
 import circle from '@turf/circle';
 import distance from '@turf/distance';
+import ellipse from '@turf/ellipse';
+import center from '@turf/center';
+import { point, featureCollection as fc } from '@turf/helpers';
 
 import type {
   FeatureCollection,
@@ -320,7 +323,8 @@ export class EditableFeatureCollection {
     } else if (
       this._mode === 'drawRectangle' ||
       this._mode === 'drawCircleFromCenter' ||
-      this._mode === 'drawCircleByBoundingBox'
+      this._mode === 'drawCircleByBoundingBox' ||
+      this._mode === 'drawEllipseByBoundingBox'
     ) {
       editAction = this._handle2ClickPolygon(groundCoords, clickedEditHandle);
     }
@@ -545,6 +549,8 @@ export class EditableFeatureCollection {
       this._handlePointerMoveForDrawCircleFromCenter(groundCoords);
     } else if (this._mode === 'drawCircleByBoundingBox') {
       this._handlePointerMoveForDrawCircleByBoundingBox(groundCoords);
+    } else if (this._mode === 'drawEllipseByBoundingBox') {
+      this._handlePointerMoveForDrawEllipseByBoundingBox(groundCoords);
     }
   }
 
@@ -631,6 +637,26 @@ export class EditableFeatureCollection {
       const centerCoordinates = getIntermediatePosition(firstClickedPoint, groundCoords);
       const radius = Math.max(distance(firstClickedPoint, centerCoordinates), 0.001);
       this._setTentativeFeature(circle(centerCoordinates, radius));
+    }
+  }
+
+  _handlePointerMoveForDrawEllipseByBoundingBox(groundCoords: Position) {
+    if (this._clickSequence.length > 0) {
+      const corner1 = this._clickSequence[0];
+      const corner2 = groundCoords;
+
+      const minX = Math.min(corner1[0], corner2[0]);
+      const minY = Math.min(corner1[1], corner2[1]);
+      const maxX = Math.max(corner1[0], corner2[0]);
+      const maxY = Math.max(corner1[1], corner2[1]);
+
+      const polygonPoints = bboxPolygon([minX, minY, maxX, maxY]).geometry.coordinates[0];
+      const ellipseCenter = center(fc([point(corner1), point(corner2)]));
+
+      const xSemiAxis = Math.max(distance(point(polygonPoints[0]), point(polygonPoints[1])), 0.001);
+      const ySemiAxis = Math.max(distance(point(polygonPoints[0]), point(polygonPoints[3])), 0.001);
+
+      this._setTentativeFeature(ellipse(ellipseCenter, xSemiAxis, ySemiAxis));
     }
   }
 }

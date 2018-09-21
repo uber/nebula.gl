@@ -189,37 +189,21 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       editableFeatureCollection.setFeatureCollection(props.data);
     }
 
+    if (changeFlags.propsOrDataChanged) {
+      editableFeatureCollection.setMode(props.mode);
+      editableFeatureCollection.setSelectedFeatureIndexes(props.selectedFeatureIndexes);
+      editableFeatureCollection.setDrawAtFront(props.drawAtFront);
+      this.updateTentativeFeature();
+      this.updateEditHandles();
+    }
+
     let selectedFeatures = [];
     if (Array.isArray(props.selectedFeatureIndexes)) {
       // TODO: needs improved testing, i.e. checking for duplicates, NaNs, out of range numbers, ...
       selectedFeatures = props.selectedFeatureIndexes.map(elem => props.data.features[elem]);
     }
 
-    let editHandles = [];
-    if (selectedFeatures.length && props.mode !== 'view') {
-      props.selectedFeatureIndexes.forEach(index => {
-        editHandles = editHandles.concat(editableFeatureCollection.getEditHandles(index));
-      });
-    }
-
-    let drawFeature = this.state.drawFeature;
-    if (changeFlags.propsOrDataChanged) {
-      // If the props are different, recalculate the draw feature
-      const selectedFeature = selectedFeatures.length === 1 ? selectedFeatures[0] : null;
-      drawFeature = this.getDrawFeature(selectedFeature, props.mode, null);
-
-      editableFeatureCollection.setMode(props.mode);
-      editableFeatureCollection.setSelectedFeatureIndexes(props.selectedFeatureIndexes);
-      editableFeatureCollection.setDrawAtFront(props.drawAtFront);
-      this.updateTentativeFeature();
-    }
-
-    this.setState({
-      editableFeatureCollection,
-      selectedFeatures,
-      editHandles,
-      drawFeature
-    });
+    this.setState({ selectedFeatures });
   }
 
   selectionAwareAccessor(accessor: any) {
@@ -346,7 +330,15 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
   }
 
-  onDoubleClick({ groundCoords }: Object) {
+  updateEditHandles() {
+    const editHandles = this.state.editableFeatureCollection.getEditHandles();
+    if (editHandles !== this.state.editHandles) {
+      this.setState({ editHandles });
+      this.setLayerNeedsUpdate();
+    }
+  }
+
+  onDoubleClick({ groundCoords }: { groundCoords: Position }) {
     const { selectedFeatures } = this.state;
     const { selectedFeatureIndexes } = this.props;
     const selectedFeature = selectedFeatures[0];
@@ -383,22 +375,32 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
   }
 
-  onClick({ picks, screenCoords, groundCoords }: Object) {
+  onClick({
+    picks,
+    screenCoords,
+    groundCoords
+  }: {
+    picks: any[],
+    screenCoords: Position,
+    groundCoords: Position
+  }) {
     const { selectedFeatures } = this.state;
     const { selectedFeatureIndexes } = this.props;
     const editHandleInfo = this.getPickedEditHandle(picks);
+    const editHandle = editHandleInfo ? editHandleInfo.object : null;
 
     let editAction = null;
 
-    if (editHandleInfo && editHandleInfo.object.type === 'existing') {
+    if (editHandle && editHandle.type === 'existing' && editHandle.featureIndex >= 0) {
       this.handleRemovePosition(
-        this.props.data.features[editHandleInfo.object.featureIndex],
-        editHandleInfo.object.featureIndex,
-        editHandleInfo.object.positionIndexes
+        this.props.data.features[editHandle.featureIndex],
+        editHandle.featureIndex,
+        editHandle.positionIndexes
       );
     } else if (this.props.mode === 'drawLineString' || this.props.mode === 'drawPolygon') {
-      editAction = this.state.editableFeatureCollection.onClick(groundCoords);
+      editAction = this.state.editableFeatureCollection.onClick(groundCoords, editHandle);
       this.updateTentativeFeature();
+      this.updateEditHandles();
     } else if (
       this.props.mode === 'drawPoint' ||
       this.props.mode === 'drawRectangle' ||
@@ -472,7 +474,13 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     groundCoords,
     dragStartScreenCoords,
     dragStartGroundCoords
-  }: Object) {
+  }: {
+    picks: any[],
+    screenCoords: Position,
+    groundCoords: Position,
+    dragStartScreenCoords: Position,
+    dragStartGroundCoords: Position
+  }) {
     const { selectedFeatures } = this.state;
     const editHandleInfo = this.getPickedEditHandle(picks);
 
@@ -497,7 +505,13 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     groundCoords,
     dragStartScreenCoords,
     dragStartGroundCoords
-  }: Object) {
+  }: {
+    picks: any[],
+    screenCoords: Position,
+    groundCoords: Position,
+    dragStartScreenCoords: Position,
+    dragStartGroundCoords: Position
+  }) {
     const { selectedFeatures } = this.state;
 
     if (!selectedFeatures.length) {
@@ -520,7 +534,13 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     groundCoords,
     dragStartScreenCoords,
     dragStartGroundCoords
-  }: Object) {
+  }: {
+    picks: any[],
+    screenCoords: Position,
+    groundCoords: Position,
+    dragStartScreenCoords: Position,
+    dragStartGroundCoords: Position
+  }) {
     const { selectedFeatures } = this.state;
 
     if (!selectedFeatures.length) {
@@ -539,13 +559,20 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }
 
   onPointerMove({
+    picks,
     screenCoords,
     groundCoords,
     isDragging,
-    picks,
     pointerDownPicks,
     sourceEvent
-  }: Object) {
+  }: {
+    picks: any[],
+    screenCoords: Position,
+    groundCoords: Position,
+    isDragging: boolean,
+    pointerDownPicks: any[],
+    sourceEvent: any
+  }) {
     this.setState({ pointerMovePicks: picks });
 
     if (pointerDownPicks && pointerDownPicks.length > 0) {
@@ -559,6 +586,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
     this.state.editableFeatureCollection.onPointerMove(groundCoords);
     this.updateTentativeFeature();
+    this.updateEditHandles();
 
     if (
       this.props.mode === 'drawRectangle' ||
@@ -742,7 +770,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     return drawFeature;
   }
 
-  handleTransformRotate(screenCoords: number[], groundCoords: Position) {
+  handleTransformRotate(screenCoords: Position, groundCoords: Position) {
     const { modeConfig } = this.props;
     let pivot;
 

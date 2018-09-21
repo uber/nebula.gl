@@ -263,52 +263,25 @@ export class EditableFeatureCollection {
    *
    * @param featureIndex The index of the feature to get edit handles
    */
-  getEditHandles(featureIndex: number): EditHandle[] {
+  getEditHandles(): EditHandle[] {
     let handles = [];
 
-    const geometry = this.featureCollection.features[featureIndex].geometry;
+    if (this._mode === 'view') {
+      return handles;
+    }
 
-    switch (geometry.type) {
-      case 'Point':
-        // positions are not nested
-        handles = [
-          {
-            position: geometry.coordinates,
-            positionIndexes: [],
-            featureIndex,
-            type: 'existing'
-          }
-        ];
-        break;
-      case 'MultiPoint':
-      case 'LineString':
-        // positions are nested 1 level
-        const includeIntermediate = geometry.type !== 'MultiPoint';
-        handles = handles.concat(
-          getEditHandles(geometry.coordinates, [], includeIntermediate, featureIndex)
-        );
-        break;
-      case 'Polygon':
-      case 'MultiLineString':
-        // positions are nested 2 levels
-        for (let a = 0; a < geometry.coordinates.length; a++) {
-          handles = handles.concat(
-            getEditHandles(geometry.coordinates[a], [a], true, featureIndex)
-          );
-        }
-        break;
-      case 'MultiPolygon':
-        // positions are nested 3 levels
-        for (let a = 0; a < geometry.coordinates.length; a++) {
-          for (let b = 0; b < geometry.coordinates[a].length; b++) {
-            handles = handles.concat(
-              getEditHandles(geometry.coordinates[a][b], [a, b], true, featureIndex)
-            );
-          }
-        }
-        break;
-      default:
-        throw Error(`Unhandled geometry type: ${geometry.type}`);
+    for (const index of this._selectedFeatureIndexes) {
+      const geometry = this.featureCollection.features[index].geometry;
+      handles = handles.concat(getEditHandlesForGeometry(geometry, index));
+    }
+
+    if (this._tentativeFeature) {
+      handles = handles.concat(getEditHandlesForGeometry(this._tentativeFeature.geometry, -1));
+
+      // Slice off the last handle (which is right under the cursor)
+      if (this._tentativeFeature && this._tentativeFeature.geometry.type === 'LineString') {
+        handles = handles.slice(0, -1);
+      }
     }
 
     return handles;
@@ -318,14 +291,14 @@ export class EditableFeatureCollection {
     return this._tentativeFeature;
   }
 
-  onClick(groundCoords: Position): ?EditAction {
+  onClick(groundCoords: Position, clickedEditHandle: ?EditHandle): ?EditAction {
     this._clickSequence.push(groundCoords);
 
     let editAction: ?EditAction = null;
     if (this._mode === 'drawLineString') {
-      editAction = this._handleClickDrawLineString(groundCoords);
+      editAction = this._handleClickDrawLineString(groundCoords, clickedEditHandle);
     } else if (this._mode === 'drawPolygon') {
-      editAction = this._handleClickDrawPolygon(groundCoords);
+      editAction = this._handleClickDrawPolygon(groundCoords, clickedEditHandle);
     }
 
     if (editAction) {
@@ -336,7 +309,7 @@ export class EditableFeatureCollection {
     return editAction;
   }
 
-  _handleClickDrawLineString(groundCoords: Position): ?EditAction {
+  _handleClickDrawLineString(groundCoords: Position, clickedEditHandle: ?EditHandle): ?EditAction {
     let editAction: ?EditAction;
     const selectedFeatureIndexes = this._selectedFeatureIndexes;
     const selectedGeoemtry = this.getSelectedGeometry();
@@ -373,6 +346,7 @@ export class EditableFeatureCollection {
         positionIndexes,
         position: groundCoords
       };
+      this._setTentativeFeature(null);
     } else if (this._clickSequence.length === 1) {
       // No selection and this is the first click
       this._setTentativeFeature({
@@ -383,39 +357,89 @@ export class EditableFeatureCollection {
         }
       });
     } else if (this._clickSequence.length === 2 && tentativeFeature) {
-      const updatedData = this.addFeature({
-        type: 'Feature',
-        properties: {},
-        geometry: tentativeFeature.geometry
-      }).getFeatureCollection();
-
-      editAction = {
-        updatedData,
-        editType: 'addFeature',
-        featureIndex: updatedData.features.length - 1,
-        positionIndexes: [1],
-        position: groundCoords
-      };
+      editAction = this._getAddFeatureEditAction(tentativeFeature.geometry);
+      this._setTentativeFeature(null);
     }
 
     return editAction;
   }
 
-  _handleClickDrawPolygon(groundCoords: Position): ?EditAction {
-    return null;
+  _handleClickDrawPolygon(groundCoords: Position, clickedEditHandle: ?EditHandle): ?EditAction {
+    let editAction: ?EditAction;
+    const selectedFeatureIndexes = this._selectedFeatureIndexes;
+    const tentativeFeature = this._tentativeFeature;
+
+    if (selectedFeatureIndexes.length > 0) {
+      console.warn(`Can only draw polygons when no selection`); // eslint-disable-line
+      return null;
+    }
+
+    if (this._clickSequence.length === 1) {
+      // No selection and this is the first click
+      this._setTentativeFeature({
+        type: 'Feature',
+        geometry: {
+          type: 'LineString',
+          coordinates: [groundCoords, groundCoords]
+        }
+      });
+    } else if (tentativeFeature && tentativeFeature.geometry.type === 'LineString') {
+      const lineString: LineString = tentativeFeature.geometry;
+
+      if (
+        lineString.coordinates.length > 2 &&
+        clickedEditHandle &&
+        clickedEditHandle.featureIndex === -1 &&
+        (clickedEditHandle.positionIndexes[0] === 0 ||
+          clickedEditHandle.positionIndexes[0] === lineString.coordinates.length - 1)
+      ) {
+        // They clicked the first or last point, so complete the polygon
+        const polygon: Polygon = {
+          type: 'Polygon',
+          coordinates: [[...lineString.coordinates.slice(0, -1), lineString.coordinates[0]]]
+        };
+        editAction = this._getAddFeatureEditAction(polygon);
+        this._setTentativeFeature(null);
+      } else {
+        // add a point to the tentative LineString
+        this._setTentativeFeature({
+          type: 'Feature',
+          geometry: {
+            type: 'LineString',
+            coordinates: [...lineString.coordinates, groundCoords]
+          }
+        });
+      }
+    }
+
+    return editAction;
   }
 
-  onPointerMove(groundCoords: ?Position): void {
+  _getAddFeatureEditAction(geometry: Geometry): EditAction {
+    const updatedData = this.addFeature({
+      type: 'Feature',
+      properties: {},
+      geometry
+    }).getFeatureCollection();
+
+    return {
+      updatedData,
+      editType: 'addFeature',
+      featureIndex: updatedData.features.length - 1,
+      positionIndexes: null,
+      position: null
+    };
+  }
+
+  onPointerMove(groundCoords: Position): void {
     if (this._mode === 'drawLineString') {
       this._handlePointerMoveForDrawLineString(groundCoords);
     } else if (this._mode === 'drawPolygon') {
       this._handlePointerMoveForDrawPolygon(groundCoords);
-    } else {
-      this._setTentativeFeature(null);
     }
   }
 
-  _handlePointerMoveForDrawLineString(groundCoords: ?Position) {
+  _handlePointerMoveForDrawLineString(groundCoords: Position): void {
     let startPosition: ?Position = null;
     const selectedGeometry = this.getSelectedGeometry();
     const tentativeFeature = this._tentativeFeature;
@@ -437,57 +461,31 @@ export class EditableFeatureCollection {
     }
 
     if (startPosition) {
-      const endPosition = groundCoords || startPosition;
-
       this._setTentativeFeature({
         type: 'Feature',
         properties: {},
         geometry: {
           type: 'LineString',
-          coordinates: [startPosition, endPosition]
+          coordinates: [startPosition, groundCoords]
         }
       });
     }
   }
 
-  _handlePointerMoveForDrawPolygon(groundCoords: ?Position) {
-    // Requires two features, a non-stroked polygon for fill and a
-    // line string for the drawing feature
-    //   drawFeature = {
-    //     type: 'FeatureCollection',
-    //     features: [
-    //       {
-    //         type: 'Feature',
-    //         geometry: {
-    //           type: 'Polygon',
-    //           coordinates: [
-    //             [
-    //               // Draw a polygon containing all the points of the LineString,
-    //               // then the mouse position,
-    //               // then back to the starting position
-    //               ...selectedGeometry.coordinates,
-    //               currentPosition,
-    //               selectedGeometry.coordinates[0]
-    //             ]
-    //           ]
-    //         }
-    //       },
-    //       {
-    //         type: 'Feature',
-    //         geometry: {
-    //           type: 'LineString',
-    //           coordinates: [
-    //             selectedGeometry.coordinates[
-    //               selectedGeometry.coordinates.length - 1
-    //             ],
-    //             currentPosition,
-    //             selectedGeometry.coordinates[0]
-    //           ]
-    //         }
-    //       }
-    //     ]
-    //   };
-    // }
+  _handlePointerMoveForDrawPolygon(groundCoords: Position) {
+    const tentativeFeature = this._tentativeFeature;
+
+    if (tentativeFeature && tentativeFeature.geometry.type === 'LineString') {
+      // Move the last point of the LineString to where the pointer is
+      const tentativeGeometry: LineString = tentativeFeature.geometry;
+      this._setTentativeFeature({
+        type: 'Feature',
+        geometry: {
+          type: 'LineString',
+          coordinates: [...tentativeGeometry.coordinates.slice(0, -1), groundCoords]
+        }
+      });
+    }
   }
 }
 
@@ -694,7 +692,56 @@ function getIntermediatePosition(position1: Position, position2: Position): Posi
   return intermediatePosition;
 }
 
-function getEditHandles(
+function getEditHandlesForGeometry(geometry: Geometry, featureIndex: number) {
+  let handles = [];
+
+  switch (geometry.type) {
+    case 'Point':
+      // positions are not nested
+      handles = [
+        {
+          position: geometry.coordinates,
+          positionIndexes: [],
+          featureIndex,
+          type: 'existing'
+        }
+      ];
+      break;
+    case 'MultiPoint':
+    case 'LineString':
+      // positions are nested 1 level
+      const includeIntermediate = geometry.type !== 'MultiPoint';
+      handles = handles.concat(
+        getEditHandlesForCoordinates(geometry.coordinates, [], includeIntermediate, featureIndex)
+      );
+      break;
+    case 'Polygon':
+    case 'MultiLineString':
+      // positions are nested 2 levels
+      for (let a = 0; a < geometry.coordinates.length; a++) {
+        handles = handles.concat(
+          getEditHandlesForCoordinates(geometry.coordinates[a], [a], true, featureIndex)
+        );
+      }
+      break;
+    case 'MultiPolygon':
+      // positions are nested 3 levels
+      for (let a = 0; a < geometry.coordinates.length; a++) {
+        for (let b = 0; b < geometry.coordinates[a].length; b++) {
+          handles = handles.concat(
+            getEditHandlesForCoordinates(geometry.coordinates[a][b], [a, b], true, featureIndex)
+          );
+        }
+      }
+      break;
+    default:
+      throw Error(`Unhandled geometry type: ${geometry.type}`);
+  }
+
+  return handles;
+}
+
+function getEditHandlesForCoordinates(
   coordinates: any[],
   positionIndexPrefix: number[],
   includeIntermediate: boolean,

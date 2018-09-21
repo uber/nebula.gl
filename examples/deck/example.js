@@ -70,7 +70,7 @@ export default class Example extends Component<
     this.state = {
       viewport: initialViewport,
       testFeatures: sampleGeoJson,
-      mode: 'drawLineString',
+      mode: 'drawPolygon',
       pointsRemovable: true,
       drawAtFront: false,
       selectedFeatureIndexes: [],

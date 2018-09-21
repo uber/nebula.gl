@@ -1,6 +1,9 @@
 // @flow
 
 import bboxPolygon from '@turf/bbox-polygon';
+import circle from '@turf/circle';
+import distance from '@turf/distance';
+
 import type {
   FeatureCollection,
   Feature,
@@ -314,8 +317,8 @@ export class EditableFeatureCollection {
       editAction = this._handleClickDrawLineString(groundCoords, clickedEditHandle);
     } else if (this._mode === 'drawPolygon') {
       editAction = this._handleClickDrawPolygon(groundCoords, clickedEditHandle);
-    } else if (this._mode === 'drawRectangle') {
-      editAction = this._handleClickDrawRectangle(groundCoords, clickedEditHandle);
+    } else if (this._mode === 'drawRectangle' || this._mode === 'drawCircleFromCenter') {
+      editAction = this._handle2ClickPolygon(groundCoords, clickedEditHandle);
     }
 
     if (editAction) {
@@ -491,7 +494,7 @@ export class EditableFeatureCollection {
     return editAction;
   }
 
-  _handleClickDrawRectangle(groundCoords: Position, clickedEditHandle: ?EditHandle): ?EditAction {
+  _handle2ClickPolygon(groundCoords: Position, clickedEditHandle: ?EditHandle): ?EditAction {
     const tentativeFeature = this._tentativeFeature;
 
     if (this._clickSequence.length === 1) {
@@ -534,6 +537,8 @@ export class EditableFeatureCollection {
       this._handlePointerMoveForDrawPolygon(groundCoords);
     } else if (this._mode === 'drawRectangle') {
       this._handlePointerMoveForDrawRectangle(groundCoords);
+    } else if (this._mode === 'drawCircleFromCenter') {
+      this._handlePointerMoveForDrawCircleFromCenter(groundCoords);
     }
   }
 
@@ -603,6 +608,14 @@ export class EditableFeatureCollection {
       const corner1 = this._clickSequence[0];
       const corner2 = groundCoords;
       this._setTentativeFeature(bboxPolygon([corner1[0], corner1[1], corner2[0], corner2[1]]));
+    }
+  }
+
+  _handlePointerMoveForDrawCircleFromCenter(groundCoords: Position) {
+    if (this._clickSequence.length > 0) {
+      const centerCoordinates = this._clickSequence[0];
+      const radius = Math.max(distance(centerCoordinates, groundCoords), 0.001);
+      this._setTentativeFeature(circle(centerCoordinates, radius));
     }
   }
 }

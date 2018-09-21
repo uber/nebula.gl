@@ -356,7 +356,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
     // if (
     //   this.props.mode === 'drawRectangleUsing3Points' ||
-    //   this.props.mode === 'drawCircleFromCenter' ||
     //   this.props.mode === 'drawCircleByBoundingBox' ||
     //   this.props.mode === 'drawEllipseByBoundingBox' ||
     //   this.props.mode === 'drawEllipseUsing3Points'
@@ -374,7 +373,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     //       );
     //     }
     //     if (
-    //       this.props.mode === 'drawCircleFromCenter' ||
     //       this.props.mode === 'drawCircleByBoundingBox'
     //     ) {
     //       this.handleDrawCircle(
@@ -562,13 +560,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
             coordinates: [startPosition, endPosition]
           }
         };
-      } else if (mode === 'drawCircleFromCenter') {
-        const centerCoordinates = ((selectedFeature.geometry.coordinates: any): Array<number>);
-        const radius = Math.max(
-          distance(selectedFeature, groundCoords || centerCoordinates),
-          0.001
-        );
-        drawFeature = circle(centerCoordinates, radius);
       } else if (mode === 'drawCircleByBoundingBox') {
         const centerCoordinates = (selectedFeature.geometry.coordinates.map(
           (p, i) => (groundCoords && (p + groundCoords[i]) / 2) || p

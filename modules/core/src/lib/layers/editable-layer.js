@@ -196,10 +196,20 @@ export default class EditableLayer extends CompositeLayer {
       }
     }
 
+    const picks = this.context.layerManager.pickObject({
+      x: screenCoords[0],
+      y: screenCoords[1],
+      mode: 'query',
+      layers: [this.props.id],
+      radius: 10,
+      viewports: [this.context.viewport]
+    });
+
     this.onPointerMove({
       screenCoords,
       groundCoords,
       isDragging,
+      picks,
       pointerDownPicks,
       sourceEvent: event
     });

@@ -133,7 +133,10 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     super.initializeState();
 
     this.setState({
-      editableFeatureCollection: null,
+      editableFeatureCollection: new EditableFeatureCollection({
+        type: 'FeatureCollection',
+        features: []
+      }),
       selectedFeatures: [],
       editHandles: [],
       drawFeature: null
@@ -148,9 +151,9 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   updateState({ props, oldProps, changeFlags }: Object) {
     super.updateState({ props, changeFlags });
 
-    let editableFeatureCollection = this.state.editableFeatureCollection;
+    const editableFeatureCollection = this.state.editableFeatureCollection;
     if (changeFlags.dataChanged) {
-      editableFeatureCollection = new EditableFeatureCollection(props.data);
+      editableFeatureCollection.setFeatureCollection(props.data);
     }
 
     let selectedFeatures = [];
@@ -167,7 +170,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
 
     let drawFeature = this.state.drawFeature;
-    if (props !== oldProps) {
+    if (changeFlags.propsOrDataChanged) {
       // If the props are different, recalculate the draw feature
       const selectedFeature = selectedFeatures.length === 1 ? selectedFeatures[0] : null;
       drawFeature = this.getDrawFeature(selectedFeature, props.mode, null);
@@ -492,18 +495,23 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
   }
 
-  onPointerMove({ screenCoords, groundCoords, isDragging, pointerDownPicks, sourceEvent }: Object) {
-    if (this.props.mode === 'modify') {
-      const picks = this.context.layerManager.pickObject({
-        x: screenCoords[0],
-        y: screenCoords[1],
-        mode: 'query',
-        layers: [this.props.id],
-        radius: 10,
-        viewports: [this.context.viewport]
-      });
+  onPointerMove({
+    screenCoords,
+    groundCoords,
+    isDragging,
+    picks,
+    pointerDownPicks,
+    sourceEvent
+  }: Object) {
+    this.setState({ pointerMovePicks: picks });
 
-      this.setState({ pointerMovePicks: picks });
+    if (pointerDownPicks && pointerDownPicks.length > 0) {
+      const editHandleInfo = this.getPickedEditHandle(pointerDownPicks);
+      if (editHandleInfo) {
+        // TODO: find a less hacky way to prevent map panning
+        // Stop propagation to prevent map panning while dragging an edit handle
+        sourceEvent.stopPropagation();
+      }
     }
 
     if (
@@ -526,14 +534,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       this.setLayerNeedsUpdate();
     }
 
-    if (pointerDownPicks && pointerDownPicks.length > 0) {
-      const editHandleInfo = this.getPickedEditHandle(pointerDownPicks);
-      if (editHandleInfo) {
-        // TODO: find a less hacky way to prevent map panning
-        // Stop propagation to prevent map panning while dragging an edit handle
-        sourceEvent.stopPropagation();
-      }
-    }
     if (
       this.props.mode === 'modify' &&
       this.props.modeConfig &&

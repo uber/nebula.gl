@@ -355,7 +355,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     this.updateEditHandles();
 
     // if (
-    //   this.props.mode === 'drawPoint' ||
     //   this.props.mode === 'drawRectangle' ||
     //   this.props.mode === 'drawRectangleUsing3Points' ||
     //   this.props.mode === 'drawCircleFromCenter' ||
@@ -363,8 +362,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     //   this.props.mode === 'drawEllipseByBoundingBox' ||
     //   this.props.mode === 'drawEllipseUsing3Points'
     // ) {
-    //   if (!selectedFeatures.length) {
-    //     this.handleDrawNewPoint(groundCoords);
     //   } else if (selectedFeatures.length === 1) {
     //     // can only draw feature while one is selected
     //     if (this.props.mode === 'drawRectangle') {
@@ -958,32 +955,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       editType: 'addPosition',
       featureIndex,
       positionIndexes,
-      position: groundCoords
-    });
-  }
-
-  handleDrawNewPoint(groundCoords: Position) {
-    // Starts off as a point (since LineString requires at least 2 positions)
-    const newFeature = {
-      type: 'Feature',
-      geometry: {
-        type: 'Point',
-        coordinates: groundCoords
-      }
-    };
-
-    const updatedData = this.state.editableFeatureCollection
-      .addFeature(newFeature)
-      .getFeatureCollection();
-    const featureIndex = this.props.data.features.length;
-
-    this.props.onEdit({
-      updatedData,
-      updatedMode: this.props.mode,
-      updatedSelectedFeatureIndexes: [featureIndex],
-      editType: 'addFeature',
-      featureIndex,
-      positionIndexes: [0],
       position: groundCoords
     });
   }

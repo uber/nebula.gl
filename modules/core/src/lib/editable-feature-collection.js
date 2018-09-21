@@ -4,11 +4,12 @@ import type {
   FeatureCollection,
   Feature,
   Geometry,
-  Position,
+  Point,
   LineString,
   Polygon,
   MultiLineString,
   MultiPolygon,
+  Position,
   PolygonCoordinates
 } from '../geojson-types.js';
 
@@ -306,6 +307,8 @@ export class EditableFeatureCollection {
       clickedEditHandle.featureIndex >= 0
     ) {
       editAction = this._handleRemovePosition(clickedEditHandle);
+    } else if (this._mode === 'drawPoint') {
+      editAction = this._handleClickDrawPoint(groundCoords, clickedEditHandle);
     } else if (this._mode === 'drawLineString') {
       editAction = this._handleClickDrawLineString(groundCoords, clickedEditHandle);
     } else if (this._mode === 'drawPolygon') {
@@ -341,6 +344,15 @@ export class EditableFeatureCollection {
       };
     }
     return null;
+  }
+
+  _handleClickDrawPoint(groundCoords: Position, clickedEditHandle: ?EditHandle): ?EditAction {
+    const geometry: Point = {
+      type: 'Point',
+      coordinates: groundCoords
+    };
+
+    return this._getAddFeatureEditAction(geometry);
   }
 
   _handleClickDrawLineString(groundCoords: Position, clickedEditHandle: ?EditHandle): ?EditAction {

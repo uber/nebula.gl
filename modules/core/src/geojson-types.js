@@ -56,13 +56,21 @@ export type Polygonal = Polygon | MultiPolygon;
 
 export type BoundingBoxArray = [number, number, number, number];
 
-export type Feature = {
+export type FeatureOf<T: Geometry> = {
   type: 'Feature',
-  geometry: Geometry,
+  geometry: T,
   properties?: {},
   id?: string | number,
   bbox?: BoundingBoxArray
 };
+
+export type Feature =
+  | FeatureOf<Point>
+  | FeatureOf<LineString>
+  | FeatureOf<Polygon>
+  | FeatureOf<MultiPoint>
+  | FeatureOf<MultiLineString>
+  | FeatureOf<MultiPolygon>;
 
 export type FeatureCollection = {
   type: 'FeatureCollection',

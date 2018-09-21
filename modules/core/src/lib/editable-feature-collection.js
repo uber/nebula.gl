@@ -38,6 +38,10 @@ export class EditableFeatureCollection {
     this.featureCollection = featureCollection;
   }
 
+  getFeatureCollection() {
+    return this.featureCollection;
+  }
+
   setFeatureCollection(featureCollection: $Shape<FeatureCollection>) {
     this.featureCollection = {
       ...this.featureCollection,
@@ -45,8 +49,41 @@ export class EditableFeatureCollection {
     };
   }
 
-  getFeatureCollection() {
-    return this.featureCollection;
+  setMode(mode: string): void {
+    if (this._mode === mode) {
+      return;
+    }
+
+    this._mode = mode;
+    this._setTentativeFeature(null);
+  }
+
+  setSelectedFeatureIndexes(indexes: number[]): void {
+    if (this._selectedFeatureIndexes === indexes) {
+      return;
+    }
+
+    this._selectedFeatureIndexes = indexes;
+    this._setTentativeFeature(null);
+
+    this._selectedFeature = null;
+    if (indexes.length === 1) {
+      this._selectedFeature = this.featureCollection.features[indexes[0]];
+    }
+  }
+
+  setDrawAtFront(drawAtFront: boolean): void {
+    if (this._drawAtFront === drawAtFront) {
+      return;
+    }
+
+    this._drawAtFront = drawAtFront;
+    this._setTentativeFeature(null);
+  }
+
+  _setTentativeFeature(tentativeFeature: ?Feature) {
+    // console.log('Setting tentative feature', JSON.stringify(tentativeFeature));
+    this._tentativeFeature = tentativeFeature;
   }
 
   /**
@@ -272,43 +309,6 @@ export class EditableFeatureCollection {
 
   getTentativeFeature(): ?Feature {
     return this._tentativeFeature;
-  }
-
-  setMode(mode: string): void {
-    if (this._mode === mode) {
-      return;
-    }
-
-    this._mode = mode;
-    this._setTentativeFeature(null);
-  }
-
-  setSelectedFeatureIndexes(indexes: number[]): void {
-    if (this._selectedFeatureIndexes === indexes) {
-      return;
-    }
-
-    this._selectedFeatureIndexes = indexes;
-    this._setTentativeFeature(null);
-
-    this._selectedFeature = null;
-    if (indexes.length === 1) {
-      this._selectedFeature = this.featureCollection.features[indexes[0]];
-    }
-  }
-
-  setDrawAtFront(drawAtFront: boolean): void {
-    if (this._drawAtFront === drawAtFront) {
-      return;
-    }
-
-    this._drawAtFront = drawAtFront;
-    this._setTentativeFeature(null);
-  }
-
-  _setTentativeFeature(tentativeFeature: ?Feature) {
-    // console.log('Setting tentative feature', JSON.stringify(tentativeFeature));
-    this._tentativeFeature = tentativeFeature;
   }
 
   onClick(groundCoords: Position): ?EditAction {

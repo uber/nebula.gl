@@ -5,6 +5,7 @@ import type {
   Feature,
   Geometry,
   Position,
+  LineString,
   Polygon,
   MultiLineString,
   MultiPolygon,
@@ -31,8 +32,8 @@ export class EditableFeatureCollection {
   _tentativeFeature: ?Feature;
   _mode: string;
   _selectedFeatureIndexes: number[];
-  _selectedFeature: ?Feature;
   _drawAtFront: boolean;
+  _clickSequence: Position[] = [];
 
   constructor(featureCollection: FeatureCollection) {
     this.featureCollection = featureCollection;
@@ -40,6 +41,13 @@ export class EditableFeatureCollection {
 
   getFeatureCollection() {
     return this.featureCollection;
+  }
+
+  getSelectedGeometry() {
+    if (this._selectedFeatureIndexes.length === 1) {
+      return this.featureCollection.features[this._selectedFeatureIndexes[0]].geometry;
+    }
+    return null;
   }
 
   setFeatureCollection(featureCollection: $Shape<FeatureCollection>) {
@@ -65,11 +73,6 @@ export class EditableFeatureCollection {
 
     this._selectedFeatureIndexes = indexes;
     this._setTentativeFeature(null);
-
-    this._selectedFeature = null;
-    if (indexes.length === 1) {
-      this._selectedFeature = this.featureCollection.features[indexes[0]];
-    }
   }
 
   setDrawAtFront(drawAtFront: boolean): void {
@@ -82,8 +85,11 @@ export class EditableFeatureCollection {
   }
 
   _setTentativeFeature(tentativeFeature: ?Feature) {
-    // console.log('Setting tentative feature', JSON.stringify(tentativeFeature));
     this._tentativeFeature = tentativeFeature;
+    if (!tentativeFeature) {
+      // Reset the click sequence
+      this._clickSequence = [];
+    }
   }
 
   /**
@@ -228,7 +234,8 @@ export class EditableFeatureCollection {
   }
 
   replaceGeometry(featureIndex: number, geometry: Geometry): EditableFeatureCollection {
-    const updatedFeature = {
+    // $FlowFixMe: just do it flow
+    const updatedFeature: Feature = {
       ...this.featureCollection.features[featureIndex],
       geometry
     };
@@ -312,20 +319,62 @@ export class EditableFeatureCollection {
   }
 
   onClick(groundCoords: Position): ?EditAction {
+    this._clickSequence.push(groundCoords);
+
+    let editAction: ?EditAction = null;
     if (this._mode === 'drawLineString') {
-      return this._handleClickDrawLineString(groundCoords);
+      editAction = this._handleClickDrawLineString(groundCoords);
+    } else if (this._mode === 'drawPolygon') {
+      editAction = this._handleClickDrawPolygon(groundCoords);
     }
-    return null;
+
+    if (editAction) {
+      // Reset the click sequence upon each edit
+      this._clickSequence = [];
+    }
+
+    return editAction;
   }
 
   _handleClickDrawLineString(groundCoords: Position): ?EditAction {
     let editAction: ?EditAction;
     const selectedFeatureIndexes = this._selectedFeatureIndexes;
-    const selectedFeature = this._selectedFeature;
+    const selectedGeoemtry = this.getSelectedGeometry();
     const tentativeFeature = this._tentativeFeature;
 
-    if (!tentativeFeature) {
-      // Start a new feature
+    if (selectedFeatureIndexes.length > 1) {
+      console.warn(`Unsupported operation for multiple selection`); // eslint-disable-line
+      return null;
+    }
+    if (selectedGeoemtry && selectedGeoemtry.type !== 'LineString') {
+      console.warn(`Unsupported geometry type: ${selectedGeoemtry.type}`); // eslint-disable-line
+      return null;
+    }
+
+    if (selectedGeoemtry && selectedGeoemtry.type === 'LineString') {
+      // Extend the LineString
+      const selectedGeometry: LineString = selectedGeoemtry;
+
+      let positionIndexes = [selectedGeometry.coordinates.length];
+      if (this._drawAtFront) {
+        positionIndexes = [0];
+      }
+      const featureIndex = selectedFeatureIndexes[0];
+      const updatedData = this.addPosition(
+        featureIndex,
+        positionIndexes,
+        groundCoords
+      ).getFeatureCollection();
+
+      editAction = {
+        updatedData,
+        editType: 'addPosition',
+        featureIndex,
+        positionIndexes,
+        position: groundCoords
+      };
+    } else if (this._clickSequence.length === 1) {
+      // No selection and this is the first click
       this._setTentativeFeature({
         type: 'Feature',
         geometry: {
@@ -333,51 +382,34 @@ export class EditableFeatureCollection {
           coordinates: [groundCoords, groundCoords]
         }
       });
-    } else if (this._mode === 'drawLineString') {
-      if (!selectedFeature) {
-        const updatedData = this.addFeature({
-          type: 'Feature',
-          properties: {},
-          geometry: tentativeFeature.geometry
-        }).getFeatureCollection();
+    } else if (this._clickSequence.length === 2 && tentativeFeature) {
+      const updatedData = this.addFeature({
+        type: 'Feature',
+        properties: {},
+        geometry: tentativeFeature.geometry
+      }).getFeatureCollection();
 
-        editAction = {
-          updatedData,
-          editType: 'addFeature',
-          featureIndex: updatedData.features.length - 1,
-          positionIndexes: [1],
-          position: groundCoords
-        };
-      } else if (selectedFeature.geometry.type === 'LineString') {
-        let positionIndexes = [selectedFeature.geometry.coordinates.length];
-        if (this._drawAtFront) {
-          positionIndexes = [0];
-        }
-        const featureIndex = selectedFeatureIndexes[0];
-        const updatedData = this.addPosition(
-          featureIndex,
-          positionIndexes,
-          groundCoords
-        ).getFeatureCollection();
-
-        editAction = {
-          updatedData,
-          editType: 'addPosition',
-          featureIndex,
-          positionIndexes,
-          position: groundCoords
-        };
-      } else {
-        console.warn(`Unsupported geometry type: ${selectedFeature.geometry.type}`); // eslint-disable-line
-      }
+      editAction = {
+        updatedData,
+        editType: 'addFeature',
+        featureIndex: updatedData.features.length - 1,
+        positionIndexes: [1],
+        position: groundCoords
+      };
     }
 
     return editAction;
   }
 
+  _handleClickDrawPolygon(groundCoords: Position): ?EditAction {
+    return null;
+  }
+
   onPointerMove(groundCoords: ?Position): void {
     if (this._mode === 'drawLineString') {
       this._handlePointerMoveForDrawLineString(groundCoords);
+    } else if (this._mode === 'drawPolygon') {
+      this._handlePointerMoveForDrawPolygon(groundCoords);
     } else {
       this._setTentativeFeature(null);
     }
@@ -385,15 +417,14 @@ export class EditableFeatureCollection {
 
   _handlePointerMoveForDrawLineString(groundCoords: ?Position) {
     let startPosition: ?Position = null;
-    const selectedFeature = this._selectedFeature;
+    const selectedGeometry = this.getSelectedGeometry();
     const tentativeFeature = this._tentativeFeature;
 
-    if (selectedFeature && selectedFeature.geometry.type === 'LineString') {
+    if (selectedGeometry && selectedGeometry.type === 'LineString') {
       // Draw an extension line starting from one end of the selected LineString
-      startPosition =
-        selectedFeature.geometry.coordinates[selectedFeature.geometry.coordinates.length - 1];
+      startPosition = selectedGeometry.coordinates[selectedGeometry.coordinates.length - 1];
       if (this._drawAtFront) {
-        startPosition = selectedFeature.geometry.coordinates[0];
+        startPosition = selectedGeometry.coordinates[0];
       }
     } else if (tentativeFeature) {
       // Draw an extension line starting from the first clicked point
@@ -417,6 +448,46 @@ export class EditableFeatureCollection {
         }
       });
     }
+  }
+
+  _handlePointerMoveForDrawPolygon(groundCoords: ?Position) {
+    // Requires two features, a non-stroked polygon for fill and a
+    // line string for the drawing feature
+    //   drawFeature = {
+    //     type: 'FeatureCollection',
+    //     features: [
+    //       {
+    //         type: 'Feature',
+    //         geometry: {
+    //           type: 'Polygon',
+    //           coordinates: [
+    //             [
+    //               // Draw a polygon containing all the points of the LineString,
+    //               // then the mouse position,
+    //               // then back to the starting position
+    //               ...selectedGeometry.coordinates,
+    //               currentPosition,
+    //               selectedGeometry.coordinates[0]
+    //             ]
+    //           ]
+    //         }
+    //       },
+    //       {
+    //         type: 'Feature',
+    //         geometry: {
+    //           type: 'LineString',
+    //           coordinates: [
+    //             selectedGeometry.coordinates[
+    //               selectedGeometry.coordinates.length - 1
+    //             ],
+    //             currentPosition,
+    //             selectedGeometry.coordinates[0]
+    //           ]
+    //         }
+    //       }
+    //     ]
+    //   };
+    // }
   }
 }
 

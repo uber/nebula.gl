@@ -210,6 +210,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
       editableFeatureCollection.setMode(props.mode);
       editableFeatureCollection.setSelectedFeatureIndexes(props.selectedFeatureIndexes);
+      editableFeatureCollection.setDrawAtFront(props.drawAtFront);
       this.updateTentativeFeature();
     }
 
@@ -300,87 +301,41 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }
 
   createDrawLayers() {
-    if (!this.state.drawFeature && !this.state.tentativeFeature) {
+    if (!this.state.tentativeFeature) {
       return [];
     }
 
-    const layers = [];
-
-    const tentativeFeature = this.state.tentativeFeature;
-    if (tentativeFeature) {
-      layers.push(
-        new GeoJsonLayer(
-          this.getSubLayerProps({
-            id: 'tentative',
-            data: tentativeFeature,
-            fp64: this.props.fp64,
-            pickable: false,
-            stroked: true,
-            autoHighlight: false,
-            lineWidthScale: this.props.lineWidthScale,
-            lineWidthMinPixels: this.props.lineWidthMinPixels,
-            lineWidthMaxPixels: this.props.lineWidthMaxPixels,
-            lineJointRounded: this.props.lineJointRounded,
-            lineMiterLimit: this.props.lineMiterLimit,
-            pointRadiusScale: this.props.editHandlePointRadiusScale,
-            outline: this.props.editHandlePointOutline,
-            strokeWidth: this.props.editHandlePointStrokeWidth,
-            pointRadiusMinPixels: this.props.editHandlePointRadiusMinPixels,
-            pointRadiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
-            getRadius: this.props.getEditHandlePointRadius,
-            getLineColor: feature =>
-              this.props.getDrawLineColor(feature, this.state.selectedFeatures[0], this.props.mode),
-            getLineWidth: feature =>
-              this.props.getDrawLineWidth(feature, this.state.selectedFeatures[0], this.props.mode),
-            getFillColor: feature =>
-              this.props.getDrawFillColor(feature, this.state.selectedFeatures[0], this.props.mode),
-            getLineDashArray: feature =>
-              this.props.getDrawLineDashArray(
-                feature,
-                this.state.selectedFeatures[0],
-                this.props.mode
-              )
-          })
-        )
-      );
-    }
-
-    layers.push(
-      new GeoJsonLayer(
-        this.getSubLayerProps({
-          id: 'draw',
-          data: this.state.drawFeature,
-          fp64: this.props.fp64,
-          pickable: false,
-          stroked: this.props.mode !== 'drawPolygon',
-          autoHighlight: false,
-          lineWidthScale: this.props.lineWidthScale,
-          lineWidthMinPixels: this.props.lineWidthMinPixels,
-          lineWidthMaxPixels: this.props.lineWidthMaxPixels,
-          lineJointRounded: this.props.lineJointRounded,
-          lineMiterLimit: this.props.lineMiterLimit,
-          pointRadiusScale: this.props.editHandlePointRadiusScale,
-          outline: this.props.editHandlePointOutline,
-          strokeWidth: this.props.editHandlePointStrokeWidth,
-          pointRadiusMinPixels: this.props.editHandlePointRadiusMinPixels,
-          pointRadiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
-          getRadius: this.props.getEditHandlePointRadius,
-          getLineColor: feature =>
-            this.props.getDrawLineColor(feature, this.state.selectedFeatures[0], this.props.mode),
-          getLineWidth: feature =>
-            this.props.getDrawLineWidth(feature, this.state.selectedFeatures[0], this.props.mode),
-          getFillColor: feature =>
-            this.props.getDrawFillColor(feature, this.state.selectedFeatures[0], this.props.mode),
-          getLineDashArray: feature =>
-            this.props.getDrawLineDashArray(
-              feature,
-              this.state.selectedFeatures[0],
-              this.props.mode
-            )
-        })
-      )
+    const layer = new GeoJsonLayer(
+      this.getSubLayerProps({
+        id: 'tentative',
+        data: this.state.tentativeFeature,
+        fp64: this.props.fp64,
+        pickable: false,
+        stroked: true,
+        autoHighlight: false,
+        lineWidthScale: this.props.lineWidthScale,
+        lineWidthMinPixels: this.props.lineWidthMinPixels,
+        lineWidthMaxPixels: this.props.lineWidthMaxPixels,
+        lineJointRounded: this.props.lineJointRounded,
+        lineMiterLimit: this.props.lineMiterLimit,
+        pointRadiusScale: this.props.editHandlePointRadiusScale,
+        outline: this.props.editHandlePointOutline,
+        strokeWidth: this.props.editHandlePointStrokeWidth,
+        pointRadiusMinPixels: this.props.editHandlePointRadiusMinPixels,
+        pointRadiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
+        getRadius: this.props.getEditHandlePointRadius,
+        getLineColor: feature =>
+          this.props.getDrawLineColor(feature, this.state.selectedFeatures[0], this.props.mode),
+        getLineWidth: feature =>
+          this.props.getDrawLineWidth(feature, this.state.selectedFeatures[0], this.props.mode),
+        getFillColor: feature =>
+          this.props.getDrawFillColor(feature, this.state.selectedFeatures[0], this.props.mode),
+        getLineDashArray: feature =>
+          this.props.getDrawLineDashArray(feature, this.state.selectedFeatures[0], this.props.mode)
+      })
     );
-    return layers;
+
+    return [layer];
   }
 
   updateTentativeFeature() {
@@ -441,12 +396,11 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         editHandleInfo.object.featureIndex,
         editHandleInfo.object.positionIndexes
       );
-    } else if (this.props.mode === 'drawLineString') {
+    } else if (this.props.mode === 'drawLineString' || this.props.mode === 'drawPolygon') {
       editAction = this.state.editableFeatureCollection.onClick(groundCoords);
       this.updateTentativeFeature();
     } else if (
       this.props.mode === 'drawPoint' ||
-      this.props.mode === 'drawPolygon' ||
       this.props.mode === 'drawRectangle' ||
       this.props.mode === 'drawRectangleUsing3Points' ||
       this.props.mode === 'drawCircleFromCenter' ||
@@ -460,14 +414,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         // can only draw feature while one is selected
         if (this.props.mode === 'drawLineString') {
           this.handleDrawLineString(
-            selectedFeatures[0],
-            selectedFeatureIndexes[0],
-            groundCoords,
-            picks
-          );
-        }
-        if (this.props.mode === 'drawPolygon') {
-          this.handleDrawPolygon(
             selectedFeatures[0],
             selectedFeatureIndexes[0],
             groundCoords,
@@ -615,7 +561,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     this.updateTentativeFeature();
 
     if (
-      this.props.mode === 'drawPolygon' ||
       this.props.mode === 'drawRectangle' ||
       this.props.mode === 'drawRectangleUsing3Points' ||
       this.props.mode === 'drawCircleFromCenter' ||
@@ -661,7 +606,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     } else if (selectedFeature.geometry.type === 'Point') {
       if (
         mode === 'drawLineString' ||
-        mode === 'drawPolygon' ||
         mode === 'drawRectangleUsing3Points' ||
         mode === 'drawEllipseUsing3Points'
       ) {
@@ -739,43 +683,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
             type: 'LineString',
             coordinates: [positionOfLineString, currentPosition]
           }
-        };
-      } else if (mode === 'drawPolygon') {
-        // Requires two features, a non-stroked polygon for fill and a
-        // line string for the drawing feature
-        drawFeature = {
-          type: 'FeatureCollection',
-          features: [
-            {
-              type: 'Feature',
-              geometry: {
-                type: 'Polygon',
-                coordinates: [
-                  [
-                    // Draw a polygon containing all the points of the LineString,
-                    // then the mouse position,
-                    // then back to the starting position
-                    ...selectedFeature.geometry.coordinates,
-                    currentPosition,
-                    selectedFeature.geometry.coordinates[0]
-                  ]
-                ]
-              }
-            },
-            {
-              type: 'Feature',
-              geometry: {
-                type: 'LineString',
-                coordinates: [
-                  selectedFeature.geometry.coordinates[
-                    selectedFeature.geometry.coordinates.length - 1
-                  ],
-                  currentPosition,
-                  selectedFeature.geometry.coordinates[0]
-                ]
-              }
-            }
-          ]
         };
       } else if (mode === 'drawRectangleUsing3Points') {
         const [p1, p2] = selectedFeature.geometry.coordinates;
@@ -1024,67 +931,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       );
       updatedMode = 'modify';
     }
-    const updatedData = featureCollection.getFeatureCollection();
-
-    this.props.onEdit({
-      updatedData,
-      updatedMode,
-      updatedSelectedFeatureIndexes: this.props.selectedFeatureIndexes,
-      editType: 'addPosition',
-      featureIndex,
-      positionIndexes,
-      position: groundCoords
-    });
-  }
-
-  handleDrawPolygon(
-    selectedFeature: Feature,
-    featureIndex: number,
-    groundCoords: Position,
-    picks: Object[]
-  ) {
-    let featureCollection = this.state.editableFeatureCollection;
-    let positionIndexes;
-
-    let updatedMode = this.props.mode;
-
-    if (selectedFeature.geometry.type === 'Point') {
-      positionIndexes = [1];
-      // Upgrade from Point to LineString
-      featureCollection = featureCollection.replaceGeometry(featureIndex, {
-        type: 'LineString',
-        coordinates: [selectedFeature.geometry.coordinates, groundCoords]
-      });
-    } else if (selectedFeature.geometry.type === 'LineString') {
-      const pickedHandleInfo = this.getPickedEditHandle(picks);
-      if (
-        pickedHandleInfo &&
-        pickedHandleInfo.object.positionIndexes[0] === 0 &&
-        selectedFeature.geometry.coordinates.length > 2
-      ) {
-        // They clicked the first position of the LineString, so close the polygon
-        featureCollection = featureCollection.replaceGeometry(featureIndex, {
-          type: 'Polygon',
-          coordinates: [
-            // $FlowFixMe: just do it
-            [...selectedFeature.geometry.coordinates, selectedFeature.geometry.coordinates[0]]
-          ]
-        });
-        updatedMode = 'modify';
-      } else {
-        // Add another point along the LineString
-        positionIndexes = [selectedFeature.geometry.coordinates.length];
-        featureCollection = featureCollection.addPosition(
-          featureIndex,
-          positionIndexes,
-          groundCoords
-        );
-      }
-    } else {
-      console.warn(`Unsupported geometry type: ${selectedFeature.geometry.type}`); // eslint-disable-line
-      return;
-    }
-
     const updatedData = featureCollection.getFeatureCollection();
 
     this.props.onEdit({

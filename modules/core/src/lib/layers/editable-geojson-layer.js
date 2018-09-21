@@ -347,84 +347,66 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     screenCoords: Position,
     groundCoords: Position
   }) {
-    const { selectedFeatures } = this.state;
-    const { selectedFeatureIndexes } = this.props;
     const editHandleInfo = this.getPickedEditHandle(picks);
     const editHandle = editHandleInfo ? editHandleInfo.object : null;
 
-    let editAction = null;
+    const editAction = this.state.editableFeatureCollection.onClick(groundCoords, editHandle);
+    this.updateTentativeFeature();
+    this.updateEditHandles();
 
-    if (editHandle && editHandle.type === 'existing' && editHandle.featureIndex >= 0) {
-      this.handleRemovePosition(
-        this.props.data.features[editHandle.featureIndex],
-        editHandle.featureIndex,
-        editHandle.positionIndexes
-      );
-    } else if (this.props.mode === 'drawLineString' || this.props.mode === 'drawPolygon') {
-      editAction = this.state.editableFeatureCollection.onClick(groundCoords, editHandle);
-      this.updateTentativeFeature();
-      this.updateEditHandles();
-    } else if (
-      this.props.mode === 'drawPoint' ||
-      this.props.mode === 'drawRectangle' ||
-      this.props.mode === 'drawRectangleUsing3Points' ||
-      this.props.mode === 'drawCircleFromCenter' ||
-      this.props.mode === 'drawCircleByBoundingBox' ||
-      this.props.mode === 'drawEllipseByBoundingBox' ||
-      this.props.mode === 'drawEllipseUsing3Points'
-    ) {
-      if (!selectedFeatures.length) {
-        this.handleDrawNewPoint(groundCoords);
-      } else if (selectedFeatures.length === 1) {
-        // can only draw feature while one is selected
-        if (this.props.mode === 'drawLineString') {
-          this.handleDrawLineString(
-            selectedFeatures[0],
-            selectedFeatureIndexes[0],
-            groundCoords,
-            picks
-          );
-        }
-        if (this.props.mode === 'drawRectangle') {
-          this.handleDrawRectangle(
-            selectedFeatures[0],
-            selectedFeatureIndexes[0],
-            groundCoords,
-            picks
-          );
-        }
-        if (
-          this.props.mode === 'drawRectangleUsing3Points' ||
-          this.props.mode === 'drawEllipseUsing3Points'
-        ) {
-          this.handleDrawRectangleUsing3Points(
-            selectedFeatures[0],
-            selectedFeatureIndexes[0],
-            groundCoords,
-            picks
-          );
-        }
-        if (
-          this.props.mode === 'drawCircleFromCenter' ||
-          this.props.mode === 'drawCircleByBoundingBox'
-        ) {
-          this.handleDrawCircle(
-            selectedFeatures[0],
-            selectedFeatureIndexes[0],
-            groundCoords,
-            picks
-          );
-        }
-        if (this.props.mode === 'drawEllipseByBoundingBox') {
-          this.handleDrawEllipseByBoundingBox(
-            selectedFeatures[0],
-            selectedFeatureIndexes[0],
-            groundCoords,
-            picks
-          );
-        }
-      }
-    }
+    // if (
+    //   this.props.mode === 'drawPoint' ||
+    //   this.props.mode === 'drawRectangle' ||
+    //   this.props.mode === 'drawRectangleUsing3Points' ||
+    //   this.props.mode === 'drawCircleFromCenter' ||
+    //   this.props.mode === 'drawCircleByBoundingBox' ||
+    //   this.props.mode === 'drawEllipseByBoundingBox' ||
+    //   this.props.mode === 'drawEllipseUsing3Points'
+    // ) {
+    //   if (!selectedFeatures.length) {
+    //     this.handleDrawNewPoint(groundCoords);
+    //   } else if (selectedFeatures.length === 1) {
+    //     // can only draw feature while one is selected
+    //     if (this.props.mode === 'drawRectangle') {
+    //       this.handleDrawRectangle(
+    //         selectedFeatures[0],
+    //         selectedFeatureIndexes[0],
+    //         groundCoords,
+    //         picks
+    //       );
+    //     }
+    //     if (
+    //       this.props.mode === 'drawRectangleUsing3Points' ||
+    //       this.props.mode === 'drawEllipseUsing3Points'
+    //     ) {
+    //       this.handleDrawRectangleUsing3Points(
+    //         selectedFeatures[0],
+    //         selectedFeatureIndexes[0],
+    //         groundCoords,
+    //         picks
+    //       );
+    //     }
+    //     if (
+    //       this.props.mode === 'drawCircleFromCenter' ||
+    //       this.props.mode === 'drawCircleByBoundingBox'
+    //     ) {
+    //       this.handleDrawCircle(
+    //         selectedFeatures[0],
+    //         selectedFeatureIndexes[0],
+    //         groundCoords,
+    //         picks
+    //       );
+    //     }
+    //     if (this.props.mode === 'drawEllipseByBoundingBox') {
+    //       this.handleDrawEllipseByBoundingBox(
+    //         selectedFeatures[0],
+    //         selectedFeatureIndexes[0],
+    //         groundCoords,
+    //         picks
+    //       );
+    //     }
+    //   }
+    // }
 
     if (editAction) {
       this.props.onEdit(editAction);
@@ -817,72 +799,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     const updatedData = this.state.editableFeatureCollection
       .addPosition(featureIndex, positionIndexes, groundCoords)
       .getFeatureCollection();
-
-    this.props.onEdit({
-      updatedData,
-      updatedMode: this.props.mode,
-      updatedSelectedFeatureIndexes: this.props.selectedFeatureIndexes,
-      editType: 'addPosition',
-      featureIndex,
-      positionIndexes,
-      position: groundCoords
-    });
-  }
-
-  handleRemovePosition(selectedFeature: Feature, featureIndex: number, positionIndexes: number[]) {
-    let updatedData;
-    try {
-      updatedData = this.state.editableFeatureCollection
-        .removePosition(featureIndex, positionIndexes)
-        .getFeatureCollection();
-    } catch (error) {
-      // This happens if user attempts to remove the last point
-    }
-
-    if (updatedData) {
-      this.props.onEdit({
-        updatedData,
-        updatedMode: this.props.mode,
-        updatedSelectedFeatureIndexes: this.props.selectedFeatureIndexes,
-        editType: 'removePosition',
-        featureIndex,
-        positionIndexes,
-        position: null
-      });
-    }
-  }
-
-  handleDrawLineString(
-    selectedFeature: Feature,
-    featureIndex: number,
-    groundCoords: Position,
-    picks: Object[]
-  ) {
-    const { drawAtFront } = this.props;
-    let featureCollection = this.state.editableFeatureCollection;
-    let positionIndexes;
-
-    if (selectedFeature.geometry.type === 'Point') {
-      positionIndexes = [1];
-
-      // Upgrade from Point to LineString
-      featureCollection = featureCollection.replaceGeometry(featureIndex, {
-        type: 'LineString',
-        coordinates: [selectedFeature.geometry.coordinates, groundCoords]
-      });
-    } else if (selectedFeature.geometry.type === 'LineString') {
-      positionIndexes = [drawAtFront ? 0 : selectedFeature.geometry.coordinates.length];
-      featureCollection = featureCollection.addPosition(
-        featureIndex,
-        positionIndexes,
-        groundCoords
-      );
-    } else {
-      console.warn(`Unsupported geometry type: ${selectedFeature.geometry.type}`); // eslint-disable-line
-      return;
-    }
-
-    const updatedData = featureCollection.getFeatureCollection();
 
     this.props.onEdit({
       updatedData,

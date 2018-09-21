@@ -295,7 +295,13 @@ export class EditableFeatureCollection {
     this._clickSequence.push(groundCoords);
 
     let editAction: ?EditAction = null;
-    if (this._mode === 'drawLineString') {
+    if (
+      clickedEditHandle &&
+      clickedEditHandle.type === 'existing' &&
+      clickedEditHandle.featureIndex >= 0
+    ) {
+      editAction = this._handleRemovePosition(clickedEditHandle);
+    } else if (this._mode === 'drawLineString') {
       editAction = this._handleClickDrawLineString(groundCoords, clickedEditHandle);
     } else if (this._mode === 'drawPolygon') {
       editAction = this._handleClickDrawPolygon(groundCoords, clickedEditHandle);
@@ -307,6 +313,29 @@ export class EditableFeatureCollection {
     }
 
     return editAction;
+  }
+
+  _handleRemovePosition(clickedEditHandle: EditHandle) {
+    let updatedData;
+    try {
+      updatedData = this.removePosition(
+        clickedEditHandle.featureIndex,
+        clickedEditHandle.positionIndexes
+      ).getFeatureCollection();
+    } catch (ignored) {
+      // This happens if user attempts to remove the last point
+    }
+
+    if (updatedData) {
+      return {
+        updatedData,
+        editType: 'removePosition',
+        featureIndex: clickedEditHandle.featureIndex,
+        positionIndexes: clickedEditHandle.positionIndexes,
+        position: null
+      };
+    }
+    return null;
   }
 
   _handleClickDrawLineString(groundCoords: Position, clickedEditHandle: ?EditHandle): ?EditAction {

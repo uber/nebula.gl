@@ -276,11 +276,16 @@ export class EditableFeatureCollection {
     }
 
     if (this._tentativeFeature) {
-      handles = handles.concat(getEditHandlesForGeometry(this._tentativeFeature.geometry, -1));
-
-      // Slice off the last handle (which is right under the cursor)
-      if (this._tentativeFeature && this._tentativeFeature.geometry.type === 'LineString') {
-        handles = handles.slice(0, -1);
+      if (this._mode === 'drawLineString' || this._mode === 'drawPolygon') {
+        handles = handles.concat(getEditHandlesForGeometry(this._tentativeFeature.geometry, -1));
+        // Slice off the handles that are are next to the pointer
+        if (this._tentativeFeature && this._tentativeFeature.geometry.type === 'LineString') {
+          // Remove the last existing and intermediate handles
+          handles = handles.slice(0, -2);
+        } else if (this._tentativeFeature && this._tentativeFeature.geometry.type === 'Polygon') {
+          // Remove the last existing and 2 intermediate handles
+          handles = handles.slice(0, -3);
+        }
       }
     }
 
@@ -404,7 +409,7 @@ export class EditableFeatureCollection {
     }
 
     if (this._clickSequence.length === 1) {
-      // No selection and this is the first click
+      // This is the first click
       this._setTentativeFeature({
         type: 'Feature',
         geometry: {
@@ -412,30 +417,57 @@ export class EditableFeatureCollection {
           coordinates: [groundCoords, groundCoords]
         }
       });
-    } else if (tentativeFeature && tentativeFeature.geometry.type === 'LineString') {
+    } else if (this._clickSequence.length === 2) {
+      // Add a point to the LineString
+
+      // $FlowFixMe: it's a LineString, trust me
       const lineString: LineString = tentativeFeature.geometry;
+      this._setTentativeFeature({
+        type: 'Feature',
+        geometry: {
+          type: 'LineString',
+          coordinates: [...lineString.coordinates, groundCoords]
+        }
+      });
+    } else if (this._clickSequence.length === 3) {
+      // Upgrade from a LineString to a Polygon
+
+      // $FlowFixMe: it's a LineString, trust me
+      const lineString: LineString = tentativeFeature.geometry;
+      this._setTentativeFeature({
+        type: 'Feature',
+        geometry: {
+          type: 'Polygon',
+          coordinates: [[...lineString.coordinates, groundCoords, lineString.coordinates[0]]]
+        }
+      });
+    } else {
+      // $FlowFixMe: it's a Polygon, trust me
+      const polygon: Polygon = tentativeFeature.geometry;
 
       if (
-        lineString.coordinates.length > 2 &&
         clickedEditHandle &&
         clickedEditHandle.featureIndex === -1 &&
-        (clickedEditHandle.positionIndexes[0] === 0 ||
-          clickedEditHandle.positionIndexes[0] === lineString.coordinates.length - 1)
+        (clickedEditHandle.positionIndexes[1] === 0 ||
+          clickedEditHandle.positionIndexes[1] === polygon.coordinates[0].length - 3)
       ) {
-        // They clicked the first or last point, so complete the polygon
-        const polygon: Polygon = {
+        // They clicked the first or last point (or double-clicked), so complete the polygon
+        // Remove the hovered position
+        const polygonToAdd: Polygon = {
           type: 'Polygon',
-          coordinates: [[...lineString.coordinates.slice(0, -1), lineString.coordinates[0]]]
+          coordinates: [[...polygon.coordinates[0].slice(0, -2), polygon.coordinates[0][0]]]
         };
-        editAction = this._getAddFeatureEditAction(polygon);
+        editAction = this._getAddFeatureEditAction(polygonToAdd);
         this._setTentativeFeature(null);
       } else {
-        // add a point to the tentative LineString
+        // Add a point to the tentative polygon
         this._setTentativeFeature({
           type: 'Feature',
           geometry: {
-            type: 'LineString',
-            coordinates: [...lineString.coordinates, groundCoords]
+            type: 'Polygon',
+            coordinates: [
+              [...polygon.coordinates[0].slice(0, -1), groundCoords, polygon.coordinates[0][0]]
+            ]
           }
         });
       }
@@ -506,12 +538,24 @@ export class EditableFeatureCollection {
 
     if (tentativeFeature && tentativeFeature.geometry.type === 'LineString') {
       // Move the last point of the LineString to where the pointer is
-      const tentativeGeometry: LineString = tentativeFeature.geometry;
+      const lineString: LineString = tentativeFeature.geometry;
       this._setTentativeFeature({
         type: 'Feature',
         geometry: {
           type: 'LineString',
-          coordinates: [...tentativeGeometry.coordinates.slice(0, -1), groundCoords]
+          coordinates: [...lineString.coordinates.slice(0, -1), groundCoords]
+        }
+      });
+    } else if (tentativeFeature && tentativeFeature.geometry.type === 'Polygon') {
+      // Move the last point of the LineString to where the pointer is
+      const polygon: Polygon = tentativeFeature.geometry;
+      this._setTentativeFeature({
+        type: 'Feature',
+        geometry: {
+          type: 'Polygon',
+          coordinates: [
+            [...polygon.coordinates[0].slice(0, -2), groundCoords, polygon.coordinates[0][0]]
+          ]
         }
       });
     }
@@ -751,6 +795,10 @@ function getEditHandlesForGeometry(geometry: Geometry, featureIndex: number) {
         handles = handles.concat(
           getEditHandlesForCoordinates(geometry.coordinates[a], [a], true, featureIndex)
         );
+        if (geometry.type === 'Polygon') {
+          // Don't repeat the first/last handle for Polygons
+          handles = handles.slice(0, -1);
+        }
       }
       break;
     case 'MultiPolygon':
@@ -760,6 +808,8 @@ function getEditHandlesForGeometry(geometry: Geometry, featureIndex: number) {
           handles = handles.concat(
             getEditHandlesForCoordinates(geometry.coordinates[a][b], [a, b], true, featureIndex)
           );
+          // Don't repeat the first/last handle for Polygons
+          handles = handles.slice(0, -1);
         }
       }
       break;

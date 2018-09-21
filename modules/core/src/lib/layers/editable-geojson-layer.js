@@ -145,8 +145,8 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
     let layers: any = [new GeoJsonLayer(subLayerProps)];
 
-    layers = layers.concat(this.createPointLayers());
     layers = layers.concat(this.createDrawLayers());
+    layers = layers.concat(this.createEditHandleLayers());
 
     return layers;
   }
@@ -233,7 +233,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     return info;
   }
 
-  createPointLayers() {
+  createEditHandleLayers() {
     if (!this.state.editHandles.length) {
       return [];
     }

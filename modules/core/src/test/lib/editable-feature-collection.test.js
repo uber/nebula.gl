@@ -567,7 +567,6 @@ describe('getEditHandles()', () => {
       { featureIndex: 0, position: [0, 1], positionIndexes: [0, 3], type: 'intermediate' },
       { featureIndex: 0, position: [-1, 1], positionIndexes: [0, 3], type: 'existing' },
       { featureIndex: 0, position: [-1, 0], positionIndexes: [0, 4], type: 'intermediate' },
-      { featureIndex: 0, position: [-1, -1], positionIndexes: [0, 4], type: 'existing' },
       { featureIndex: 0, position: [-0.5, -0.5], positionIndexes: [1, 0], type: 'existing' },
       { featureIndex: 0, position: [-0.5, 0], positionIndexes: [1, 1], type: 'intermediate' },
       { featureIndex: 0, position: [-0.5, 0.5], positionIndexes: [1, 1], type: 'existing' },
@@ -575,8 +574,7 @@ describe('getEditHandles()', () => {
       { featureIndex: 0, position: [0.5, 0.5], positionIndexes: [1, 2], type: 'existing' },
       { featureIndex: 0, position: [0.5, 0], positionIndexes: [1, 3], type: 'intermediate' },
       { featureIndex: 0, position: [0.5, -0.5], positionIndexes: [1, 3], type: 'existing' },
-      { featureIndex: 0, position: [0, -0.5], positionIndexes: [1, 4], type: 'intermediate' },
-      { featureIndex: 0, position: [-0.5, -0.5], positionIndexes: [1, 4], type: 'existing' }
+      { featureIndex: 0, position: [0, -0.5], positionIndexes: [1, 4], type: 'intermediate' }
     ];
 
     expect(actual).toEqual(expected);
@@ -639,7 +637,6 @@ describe('getEditHandles()', () => {
       { featureIndex: 0, position: [0, 1], positionIndexes: [0, 0, 3], type: 'intermediate' },
       { featureIndex: 0, position: [-1, 1], positionIndexes: [0, 0, 3], type: 'existing' },
       { featureIndex: 0, position: [-1, 0], positionIndexes: [0, 0, 4], type: 'intermediate' },
-      { featureIndex: 0, position: [-1, -1], positionIndexes: [0, 0, 4], type: 'existing' },
       { featureIndex: 0, position: [-0.5, -0.5], positionIndexes: [0, 1, 0], type: 'existing' },
       { featureIndex: 0, position: [-0.5, 0], positionIndexes: [0, 1, 1], type: 'intermediate' },
       { featureIndex: 0, position: [-0.5, 0.5], positionIndexes: [0, 1, 1], type: 'existing' },
@@ -648,7 +645,6 @@ describe('getEditHandles()', () => {
       { featureIndex: 0, position: [0.5, 0], positionIndexes: [0, 1, 3], type: 'intermediate' },
       { featureIndex: 0, position: [0.5, -0.5], positionIndexes: [0, 1, 3], type: 'existing' },
       { featureIndex: 0, position: [0, -0.5], positionIndexes: [0, 1, 4], type: 'intermediate' },
-      { featureIndex: 0, position: [-0.5, -0.5], positionIndexes: [0, 1, 4], type: 'existing' },
       { featureIndex: 0, position: [2, -1], positionIndexes: [1, 0, 0], type: 'existing' },
       { featureIndex: 0, position: [3, -1], positionIndexes: [1, 0, 1], type: 'intermediate' },
       { featureIndex: 0, position: [4, -1], positionIndexes: [1, 0, 1], type: 'existing' },
@@ -656,8 +652,7 @@ describe('getEditHandles()', () => {
       { featureIndex: 0, position: [4, 1], positionIndexes: [1, 0, 2], type: 'existing' },
       { featureIndex: 0, position: [3, 1], positionIndexes: [1, 0, 3], type: 'intermediate' },
       { featureIndex: 0, position: [2, 1], positionIndexes: [1, 0, 3], type: 'existing' },
-      { featureIndex: 0, position: [2, 0], positionIndexes: [1, 0, 4], type: 'intermediate' },
-      { featureIndex: 0, position: [2, -1], positionIndexes: [1, 0, 4], type: 'existing' }
+      { featureIndex: 0, position: [2, 0], positionIndexes: [1, 0, 4], type: 'intermediate' }
     ];
 
     expect(actual).toEqual(expected);

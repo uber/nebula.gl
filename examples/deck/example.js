@@ -294,8 +294,7 @@ export default class Example extends Component<
           // reject the edit
           return;
         }
-        if (editType === 'addFeature') {
-          // && this.state.mode === 'drawLineString') {
+        if (editType === 'addFeature' && this.state.mode === 'drawLineString') {
           // Switch to extending the line string
           updatedSelectedFeatureIndexes = [featureIndex];
         }

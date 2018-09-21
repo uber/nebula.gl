@@ -317,7 +317,11 @@ export class EditableFeatureCollection {
       editAction = this._handleClickDrawLineString(groundCoords, clickedEditHandle);
     } else if (this._mode === 'drawPolygon') {
       editAction = this._handleClickDrawPolygon(groundCoords, clickedEditHandle);
-    } else if (this._mode === 'drawRectangle' || this._mode === 'drawCircleFromCenter') {
+    } else if (
+      this._mode === 'drawRectangle' ||
+      this._mode === 'drawCircleFromCenter' ||
+      this._mode === 'drawCircleByBoundingBox'
+    ) {
       editAction = this._handle2ClickPolygon(groundCoords, clickedEditHandle);
     }
 
@@ -539,6 +543,8 @@ export class EditableFeatureCollection {
       this._handlePointerMoveForDrawRectangle(groundCoords);
     } else if (this._mode === 'drawCircleFromCenter') {
       this._handlePointerMoveForDrawCircleFromCenter(groundCoords);
+    } else if (this._mode === 'drawCircleByBoundingBox') {
+      this._handlePointerMoveForDrawCircleByBoundingBox(groundCoords);
     }
   }
 
@@ -615,6 +621,15 @@ export class EditableFeatureCollection {
     if (this._clickSequence.length > 0) {
       const centerCoordinates = this._clickSequence[0];
       const radius = Math.max(distance(centerCoordinates, groundCoords), 0.001);
+      this._setTentativeFeature(circle(centerCoordinates, radius));
+    }
+  }
+
+  _handlePointerMoveForDrawCircleByBoundingBox(groundCoords: Position) {
+    if (this._clickSequence.length > 0) {
+      const firstClickedPoint = this._clickSequence[0];
+      const centerCoordinates = getIntermediatePosition(firstClickedPoint, groundCoords);
+      const radius = Math.max(distance(firstClickedPoint, centerCoordinates), 0.001);
       this._setTentativeFeature(circle(centerCoordinates, radius));
     }
   }

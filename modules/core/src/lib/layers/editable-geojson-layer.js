@@ -356,7 +356,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
     // if (
     //   this.props.mode === 'drawRectangleUsing3Points' ||
-    //   this.props.mode === 'drawCircleByBoundingBox' ||
     //   this.props.mode === 'drawEllipseByBoundingBox' ||
     //   this.props.mode === 'drawEllipseUsing3Points'
     // ) {
@@ -366,16 +365,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     //       this.props.mode === 'drawEllipseUsing3Points'
     //     ) {
     //       this.handleDrawRectangleUsing3Points(
-    //         selectedFeatures[0],
-    //         selectedFeatureIndexes[0],
-    //         groundCoords,
-    //         picks
-    //       );
-    //     }
-    //     if (
-    //       this.props.mode === 'drawCircleByBoundingBox'
-    //     ) {
-    //       this.handleDrawCircle(
     //         selectedFeatures[0],
     //         selectedFeatureIndexes[0],
     //         groundCoords,
@@ -560,15 +549,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
             coordinates: [startPosition, endPosition]
           }
         };
-      } else if (mode === 'drawCircleByBoundingBox') {
-        const centerCoordinates = (selectedFeature.geometry.coordinates.map(
-          (p, i) => (groundCoords && (p + groundCoords[i]) / 2) || p
-        ): Array<number>);
-        const radius = Math.max(
-          distance(selectedFeature, centerCoordinates || selectedFeature),
-          0.001
-        );
-        drawFeature = circle(centerCoordinates, radius);
       } else if (mode === 'drawEllipseByBoundingBox') {
         const corner1 = ((selectedFeature.geometry.coordinates: any): Array<number>);
         const corner2 = groundCoords || corner1;
@@ -803,43 +783,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }
 
   handleDrawRectangle(
-    selectedFeature: Feature,
-    featureIndex: number,
-    groundCoords: Position,
-    picks: Object[]
-  ) {
-    let featureCollection = this.state.editableFeatureCollection;
-    let positionIndexes;
-
-    let updatedMode = this.props.mode;
-
-    if (selectedFeature.geometry.type === 'Point') {
-      positionIndexes = null;
-      featureCollection = featureCollection.replaceGeometry(
-        featureIndex,
-        // $FlowFixMe: it's ok, I know drawFeature will be there
-        this.state.drawFeature.geometry
-      );
-      updatedMode = 'modify';
-    } else {
-      console.warn(`Unsupported geometry type: ${selectedFeature.geometry.type}`); // eslint-disable-line
-      return;
-    }
-
-    const updatedData = featureCollection.getFeatureCollection();
-
-    this.props.onEdit({
-      updatedData,
-      updatedMode,
-      updatedSelectedFeatureIndexes: this.props.selectedFeatureIndexes,
-      editType: 'addPosition',
-      featureIndex,
-      positionIndexes,
-      position: groundCoords
-    });
-  }
-
-  handleDrawCircle(
     selectedFeature: Feature,
     featureIndex: number,
     groundCoords: Position,

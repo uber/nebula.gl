@@ -1,5 +1,6 @@
 // @flow
 
+import bboxPolygon from '@turf/bbox-polygon';
 import type {
   FeatureCollection,
   Feature,
@@ -313,6 +314,8 @@ export class EditableFeatureCollection {
       editAction = this._handleClickDrawLineString(groundCoords, clickedEditHandle);
     } else if (this._mode === 'drawPolygon') {
       editAction = this._handleClickDrawPolygon(groundCoords, clickedEditHandle);
+    } else if (this._mode === 'drawRectangle') {
+      editAction = this._handleClickDrawRectangle(groundCoords, clickedEditHandle);
     }
 
     if (editAction) {
@@ -488,6 +491,26 @@ export class EditableFeatureCollection {
     return editAction;
   }
 
+  _handleClickDrawRectangle(groundCoords: Position, clickedEditHandle: ?EditHandle): ?EditAction {
+    const tentativeFeature = this._tentativeFeature;
+
+    if (this._clickSequence.length === 1) {
+      // This is the first click
+      this._setTentativeFeature({
+        type: 'Feature',
+        geometry: {
+          type: 'Polygon',
+          coordinates: [[groundCoords, groundCoords, groundCoords, groundCoords]]
+        }
+      });
+    } else if (tentativeFeature && tentativeFeature.geometry.type === 'Polygon') {
+      this._setTentativeFeature(null);
+      return this._getAddFeatureEditAction(tentativeFeature.geometry);
+    }
+
+    return null;
+  }
+
   _getAddFeatureEditAction(geometry: Geometry): EditAction {
     const updatedData = this.addFeature({
       type: 'Feature',
@@ -509,6 +532,8 @@ export class EditableFeatureCollection {
       this._handlePointerMoveForDrawLineString(groundCoords);
     } else if (this._mode === 'drawPolygon') {
       this._handlePointerMoveForDrawPolygon(groundCoords);
+    } else if (this._mode === 'drawRectangle') {
+      this._handlePointerMoveForDrawRectangle(groundCoords);
     }
   }
 
@@ -570,6 +595,14 @@ export class EditableFeatureCollection {
           ]
         }
       });
+    }
+  }
+
+  _handlePointerMoveForDrawRectangle(groundCoords: Position) {
+    if (this._clickSequence.length > 0) {
+      const corner1 = this._clickSequence[0];
+      const corner2 = groundCoords;
+      this._setTentativeFeature(bboxPolygon([corner1[0], corner1[1], corner2[0], corner2[1]]));
     }
   }
 }

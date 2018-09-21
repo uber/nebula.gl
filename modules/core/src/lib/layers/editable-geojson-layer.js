@@ -355,7 +355,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     this.updateEditHandles();
 
     // if (
-    //   this.props.mode === 'drawRectangle' ||
     //   this.props.mode === 'drawRectangleUsing3Points' ||
     //   this.props.mode === 'drawCircleFromCenter' ||
     //   this.props.mode === 'drawCircleByBoundingBox' ||
@@ -363,15 +362,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     //   this.props.mode === 'drawEllipseUsing3Points'
     // ) {
     //   } else if (selectedFeatures.length === 1) {
-    //     // can only draw feature while one is selected
-    //     if (this.props.mode === 'drawRectangle') {
-    //       this.handleDrawRectangle(
-    //         selectedFeatures[0],
-    //         selectedFeatureIndexes[0],
-    //         groundCoords,
-    //         picks
-    //       );
-    //     }
     //     if (
     //       this.props.mode === 'drawRectangleUsing3Points' ||
     //       this.props.mode === 'drawEllipseUsing3Points'
@@ -531,24 +521,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     this.updateEditHandles();
 
     if (
-      this.props.mode === 'drawRectangle' ||
-      this.props.mode === 'drawRectangleUsing3Points' ||
-      this.props.mode === 'drawCircleFromCenter' ||
-      this.props.mode === 'drawCircleByBoundingBox' ||
-      this.props.mode === 'drawEllipseByBoundingBox' ||
-      this.props.mode === 'drawEllipseUsing3Points'
-    ) {
-      const selectedFeature =
-        this.state.selectedFeatures.length === 1 ? this.state.selectedFeatures[0] : null;
-      const drawFeature = this.getDrawFeature(selectedFeature, this.props.mode, groundCoords);
-
-      this.setState({ drawFeature });
-
-      // TODO: figure out how to properly update state from a pointer event handler
-      this.setLayerNeedsUpdate();
-    }
-
-    if (
       this.props.mode === 'modify' &&
       this.props.modeConfig &&
       this.props.modeConfig.action === 'transformRotate'
@@ -590,15 +562,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
             coordinates: [startPosition, endPosition]
           }
         };
-      } else if (mode === 'drawRectangle') {
-        const corner1 = ((selectedFeature.geometry.coordinates: any): Array<number>);
-        const corner2 = groundCoords || corner1;
-        const minX = Math.min(corner1[0], corner2[0]);
-        const minY = Math.min(corner1[1], corner2[1]);
-        const maxX = Math.max(corner1[0], corner2[0]);
-        const maxY = Math.max(corner1[1], corner2[1]);
-
-        drawFeature = bboxPolygon([minX, minY, maxX, maxY]);
       } else if (mode === 'drawCircleFromCenter') {
         const centerCoordinates = ((selectedFeature.geometry.coordinates: any): Array<number>);
         const radius = Math.max(

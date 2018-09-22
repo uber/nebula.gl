@@ -434,13 +434,7 @@ export class EditableFeatureCollection {
 
   _handleClickDrawPolygon(groundCoords: Position, clickedEditHandle: ?EditHandle): ?EditAction {
     let editAction: ?EditAction;
-    const selectedFeatureIndexes = this._selectedFeatureIndexes;
     const tentativeFeature = this._tentativeFeature;
-
-    if (selectedFeatureIndexes.length > 0) {
-      console.warn(`Can only draw polygons when no selection`); // eslint-disable-line
-      return null;
-    }
 
     if (this._clickSequence.length === 1) {
       // This is the first click

@@ -201,19 +201,18 @@ The additional arguments (in order) are:
 * `isSelected`: indicates if the given feature is a selected feature
 * `mode`: the current value of the `mode` prop
 
-### Drawing Feature
+### Tentative Features
 
-While creating a new feature in any of the `draw` modes, portion of a feature which has not been "committed" yet can hold its own props. For a LineString, this would be the last line segment moving under the mouse. For a Polygon, this would be the last segment and the fill moving under the mouse. For Rectangles and Circles, this would be the whole feature during drawing. Define the properties with the following accessors:
+While creating a new feature in any of the `draw` modes, portion of a feature which has not been "committed" yet can hold its own props. For example, in `drawLineString` mode, the tentative feature is the last line segment moving under the mouse. For polygons and ellipses, this would be the whole feature during drawing. Define the properties with the following accessors:
 
-* `getDrawLineColor`
-* `getDrawFillColor`
-* `getDrawLineWidth`
-* `getDrawLineDashArray`
+* `getTentativeLineColor`
+* `getTentativeFillColor`
+* `getTentativeLineWidth`
+* `getTentativeLineDashArray`
 
 The following accessors default to the same values as the existing feature accessors above. The arguments in order:
 
-* `feature`: the segment/polygon that represents the "uncommitted" feature
-* `selectedFeature`: the "committed" feature which is being drawn/extended
+* `feature`: the segment/polygon that represents the tentative feature
 * `mode`: the current value of the `mode` prop
 
 ### Edit Handles

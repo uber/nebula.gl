@@ -346,9 +346,9 @@ export default class Example extends Component<
         handle.type === 'existing' ? [0xff, 0x80, 0x00, 0xff] : [0x0, 0x0, 0x0, 0x80],
       editHandlePointRadiusScale: 2,
 
-      // customize drawing line style
-      getDrawLineDashArray: () => [7, 4],
-      getDrawLineColor: () => [0x8f, 0x8f, 0x8f, 0xff]
+      // customize tentative feature style
+      getTentativeLineDashArray: () => [7, 4],
+      getTentativeLineColor: () => [0x8f, 0x8f, 0x8f, 0xff]
     });
 
     return (

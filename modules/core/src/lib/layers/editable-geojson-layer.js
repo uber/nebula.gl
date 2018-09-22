@@ -45,11 +45,11 @@ const defaultProps = {
   getLineDashArray: (feature, isSelected, mode) =>
     isSelected && mode !== 'view' ? [7, 4] : [0, 0],
 
-  // drawing line
-  getDrawLineDashArray: (f, mode) => [7, 4],
-  getDrawLineColor: (f, mode) => DEFAULT_SELECTED_LINE_COLOR,
-  getDrawFillColor: (f, mode) => DEFAULT_SELECTED_FILL_COLOR,
-  getDrawLineWidth: (f, mode) => (f && f.properties && f.properties.lineWidth) || 1,
+  // Tentative feature rendering
+  getTentativeLineDashArray: (f, mode) => [7, 4],
+  getTentativeLineColor: (f, mode) => DEFAULT_SELECTED_LINE_COLOR,
+  getTentativeFillColor: (f, mode) => DEFAULT_SELECTED_FILL_COLOR,
+  getTentativeLineWidth: (f, mode) => (f && f.properties && f.properties.lineWidth) || 1,
 
   editHandleType: 'point',
   editHandleParameters: {},
@@ -135,7 +135,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
     let layers: any = [new GeoJsonLayer(subLayerProps)];
 
-    layers = layers.concat(this.createDrawLayers());
+    layers = layers.concat(this.createTentativeLayers());
     layers = layers.concat(this.createEditHandleLayers());
 
     return layers;
@@ -273,7 +273,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     return [layer];
   }
 
-  createDrawLayers() {
+  createTentativeLayers() {
     if (!this.state.tentativeFeature) {
       return [];
     }
@@ -297,14 +297,15 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         pointRadiusMinPixels: this.props.editHandlePointRadiusMinPixels,
         pointRadiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
         getRadius: this.props.getEditHandlePointRadius,
-        getLineColor: feature =>
-          this.props.getDrawLineColor(feature, this.state.selectedFeatures[0], this.props.mode),
-        getLineWidth: feature =>
-          this.props.getDrawLineWidth(feature, this.state.selectedFeatures[0], this.props.mode),
-        getFillColor: feature =>
-          this.props.getDrawFillColor(feature, this.state.selectedFeatures[0], this.props.mode),
+        getLineColor: feature => this.props.getTentativeLineColor(feature, this.props.mode),
+        getLineWidth: feature => this.props.getTentativeLineWidth(feature, this.props.mode),
+        getFillColor: feature => this.props.getTentativeFillColor(feature, this.props.mode),
         getLineDashArray: feature =>
-          this.props.getDrawLineDashArray(feature, this.state.selectedFeatures[0], this.props.mode)
+          this.props.getTentativeLineDashArray(
+            feature,
+            this.state.selectedFeatures[0],
+            this.props.mode
+          )
       })
     );
 

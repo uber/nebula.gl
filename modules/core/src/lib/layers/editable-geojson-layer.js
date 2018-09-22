@@ -508,8 +508,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
     this.props.onEdit({
       updatedData,
-      updatedMode: this.props.mode,
-      updatedSelectedFeatureIndexes: this.props.selectedFeatureIndexes,
       editType: 'transformPosition',
       featureIndex,
       positionIndexes: this.props.positionIndexes,
@@ -524,8 +522,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
     this.props.onEdit({
       updatedData,
-      updatedMode: this.props.mode,
-      updatedSelectedFeatureIndexes: this.props.selectedFeatureIndexes,
       editType: 'movePosition',
       featureIndex,
       positionIndexes,
@@ -544,8 +540,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
     this.props.onEdit({
       updatedData,
-      updatedMode: this.props.mode,
-      updatedSelectedFeatureIndexes: this.props.selectedFeatureIndexes,
       editType: 'finishMovePosition',
       featureIndex,
       positionIndexes,
@@ -564,8 +558,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
     this.props.onEdit({
       updatedData,
-      updatedMode: this.props.mode,
-      updatedSelectedFeatureIndexes: this.props.selectedFeatureIndexes,
       editType: 'addPosition',
       featureIndex,
       positionIndexes,

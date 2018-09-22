@@ -245,8 +245,7 @@ export class EditableFeatureCollection {
   }
 
   replaceGeometry(featureIndex: number, geometry: Geometry): EditableFeatureCollection {
-    // $FlowFixMe: just do it flow
-    const updatedFeature: Feature = {
+    const updatedFeature: any = {
       ...this.featureCollection.features[featureIndex],
       geometry
     };

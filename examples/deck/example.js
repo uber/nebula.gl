@@ -358,7 +358,15 @@ export default class Example extends Component<
           {...viewport}
           getCursor={editableGeoJsonLayer.getCursor.bind(editableGeoJsonLayer)}
           layers={[editableGeoJsonLayer]}
-          views={new MapView({ id: 'basemap', controller: MapController })}
+          views={
+            new MapView({
+              id: 'basemap',
+              controller: {
+                type: MapController,
+                doubleClickZoom: this.state.mode === 'view'
+              }
+            })
+          }
           onLayerClick={this._onLayerClick}
           onViewStateChange={({ viewState }) => this.setState({ viewport: viewState })}
         >

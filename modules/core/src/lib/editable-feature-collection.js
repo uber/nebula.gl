@@ -384,23 +384,23 @@ export class EditableFeatureCollection {
   _handleClickDrawLineString(groundCoords: Position, clickedEditHandle: ?EditHandle): ?EditAction {
     let editAction: ?EditAction;
     const selectedFeatureIndexes = this._selectedFeatureIndexes;
-    const selectedGeoemtry = this.getSelectedGeometry();
+    const selectedGeometry = this.getSelectedGeometry();
     const tentativeFeature = this._tentativeFeature;
 
     if (selectedFeatureIndexes.length > 1) {
       console.warn(`Unsupported operation for multiple selection`); // eslint-disable-line
       return null;
     }
-    if (selectedGeoemtry && selectedGeoemtry.type !== 'LineString') {
-      console.warn(`Unsupported geometry type: ${selectedGeoemtry.type}`); // eslint-disable-line
+    if (selectedGeometry && selectedGeometry.type !== 'LineString') {
+      console.warn(`Unsupported geometry type: ${selectedGeometry.type}`); // eslint-disable-line
       return null;
     }
 
-    if (selectedGeoemtry && selectedGeoemtry.type === 'LineString') {
+    if (selectedGeometry && selectedGeometry.type === 'LineString') {
       // Extend the LineString
-      const selectedGeometry: LineString = selectedGeoemtry;
+      const lineString: LineString = selectedGeometry;
 
-      let positionIndexes = [selectedGeometry.coordinates.length];
+      let positionIndexes = [lineString.coordinates.length];
       if (this._drawAtFront) {
         positionIndexes = [0];
       }
@@ -518,6 +518,11 @@ export class EditableFeatureCollection {
   _handlePointerMoveForDrawLineString(groundCoords: Position): void {
     let startPosition: ?Position = null;
     const selectedGeometry = this.getSelectedGeometry();
+
+    if (!selectedGeometry || selectedGeometry.type !== 'LineString') {
+      // unsupported
+      return;
+    }
 
     if (selectedGeometry && selectedGeometry.type === 'LineString') {
       // Draw an extension line starting from one end of the selected LineString

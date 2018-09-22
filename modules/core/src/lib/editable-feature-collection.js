@@ -5,6 +5,10 @@ import circle from '@turf/circle';
 import distance from '@turf/distance';
 import ellipse from '@turf/ellipse';
 import center from '@turf/center';
+import destination from '@turf/destination';
+import bearing from '@turf/bearing';
+// import turfTransformRotate from '@turf/transform-rotate';
+import pointToLineDistance from '@turf/point-to-line-distance';
 import { point, featureCollection as fc } from '@turf/helpers';
 
 import type {
@@ -327,6 +331,11 @@ export class EditableFeatureCollection {
       this._mode === 'drawEllipseByBoundingBox'
     ) {
       editAction = this._handle2ClickPolygon(groundCoords, clickedEditHandle);
+    } else if (
+      this._mode === 'drawRectangleUsing3Points' ||
+      this._mode === 'drawEllipseUsing3Points'
+    ) {
+      editAction = this._handle3ClickPolygon(groundCoords, clickedEditHandle);
     }
 
     if (editAction) {
@@ -506,12 +515,42 @@ export class EditableFeatureCollection {
     const tentativeFeature = this._tentativeFeature;
 
     if (this._clickSequence.length === 1) {
-      // This is the first click
+      // This is the first click, so start a Polygon
       this._setTentativeFeature({
         type: 'Feature',
         geometry: {
           type: 'Polygon',
           coordinates: [[groundCoords, groundCoords, groundCoords, groundCoords]]
+        }
+      });
+    } else if (tentativeFeature && tentativeFeature.geometry.type === 'Polygon') {
+      this._setTentativeFeature(null);
+      return this._getAddFeatureEditAction(tentativeFeature.geometry);
+    }
+
+    return null;
+  }
+
+  _handle3ClickPolygon(groundCoords: Position, clickedEditHandle: ?EditHandle): ?EditAction {
+    const tentativeFeature = this._tentativeFeature;
+
+    if (this._clickSequence.length === 1) {
+      // This is the first click, so start a LineString
+      this._setTentativeFeature({
+        type: 'Feature',
+        geometry: {
+          type: 'LineString',
+          coordinates: [groundCoords, groundCoords]
+        }
+      });
+    } else if (this._clickSequence.length === 2) {
+      // This is the second click, so start a Polygon
+      const firstClick = this._clickSequence[0];
+      this._setTentativeFeature({
+        type: 'Feature',
+        geometry: {
+          type: 'Polygon',
+          coordinates: [[firstClick, groundCoords, firstClick]]
         }
       });
     } else if (tentativeFeature && tentativeFeature.geometry.type === 'Polygon') {
@@ -551,6 +590,8 @@ export class EditableFeatureCollection {
       this._handlePointerMoveForDrawCircleByBoundingBox(groundCoords);
     } else if (this._mode === 'drawEllipseByBoundingBox') {
       this._handlePointerMoveForDrawEllipseByBoundingBox(groundCoords);
+    } else if (this._mode === 'drawRectangleUsing3Points') {
+      this._handlePointerMoveForDrawRectangleUsing3Points(groundCoords);
     }
   }
 
@@ -616,47 +657,121 @@ export class EditableFeatureCollection {
   }
 
   _handlePointerMoveForDrawRectangle(groundCoords: Position) {
-    if (this._clickSequence.length > 0) {
-      const corner1 = this._clickSequence[0];
-      const corner2 = groundCoords;
-      this._setTentativeFeature(bboxPolygon([corner1[0], corner1[1], corner2[0], corner2[1]]));
+    if (this._clickSequence.length === 0) {
+      // nothing to do yet
+      return;
     }
+
+    const corner1 = this._clickSequence[0];
+    const corner2 = groundCoords;
+    this._setTentativeFeature(bboxPolygon([corner1[0], corner1[1], corner2[0], corner2[1]]));
   }
 
   _handlePointerMoveForDrawCircleFromCenter(groundCoords: Position) {
-    if (this._clickSequence.length > 0) {
-      const centerCoordinates = this._clickSequence[0];
-      const radius = Math.max(distance(centerCoordinates, groundCoords), 0.001);
-      this._setTentativeFeature(circle(centerCoordinates, radius));
+    if (this._clickSequence.length === 0) {
+      // nothing to do yet
+      return;
     }
+
+    const centerCoordinates = this._clickSequence[0];
+    const radius = Math.max(distance(centerCoordinates, groundCoords), 0.001);
+    this._setTentativeFeature(circle(centerCoordinates, radius));
   }
 
   _handlePointerMoveForDrawCircleByBoundingBox(groundCoords: Position) {
-    if (this._clickSequence.length > 0) {
-      const firstClickedPoint = this._clickSequence[0];
-      const centerCoordinates = getIntermediatePosition(firstClickedPoint, groundCoords);
-      const radius = Math.max(distance(firstClickedPoint, centerCoordinates), 0.001);
-      this._setTentativeFeature(circle(centerCoordinates, radius));
+    if (this._clickSequence.length === 0) {
+      // nothing to do yet
+      return;
     }
+
+    const firstClickedPoint = this._clickSequence[0];
+    const centerCoordinates = getIntermediatePosition(firstClickedPoint, groundCoords);
+    const radius = Math.max(distance(firstClickedPoint, centerCoordinates), 0.001);
+    this._setTentativeFeature(circle(centerCoordinates, radius));
   }
 
   _handlePointerMoveForDrawEllipseByBoundingBox(groundCoords: Position) {
-    if (this._clickSequence.length > 0) {
-      const corner1 = this._clickSequence[0];
-      const corner2 = groundCoords;
+    if (this._clickSequence.length === 0) {
+      // nothing to do yet
+      return;
+    }
 
-      const minX = Math.min(corner1[0], corner2[0]);
-      const minY = Math.min(corner1[1], corner2[1]);
-      const maxX = Math.max(corner1[0], corner2[0]);
-      const maxY = Math.max(corner1[1], corner2[1]);
+    const corner1 = this._clickSequence[0];
+    const corner2 = groundCoords;
 
-      const polygonPoints = bboxPolygon([minX, minY, maxX, maxY]).geometry.coordinates[0];
-      const ellipseCenter = center(fc([point(corner1), point(corner2)]));
+    const minX = Math.min(corner1[0], corner2[0]);
+    const minY = Math.min(corner1[1], corner2[1]);
+    const maxX = Math.max(corner1[0], corner2[0]);
+    const maxY = Math.max(corner1[1], corner2[1]);
 
-      const xSemiAxis = Math.max(distance(point(polygonPoints[0]), point(polygonPoints[1])), 0.001);
-      const ySemiAxis = Math.max(distance(point(polygonPoints[0]), point(polygonPoints[3])), 0.001);
+    const polygonPoints = bboxPolygon([minX, minY, maxX, maxY]).geometry.coordinates[0];
+    const ellipseCenter = center(fc([point(corner1), point(corner2)]));
 
-      this._setTentativeFeature(ellipse(ellipseCenter, xSemiAxis, ySemiAxis));
+    const xSemiAxis = Math.max(distance(point(polygonPoints[0]), point(polygonPoints[1])), 0.001);
+    const ySemiAxis = Math.max(distance(point(polygonPoints[0]), point(polygonPoints[3])), 0.001);
+
+    this._setTentativeFeature(ellipse(ellipseCenter, xSemiAxis, ySemiAxis));
+  }
+
+  _handlePointerMoveForDrawRectangleUsing3Points(groundCoords: Position) {
+    if (this._clickSequence.length === 0) {
+      // nothing to do yet
+      return;
+    }
+
+    if (this._clickSequence.length === 1) {
+      this._setTentativeFeature({
+        type: 'Feature',
+        geometry: {
+          type: 'LineString',
+          coordinates: [this._clickSequence[0], groundCoords]
+        }
+      });
+    } else if (this._clickSequence.length === 2) {
+      // 2 or more clicks
+
+      const lineString: LineString = {
+        type: 'LineString',
+        coordinates: this._clickSequence
+      };
+
+      const [p1, p2] = this._clickSequence;
+      const pt = point(groundCoords);
+      const options = { units: 'miles' };
+      const ddistance = pointToLineDistance(pt, lineString, options);
+      const lineBearing = bearing(p1, p2);
+
+      // Check if current point is to the left or right of line
+      // Line from A=(x1,y1) to B=(x2,y2) a point P=(x,y)
+      // then (x−x1)(y2−y1)−(y−y1)(x2−x1)
+      const isPointToLeftOfLine =
+        (groundCoords[0] - p1[0]) * (p2[1] - p1[1]) - (groundCoords[1] - p1[1]) * (p2[0] - p1[0]);
+
+      // Bearing to draw perpendicular to the line string
+      const orthogonalBearing = isPointToLeftOfLine < 0 ? lineBearing - 90 : lineBearing - 270;
+
+      // Get coordinates for the point p3 and p4 which are perpendicular to the lineString
+      // Add the distance as the current position moves away from the lineString
+      const p3 = destination(p2, ddistance, orthogonalBearing, options);
+      const p4 = destination(p1, ddistance, orthogonalBearing, options);
+
+      this._setTentativeFeature({
+        type: 'Feature',
+        geometry: {
+          type: 'Polygon',
+          coordinates: [
+            [
+              // Draw a polygon containing all the points of the LineString,
+              // then the points orthogonal to the lineString,
+              // then back to the starting position
+              ...lineString.coordinates,
+              p3.geometry.coordinates,
+              p4.geometry.coordinates,
+              p1
+            ]
+          ]
+        }
+      });
     }
   }
 }

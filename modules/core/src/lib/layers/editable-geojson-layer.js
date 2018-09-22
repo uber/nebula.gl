@@ -2,14 +2,11 @@
 /* eslint-env browser */
 
 import { GeoJsonLayer, ScatterplotLayer, IconLayer } from 'deck.gl';
-import bboxPolygon from '@turf/bbox-polygon';
 import ellipse from '@turf/ellipse';
 import distance from '@turf/distance';
 import center from '@turf/center';
-import destination from '@turf/destination';
 import bearing from '@turf/bearing';
 import turfTransformRotate from '@turf/transform-rotate';
-import pointToLineDistance from '@turf/point-to-line-distance';
 import { point, featureCollection as fc } from '@turf/helpers';
 import { EditableFeatureCollection } from '../editable-feature-collection.js';
 import type { EditAction } from '../editable-feature-collection.js';
@@ -353,25 +350,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     this.updateTentativeFeature();
     this.updateEditHandles();
 
-    // if (
-    //   this.props.mode === 'drawRectangleUsing3Points' ||
-    //   this.props.mode === 'drawEllipseUsing3Points'
-    // ) {
-    //   } else if (selectedFeatures.length === 1) {
-    //     if (
-    //       this.props.mode === 'drawRectangleUsing3Points' ||
-    //       this.props.mode === 'drawEllipseUsing3Points'
-    //     ) {
-    //       this.handleDrawRectangleUsing3Points(
-    //         selectedFeatures[0],
-    //         selectedFeatureIndexes[0],
-    //         groundCoords,
-    //         picks
-    //       );
-    //     }
-    //   }
-    // }
-
     if (editAction) {
       this.props.onEdit(editAction);
     }
@@ -522,85 +500,13 @@ export default class EditableGeoJsonLayer extends EditableLayer {
           coordinates: groundCoords
         }
       };
-    } else if (selectedFeature.geometry.type === 'Point') {
-      if (
-        mode === 'drawLineString' ||
-        mode === 'drawRectangleUsing3Points' ||
-        mode === 'drawEllipseUsing3Points'
-      ) {
-        // Draw an extension line starting from the point
-        const startPosition = selectedFeature.geometry.coordinates;
-        const endPosition = groundCoords || startPosition;
-
-        drawFeature = {
-          type: 'Feature',
-          geometry: {
-            type: 'LineString',
-            coordinates: [startPosition, endPosition]
-          }
-        };
-      }
     } else if (selectedFeature.geometry.type === 'LineString') {
       const positionOfLineString = this.props.drawAtFront
         ? selectedFeature.geometry.coordinates[0]
         : selectedFeature.geometry.coordinates[selectedFeature.geometry.coordinates.length - 1];
       const currentPosition = groundCoords || positionOfLineString;
 
-      if (mode === 'drawLineString') {
-        // Draw a single line extending beyond the last point
-
-        drawFeature = {
-          type: 'Feature',
-          geometry: {
-            type: 'LineString',
-            coordinates: [positionOfLineString, currentPosition]
-          }
-        };
-      } else if (mode === 'drawRectangleUsing3Points') {
-        const [p1, p2] = selectedFeature.geometry.coordinates;
-        const pt = point(currentPosition);
-        const options = { units: 'miles' };
-        const ddistance = pointToLineDistance(pt, selectedFeature, options);
-        const lineBearing = bearing(p1, p2);
-
-        // Check if current point is to the left or right of line
-        // Line from A=(x1,y1) to B=(x2,y2) a point P=(x,y)
-        // then (x−x1)(y2−y1)−(y−y1)(x2−x1)
-        const isPointToLeftOfLine =
-          (currentPosition[0] - p1[0]) * (p2[1] - p1[1]) -
-          (currentPosition[1] - p1[1]) * (p2[0] - p1[0]);
-
-        // Bearing to draw perpendicular to the line string
-        const orthogonalBearing = isPointToLeftOfLine < 0 ? lineBearing - 90 : lineBearing - 270;
-
-        // Get coordinates for the point p3 and p4 which are perpendicular to the lineString
-        // Add the distance as the current position moves away from the lineString
-        const p3 = destination(p2, ddistance, orthogonalBearing, options);
-        const p4 = destination(p1, ddistance, orthogonalBearing, options);
-
-        if (selectedFeature.geometry.type !== 'LineString') {
-          // This shouldn't happen, but flow needs the type guard right before using it, grr...
-          return null;
-        }
-
-        drawFeature = {
-          type: 'Feature',
-          geometry: {
-            type: 'Polygon',
-            coordinates: [
-              [
-                // Draw a polygon containing all the points of the LineString,
-                // then the points orthogonal to the lineString,
-                // then back to the starting position
-                ...selectedFeature.geometry.coordinates,
-                p3.geometry.coordinates,
-                p4.geometry.coordinates,
-                p1
-              ]
-            ]
-          }
-        };
-      } else if (mode === 'drawEllipseUsing3Points') {
+      if (mode === 'drawEllipseUsing3Points') {
         const [p1, p2] = selectedFeature.geometry.coordinates;
 
         const ellipseCenter = center(fc([point(p1), point(p2)]));
@@ -702,83 +608,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     this.props.onEdit({
       updatedData,
       updatedMode: this.props.mode,
-      updatedSelectedFeatureIndexes: this.props.selectedFeatureIndexes,
-      editType: 'addPosition',
-      featureIndex,
-      positionIndexes,
-      position: groundCoords
-    });
-  }
-
-  handleDrawRectangleUsing3Points(
-    selectedFeature: Feature,
-    featureIndex: number,
-    groundCoords: Position,
-    picks: Object[]
-  ) {
-    let featureCollection = this.state.editableFeatureCollection;
-    let positionIndexes;
-
-    let updatedMode = this.props.mode;
-
-    if (selectedFeature.geometry.type === 'Point') {
-      positionIndexes = [1];
-      // Upgrade from Point to LineString
-      featureCollection = featureCollection.replaceGeometry(featureIndex, {
-        type: 'LineString',
-        coordinates: [selectedFeature.geometry.coordinates, groundCoords]
-      });
-    } else {
-      // Draw the rectangle with the drawFeature geometry
-      featureCollection = featureCollection.replaceGeometry(
-        featureIndex,
-        // $FlowFixMe: it's ok, I know drawFeature will be there
-        this.state.drawFeature.geometry
-      );
-      updatedMode = 'modify';
-    }
-    const updatedData = featureCollection.getFeatureCollection();
-
-    this.props.onEdit({
-      updatedData,
-      updatedMode,
-      updatedSelectedFeatureIndexes: this.props.selectedFeatureIndexes,
-      editType: 'addPosition',
-      featureIndex,
-      positionIndexes,
-      position: groundCoords
-    });
-  }
-
-  handleDrawRectangle(
-    selectedFeature: Feature,
-    featureIndex: number,
-    groundCoords: Position,
-    picks: Object[]
-  ) {
-    let featureCollection = this.state.editableFeatureCollection;
-    let positionIndexes;
-
-    let updatedMode = this.props.mode;
-
-    if (selectedFeature.geometry.type === 'Point') {
-      positionIndexes = null;
-      featureCollection = featureCollection.replaceGeometry(
-        featureIndex,
-        // $FlowFixMe: it's ok, I know drawFeature will be there
-        this.state.drawFeature.geometry
-      );
-      updatedMode = 'modify';
-    } else {
-      console.warn(`Unsupported geometry type: ${selectedFeature.geometry.type}`); // eslint-disable-line
-      return;
-    }
-
-    const updatedData = featureCollection.getFeatureCollection();
-
-    this.props.onEdit({
-      updatedData,
-      updatedMode,
       updatedSelectedFeatureIndexes: this.props.selectedFeatureIndexes,
       editType: 'addPosition',
       featureIndex,

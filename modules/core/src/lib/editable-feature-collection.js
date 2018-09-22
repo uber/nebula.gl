@@ -386,12 +386,11 @@ export class EditableFeatureCollection {
     const selectedGeometry = this.getSelectedGeometry();
     const tentativeFeature = this._tentativeFeature;
 
-    if (selectedFeatureIndexes.length > 1) {
-      console.warn(`Unsupported operation for multiple selection`); // eslint-disable-line
-      return null;
-    }
-    if (selectedGeometry && selectedGeometry.type !== 'LineString') {
-      console.warn(`Unsupported geometry type: ${selectedGeometry.type}`); // eslint-disable-line
+    if (
+      selectedFeatureIndexes.length > 1 ||
+      (selectedGeometry && selectedGeometry.type !== 'LineString')
+    ) {
+      console.warn(`drawLineString mode only supported for single LineString selection`); // eslint-disable-line
       return null;
     }
 
@@ -516,9 +515,13 @@ export class EditableFeatureCollection {
 
   _handlePointerMoveForDrawLineString(groundCoords: Position): void {
     let startPosition: ?Position = null;
+    const selectedFeatureIndexes = this._selectedFeatureIndexes;
     const selectedGeometry = this.getSelectedGeometry();
 
-    if (!selectedGeometry || selectedGeometry.type !== 'LineString') {
+    if (
+      selectedFeatureIndexes.length > 1 ||
+      (selectedGeometry && selectedGeometry.type !== 'LineString')
+    ) {
       // unsupported
       return;
     }

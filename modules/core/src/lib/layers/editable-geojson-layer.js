@@ -2,15 +2,10 @@
 /* eslint-env browser */
 
 import { GeoJsonLayer, ScatterplotLayer, IconLayer } from 'deck.gl';
-import ellipse from '@turf/ellipse';
-import distance from '@turf/distance';
-import center from '@turf/center';
-import bearing from '@turf/bearing';
 import turfTransformRotate from '@turf/transform-rotate';
-import { point, featureCollection as fc } from '@turf/helpers';
 import { EditableFeatureCollection } from '../editable-feature-collection.js';
 import type { EditAction } from '../editable-feature-collection.js';
-import type { AnyGeoJson, Feature, Position } from '../../geojson-types.js';
+import type { Feature, Position } from '../../geojson-types.js';
 import EditableLayer from './editable-layer.js';
 
 const DEFAULT_LINE_COLOR = [0x0, 0x0, 0x0, 0xff];
@@ -93,7 +88,6 @@ type Props = {
 type State = {
   editableFeatureCollection: EditableFeatureCollection,
   tentativeFeature: ?Feature,
-  drawFeature: ?AnyGeoJson,
   editHandles: any[],
   selectedFeatures: Feature[],
   pointerMovePicks: any[]
@@ -156,8 +150,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         features: []
       }),
       selectedFeatures: [],
-      editHandles: [],
-      drawFeature: null
+      editHandles: []
     });
   }
 
@@ -482,42 +475,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     ) {
       this.handleTransformRotate(screenCoords, groundCoords);
     }
-  }
-
-  getDrawFeature(selectedFeature: ?Feature, mode: string, groundCoords: ?Position): ?AnyGeoJson {
-    let drawFeature: ?AnyGeoJson = null;
-
-    if (!selectedFeature) {
-      if (!groundCoords) {
-        // Need a mouse position in order to draw a single point
-        return null;
-      }
-      // Start with a point
-      drawFeature = {
-        type: 'Feature',
-        geometry: {
-          type: 'Point',
-          coordinates: groundCoords
-        }
-      };
-    } else if (selectedFeature.geometry.type === 'LineString') {
-      const positionOfLineString = this.props.drawAtFront
-        ? selectedFeature.geometry.coordinates[0]
-        : selectedFeature.geometry.coordinates[selectedFeature.geometry.coordinates.length - 1];
-      const currentPosition = groundCoords || positionOfLineString;
-
-      if (mode === 'drawEllipseUsing3Points') {
-        const [p1, p2] = selectedFeature.geometry.coordinates;
-
-        const ellipseCenter = center(fc([point(p1), point(p2)]));
-        const xSemiAxis = Math.max(distance(ellipseCenter, point(currentPosition)), 0.001);
-        const ySemiAxis = Math.max(distance(p1, p2), 0.001) / 2;
-        const options = { angle: bearing(p1, p2) };
-
-        drawFeature = ellipse(ellipseCenter, xSemiAxis, ySemiAxis, options);
-      }
-    }
-    return drawFeature;
   }
 
   handleTransformRotate(screenCoords: Position, groundCoords: Position) {

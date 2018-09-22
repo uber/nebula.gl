@@ -4,12 +4,11 @@ import bboxPolygon from '@turf/bbox-polygon';
 import circle from '@turf/circle';
 import distance from '@turf/distance';
 import ellipse from '@turf/ellipse';
-import center from '@turf/center';
 import destination from '@turf/destination';
 import bearing from '@turf/bearing';
 // import turfTransformRotate from '@turf/transform-rotate';
 import pointToLineDistance from '@turf/point-to-line-distance';
-import { point, featureCollection as fc } from '@turf/helpers';
+import { point } from '@turf/helpers';
 
 import type {
   FeatureCollection,
@@ -592,6 +591,8 @@ export class EditableFeatureCollection {
       this._handlePointerMoveForDrawEllipseByBoundingBox(groundCoords);
     } else if (this._mode === 'drawRectangleUsing3Points') {
       this._handlePointerMoveForDrawRectangleUsing3Points(groundCoords);
+    } else if (this._mode === 'drawEllipseUsing3Points') {
+      this._handlePointerMoveForDrawEllipseUsing3Points(groundCoords);
     }
   }
 
@@ -705,12 +706,12 @@ export class EditableFeatureCollection {
     const maxY = Math.max(corner1[1], corner2[1]);
 
     const polygonPoints = bboxPolygon([minX, minY, maxX, maxY]).geometry.coordinates[0];
-    const ellipseCenter = center(fc([point(corner1), point(corner2)]));
+    const centerCoordinates = getIntermediatePosition(corner1, corner2);
 
     const xSemiAxis = Math.max(distance(point(polygonPoints[0]), point(polygonPoints[1])), 0.001);
     const ySemiAxis = Math.max(distance(point(polygonPoints[0]), point(polygonPoints[3])), 0.001);
 
-    this._setTentativeFeature(ellipse(ellipseCenter, xSemiAxis, ySemiAxis));
+    this._setTentativeFeature(ellipse(centerCoordinates, xSemiAxis, ySemiAxis));
   }
 
   _handlePointerMoveForDrawRectangleUsing3Points(groundCoords: Position) {
@@ -728,8 +729,6 @@ export class EditableFeatureCollection {
         }
       });
     } else if (this._clickSequence.length === 2) {
-      // 2 or more clicks
-
       const lineString: LineString = {
         type: 'LineString',
         coordinates: this._clickSequence
@@ -772,6 +771,32 @@ export class EditableFeatureCollection {
           ]
         }
       });
+    }
+  }
+
+  _handlePointerMoveForDrawEllipseUsing3Points(groundCoords: Position) {
+    if (this._clickSequence.length === 0) {
+      // nothing to do yet
+      return;
+    }
+
+    if (this._clickSequence.length === 1) {
+      this._setTentativeFeature({
+        type: 'Feature',
+        geometry: {
+          type: 'LineString',
+          coordinates: [this._clickSequence[0], groundCoords]
+        }
+      });
+    } else if (this._clickSequence.length === 2) {
+      const [p1, p2] = this._clickSequence;
+
+      const centerCoordinates = getIntermediatePosition(p1, p2);
+      const xSemiAxis = Math.max(distance(centerCoordinates, point(groundCoords)), 0.001);
+      const ySemiAxis = Math.max(distance(p1, p2), 0.001) / 2;
+      const options = { angle: bearing(p1, p2) };
+
+      this._setTentativeFeature(ellipse(centerCoordinates, xSemiAxis, ySemiAxis, options));
     }
   }
 }

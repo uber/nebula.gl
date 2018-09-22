@@ -340,7 +340,11 @@ export class EditableFeatureCollection {
     if (editAction) {
       // Reset the click sequence upon each edit
       this._clickSequence = [];
+      this._setTentativeFeature(null);
     }
+
+    // Trigger pointer move handling since that's where most of the tentative feature handling is
+    this.onPointerMove(groundCoords);
 
     return editAction;
   }
@@ -414,19 +418,8 @@ export class EditableFeatureCollection {
         positionIndexes,
         position: groundCoords
       };
-      this._setTentativeFeature(null);
-    } else if (this._clickSequence.length === 1) {
-      // No selection and this is the first click
-      this._setTentativeFeature({
-        type: 'Feature',
-        geometry: {
-          type: 'LineString',
-          coordinates: [groundCoords, groundCoords]
-        }
-      });
     } else if (this._clickSequence.length === 2 && tentativeFeature) {
       editAction = this._getAddFeatureEditAction(tentativeFeature.geometry);
-      this._setTentativeFeature(null);
     }
 
     return editAction;
@@ -436,41 +429,7 @@ export class EditableFeatureCollection {
     let editAction: ?EditAction;
     const tentativeFeature = this._tentativeFeature;
 
-    if (this._clickSequence.length === 1) {
-      // This is the first click
-      this._setTentativeFeature({
-        type: 'Feature',
-        geometry: {
-          type: 'LineString',
-          coordinates: [groundCoords, groundCoords]
-        }
-      });
-    } else if (this._clickSequence.length === 2) {
-      // Add a point to the LineString
-
-      // $FlowFixMe: it's a LineString, trust me
-      const lineString: LineString = tentativeFeature.geometry;
-      this._setTentativeFeature({
-        type: 'Feature',
-        geometry: {
-          type: 'LineString',
-          coordinates: [...lineString.coordinates, groundCoords]
-        }
-      });
-    } else if (this._clickSequence.length === 3) {
-      // Upgrade from a LineString to a Polygon
-
-      // $FlowFixMe: it's a LineString, trust me
-      const lineString: LineString = tentativeFeature.geometry;
-      this._setTentativeFeature({
-        type: 'Feature',
-        geometry: {
-          type: 'Polygon',
-          coordinates: [[...lineString.coordinates, groundCoords, lineString.coordinates[0]]]
-        }
-      });
-    } else {
-      // $FlowFixMe: it's a Polygon, trust me
+    if (tentativeFeature && tentativeFeature.geometry.type === 'Polygon') {
       const polygon: Polygon = tentativeFeature.geometry;
 
       if (
@@ -486,18 +445,6 @@ export class EditableFeatureCollection {
           coordinates: [[...polygon.coordinates[0].slice(0, -2), polygon.coordinates[0][0]]]
         };
         editAction = this._getAddFeatureEditAction(polygonToAdd);
-        this._setTentativeFeature(null);
-      } else {
-        // Add a point to the tentative polygon
-        this._setTentativeFeature({
-          type: 'Feature',
-          geometry: {
-            type: 'Polygon',
-            coordinates: [
-              [...polygon.coordinates[0].slice(0, -1), groundCoords, polygon.coordinates[0][0]]
-            ]
-          }
-        });
       }
     }
 
@@ -507,17 +454,11 @@ export class EditableFeatureCollection {
   _handle2ClickPolygon(groundCoords: Position, clickedEditHandle: ?EditHandle): ?EditAction {
     const tentativeFeature = this._tentativeFeature;
 
-    if (this._clickSequence.length === 1) {
-      // This is the first click, so start a Polygon
-      this._setTentativeFeature({
-        type: 'Feature',
-        geometry: {
-          type: 'Polygon',
-          coordinates: [[groundCoords, groundCoords, groundCoords, groundCoords]]
-        }
-      });
-    } else if (tentativeFeature && tentativeFeature.geometry.type === 'Polygon') {
-      this._setTentativeFeature(null);
+    if (
+      this._clickSequence.length > 1 &&
+      tentativeFeature &&
+      tentativeFeature.geometry.type === 'Polygon'
+    ) {
       return this._getAddFeatureEditAction(tentativeFeature.geometry);
     }
 
@@ -527,27 +468,11 @@ export class EditableFeatureCollection {
   _handle3ClickPolygon(groundCoords: Position, clickedEditHandle: ?EditHandle): ?EditAction {
     const tentativeFeature = this._tentativeFeature;
 
-    if (this._clickSequence.length === 1) {
-      // This is the first click, so start a LineString
-      this._setTentativeFeature({
-        type: 'Feature',
-        geometry: {
-          type: 'LineString',
-          coordinates: [groundCoords, groundCoords]
-        }
-      });
-    } else if (this._clickSequence.length === 2) {
-      // This is the second click, so start a Polygon
-      const firstClick = this._clickSequence[0];
-      this._setTentativeFeature({
-        type: 'Feature',
-        geometry: {
-          type: 'Polygon',
-          coordinates: [[firstClick, groundCoords, firstClick]]
-        }
-      });
-    } else if (tentativeFeature && tentativeFeature.geometry.type === 'Polygon') {
-      this._setTentativeFeature(null);
+    if (
+      this._clickSequence.length > 2 &&
+      tentativeFeature &&
+      tentativeFeature.geometry.type === 'Polygon'
+    ) {
       return this._getAddFeatureEditAction(tentativeFeature.geometry);
     }
 
@@ -593,7 +518,6 @@ export class EditableFeatureCollection {
   _handlePointerMoveForDrawLineString(groundCoords: Position): void {
     let startPosition: ?Position = null;
     const selectedGeometry = this.getSelectedGeometry();
-    const tentativeFeature = this._tentativeFeature;
 
     if (selectedGeometry && selectedGeometry.type === 'LineString') {
       // Draw an extension line starting from one end of the selected LineString
@@ -601,14 +525,8 @@ export class EditableFeatureCollection {
       if (this._drawAtFront) {
         startPosition = selectedGeometry.coordinates[0];
       }
-    } else if (tentativeFeature) {
-      // Draw an extension line starting from the first clicked point
-      if (tentativeFeature.geometry.type === 'LineString') {
-        startPosition = tentativeFeature.geometry.coordinates[0];
-      } else {
-        // eslint-disable-next-line
-        console.warn(`Unexpected tentative feature type ${tentativeFeature.geometry.type}`);
-      }
+    } else if (this._clickSequence.length === 1) {
+      startPosition = this._clickSequence[0];
     }
 
     if (startPosition) {
@@ -624,28 +542,27 @@ export class EditableFeatureCollection {
   }
 
   _handlePointerMoveForDrawPolygon(groundCoords: Position) {
-    const tentativeFeature = this._tentativeFeature;
+    if (this._clickSequence.length === 0) {
+      // nothing to do yet
+      return;
+    }
 
-    if (tentativeFeature && tentativeFeature.geometry.type === 'LineString') {
-      // Move the last point of the LineString to where the pointer is
-      const lineString: LineString = tentativeFeature.geometry;
+    if (this._clickSequence.length < 3) {
+      // Draw a LineString connecting all the clicked points with the hovered point
       this._setTentativeFeature({
         type: 'Feature',
         geometry: {
           type: 'LineString',
-          coordinates: [...lineString.coordinates.slice(0, -1), groundCoords]
+          coordinates: [...this._clickSequence, groundCoords]
         }
       });
-    } else if (tentativeFeature && tentativeFeature.geometry.type === 'Polygon') {
-      // Move the last point of the LineString to where the pointer is
-      const polygon: Polygon = tentativeFeature.geometry;
+    } else {
+      // Draw a Polygon connecting all the clicked points with the hovered point
       this._setTentativeFeature({
         type: 'Feature',
         geometry: {
           type: 'Polygon',
-          coordinates: [
-            [...polygon.coordinates[0].slice(0, -2), groundCoords, polygon.coordinates[0][0]]
-          ]
+          coordinates: [[...this._clickSequence, groundCoords, this._clickSequence[0]]]
         }
       });
     }

@@ -29,7 +29,7 @@ function processInitialData(data) {
     const num = parseInt(DEMO_COLORS[color++ % DEMO_COLORS.length].substring(1), 16);
     const fillColor = [16, 8, 0].map(sh => (num >> sh) & 0xff);
     state.properties.fillColor = fillColor;
-    state.properties.elevation = Math.round(1 + elevation++ % 10) * 10000;
+    state.properties.elevation = Math.round(1 + (elevation++ % 10)) * 10000;
   });
   return data;
 }
@@ -442,36 +442,18 @@ class Hero extends Component {
       extruded: this.state.extrude,
 
       // Editing callbacks
-      onEdit: ({
-        updatedData,
-        updatedMode,
-        updatedSelectedFeatureIndexes,
-        editType,
-        featureIndex,
-        positionIndexes,
-        position
-      }) => {
+      onEdit: ({ updatedData, editType, featureIndex, positionIndexes, position }) => {
         if (editType !== 'movePosition') {
           // Don't log moves since they're really chatty
           // eslint-disable-next-line
-          console.log(
-            'onEdit',
-            editType,
-            updatedMode,
-            updatedSelectedFeatureIndexes,
-            featureIndex,
-            positionIndexes,
-            position
-          );
+          console.log('onEdit', editType, featureIndex, positionIndexes, position);
         }
         if (editType === 'removePosition' && !this.state.pointsRemovable) {
           // reject the edit
           return;
         }
         this.setState({
-          data: updatedData,
-          mode: updatedMode,
-          selectedFeatureIndexes: updatedSelectedFeatureIndexes
+          data: updatedData
         });
       },
 

@@ -27,11 +27,9 @@ class App extends React.Component {
       mode: this.state.mode,
       selectedFeatureIndexes: this.state.selectedFeatureIndexes,
 
-      onEdit: ({ updatedData, updatedMode, updatedSelectedFeatureIndexes }) => {
+      onEdit: ({ updatedData }) => {
         this.setState({
           data: updatedData,
-          mode: updatedMode,
-          selectedFeatureIndexes: updatedSelectedFeatureIndexes
         });
       }
     });
@@ -71,94 +69,29 @@ The `mode` property dictates what type of edits the user can perform and how to 
 
 * `modify`: user can move existing points, add intermediate points along lines, and remove points.
 
-* `drawPoint`: user can draw a `Point` feature by clicking positions to add.
+* `drawPoint`: user can draw a new `Point` feature by clicking where the point is to be.
 
-  * If no feature is selected, clicking will create a new `Point` feature.
+* `drawLineString`: user can draw a new `LineString` feature by clicking positions to add.
 
-* `drawLineString`: user can draw a `LineString` feature by clicking positions to add.
+  * If a `LineString` feature is selected, clicking will add a position to it.
 
-  * If no feature is selected, clicking will create a new feature `Point` feature and select it (by passing its index as `updatedSelectedFeatureIndexes`).
+  * If no feature is selected, a new `LineString` feature will be added. *Note*: you must select the new feature (via the `onEdit` callback) in order to start extending it.
 
-  * If a `Point` feature is selected, clicking will convert it to a `LineString` and add the clicked position to it.
+  * If multiple features are selected, or a non-`LineString` is selected, the user will be prevented from drawing.
 
-  * If a `LineString` feature is selected, clicking will add the clicked position to it.
-
-  * If multiple features are selected, the user will be prevented from drawing
-
-* `drawPolygon`: user can draw a new `Polygon` feature by clicking positions to add then closing the polygon.
-
-  * If no feature is selected, clicking will create a new `Point` feature and select it (by passing its index as `updatedSelectedFeatureIndexes`).
-
-  * If a `Point` feature is selected, clicking will convert it to a `LineString` and add the clicked position to it.
-
-  * If a `LineString` feature is selected, clicking will add the clicked position to it. If that clicked position is the first position, the feature will be converted to a `Polygon` feature.
-
-  * If a `LineString` feature is selected, after having 3 points any where double-click the feature will be converted to a `Polygon` feature by closing the shape to first position.
-
-  * If multiple features are selected, the user will be prevented from drawing.
+* `drawPolygon`: user can draw a new `Polygon` feature by clicking positions to add then closing the polygon (or double-clicking).
 
 * `drawRectangle`: user can draw a new rectanglular `Polygon` feature by clicking two opposing corners of the rectangle.
 
-  * If no feature is selected, clicking will create a new `Point` feature and select it (by passing its index as `updatedSelectedFeatureIndexes`).
-
-  * If a `Point` feature is selected, clicking will convert it to a `Polygon` whose two opposing corners are the original point and the position clicked.
-
-  * If a `LineString` feature is selected, the user will be prevented from drawing a rectangle.
-
-  * If multiple features are selected, the user will be prevented from drawing.
-
 * `drawRectangleUsing3Points`: user can draw a new rectanglular `Polygon` feature by clicking three corners of the rectangle.
-
-  * If no feature is selected, clicking will create a new `Point` feature and select it (by passing its index as `updatedSelectedFeatureIndexes`).
-
-  * If a `Point` feature is selected, clicking will convert it to a `LineString` and add the clicked position to it.
-
-  * If a `LineString` feature is selected, clicking will draw the rectangle.
-
-  * If multiple features are selected, the user will be prevented from drawing.
 
 * `drawCircleFromCenter`: user can draw a new circular `Polygon` feature by clicking the center then along the ring.
 
-  * If no feature is selected, clicking will create a new `Point` feature and select it (by passing its index as `updatedSelectedFeatureIndexes`).
-
-  * If a `Point` feature is selected, clicking will convert it to a `Polygon` whose center is the original point and radius is the distance to the clicked position.
-
-  * If a `LineString` feature is selected, the user will be prevented from drawing a circle.
-
-  * If multiple features are selected, the user will be prevented from drawing.
-
 * `drawCircleByBoundingBox`: user can draw a new circular `Polygon` feature by clicking the two corners of bounding box.
-
-  * If no feature is selected, clicking will create a new `Point` feature and select it (by passing its index as `updatedSelectedFeatureIndexes`).
-
-  * If a `Point` feature is selected, clicking will convert it to a `Polygon` whose radius is the center of two corners of bounding box.
-
-  * If a `LineString` feature is selected, the user will be prevented from drawing a circle.
-
-  * If multiple features are selected, the user will be prevented from drawing.
 
 * `drawEllipseByBoundingBox`: user can draw a new ellipse shape `Polygon` feature by clicking two corners of bounding box.
 
-  * The center of ellipse will be center of two corners of bounding box.
-
-  * If no feature is selected, clicking will create a new `Point` feature and select it (by passing its index as `updatedSelectedFeatureIndexes`).
-
-  * If a `Point` feature is selected, clicking will convert it to a `Polygon` whose two opposing corners are the original point and the position clicked.
-
-  * If a `LineString` feature is selected, the user will be prevented from drawing a rectangle.
-
-  * If multiple features are selected, the user will be prevented from drawing.
-
 * `drawEllipseUsing3Points`: user can draw a new ellipse shape `Polygon` feature by clicking center and two corners of the ellipse.
-
-  * If no feature is selected, clicking will create a new `Point` feature and select it (by passing its index as `updatedSelectedFeatureIndexes`).
-
-  * If a `Point` feature is selected, clicking will convert it to a `LineString` and add the clicked position to it.
-
-  * If a `LineString` feature is selected, clicking will draw the rectangle.
-
-  * If multiple features are selected, the user will be prevented from drawing.
-
 
 #### `modeConfig` (Object, optional)
 
@@ -193,15 +126,11 @@ The `onEdit` event is the core event provided by this layer and must be handled 
 
   * You may also supply a modified version of this object into the `data` prop on the next render cycle (e.g. if you have your own snapping logic).
 
-* `updatedMode` (String): A suggested value to use for `mode` after the edit is applied. Often this is the same value. But occasionally, an edit will need to transition the layer from one mode to another.
-
-* `updatedSelectedFeatureIndexes` (Number): A suggested array to use for `selectedFeatureIndexes` after the edit is applied. Often this is the same array. But occasionally, an edit will change the selected features (e.g. when creating a new feature, it goes from `[]` to an array holding the index of the newly created feature).
-
 * `editType` (String): The type of edit requested. One of:
 
   * `movePosition`: A position was moved.
 
-  * `addPosition`: A position was added (either at the beginning, middle, or end of a feature's coordinates). Note: this may result in a feature being "upgraded" from one type to another (e.g. `Point` to `LineString` or `LineString` to `Polygon`).
+  * `addPosition`: A position was added (either at the beginning, middle, or end of a feature's coordinates).
 
   * `removePosition`: A position was removed. Note: it may result in multiple positions being removed in order to maintain valid GeoJSON (e.g. removing a point from a triangular hole will remove the hole entirely).
 
@@ -222,8 +151,6 @@ Consider the user removed the third position from a `Polygon`'s first ring, and 
 ```js
 {
   updatedData: {...},
-  updatedMode: 'modify',
-  updatedSelectedFeatureIndexes: [3],
   editType: 'removePosition',
   featureIndex: 3,
   positionIndexes: [1, 2],
@@ -274,19 +201,18 @@ The additional arguments (in order) are:
 * `isSelected`: indicates if the given feature is a selected feature
 * `mode`: the current value of the `mode` prop
 
-### Drawing Feature
+### Tentative Features
 
-While creating a new feature in any of the `draw` modes, portion of a feature which has not been "committed" yet can hold its own props. For a LineString, this would be the last line segment moving under the mouse. For a Polygon, this would be the last segment and the fill moving under the mouse. For Rectangles and Circles, this would be the whole feature during drawing. Define the properties with the following accessors:
+While creating a new feature in any of the `draw` modes, portion of a feature which has not been "committed" yet can hold its own props. For example, in `drawLineString` mode, the tentative feature is the last line segment moving under the mouse. For polygons and ellipses, this would be the whole feature during drawing. Define the properties with the following accessors:
 
-* `getDrawLineColor`
-* `getDrawFillColor`
-* `getDrawLineWidth`
-* `getDrawLineDashArray`
+* `getTentativeLineColor`
+* `getTentativeFillColor`
+* `getTentativeLineWidth`
+* `getTentativeLineDashArray`
 
 The following accessors default to the same values as the existing feature accessors above. The arguments in order:
 
-* `feature`: the segment/polygon that represents the "uncommitted" feature
-* `selectedFeature`: the "committed" feature which is being drawn/extended
+* `feature`: the segment/polygon that represents the tentative feature
 * `mode`: the current value of the `mode` prop
 
 ### Edit Handles

@@ -70,8 +70,9 @@ export default class Example extends Component<
     this.state = {
       viewport: initialViewport,
       testFeatures: sampleGeoJson,
-      mode: 'modify',
+      mode: 'drawPolygon',
       pointsRemovable: true,
+      drawAtFront: false,
       selectedFeatureIndexes: [],
       editHandleType: 'point',
       keyHolded: ''
@@ -282,35 +283,23 @@ export default class Example extends Component<
       drawAtFront,
 
       // Editing callbacks
-      onEdit: ({
-        updatedData,
-        updatedMode,
-        updatedSelectedFeatureIndexes,
-        editType,
-        featureIndex,
-        positionIndexes,
-        position
-      }) => {
+      onEdit: ({ updatedData, editType, featureIndex, positionIndexes, position }) => {
+        let updatedSelectedFeatureIndexes = this.state.selectedFeatureIndexes;
         if (editType !== 'movePosition') {
           // Don't log moves since they're really chatty
           // eslint-disable-next-line
-          console.log(
-            'onEdit',
-            editType,
-            updatedMode,
-            updatedSelectedFeatureIndexes,
-            featureIndex,
-            positionIndexes,
-            position
-          );
+          console.log('onEdit', editType, featureIndex, positionIndexes, position);
         }
         if (editType === 'removePosition' && !this.state.pointsRemovable) {
           // reject the edit
           return;
         }
+        if (editType === 'addFeature') {
+          // Add the new feature to the selection
+          updatedSelectedFeatureIndexes = [...this.state.selectedFeatureIndexes, featureIndex];
+        }
         this.setState({
           testFeatures: updatedData,
-          mode: updatedMode,
           selectedFeatureIndexes: updatedSelectedFeatureIndexes
         });
       },
@@ -357,9 +346,9 @@ export default class Example extends Component<
         handle.type === 'existing' ? [0xff, 0x80, 0x00, 0xff] : [0x0, 0x0, 0x0, 0x80],
       editHandlePointRadiusScale: 2,
 
-      // customize drawing line style
-      getDrawLineDashArray: () => [7, 4],
-      getDrawLineColor: () => [0x8f, 0x8f, 0x8f, 0xff]
+      // customize tentative feature style
+      getTentativeLineDashArray: () => [7, 4],
+      getTentativeLineColor: () => [0x8f, 0x8f, 0x8f, 0xff]
     });
 
     return (
@@ -369,7 +358,15 @@ export default class Example extends Component<
           {...viewport}
           getCursor={editableGeoJsonLayer.getCursor.bind(editableGeoJsonLayer)}
           layers={[editableGeoJsonLayer]}
-          views={new MapView({ id: 'basemap', controller: MapController })}
+          views={
+            new MapView({
+              id: 'basemap',
+              controller: {
+                type: MapController,
+                doubleClickZoom: this.state.mode === 'view'
+              }
+            })
+          }
           onLayerClick={this._onLayerClick}
           onViewStateChange={({ viewState }) => this.setState({ viewport: viewState })}
         >

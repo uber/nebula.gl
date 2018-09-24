@@ -95,6 +95,81 @@ describe('getFeatureCollection()', () => {
   });
 });
 
+describe('setFeatureCollection()', () => {
+  it('immutably updates feature collection', () => {
+    const featureCollection1 = {
+      type: 'FeatureCollection',
+      features: [pointFeature]
+    };
+    const featureCollection2 = {
+      type: 'FeatureCollection',
+      features: [multiPolygonFeature, lineStringFeature]
+    };
+    const editable = new EditableFeatureCollection(featureCollection1);
+
+    editable.setFeatureCollection(featureCollection2);
+
+    expect(editable.getFeatureCollection()).toEqual(featureCollection2);
+  });
+});
+
+describe('setMode()', () => {
+  it('should set mode', () => {
+    const editable = new EditableFeatureCollection(featureCollection);
+
+    editable.setMode('hamster');
+
+    expect(editable._mode).toEqual('hamster');
+  });
+
+  it('should do nothing if already set', () => {
+    const editable = new EditableFeatureCollection(featureCollection);
+
+    editable.setMode('hamster');
+    editable.setMode('hamster');
+
+    expect(editable._mode).toEqual('hamster');
+  });
+});
+
+describe('setSelectedFeatureIndexes()', () => {
+  it('should set selectedFeatureIndexes', () => {
+    const editable = new EditableFeatureCollection(featureCollection);
+
+    editable.setSelectedFeatureIndexes([1, 2]);
+
+    expect(editable._selectedFeatureIndexes).toEqual([1, 2]);
+  });
+
+  it('should do nothing if already set', () => {
+    const editable = new EditableFeatureCollection(featureCollection);
+
+    editable.setSelectedFeatureIndexes([1, 2]);
+    editable.setSelectedFeatureIndexes([1, 2]);
+
+    expect(editable._selectedFeatureIndexes).toEqual([1, 2]);
+  });
+});
+
+describe('setDrawAtFront()', () => {
+  it('should set drawAtFront', () => {
+    const editable = new EditableFeatureCollection(featureCollection);
+
+    editable.setDrawAtFront(true);
+
+    expect(editable._drawAtFront).toEqual(true);
+  });
+
+  it('should do nothing if already set', () => {
+    const editable = new EditableFeatureCollection(featureCollection);
+
+    editable.setDrawAtFront(true);
+    editable.setDrawAtFront(true);
+
+    expect(editable._drawAtFront).toEqual(true);
+  });
+});
+
 describe('replacePosition()', () => {
   it(`doesn't mutate original`, () => {
     const leaveMeAlone = {
@@ -677,5 +752,119 @@ describe('getEditHandles()', () => {
     ];
 
     expect(actual).toEqual(expected);
+  });
+});
+
+describe('drawLineString mode', () => {
+  describe('when no selection', () => {
+    test('sets tentative feature to a LineString after first click', () => {
+      const editable = new EditableFeatureCollection(featureCollection);
+      editable.setMode('drawLineString');
+
+      editable.onPointerMove([1, 2]);
+      editable.onClick([1, 2], null);
+      editable.onPointerMove([2, 3]);
+
+      const tentativeFeature = editable.getTentativeFeature();
+
+      expect(tentativeFeature).toEqual({
+        type: 'Feature',
+        properties: {},
+        geometry: {
+          type: 'LineString',
+          coordinates: [[1, 2], [2, 3]]
+        }
+      });
+    });
+
+    test('adds a new feature after two clicks', () => {
+      const editable = new EditableFeatureCollection(featureCollection);
+      editable.setMode('drawLineString');
+
+      editable.onPointerMove([1, 2]);
+      const action1 = editable.onClick([1, 2], null);
+      editable.onPointerMove([2, 3]);
+      const action2 = editable.onClick([2, 3], null);
+
+      expect(action1).toBeNull();
+      expect(action2).toEqual({
+        editType: 'addFeature',
+        updatedData: {
+          ...featureCollection,
+          features: [
+            ...featureCollection.features,
+            {
+              type: 'Feature',
+              properties: {},
+              geometry: {
+                type: 'LineString',
+                coordinates: [[1, 2], [2, 3]]
+              }
+            }
+          ]
+        },
+        featureIndex: featureCollection.features.length + 1,
+        position: null,
+        positionIndexes: null
+      });
+    });
+  });
+
+  describe('when single LineString selected', () => {
+    test('extends LineString on click', () => {
+      const editable = new EditableFeatureCollection(featureCollection);
+
+      const featureIndex = featureCollection.features.indexOf(lineStringFeature);
+      editable.setSelectedFeatureIndexes([featureIndex]);
+      editable.setMode('drawLineString');
+
+      editable.onPointerMove([7, 8]);
+      const action = editable.onClick([7, 8], null);
+
+      if (!action) {
+        throw new Error('action should be defined');
+      }
+      expect(action.editType).toEqual('addPosition');
+      expect(action.featureIndex).toEqual(featureIndex);
+      expect(action.position).toEqual([7, 8]);
+      expect(action.positionIndexes).toEqual([lineStringFeature.geometry.coordinates.length]);
+      expect(action.updatedData.features[featureIndex]).toEqual({
+        type: 'Feature',
+        properties: {},
+        geometry: {
+          type: 'LineString',
+          coordinates: [...lineStringFeature.geometry.coordinates, [7, 8]]
+        }
+      });
+    });
+  });
+
+  describe('when multiple selection', () => {
+    test('does nothing', () => {
+      const editable = new EditableFeatureCollection(featureCollection);
+
+      editable.setSelectedFeatureIndexes([1, 2]);
+      editable.setMode('drawLineString');
+
+      editable.onPointerMove([7, 8]);
+      const action = editable.onClick([7, 8], null);
+
+      expect(action).toBeNull();
+    });
+  });
+
+  describe('when non-LineString selected', () => {
+    test('does nothing', () => {
+      const editable = new EditableFeatureCollection(featureCollection);
+
+      const featureIndex = featureCollection.features.indexOf(polygonFeature);
+      editable.setSelectedFeatureIndexes([featureIndex]);
+      editable.setMode('drawLineString');
+
+      editable.onPointerMove([7, 8]);
+      const action = editable.onClick([7, 8], null);
+
+      expect(action).toBeNull();
+    });
   });
 });

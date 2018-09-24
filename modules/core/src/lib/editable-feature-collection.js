@@ -41,9 +41,9 @@ export type EditAction = {
 export class EditableFeatureCollection {
   featureCollection: FeatureCollection;
   _tentativeFeature: ?Feature;
-  _mode: string;
-  _selectedFeatureIndexes: number[];
-  _drawAtFront: boolean;
+  _mode: string = 'modify';
+  _selectedFeatureIndexes: number[] = [];
+  _drawAtFront: boolean = false;
   _clickSequence: Position[] = [];
 
   constructor(featureCollection: FeatureCollection) {
@@ -381,7 +381,7 @@ export class EditableFeatureCollection {
   }
 
   _handleClickDrawLineString(groundCoords: Position, clickedEditHandle: ?EditHandle): ?EditAction {
-    let editAction: ?EditAction;
+    let editAction: ?EditAction = null;
     const selectedFeatureIndexes = this._selectedFeatureIndexes;
     const selectedGeometry = this.getSelectedGeometry();
     const tentativeFeature = this._tentativeFeature;
@@ -424,7 +424,7 @@ export class EditableFeatureCollection {
   }
 
   _handleClickDrawPolygon(groundCoords: Position, clickedEditHandle: ?EditHandle): ?EditAction {
-    let editAction: ?EditAction;
+    let editAction: ?EditAction = null;
     const tentativeFeature = this._tentativeFeature;
 
     if (tentativeFeature && tentativeFeature.geometry.type === 'Polygon') {
@@ -487,7 +487,7 @@ export class EditableFeatureCollection {
     return {
       updatedData,
       editType: 'addFeature',
-      featureIndex: updatedData.features.length - 1,
+      featureIndex: updatedData.features.length,
       positionIndexes: null,
       position: null
     };

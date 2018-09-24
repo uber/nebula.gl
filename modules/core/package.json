@@ -2,7 +2,7 @@
   "name": "nebula.gl",
   "description": "A suite of 3D-enabled data editing overlays, suitable for deck.gl",
   "license": "MIT",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "author": "Georgios Karnas <georgios@uber.com>",
   "keywords": [
     "webgl",
@@ -62,6 +62,5 @@
     "supercluster": ">=2.3.0",
     "viewport-mercator-project": ">=5.0.0"
   },
-  "peerDependencies": {
-  }
+  "peerDependencies": {}
 }

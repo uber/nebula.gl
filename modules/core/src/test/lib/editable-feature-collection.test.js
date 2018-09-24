@@ -756,6 +756,18 @@ describe('getEditHandles()', () => {
 });
 
 describe('drawLineString mode', () => {
+  let warnBefore;
+  beforeEach(() => {
+    warnBefore = console.warn; // eslint-disable-line
+    // $FlowFixMe
+    console.warn = function() {}; // eslint-disable-line
+  });
+
+  afterEach(() => {
+    // $FlowFixMe
+    console.warn = warnBefore; // eslint-disable-line
+  });
+
   describe('when no selection', () => {
     test('sets tentative feature to a LineString after first click', () => {
       const editable = new EditableFeatureCollection(featureCollection);

@@ -290,7 +290,7 @@
     "@turf/helpers" "^5.1.5"
     "@turf/invariant" "^5.1.5"
 
-"@turf/transform-rotate@^5.1.5":
+"@turf/transform-rotate@>=4.0.0", "@turf/transform-rotate@^5.1.5":
   version "5.1.5"
   resolved "https://registry.yarnpkg.com/@turf/transform-rotate/-/transform-rotate-5.1.5.tgz#d096edd9e300fe315069d54d8e458c409221edfb"
   dependencies:
@@ -4918,9 +4918,15 @@ natural-compare@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
 
-nebula.gl@0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/nebula.gl/-/nebula.gl-0.4.0.tgz#04038cfc8837a9ff050d6d6a82dea139bb4c74d3"
+nebula.gl-react@0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/nebula.gl-react/-/nebula.gl-react-0.5.0.tgz#4c7e77091d7f482e78170d38651574929c597b56"
+  dependencies:
+    nebula.gl "0.5.0"
+
+nebula.gl@0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/nebula.gl/-/nebula.gl-0.5.0.tgz#192db1635e26f727de8bc27ba88a9fc04bad5ac9"
   dependencies:
     "@deck.gl/experimental-layers" "^6.0.3"
     "@turf/bbox" ">=4.0.0"
@@ -4935,6 +4941,7 @@ nebula.gl@0.4.0:
     "@turf/ellipse" ">=4.0.0"
     "@turf/helpers" ">=4.0.0"
     "@turf/point-to-line-distance" ">=4.0.0"
+    "@turf/transform-rotate" ">=4.0.0"
     cubic-hermite-spline "^1.0.1"
     deck.gl "^6.0.3"
     geojson-types "^2.0.1"

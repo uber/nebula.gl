@@ -503,9 +503,9 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     const feature = this.state.selectedFeatures[0];
     const rotatedFeature = turfTransformRotate(feature, 2, { pivot });
 
-    const updatedData = this.state.editableFeatureCollection
+    const updatedData = this.state.editableFeatureCollection.featureCollection
       .replaceGeometry(featureIndex, rotatedFeature.geometry)
-      .getFeatureCollection();
+      .getObject();
 
     this.props.onEdit({
       updatedData,
@@ -517,9 +517,9 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }
 
   handleMovePosition(featureIndex: number, positionIndexes: number[], groundCoords: Position) {
-    const updatedData = this.state.editableFeatureCollection
+    const updatedData = this.state.editableFeatureCollection.featureCollection
       .replacePosition(featureIndex, positionIndexes, groundCoords)
-      .getFeatureCollection();
+      .getObject();
 
     this.props.onEdit({
       updatedData,
@@ -535,9 +535,9 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     positionIndexes: number[],
     groundCoords: Position
   ) {
-    const updatedData = this.state.editableFeatureCollection
+    const updatedData = this.state.editableFeatureCollection.featureCollection
       .replacePosition(featureIndex, positionIndexes, groundCoords)
-      .getFeatureCollection();
+      .getObject();
 
     this.props.onEdit({
       updatedData,
@@ -553,9 +553,9 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     positionIndexes: number[],
     groundCoords: Position
   ) {
-    const updatedData = this.state.editableFeatureCollection
+    const updatedData = this.state.editableFeatureCollection.featureCollection
       .addPosition(featureIndex, positionIndexes, groundCoords)
-      .getFeatureCollection();
+      .getObject();
 
     this.props.onEdit({
       updatedData,

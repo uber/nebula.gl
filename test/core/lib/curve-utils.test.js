@@ -1,4 +1,4 @@
-import { generateCurveFromControlPoints } from '../../lib/curve-utils';
+import { generateCurveFromControlPoints } from '../../../modules/core/src/lib/curve-utils';
 
 const POLYLINE = {
   type: 'Feature',

@@ -2,7 +2,7 @@
 /* eslint-env jest */
 /* eslint-disable max-nested-callbacks */
 
-import { EditableFeatureCollection } from '../../lib/editable-feature-collection';
+import { EditableFeatureCollection } from '../../../modules/core/src/lib/editable-feature-collection';
 
 let pointFeature;
 let lineStringFeature;

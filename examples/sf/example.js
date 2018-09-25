@@ -8,11 +8,11 @@ import {
   EditableJunctionsLayer,
   EditableGeoJsonLayer,
   Feature,
-  HtmlTooltipOverlay,
-  Nebula,
   SegmentsLayer,
   SELECTION_TYPE
 } from 'nebula.gl';
+
+import { HtmlTooltipOverlay, Nebula } from 'nebula.gl-react';
 
 import testPolygons from '../data/sf-polygons';
 

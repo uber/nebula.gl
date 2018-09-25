@@ -29,7 +29,7 @@
     "version-major": "./all-modules.sh npm version major",
     "version-minor": "./all-modules.sh npm version minor",
     "version-patch": "./all-modules.sh npm version patch",
-    "test": "npm run lint && npm run build && npm run flow && npm run jest-cover",
+    "test": "npm run lint && npm run build && npm run flow && npm run jest",
     "test-r": "npm run lint && npm run build && npm run test-node && (cd test/rendering-test && node node-rendering.js)",
     "test-fast": "npm run test-node",
     "test-ci": "npm run lint && node test/node-ci.js",

@@ -3,13 +3,9 @@
 
 import { GeoJsonLayer, ScatterplotLayer, IconLayer } from 'deck.gl';
 import turfTransformRotate from '@turf/transform-rotate';
-<<<<<<< HEAD
-=======
 import turfTransformTranslate from '@turf/transform-translate';
-import pointToLineDistance from '@turf/point-to-line-distance';
-import { point, featureCollection as fc } from '@turf/helpers';
-import type { Feature } from '../../geojson-types.js';
->>>>>>> db69fd7... Ability to transform translate (move) any feature
+import turfDistance from '@turf/distance';
+import { point } from '@turf/helpers';
 import { EditableFeatureCollection } from '../editable-feature-collection.js';
 import type { EditAction } from '../editable-feature-collection.js';
 import type { Feature, Position } from '../../geojson-types.js';
@@ -461,7 +457,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     pointerDownPicks: any[],
     sourceEvent: any
   }) {
-  }: Object) {
     const isTranslateFeature =
       this.props.mode === 'modify' &&
       this.props.modeConfig &&
@@ -476,7 +471,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       picks.length
     ) {
       distanceMoved = Math.max(
-        distance(point(pointerMovePicks[0].lngLat), point(picks[0].lngLat)),
+        turfDistance(point(pointerMovePicks[0].lngLat), point(picks[0].lngLat)),
         0.02
       );
     }
@@ -548,9 +543,9 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }
 
   handleTransformTranslate(
-    screenCoords: number[],
-    groundCoords: number[],
-    pointerDownPicks: Object[],
+    screenCoords: Position,
+    groundCoords: Position,
+    pointerDownPicks: any[],
     distanceMoved: number
   ) {
     const featureIndex = this.props.selectedFeatureIndexes[0];
@@ -564,9 +559,9 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     const direction = angleFromNorth(p2, p1);
     const movedFeature = turfTransformTranslate(feature, distanceMoved, direction);
 
-    const updatedData = this.state.editableFeatureCollection
+    const updatedData = this.state.editableFeatureCollection.featureCollection
       .replaceGeometry(featureIndex, movedFeature.geometry)
-      .getFeatureCollection();
+      .getObject();
 
     this.props.onEdit({
       updatedData,

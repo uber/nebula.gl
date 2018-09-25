@@ -1011,7 +1011,7 @@
     "@turf/rhumb-destination" "^5.1.5"
     "@turf/rhumb-distance" "^5.1.5"
 
-"@turf/transform-translate@^5.1.5":
+"@turf/transform-translate@>=4.0.0":
   version "5.1.5"
   resolved "https://registry.yarnpkg.com/@turf/transform-translate/-/transform-translate-5.1.5.tgz#530a257fb1dc7268dadcab34e67901eb2a3dec63"
   dependencies:
@@ -4386,7 +4386,7 @@ istanbul-lib-source-maps@^1.2.0, istanbul-lib-source-maps@^1.2.1, istanbul-lib-s
   resolved "https://registry.yarnpkg.com/istanbul-lib-source-maps/-/istanbul-lib-source-maps-1.2.6.tgz#37b9ff661580f8fca11232752ee42e08c6675d8f"
   dependencies:
     debug "^3.1.0"
-    istanbul-lib-coverage "^1.1.2"
+    istanbul-lib-coverage "^1.2.1"
     mkdirp "^0.5.1"
     rimraf "^2.6.1"
     source-map "^0.5.3"

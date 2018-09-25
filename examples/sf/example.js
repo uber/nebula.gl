@@ -12,10 +12,7 @@ import {
   SELECTION_TYPE
 } from 'nebula.gl';
 
-import {
-  HtmlTooltipOverlay,
-  Nebula
-} from 'nebula.gl-react';
+import { HtmlTooltipOverlay, Nebula } from 'nebula.gl-react';
 
 import testPolygons from '../data/sf-polygons';
 

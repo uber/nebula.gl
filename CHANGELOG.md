@@ -3,7 +3,9 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/uber/nebula.gl/compare/v0.4.3...HEAD)
+<!-- ## [0.5.1](https://github.com/uber/nebula.gl/compare/v0.5.1...master) -->
+
+## [0.5.1](https://github.com/uber/nebula.gl/compare/v0.4.3...v0.5.1) - 2017-09-24
 
 ### Removed
 
@@ -16,6 +18,10 @@ All notable changes to this project will be documented in this file. This projec
 * Renamed `getDrawFillColor` to `getTentativeFillColor`
 * Renamed `getDrawLineWidth` to `getTentativeLineWidth`
 * Renamed `getDrawLineDashArray` to `getTentativeLineDashArray`
+
+### Fixes
+
+* Double-click to complete polygon adds a point where the double-click happened
 
 ## [0.1.1 through 0.4.3](https://github.com/uber/nebula.gl/compare/v0.1.0...v0.4.3)
 

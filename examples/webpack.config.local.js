@@ -94,7 +94,7 @@ module.exports = (config, exampleDir) => env => {
     config = addLocalDevSettings(config, exampleDir);
   }
 
-  console.warn(JSON.stringify(config, null, 2));
+  // console.warn(JSON.stringify(config, null, 2));
 
   return config;
 };

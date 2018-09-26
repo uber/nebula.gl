@@ -94,11 +94,11 @@ type State = {
 };
 
 export default class EditableGeoJsonLayer extends EditableLayer {
-  state: State;
+  // state: State;
 
-  props: Props;
+  // props: Props;
 
-  setState: ($Shape<State>) => void;
+  // setState: ($Shape<State>) => void;
 
   renderLayers() {
     const subLayerProps = this.getSubLayerProps({

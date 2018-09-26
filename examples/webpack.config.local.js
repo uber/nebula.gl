@@ -10,7 +10,10 @@ const resolve = require('path').resolve;
 const webpack = require('webpack');
 
 const LIB_DIR = resolve(__dirname, '..');
-const SRC_DIR = resolve(LIB_DIR, './modules/core/src');
+const CORE_SRC_DIR = resolve(LIB_DIR, './modules/core/src');
+const REACT_SRC_DIR = resolve(LIB_DIR, './modules/react/src');
+
+// const babelConfig = require('../babel.config');
 
 // Support for hot reloading changes to the nebula.gl library:
 function makeLocalDevConfig(EXAMPLE_DIR = LIB_DIR) {
@@ -27,9 +30,14 @@ function makeLocalDevConfig(EXAMPLE_DIR = LIB_DIR) {
     resolve: {
       alias: {
         // For importing modules that are not exported at root
-        'nebula.gl/dist': SRC_DIR,
+        'nebula.gl/dist': CORE_SRC_DIR,
         // Imports the nebula.gl library from the src directory in this repo
-        'nebula.gl': SRC_DIR,
+        'nebula.gl': CORE_SRC_DIR,
+
+        // For importing modules that are not exported at root
+        'nebula.gl-react/dist': REACT_SRC_DIR,
+        // Imports the nebula.gl library from the src directory in this repo
+        'nebula.gl-react': REACT_SRC_DIR,
 
         'deck.gl': resolve(LIB_DIR, './node_modules/deck.gl'),
         '@deck.gl/experimental-layers': resolve(
@@ -61,20 +69,6 @@ function makeLocalDevConfig(EXAMPLE_DIR = LIB_DIR) {
   };
 }
 
-const BUBLE_CONFIG = {
-  module: {
-    rules: [
-      {
-        // Compile ES2015 using babel
-        test: /\.js$/,
-        loader: 'babel-loader',
-        include: [resolve(SRC_DIR)],
-        exclude: [/node_modules/]
-      }
-    ]
-  }
-};
-
 function addLocalDevSettings(config, exampleDir) {
   const LOCAL_DEV_CONFIG = makeLocalDevConfig(exampleDir);
   config = Object.assign({}, LOCAL_DEV_CONFIG, config);
@@ -89,27 +83,18 @@ function addLocalDevSettings(config, exampleDir) {
   return config;
 }
 
-function addBubleSettings(config) {
-  config.module = config.module || {};
-  Object.assign(config.module, {
-    rules: (config.module.rules || []).concat(BUBLE_CONFIG.module.rules)
-  });
-  return config;
-}
-
 module.exports = (config, exampleDir) => env => {
   // npm run start-local now transpiles the lib
   if (env && env.local) {
     config = addLocalDevSettings(config, exampleDir);
-    config = addBubleSettings(config);
-    // console.warn(JSON.stringify(config, null, 2));
   }
 
   // npm run start-es6 does not transpile the lib
   if (env && env.es6) {
     config = addLocalDevSettings(config, exampleDir);
-    // console.warn(JSON.stringify(config, null, 2));
   }
+
+  // console.warn(JSON.stringify(config, null, 2));
 
   return config;
 };

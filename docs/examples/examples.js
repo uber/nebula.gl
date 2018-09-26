@@ -4,13 +4,8 @@ import MapGL from 'react-map-gl';
 import DeckGL from 'deck.gl';
 import { featureCollection, point } from '@turf/helpers';
 
-import {
-  Nebula,
-  HtmlOverlay,
-  HtmlOverlayItem,
-  HtmlClusterOverlay,
-  EditableGeoJsonLayer
-} from 'nebula.gl';
+import { EditableGeoJsonLayer } from 'nebula.gl';
+import { Nebula, HtmlOverlay, HtmlOverlayItem, HtmlClusterOverlay } from 'nebula.gl-react';
 
 class Example extends Component {
   constructor() {

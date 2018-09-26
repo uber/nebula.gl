@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import DeckGL, { MapView, MapController, GeoJsonLayer, ScatterplotLayer } from 'deck.gl';
+import DeckGL, { MapView, MapController } from 'deck.gl';
 import { StaticMap } from 'react-map-gl';
 import { EditableGeoJsonLayer } from 'nebula.gl';
 import window from 'global/window';
@@ -32,100 +32,6 @@ function processInitialData(data) {
     state.properties.elevation = Math.round(1 + (elevation++ % 10)) * 10000;
   });
   return data;
-}
-
-const LIGHT_SETTINGS = {
-  lightsPosition: [0, 80, 190000, -125, 80, 190000],
-  ambientRatio: 0.3,
-  diffuseRatio: 0.6,
-  specularRatio: 0.2,
-  lightsStrength: [1.0, 0.0, 1.0, 0.0],
-  numberOfLights: 2
-};
-
-class EditableGeoJsonLayer2 extends EditableGeoJsonLayer {
-  renderLayers() {
-    const subLayerProps = this.getSubLayerProps({
-      id: 'geojson',
-
-      // Proxy most GeoJsonLayer props as-is
-      data: this.props.data,
-      fp64: this.props.fp64,
-      filled: this.props.filled,
-      stroked: this.props.stroked,
-      lineWidthScale: this.props.lineWidthScale,
-      lineWidthMinPixels: this.props.lineWidthMinPixels,
-      lineWidthMaxPixels: this.props.lineWidthMaxPixels,
-      lineJointRounded: this.props.lineJointRounded,
-      lineMiterLimit: this.props.lineMiterLimit,
-      pointRadiusScale: this.props.pointRadiusScale,
-      pointRadiusMinPixels: this.props.pointRadiusMinPixels,
-      pointRadiusMaxPixels: this.props.pointRadiusMaxPixels,
-      lineDashJustified: this.props.lineDashJustified,
-      getLineColor: this.selectionAwareAccessor(this.props.getLineColor),
-      getFillColor: this.selectionAwareAccessor(this.props.getFillColor),
-      getRadius: this.selectionAwareAccessor(this.props.getRadius),
-      getLineWidth: this.selectionAwareAccessor(this.props.getLineWidth),
-      getLineDashArray: this.selectionAwareAccessor(this.props.getLineDashArray),
-
-      extruded: this.props.extruded,
-      getElevation: f => (f && f.properties && f.properties.elevation) || 150000,
-      lightSettings: LIGHT_SETTINGS,
-      // opacity: 1,
-
-      updateTriggers: {
-        getLineColor: [this.props.selectedFeatureIndexes, this.props.mode],
-        getFillColor: [this.props.selectedFeatureIndexes, this.props.mode],
-        getRadius: [this.props.selectedFeatureIndexes, this.props.mode],
-        getLineWidth: [this.props.selectedFeatureIndexes, this.props.mode],
-        getLineDashArray: [this.props.selectedFeatureIndexes, this.props.mode]
-      }
-    });
-
-    let layers = [new GeoJsonLayer(subLayerProps)];
-
-    layers = layers.concat(this.createPointLayers());
-    layers = layers.concat(this.createDrawLayers());
-
-    return layers;
-  }
-
-  createPointLayers() {
-    if (!this.state.editHandles.length) {
-      return [];
-    }
-
-    const sharedProps = {
-      id: `${this.props.editHandleType}-edit-handles`,
-      data: this.state.editHandles,
-      fp64: this.props.fp64
-    };
-
-    const layer =
-      this.props.editHandleType === 'point'
-        ? new ScatterplotLayer(
-            this.getSubLayerProps({
-              ...sharedProps,
-
-              // Proxy editing point props
-              radiusScale: this.props.editHandlePointRadiusScale,
-              outline: this.props.editHandlePointOutline,
-              strokeWidth: this.props.editHandlePointStrokeWidth,
-              radiusMinPixels: this.props.editHandlePointRadiusMinPixels,
-              radiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
-              getRadius: this.props.getEditHandlePointRadius,
-              getColor: this.props.getEditHandlePointColor,
-
-              parameters: {
-                depthTest: false,
-                blend: false
-              }
-            })
-          )
-        : null;
-
-    return [layer];
-  }
 }
 
 const initialViewport = {
@@ -432,7 +338,7 @@ class Hero extends Component {
       width: window.innerWidth
     };
 
-    const editableGeoJsonLayer = new EditableGeoJsonLayer2({
+    const editableGeoJsonLayer = new EditableGeoJsonLayer({
       data,
       selectedFeatureIndexes,
       mode: this.state.mode,

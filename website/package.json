@@ -16,8 +16,8 @@
     "@deck.gl/layers": "6.0.3",
     "@deck.gl/react": "6.0.3",
     "deck.gl": "6.0.3",
-    "nebula.gl": "0.5.0",
-    "nebula.gl-react": "0.5.0",
+    "nebula.gl": "0.6.0",
+    "nebula.gl-react": "0.6.0",
     "ocular": "0.6.1",
     "react-map-gl": "^3.2.7"
   }

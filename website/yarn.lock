@@ -4918,15 +4918,15 @@ natural-compare@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
 
-nebula.gl-react@0.5.0:
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/nebula.gl-react/-/nebula.gl-react-0.5.0.tgz#4c7e77091d7f482e78170d38651574929c597b56"
+nebula.gl-react@0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/nebula.gl-react/-/nebula.gl-react-0.6.0.tgz#7e6cc1d1bc281c22957ada205dd2769d1d466299"
   dependencies:
-    nebula.gl "0.5.0"
+    nebula.gl "0.6.0"
 
-nebula.gl@0.5.0:
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/nebula.gl/-/nebula.gl-0.5.0.tgz#192db1635e26f727de8bc27ba88a9fc04bad5ac9"
+nebula.gl@0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/nebula.gl/-/nebula.gl-0.6.0.tgz#8f0467d92853b5641b9b732fd0ad6a22cd819c82"
   dependencies:
     "@deck.gl/experimental-layers" "^6.0.3"
     "@turf/bbox" ">=4.0.0"

@@ -4,41 +4,53 @@
 // avoid destructuring for older Node version support
 const resolve = require('path').resolve;
 const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const CONFIG = {
+  mode: 'development',
+
+  devtool: 'source-map',
+
   entry: {
     app: resolve('./app.js')
   },
-
-  devtool: 'source-map',
 
   module: {
     rules: [
       {
         // Compile ES2015 using babel
         test: /\.js$/,
-        loader: 'babel-loader',
-        include: [resolve('.')],
-        exclude: [/node_modules/]
+        include: [resolve('.'), resolve('../../modules')],
+        exclude: [/node_modules/],
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: [
+              require('@babel/preset-env'),
+              require('@babel/preset-react'),
+              require('@babel/preset-flow')
+            ],
+            plugins: [
+              require('@babel/plugin-proposal-class-properties'),
+              require('@babel/plugin-proposal-export-default-from')
+            ]
+          }
+        }
       },
       {
-        // Compile ES2015 using babel
-        test: /\.js$/,
-        loader: 'babel-loader',
-        include: [resolve('./node_modules/@mapbox/')]
+        // webpackl 4 fix for broken turf module: https://github.com/uber/nebula.gl/issues/64
+        test: /\.mjs$/,
+        include: /node_modules/,
+        type: 'javascript/auto'
       }
     ]
   },
 
-  resolve: {
-    alias: {
-      // From mapbox-gl-js README. Required for non-browserify bundlers (e.g. webpack):
-      'mapbox-gl$': resolve('./node_modules/mapbox-gl/dist/mapbox-gl.js')
-    }
-  },
-
   // Optional: Enables reading mapbox token from environment variable
-  plugins: [new webpack.EnvironmentPlugin(['MapboxAccessToken'])]
+  plugins: [
+    new HtmlWebpackPlugin({ title: 'nebula.gl' }),
+    new webpack.EnvironmentPlugin(['MapboxAccessToken'])
+  ]
 };
 
 // This line enables bundling against src in this repo rather than installed module

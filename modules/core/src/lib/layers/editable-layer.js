@@ -202,7 +202,8 @@ export default class EditableLayer extends CompositeLayer {
       mode: 'query',
       layers: [this.props.id],
       radius: 10,
-      viewports: [this.context.viewport]
+      viewports: [this.context.viewport],
+      depth: 2
     });
 
     this.onPointerMove({

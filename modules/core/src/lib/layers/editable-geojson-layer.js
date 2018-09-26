@@ -323,8 +323,8 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
   }
 
-  updateEditHandles() {
-    const editHandles = this.state.editableFeatureCollection.getEditHandles();
+  updateEditHandles(picks?: Array<Object>, groundCoords?: Position) {
+    const editHandles = this.state.editableFeatureCollection.getEditHandles(picks, groundCoords);
     if (editHandles !== this.state.editHandles) {
       this.setState({ editHandles });
       this.setLayerNeedsUpdate();
@@ -493,7 +493,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
     this.state.editableFeatureCollection.onPointerMove(groundCoords);
     this.updateTentativeFeature();
-    this.updateEditHandles();
+    this.updateEditHandles(picks, groundCoords);
 
     if (
       this.props.mode === 'modify' &&

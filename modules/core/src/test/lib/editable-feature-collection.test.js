@@ -303,6 +303,124 @@ describe('getEditHandles()', () => {
 
     expect(actual).toEqual(expected);
   });
+
+  const lineString = {
+    type: 'Feature',
+    geometry: {
+      type: 'LineString',
+      coordinates: [
+        [-122.40880966186523, 37.783536601521924],
+        [-122.43893623352051, 37.779669924659004],
+        [-122.43515968322752, 37.7624370109886],
+        [-122.42348670959471, 37.77180027337861],
+        [-122.4250316619873, 37.778584505321376],
+        [-122.42314338684082, 37.778652344496926],
+        [-122.42357254028322, 37.77987343901049],
+        [-122.41198539733887, 37.78109451335266]
+      ]
+    }
+  };
+
+  const point = {
+    type: 'Feature',
+    geometry: {
+      type: 'Point',
+      coordinates: [-122.40880966186523, 37.783536601521924]
+    }
+  };
+
+  const pick = {
+    object: lineString,
+    index: 0
+  };
+
+  const groundCoords = [-122.43862233312133, 37.77767798407437];
+
+  it('includes an intermediate edit handle', () => {
+    const features = new EditableFeatureCollection({
+      type: 'FeatureCollection',
+      features: [lineString]
+    });
+    features.setSelectedFeatureIndexes([0]);
+    const actual = features.getEditHandles([pick], groundCoords);
+    const intermediate = actual.find(editHandle => editHandle.type === 'intermediate');
+    expect(JSON.stringify(intermediate)).toBe(
+      JSON.stringify({
+        position: [-122.43850292231143, 37.777692666558565],
+        positionIndexes: [2],
+        featureIndex: 0,
+        type: 'intermediate'
+      })
+    );
+  });
+
+  it('does not add intermeidate edit handle when no picks provided', () => {
+    const features = new EditableFeatureCollection({
+      type: 'FeatureCollection',
+      features: [lineString]
+    });
+    features.setSelectedFeatureIndexes([0]);
+    const actual = features.getEditHandles(undefined, groundCoords);
+    const intermediate = actual.find(editHandle => editHandle.type === 'intermediate');
+    expect(intermediate).toBeUndefined();
+  });
+
+  it('does not add intermeidate edit handle when empty picks array provided', () => {
+    const features = new EditableFeatureCollection({
+      type: 'FeatureCollection',
+      features: [lineString]
+    });
+    features.setSelectedFeatureIndexes([0]);
+    const actual = features.getEditHandles([], groundCoords);
+    const intermediate = actual.find(editHandle => editHandle.type === 'intermediate');
+    expect(intermediate).toBeUndefined();
+  });
+
+  it('does not add intermeidate edit handle when no ground coords provided', () => {
+    const features = new EditableFeatureCollection({
+      type: 'FeatureCollection',
+      features: [lineString]
+    });
+    features.setSelectedFeatureIndexes([0]);
+    const actual = features.getEditHandles([pick]);
+    const intermediate = actual.find(editHandle => editHandle.type === 'intermediate');
+    expect(intermediate).toBeUndefined();
+  });
+
+  it('does not add intermeidate edit handle when too close to existing edit handle', () => {
+    const features = new EditableFeatureCollection({
+      type: 'FeatureCollection',
+      features: [lineString]
+    });
+    features.setSelectedFeatureIndexes([0]);
+    const actual = features.getEditHandles(
+      [pick, { isEditingHandle: true, object: { type: 'existing' } }],
+      groundCoords
+    );
+    const intermediate = actual.find(editHandle => editHandle.type === 'intermediate');
+    expect(intermediate).toBeUndefined();
+  });
+
+  it('does not add intermeidate edit handle when pick is not a selected feature', () => {
+    const features = new EditableFeatureCollection({
+      type: 'FeatureCollection',
+      features: [lineString]
+    });
+    const actual = features.getEditHandles([pick], groundCoords);
+    const intermediate = actual.find(editHandle => editHandle.type === 'intermediate');
+    expect(intermediate).toBeUndefined();
+  });
+
+  it('does not add intermeidate edit handle when pick is a Point / MultiPoint', () => {
+    const features = new EditableFeatureCollection({
+      type: 'FeatureCollection',
+      features: [point]
+    });
+    features.setSelectedFeatureIndexes([0]);
+    const actual = features.getEditHandles([{ object: point, index: 0 }], groundCoords);
+    const intermediate = actual.find(editHandle => editHandle.type === 'intermediate');
+    expect(intermediate).toBeUndefined();
+  });
 });
 
 describe('drawLineString mode', () => {
@@ -310,7 +428,7 @@ describe('drawLineString mode', () => {
   beforeEach(() => {
     warnBefore = console.warn; // eslint-disable-line
     // $FlowFixMe
-    console.warn = function() {}; // eslint-disable-line
+    console.warn = function () { }; // eslint-disable-line
   });
 
   afterEach(() => {

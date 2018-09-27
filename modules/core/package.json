@@ -53,7 +53,7 @@
     "@turf/distance": ">=4.0.0",
     "@turf/ellipse": ">=4.0.0",
     "@turf/helpers": ">=4.0.0",
-    "@turf/nearest-point-on-line": "^6.0.2",
+    "@turf/nearest-point-on-line": ">=4.0.0",
     "@turf/point-to-line-distance": ">=4.0.0",
     "@turf/transform-rotate": ">=4.0.0",
     "cubic-hermite-spline": "^1.0.1",

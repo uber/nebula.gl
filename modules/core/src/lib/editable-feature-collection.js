@@ -170,7 +170,10 @@ export class EditableFeatureCollection {
         );
         // tack on the lone intermediate point to the set of handles
         if (intermediatePoint) {
-          const { geometry: { coordinates: position }, properties: { index } } = intermediatePoint;
+          const {
+            geometry: { coordinates: position },
+            properties: { index }
+          } = intermediatePoint;
           handles = [
             ...handles,
             {

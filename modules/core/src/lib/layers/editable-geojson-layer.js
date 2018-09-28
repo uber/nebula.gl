@@ -3,6 +3,9 @@
 
 import { GeoJsonLayer, ScatterplotLayer, IconLayer } from 'deck.gl';
 import turfTransformRotate from '@turf/transform-rotate';
+import turfTransformTranslate from '@turf/transform-translate';
+import turfDistance from '@turf/distance';
+import { point } from '@turf/helpers';
 import { EditableFeatureCollection } from '../editable-feature-collection.js';
 import type { EditAction } from '../editable-feature-collection.js';
 import type { Feature, Position } from '../../geojson-types.js';
@@ -454,9 +457,32 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     pointerDownPicks: any[],
     sourceEvent: any
   }) {
+    const isTranslateFeature =
+      this.props.mode === 'modify' &&
+      this.props.modeConfig &&
+      this.props.modeConfig.action === 'transformTranslate';
+    let distanceMoved = 0.02;
+    const { pointerMovePicks } = this.state;
+    if (
+      isTranslateFeature &&
+      pointerMovePicks &&
+      pointerMovePicks.length &&
+      picks &&
+      picks.length
+    ) {
+      distanceMoved = Math.max(
+        turfDistance(point(pointerMovePicks[0].lngLat), point(picks[0].lngLat)),
+        0.02
+      );
+    }
     this.setState({ pointerMovePicks: picks });
 
     if (pointerDownPicks && pointerDownPicks.length > 0) {
+      if (isTranslateFeature) {
+        sourceEvent.stopPropagation();
+        this.handleTransformTranslate(screenCoords, groundCoords, pointerDownPicks, distanceMoved);
+        return;
+      }
       const editHandleInfo = this.getPickedEditHandle(pointerDownPicks);
       if (editHandleInfo) {
         // TODO: find a less hacky way to prevent map panning
@@ -509,6 +535,38 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
     this.props.onEdit({
       updatedData,
+      editType: 'transformPosition',
+      featureIndex,
+      positionIndexes: this.props.positionIndexes,
+      position: groundCoords
+    });
+  }
+
+  handleTransformTranslate(
+    screenCoords: Position,
+    groundCoords: Position,
+    pointerDownPicks: any[],
+    distanceMoved: number
+  ) {
+    const featureIndex = this.props.selectedFeatureIndexes[0];
+    const feature = this.state.selectedFeatures[0];
+    const p1 = { x: screenCoords[0], y: screenCoords[1] };
+    const p2 = { x: pointerDownPicks[0].x, y: pointerDownPicks[0].y };
+    const angleFromNorth = (pointA, pointB) => {
+      const angleFromWest = (Math.atan2(pointA.y - pointB.y, pointA.x - pointB.x) * 180) / Math.PI;
+      return angleFromWest > 90 && angleFromWest < 180 ? angleFromWest - 90 : angleFromWest + 270;
+    };
+    const direction = angleFromNorth(p2, p1);
+    const movedFeature = turfTransformTranslate(feature, distanceMoved, direction);
+
+    const updatedData = this.state.editableFeatureCollection.featureCollection
+      .replaceGeometry(featureIndex, movedFeature.geometry)
+      .getObject();
+
+    this.props.onEdit({
+      updatedData,
+      updatedMode: this.props.mode,
+      updatedSelectedFeatureIndexes: this.props.selectedFeatureIndexes,
       editType: 'transformPosition',
       featureIndex,
       positionIndexes: this.props.positionIndexes,

@@ -56,6 +56,7 @@
     "@turf/nearest-point-on-line": ">=4.0.0",
     "@turf/point-to-line-distance": ">=4.0.0",
     "@turf/transform-rotate": ">=4.0.0",
+    "@turf/transform-translate": ">=4.0.0",
     "cubic-hermite-spline": "^1.0.1",
     "deck.gl": "^6.1.1",
     "geojson-types": "^2.0.1",

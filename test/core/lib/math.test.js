@@ -1,5 +1,5 @@
 // @flow-ignore
-import { convertE7Array, toDegree, toRadian } from '../../lib/math';
+import { convertE7Array, toDegree, toRadian } from '../../../modules/core/src/lib/math';
 
 it('test toDegree()', () => {
   expect(toDegree(Math.PI / 4)).toBe(45);

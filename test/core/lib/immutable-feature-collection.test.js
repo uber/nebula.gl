@@ -2,7 +2,7 @@
 /* eslint-env jest */
 /* eslint-disable max-nested-callbacks */
 
-import { ImmutableFeatureCollection } from '../../lib/immutable-feature-collection';
+import { ImmutableFeatureCollection } from '../../../modules/core/src/lib/immutable-feature-collection';
 
 let pointFeature;
 let lineStringFeature;

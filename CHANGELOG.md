@@ -3,7 +3,7 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-<!-- ## [0.5.1](https://github.com/uber/nebula.gl/compare/v0.5.1...master) -->
+<!-- ## [Unreleased](https://github.com/uber/nebula.gl/compare/v0.5.1...master) -->
 
 ## [0.5.1](https://github.com/uber/nebula.gl/compare/v0.4.3...v0.5.1) - 2017-09-24
 

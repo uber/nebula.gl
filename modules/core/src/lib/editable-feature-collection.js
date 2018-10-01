@@ -1,5 +1,6 @@
 // @flow
 
+import nearestPointOnLine from '@turf/nearest-point-on-line';
 import bboxPolygon from '@turf/bbox-polygon';
 import circle from '@turf/circle';
 import distance from '@turf/distance';
@@ -8,18 +9,19 @@ import destination from '@turf/destination';
 import bearing from '@turf/bearing';
 // import turfTransformRotate from '@turf/transform-rotate';
 import pointToLineDistance from '@turf/point-to-line-distance';
-import { point } from '@turf/helpers';
+import { point, lineString as toLineString } from '@turf/helpers';
 
 import type {
   FeatureCollection,
-  Feature,
-  Geometry,
-  Point,
-  LineString,
-  Polygon,
-  Position
+    Feature,
+    Geometry,
+    Point,
+    LineString,
+    Polygon,
+    Position
 } from '../geojson-types.js';
 
+import { recursivelyTraverseNestedArrays } from './utils';
 import { ImmutableFeatureCollection } from './immutable-feature-collection.js';
 
 export type EditHandle = {
@@ -104,7 +106,7 @@ export class EditableFeatureCollection {
    *
    * @param featureIndex The index of the feature to get edit handles
    */
-  getEditHandles(): EditHandle[] {
+  getEditHandles(picks?: Array<Object>, groundCoords?: Position): EditHandle[] {
     let handles = [];
 
     if (this._mode === 'view') {
@@ -121,11 +123,66 @@ export class EditableFeatureCollection {
         handles = handles.concat(getEditHandlesForGeometry(this._tentativeFeature.geometry, -1));
         // Slice off the handles that are are next to the pointer
         if (this._tentativeFeature && this._tentativeFeature.geometry.type === 'LineString') {
-          // Remove the last existing and intermediate handles
-          handles = handles.slice(0, -2);
+          // Remove the last existing handle
+          handles = handles.slice(0, -1);
         } else if (this._tentativeFeature && this._tentativeFeature.geometry.type === 'Polygon') {
-          // Remove the last existing and 2 intermediate handles
-          handles = handles.slice(0, -3);
+          // Remove the last existing handle
+          handles = handles.slice(0, -1);
+        }
+      }
+    }
+
+    // intermediate edit handle
+    if (picks && picks.length && groundCoords) {
+      const existingEditHandle = picks.find(
+        pick => pick.isEditingHandle && pick.object && pick.object.type === 'existing'
+      );
+      // don't show intermediate point when too close to an existing edit handle
+      const featureAsPick = !existingEditHandle && picks.find(pick => !pick.isEditingHandle);
+
+      // is the feature in the pick selected
+      if (
+        featureAsPick &&
+        !featureAsPick.object.geometry.type.includes('Point') &&
+        this._selectedFeatureIndexes.includes(featureAsPick.index)
+      ) {
+        let intermediatePoint = null;
+        let positionIndexPrefix = [];
+        const referencePoint = point(groundCoords);
+        // process all lines of the (single) feature
+        recursivelyTraverseNestedArrays(
+          featureAsPick.object.geometry.coordinates,
+          [],
+          (lineString, prefix) => {
+            const lineStringFeature = toLineString(lineString);
+            const candidateIntermediatePoint = nearestPointOnLine(
+              lineStringFeature,
+              referencePoint
+            );
+            if (
+              !intermediatePoint ||
+              candidateIntermediatePoint.properties.dist < intermediatePoint.properties.dist
+            ) {
+              intermediatePoint = candidateIntermediatePoint;
+              positionIndexPrefix = prefix;
+            }
+          }
+        );
+        // tack on the lone intermediate point to the set of handles
+        if (intermediatePoint) {
+          const {
+            geometry: { coordinates: position },
+            properties: { index }
+          } = intermediatePoint;
+          handles = [
+            ...handles,
+            {
+              position,
+              positionIndexes: [...positionIndexPrefix, index + 1],
+              featureIndex: featureAsPick.index,
+              type: 'intermediate'
+            }
+          ];
         }
       }
     }
@@ -575,9 +632,8 @@ function getEditHandlesForGeometry(geometry: Geometry, featureIndex: number) {
     case 'MultiPoint':
     case 'LineString':
       // positions are nested 1 level
-      const includeIntermediate = geometry.type !== 'MultiPoint';
       handles = handles.concat(
-        getEditHandlesForCoordinates(geometry.coordinates, [], includeIntermediate, featureIndex)
+        getEditHandlesForCoordinates(geometry.coordinates, [], featureIndex)
       );
       break;
     case 'Polygon':
@@ -585,7 +641,7 @@ function getEditHandlesForGeometry(geometry: Geometry, featureIndex: number) {
       // positions are nested 2 levels
       for (let a = 0; a < geometry.coordinates.length; a++) {
         handles = handles.concat(
-          getEditHandlesForCoordinates(geometry.coordinates[a], [a], true, featureIndex)
+          getEditHandlesForCoordinates(geometry.coordinates[a], [a], featureIndex)
         );
         if (geometry.type === 'Polygon') {
           // Don't repeat the first/last handle for Polygons
@@ -598,7 +654,7 @@ function getEditHandlesForGeometry(geometry: Geometry, featureIndex: number) {
       for (let a = 0; a < geometry.coordinates.length; a++) {
         for (let b = 0; b < geometry.coordinates[a].length; b++) {
           handles = handles.concat(
-            getEditHandlesForCoordinates(geometry.coordinates[a][b], [a, b], true, featureIndex)
+            getEditHandlesForCoordinates(geometry.coordinates[a][b], [a, b], featureIndex)
           );
           // Don't repeat the first/last handle for Polygons
           handles = handles.slice(0, -1);
@@ -615,7 +671,6 @@ function getEditHandlesForGeometry(geometry: Geometry, featureIndex: number) {
 function getEditHandlesForCoordinates(
   coordinates: any[],
   positionIndexPrefix: number[],
-  includeIntermediate: boolean,
   featureIndex: number
 ): EditHandle[] {
   const editHandles = [];
@@ -627,17 +682,6 @@ function getEditHandlesForCoordinates(
       featureIndex,
       type: 'existing'
     });
-
-    if (includeIntermediate && i < coordinates.length - 1) {
-      // add intermediate position after every position except the last one
-      const nextPosition = coordinates[i + 1];
-      editHandles.push({
-        position: getIntermediatePosition(position, nextPosition),
-        positionIndexes: [...positionIndexPrefix, i + 1],
-        featureIndex,
-        type: 'intermediate'
-      });
-    }
   }
   return editHandles;
 }

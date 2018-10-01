@@ -97,6 +97,8 @@ The `mode` property dictates what type of edits the user can perform and how to 
 
 * If action: `transformTranslate` means the feature can be moved by mouse pointer down hold and drag to required direction.
 
+* If action: `duplicate` means the feature can be copied and moved by mouse pointer down hold and drag to required direction.
+
 * If action: `transformRotate` means the feature will be transform rotated by default the pivot as centroid.
 
 * If pivot: [120, 5] means the point is used as pivot for rotate. if the value is null or undefined then pivot is centroid.

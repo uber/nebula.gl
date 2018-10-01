@@ -274,7 +274,7 @@ export default class Example extends Component<
       selectedFeatureIndexes,
       mode,
       modeConfig: {
-        action: keyHolded === 'Control' ? 'transformRotate' : 'transformTranslate',
+        action: keyHolded === 'Control' ? 'transformRotate' : 'none',
         usePickAsPivot: true,
         pivot: undefined
       },

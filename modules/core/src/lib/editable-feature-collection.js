@@ -323,6 +323,10 @@ export class EditableFeatureCollection {
     };
   }
 
+  getAddFeatureEditAction(geometry: Geometry): EditAction {
+    return this._getAddFeatureEditAction(geometry);
+  }
+
   onPointerMove(groundCoords: Position): void {
     if (this._mode === 'drawLineString') {
       this._handlePointerMoveForDrawLineString(groundCoords);

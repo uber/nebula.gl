@@ -45,6 +45,10 @@ export default class EditableLayer extends CompositeLayer {
     // default implementation - do nothing
   }
 
+  onPointerDown({ screenCoords, groundCoords, sourceEvent }: Object) {
+    // default implementation - do nothing
+  }
+
   onPointerMove({ screenCoords, groundCoords, isDragging, sourceEvent }: Object) {
     // default implementation - do nothing
   }
@@ -155,6 +159,11 @@ export default class EditableLayer extends CompositeLayer {
         pointerDownPicks: picks,
         isDragging: false
       }
+    });
+    this.onPointerDown({
+      screenCoords,
+      groundCoords,
+      sourceEvent: event
     });
   }
 

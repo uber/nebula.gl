@@ -95,6 +95,15 @@ describe('getFeatureCollection()', () => {
   });
 });
 
+describe('getAddFeatureEditAction()', () => {
+  it('get add feature edit action', () => {
+    const editable = new EditableFeatureCollection(featureCollection);
+    const editAction = editable.getAddFeatureEditAction(polygonFeature.geometry);
+
+    expect(editAction.editType).toBe('addFeature');
+  });
+});
+
 describe('setFeatureCollection()', () => {
   it('immutably updates feature collection', () => {
     const featureCollection1 = {

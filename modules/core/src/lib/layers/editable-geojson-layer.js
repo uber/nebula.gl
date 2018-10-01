@@ -442,6 +442,31 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
   }
 
+  onPointerDown({
+    screenCoords,
+    groundCoords,
+    sourceEvent
+  }: {
+    screenCoords: Position,
+    groundCoords: Position,
+    sourceEvent: any
+  }) {
+    const isDuplicateFeature =
+      this.props.mode === 'modify' &&
+      this.props.modeConfig &&
+      this.props.modeConfig.action === 'duplicate';
+    const feature = this.state.selectedFeatures[0];
+    if (isDuplicateFeature) {
+      const editAction = this.state.editableFeatureCollection.getAddFeatureEditAction(
+        feature.geometry
+      );
+
+      if (editAction) {
+        this.props.onEdit(editAction);
+      }
+    }
+  }
+
   onPointerMove({
     picks,
     screenCoords,
@@ -460,7 +485,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     const isTranslateFeature =
       this.props.mode === 'modify' &&
       this.props.modeConfig &&
-      this.props.modeConfig.action === 'transformTranslate';
+      ['transformTranslate', 'duplicate'].includes(this.props.modeConfig.action);
     let distanceMoved = 0.02;
     const { pointerMovePicks } = this.state;
     if (

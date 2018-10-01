@@ -13,12 +13,12 @@ import { point, lineString as toLineString } from '@turf/helpers';
 
 import type {
   FeatureCollection,
-  Feature,
-  Geometry,
-  Point,
-  LineString,
-  Polygon,
-  Position
+    Feature,
+    Geometry,
+    Point,
+    LineString,
+    Polygon,
+    Position
 } from '../geojson-types.js';
 
 import { recursivelyTraverseNestedArrays } from './utils';
@@ -170,10 +170,7 @@ export class EditableFeatureCollection {
         );
         // tack on the lone intermediate point to the set of handles
         if (intermediatePoint) {
-          const {
-            geometry: { coordinates: position },
-            properties: { index }
-          } = intermediatePoint;
+          const { geometry: { coordinates: position }, properties: { index } } = intermediatePoint;
           handles = [
             ...handles,
             {

@@ -1,6 +1,7 @@
 // @flow
 
 import nearestPointOnLine from '@turf/nearest-point-on-line';
+import turfBbox from '@turf/bbox';
 import bboxPolygon from '@turf/bbox-polygon';
 import circle from '@turf/circle';
 import distance from '@turf/distance';
@@ -13,12 +14,12 @@ import { point, lineString as toLineString } from '@turf/helpers';
 
 import type {
   FeatureCollection,
-    Feature,
-    Geometry,
-    Point,
-    LineString,
-    Polygon,
-    Position
+  Feature,
+  Geometry,
+  Point,
+  LineString,
+  Polygon,
+  Position
 } from '../geojson-types.js';
 
 import { recursivelyTraverseNestedArrays } from './utils';
@@ -188,6 +189,21 @@ export class EditableFeatureCollection {
     }
 
     return handles;
+  }
+
+  getEditBoundingBoxes(): Feature[] {
+    let bboxes = [];
+
+    if (this._mode !== 'modify') {
+      return bboxes;
+    }
+
+    for (const index of this._selectedFeatureIndexes) {
+      const feature = this.featureCollection.getObject().features[index];
+      bboxes = bboxes.concat(bboxPolygon(turfBbox(feature)));
+    }
+
+    return bboxes;
   }
 
   getTentativeFeature(): ?Feature {

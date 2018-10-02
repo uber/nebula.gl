@@ -7,6 +7,12 @@ import { EditableFeatureCollection } from '../editable-feature-collection.js';
 import type { EditAction } from '../editable-feature-collection.js';
 import type { Feature, Position } from '../../geojson-types.js';
 import EditableLayer from './editable-layer.js';
+import type {
+  ClickEvent,
+  PointerMoveEvent,
+  StartDraggingEvent,
+  StopDraggingEvent
+} from './editable-layer.js';
 
 const DEFAULT_LINE_COLOR = [0x0, 0x0, 0x0, 0xff];
 const DEFAULT_FILL_COLOR = [0x0, 0x0, 0x0, 0x90];
@@ -328,15 +334,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
   }
 
-  onClick({
-    picks,
-    screenCoords,
-    groundCoords
-  }: {
-    picks: any[],
-    screenCoords: Position,
-    groundCoords: Position
-  }) {
+  onClick({ picks, screenCoords, groundCoords }: ClickEvent) {
     const editHandleInfo = this.getPickedEditHandle(picks);
     const editHandle = editHandleInfo ? editHandleInfo.object : null;
 
@@ -355,13 +353,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     groundCoords,
     dragStartScreenCoords,
     dragStartGroundCoords
-  }: {
-    picks: any[],
-    screenCoords: Position,
-    groundCoords: Position,
-    dragStartScreenCoords: Position,
-    dragStartGroundCoords: Position
-  }) {
+  }: StartDraggingEvent) {
     const { selectedFeatures } = this.state;
     const editHandleInfo = this.getPickedEditHandle(picks);
 
@@ -386,13 +378,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     groundCoords,
     dragStartScreenCoords,
     dragStartGroundCoords
-  }: {
-    picks: any[],
-    screenCoords: Position,
-    groundCoords: Position,
-    dragStartScreenCoords: Position,
-    dragStartGroundCoords: Position
-  }) {
+  }: StopDraggingEvent) {
     const { selectedFeatures } = this.state;
 
     if (!selectedFeatures.length) {
@@ -416,16 +402,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     picks,
     draggingInfo,
     sourceEvent
-  }: {
-    picks: any[],
-    screenCoords: Position,
-    groundCoords: Position,
-    draggingInfo: {
-      isDragging: boolean,
-      dragStartPicks: any[]
-    },
-    sourceEvent: any
-  }) {
+  }: PointerMoveEvent) {
     this.setState({ pointerMovePicks: picks });
 
     if (draggingInfo.dragStartPicks && draggingInfo.dragStartPicks.length > 0) {

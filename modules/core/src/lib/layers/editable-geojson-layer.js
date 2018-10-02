@@ -380,35 +380,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
   }
 
-  onDragging({
-    picks,
-    screenCoords,
-    groundCoords,
-    dragStartScreenCoords,
-    dragStartGroundCoords
-  }: {
-    picks: any[],
-    screenCoords: Position,
-    groundCoords: Position,
-    dragStartScreenCoords: Position,
-    dragStartGroundCoords: Position
-  }) {
-    const { selectedFeatures } = this.state;
-
-    if (!selectedFeatures.length) {
-      return;
-    }
-
-    const editHandleInfo = this.getPickedEditHandle(picks);
-    if (editHandleInfo) {
-      this.handleMovePosition(
-        editHandleInfo.object.featureIndex,
-        editHandleInfo.object.positionIndexes,
-        groundCoords
-      );
-    }
-  }
-
   onStopDragging({
     picks,
     screenCoords,
@@ -440,28 +411,46 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }
 
   onPointerMove({
-    picks,
     screenCoords,
     groundCoords,
-    isDragging,
-    pointerDownPicks,
+    picks,
+    draggingInfo,
     sourceEvent
   }: {
     picks: any[],
     screenCoords: Position,
     groundCoords: Position,
-    isDragging: boolean,
-    pointerDownPicks: any[],
+    draggingInfo: {
+      isDragging: boolean,
+      dragStartPicks: any[]
+    },
     sourceEvent: any
   }) {
     this.setState({ pointerMovePicks: picks });
 
-    if (pointerDownPicks && pointerDownPicks.length > 0) {
-      const editHandleInfo = this.getPickedEditHandle(pointerDownPicks);
+    if (draggingInfo.dragStartPicks && draggingInfo.dragStartPicks.length > 0) {
+      const editHandleInfo = this.getPickedEditHandle(draggingInfo.dragStartPicks);
       if (editHandleInfo) {
         // TODO: find a less hacky way to prevent map panning
         // Stop propagation to prevent map panning while dragging an edit handle
         sourceEvent.stopPropagation();
+      }
+    }
+
+    if (draggingInfo.isDragging) {
+      const { selectedFeatures } = this.state;
+
+      if (!selectedFeatures.length) {
+        return;
+      }
+
+      const editHandleInfo = this.getPickedEditHandle(draggingInfo.dragStartPicks);
+      if (editHandleInfo) {
+        this.handleMovePosition(
+          editHandleInfo.object.featureIndex,
+          editHandleInfo.object.positionIndexes,
+          groundCoords
+        );
       }
     }
 

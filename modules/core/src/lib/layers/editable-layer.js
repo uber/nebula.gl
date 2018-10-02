@@ -25,16 +25,6 @@ export default class EditableLayer extends CompositeLayer {
     // default implementation - do nothing
   }
 
-  onDragging({
-    picks,
-    screenCoords,
-    groundCoords,
-    dragStartScreenCoords,
-    dragStartGroundCoords
-  }: Object) {
-    // default implementation - do nothing
-  }
-
   onStopDragging({
     picks,
     screenCoords,
@@ -45,7 +35,7 @@ export default class EditableLayer extends CompositeLayer {
     // default implementation - do nothing
   }
 
-  onPointerMove({ screenCoords, groundCoords, isDragging, sourceEvent }: Object) {
+  onPointerMove({ screenCoords, groundCoords, picks, draggingInfo, sourceEvent }: Object) {
     // default implementation - do nothing
   }
 
@@ -206,24 +196,20 @@ export default class EditableLayer extends CompositeLayer {
       depth: 2
     });
 
+    const draggingInfo = {
+      isDragging,
+      dragStartPicks: pointerDownPicks,
+      dragStartScreenCoords: pointerDownScreenCoords,
+      dragStartGroundCoords: pointerDownGroundCoords
+    };
+
     this.onPointerMove({
       screenCoords,
       groundCoords,
-      isDragging,
       picks,
-      pointerDownPicks,
+      draggingInfo,
       sourceEvent: event
     });
-
-    if (isDragging) {
-      this.onDragging({
-        picks: pointerDownPicks,
-        screenCoords,
-        groundCoords,
-        dragStartScreenCoords: pointerDownScreenCoords,
-        dragStartGroundCoords: pointerDownGroundCoords
-      });
-    }
   }
 
   _onPointerUp(event: Object) {

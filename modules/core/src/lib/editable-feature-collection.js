@@ -13,12 +13,12 @@ import { point, lineString as toLineString } from '@turf/helpers';
 
 import type {
   FeatureCollection,
-    Feature,
-    Geometry,
-    Point,
-    LineString,
-    Polygon,
-    Position
+  Feature,
+  Geometry,
+  Point,
+  LineString,
+  Polygon,
+  Position
 } from '../geojson-types.js';
 
 import { recursivelyTraverseNestedArrays } from './utils';

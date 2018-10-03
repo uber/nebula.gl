@@ -339,15 +339,9 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         pointRadiusMinPixels: this.props.editHandlePointRadiusMinPixels,
         pointRadiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
         getRadius: this.props.getEditHandlePointRadius,
-        getLineColor: feature => this.props.getTentativeLineColor(feature, this.props.mode),
-        getLineWidth: feature => this.props.getTentativeLineWidth(feature, this.props.mode),
-        getFillColor: feature => this.props.getTentativeFillColor(feature, this.props.mode),
-        getLineDashArray: feature =>
-          this.props.getTentativeLineDashArray(
-            feature,
-            this.state.selectedFeatures[0],
-            this.props.mode
-          )
+        getLineColor: feature => this.props.getCursorBoundingBoxLineColor(feature, this.props.mode),
+        getLineWidth: feature => this.props.getCursorBoundingBoxLineWidth(feature, this.props.mode),
+        getFillColor: feature => this.props.getCursorBoundingBoxFillColor(feature, this.props.mode)
       })
     );
 
@@ -387,6 +381,9 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     screenCoords: Position,
     groundCoords: Position
   }) {
+    if (this.props.mode === 'cursor') {
+      return;
+    }
     const editHandleInfo = this.getPickedEditHandle(picks);
     const editHandle = editHandleInfo ? editHandleInfo.object : null;
 
@@ -446,7 +443,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }) {
     const { selectedFeatures } = this.state;
 
-    if (!selectedFeatures.length) {
+    if (!selectedFeatures.length || this.props.mode === 'cursor') {
       return;
     }
 
@@ -475,7 +472,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }) {
     const { selectedFeatures } = this.state;
 
-    if (!selectedFeatures.length) {
+    if (!selectedFeatures.length || this.props.mode === 'cursor') {
       return;
     }
 

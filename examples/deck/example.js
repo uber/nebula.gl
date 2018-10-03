@@ -349,7 +349,12 @@ export default class Example extends Component<
 
       // customize tentative feature style
       getTentativeLineDashArray: () => [7, 4],
-      getTentativeLineColor: () => [0x8f, 0x8f, 0x8f, 0xff]
+      getTentativeLineColor: () => [0x8f, 0x8f, 0x8f, 0xff],
+
+      // customize cursor mode bounding box selection feature style
+      getCursorBoundingBoxLineColor: () => [0x8f, 0x8f, 0x8f, 0xff],
+      getCursorBoundingBoxLineWidth: () => 2,
+      getCursorBoundingBoxFillColor: () => [0, 0, 0, 0.1]
     });
 
     return (

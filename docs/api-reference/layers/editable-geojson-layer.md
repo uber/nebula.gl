@@ -67,6 +67,8 @@ The `mode` property dictates what type of edits the user can perform and how to 
 
 * `view`: no edits are possible, but selection is still possible.
 
+* `cursor`: When user selected any feature, The bounding box will be drawn for the feature. 
+
 * `modify`: user can move existing points, add intermediate points along lines, and remove points.
 
 * `drawPoint`: user can draw a new `Point` feature by clicking where the point is to be.

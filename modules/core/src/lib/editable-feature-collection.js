@@ -604,6 +604,58 @@ export class EditableFeatureCollection {
       this._setTentativeFeature(ellipse(centerCoordinates, xSemiAxis, ySemiAxis, options));
     }
   }
+
+  onStartDragging(picks: any[], groundCoords: Position): ?EditAction {
+    let editAction: ?EditAction = null;
+    const selectedFeatureIndexes = this._selectedFeatureIndexes;
+
+    const editHandle = getPickedEditHandle(picks);
+    if (selectedFeatureIndexes.length && editHandle && editHandle.type === 'intermediate') {
+      const updatedData = this.featureCollection
+        .addPosition(editHandle.featureIndex, editHandle.positionIndexes, groundCoords)
+        .getObject();
+
+      editAction = {
+        updatedData,
+        editType: 'addPosition',
+        featureIndex: editHandle.featureIndex,
+        positionIndexes: editHandle.positionIndexes,
+        position: groundCoords
+      };
+    }
+
+    return editAction;
+  }
+
+  onStopDragging(picks: any[], groundCoords: Position): ?EditAction {
+    let editAction: ?EditAction = null;
+    const selectedFeatureIndexes = this._selectedFeatureIndexes;
+
+    const editHandle = getPickedEditHandle(picks);
+    if (selectedFeatureIndexes.length && editHandle) {
+      const updatedData = this.featureCollection
+        .replacePosition(editHandle.featureIndex, editHandle.positionIndexes, groundCoords)
+        .getObject();
+
+      editAction = {
+        updatedData,
+        editType: 'finishMovePosition',
+        featureIndex: editHandle.featureIndex,
+        positionIndexes: editHandle.positionIndexes,
+        position: groundCoords
+      };
+    }
+
+    return editAction;
+  }
+}
+
+function getPickedEditHandle(picks: any[]): ?EditHandle {
+  const info = picks.find(pick => pick.isEditingHandle);
+  if (info) {
+    return info.object;
+  }
+  return null;
 }
 
 function getIntermediatePosition(position1: Position, position2: Position): Position {

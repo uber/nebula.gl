@@ -354,21 +354,12 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     dragStartScreenCoords,
     dragStartGroundCoords
   }: StartDraggingEvent) {
-    const { selectedFeatures } = this.state;
-    const editHandleInfo = this.getPickedEditHandle(picks);
+    const editAction = this.state.editableFeatureCollection.onStartDragging(picks, groundCoords);
+    this.updateTentativeFeature();
+    this.updateEditHandles();
 
-    if (!selectedFeatures.length) {
-      return;
-    }
-
-    if (editHandleInfo) {
-      if (editHandleInfo.object.type === 'intermediate') {
-        this.handleAddIntermediatePosition(
-          editHandleInfo.object.featureIndex,
-          editHandleInfo.object.positionIndexes,
-          groundCoords
-        );
-      }
+    if (editAction) {
+      this.props.onEdit(editAction);
     }
   }
 
@@ -379,20 +370,12 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     dragStartScreenCoords,
     dragStartGroundCoords
   }: StopDraggingEvent) {
-    const { selectedFeatures } = this.state;
+    const editAction = this.state.editableFeatureCollection.onStopDragging(picks, groundCoords);
+    this.updateTentativeFeature();
+    this.updateEditHandles();
 
-    if (!selectedFeatures.length) {
-      return;
-    }
-
-    const editHandleInfo = this.getPickedEditHandle(picks);
-
-    if (editHandleInfo) {
-      this.handleFinishMovePosition(
-        editHandleInfo.object.featureIndex,
-        editHandleInfo.object.positionIndexes,
-        groundCoords
-      );
+    if (editAction) {
+      this.props.onEdit(editAction);
     }
   }
 
@@ -490,42 +473,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     this.props.onEdit({
       updatedData,
       editType: 'movePosition',
-      featureIndex,
-      positionIndexes,
-      position: groundCoords
-    });
-  }
-
-  handleFinishMovePosition(
-    featureIndex: number,
-    positionIndexes: number[],
-    groundCoords: Position
-  ) {
-    const updatedData = this.state.editableFeatureCollection.featureCollection
-      .replacePosition(featureIndex, positionIndexes, groundCoords)
-      .getObject();
-
-    this.props.onEdit({
-      updatedData,
-      editType: 'finishMovePosition',
-      featureIndex,
-      positionIndexes,
-      position: groundCoords
-    });
-  }
-
-  handleAddIntermediatePosition(
-    featureIndex: number,
-    positionIndexes: number[],
-    groundCoords: Position
-  ) {
-    const updatedData = this.state.editableFeatureCollection.featureCollection
-      .addPosition(featureIndex, positionIndexes, groundCoords)
-      .getObject();
-
-    this.props.onEdit({
-      updatedData,
-      editType: 'addPosition',
       featureIndex,
       positionIndexes,
       position: groundCoords

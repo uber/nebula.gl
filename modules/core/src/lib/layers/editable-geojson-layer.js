@@ -512,7 +512,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       this.props.mode === 'modify' &&
       this.props.modeConfig &&
       this.props.modeConfig.action === 'transformTranslate';
-    let distanceMoved = 0.02;
+    let distanceMoved;
     const { pointerMovePicks } = this.state;
     if (
       isTranslateFeature &&
@@ -521,15 +521,12 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       picks &&
       picks.length
     ) {
-      distanceMoved = Math.max(
-        turfDistance(point(pointerMovePicks[0].lngLat), point(picks[0].lngLat)),
-        0.02
-      );
+      distanceMoved = turfDistance(point(pointerMovePicks[0].lngLat), point(picks[0].lngLat));
     }
     this.setState({ pointerMovePicks: picks });
 
     if (pointerDownPicks && pointerDownPicks.length > 0) {
-      if (isTranslateFeature) {
+      if (isTranslateFeature && distanceMoved) {
         sourceEvent.stopPropagation();
         this.handleTransformTranslate(screenCoords, groundCoords, pointerDownPicks, distanceMoved);
         return;

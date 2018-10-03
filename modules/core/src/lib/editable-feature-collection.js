@@ -114,6 +114,15 @@ export class EditableFeatureCollection {
       return handles;
     }
 
+    if (this._mode === 'cursor') {
+      for (const index of this._selectedFeatureIndexes) {
+        const feature = this.featureCollection.getObject().features[index];
+        const bbox = bboxPolygon(turfBbox(feature));
+        handles = handles.concat(getEditHandlesForGeometry(bbox.geometry, index));
+      }
+      return handles;
+    }
+
     for (const index of this._selectedFeatureIndexes) {
       const geometry = this.featureCollection.getObject().features[index].geometry;
       handles = handles.concat(getEditHandlesForGeometry(geometry, index));
@@ -194,7 +203,7 @@ export class EditableFeatureCollection {
   getEditBoundingBoxes(): Feature[] {
     let bboxes = [];
 
-    if (this._mode !== 'modify') {
+    if (this._mode !== 'cursor') {
       return bboxes;
     }
 

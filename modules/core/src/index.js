@@ -16,6 +16,8 @@ export { default as SegmentsLayer } from './lib/layers/segments-layer';
 
 export { default as NebulaCore } from './lib/nebula';
 
+export { EditableFeatureCollection } from './lib/editable-feature-collection.js';
+
 // Utils
 export { toDeckColor } from './lib/utils';
 

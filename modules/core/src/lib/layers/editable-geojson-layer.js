@@ -39,7 +39,7 @@ const defaultProps = {
   pointRadiusMinPixels: 2,
   pointRadiusMaxPixels: Number.MAX_SAFE_INTEGER,
   lineDashJustified: false,
-  drawAtFront: false,
+  editableFeatureCollection: () => new EditableFeatureCollection(),
   getLineColor: (feature, isSelected, mode) =>
     isSelected ? DEFAULT_SELECTED_LINE_COLOR : DEFAULT_LINE_COLOR,
   getFillColor: (feature, isSelected, mode) =>
@@ -86,6 +86,7 @@ const defaultProps = {
 
 type Props = {
   onEdit: EditAction => void,
+  editableFeatureCollection: EditableFeatureCollection | (() => EditableFeatureCollection),
   // TODO
   [string]: any
 };
@@ -150,10 +151,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     super.initializeState();
 
     this.setState({
-      editableFeatureCollection: new EditableFeatureCollection({
-        type: 'FeatureCollection',
-        features: []
-      }),
       selectedFeatures: [],
       editHandles: []
     });
@@ -178,7 +175,16 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }) {
     super.updateState({ props, changeFlags });
 
-    const editableFeatureCollection = this.state.editableFeatureCollection;
+    let editableFeatureCollection = this.state.editableFeatureCollection;
+    if (!editableFeatureCollection) {
+      if (typeof props.editableFeatureCollection === 'function') {
+        editableFeatureCollection = props.editableFeatureCollection();
+      } else {
+        editableFeatureCollection = props.editableFeatureCollection;
+      }
+      this.setState({ editableFeatureCollection });
+    }
+
     if (changeFlags.dataChanged) {
       editableFeatureCollection.setFeatureCollection(props.data);
     }
@@ -187,7 +193,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       editableFeatureCollection.setMode(props.mode);
       editableFeatureCollection.setModeConfig(props.modeConfig);
       editableFeatureCollection.setSelectedFeatureIndexes(props.selectedFeatureIndexes);
-      editableFeatureCollection.setDrawAtFront(props.drawAtFront);
       this.updateTentativeFeature();
       this.updateEditHandles();
     }

@@ -67,6 +67,8 @@ The `mode` property dictates what type of edits the user can perform and how to 
 
 * `view`: no edits are possible, but selection is still possible.
 
+* `cursor`: When user selected any feature, The bounding box will be drawn for the feature. Currently modeConfig.action: `transformTranslate` is available.
+
 * `modify`: user can move existing points, add intermediate points along lines, and remove points.
 
 * `drawPoint`: user can draw a new `Point` feature by clicking where the point is to be.
@@ -95,7 +97,7 @@ The `mode` property dictates what type of edits the user can perform and how to 
 
 #### `modeConfig` (Object, optional)
 
-* If action: `transformTranslate` means the feature can be moved by mouse pointer down hold and drag to required direction.
+* In `cursor` mode, If action: `transformTranslate` means the feature can be moved by mouse pointer down hold and drag to required direction.
 
 * If action: `transformRotate` means the feature will be transform rotated by default the pivot as centroid.
 

@@ -2,7 +2,6 @@
 /* eslint-env browser */
 
 import { GeoJsonLayer, ScatterplotLayer, IconLayer } from 'deck.gl';
-import turfTransformRotate from '@turf/transform-rotate';
 import { EditableFeatureCollection } from '../editable-feature-collection.js';
 import type { EditAction } from '../editable-feature-collection.js';
 import type { Feature, Position } from '../../geojson-types.js';
@@ -186,6 +185,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
     if (changeFlags.propsOrDataChanged) {
       editableFeatureCollection.setMode(props.mode);
+      editableFeatureCollection.setModeConfig(props.modeConfig);
       editableFeatureCollection.setSelectedFeatureIndexes(props.selectedFeatureIndexes);
       editableFeatureCollection.setDrawAtFront(props.drawAtFront);
       this.updateTentativeFeature();
@@ -334,11 +334,8 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
   }
 
-  onClick({ picks, screenCoords, groundCoords }: ClickEvent) {
-    const editHandleInfo = this.getPickedEditHandle(picks);
-    const editHandle = editHandleInfo ? editHandleInfo.object : null;
-
-    const editAction = this.state.editableFeatureCollection.onClick(groundCoords, editHandle);
+  onClick({ groundCoords, picks }: ClickEvent) {
+    const editAction = this.state.editableFeatureCollection.onClick(groundCoords, picks);
     this.updateTentativeFeature();
     this.updateEditHandles();
 
@@ -380,103 +377,34 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }
 
   onPointerMove({
-    screenCoords,
     groundCoords,
     picks,
-    draggingInfo,
+    isDragging,
+    dragStartPicks,
+    dragStartGroundCoords,
     sourceEvent
   }: PointerMoveEvent) {
     this.setState({ pointerMovePicks: picks });
 
-    if (draggingInfo.dragStartPicks && draggingInfo.dragStartPicks.length > 0) {
-      const editHandleInfo = this.getPickedEditHandle(draggingInfo.dragStartPicks);
-      if (editHandleInfo) {
-        // TODO: find a less hacky way to prevent map panning
-        // Stop propagation to prevent map panning while dragging an edit handle
-        sourceEvent.stopPropagation();
-      }
-    }
-
-    if (draggingInfo.isDragging) {
-      const { selectedFeatures } = this.state;
-
-      if (!selectedFeatures.length) {
-        return;
-      }
-
-      const editHandleInfo = this.getPickedEditHandle(draggingInfo.dragStartPicks);
-      if (editHandleInfo) {
-        this.handleMovePosition(
-          editHandleInfo.object.featureIndex,
-          editHandleInfo.object.positionIndexes,
-          groundCoords
-        );
-      }
-    }
-
-    this.state.editableFeatureCollection.onPointerMove(groundCoords);
+    const { editAction, cancelMapPan } = this.state.editableFeatureCollection.onPointerMove(
+      groundCoords,
+      picks,
+      isDragging,
+      dragStartPicks,
+      dragStartGroundCoords
+    );
     this.updateTentativeFeature();
     this.updateEditHandles(picks, groundCoords);
 
-    if (
-      this.props.mode === 'modify' &&
-      this.props.modeConfig &&
-      this.props.modeConfig.action === 'transformRotate'
-    ) {
-      this.handleTransformRotate(screenCoords, groundCoords);
+    if (cancelMapPan) {
+      // TODO: find a less hacky way to prevent map panning
+      // Stop propagation to prevent map panning while dragging an edit handle
+      sourceEvent.stopPropagation();
     }
-  }
 
-  handleTransformRotate(screenCoords: Position, groundCoords: Position) {
-    const { modeConfig } = this.props;
-    let pivot;
-
-    if (modeConfig && modeConfig.usePickAsPivot) {
-      const picks = this.context.layerManager.pickObject({
-        x: screenCoords[0],
-        y: screenCoords[1],
-        mode: 'query',
-        layers: [this.props.id],
-        radius: 100,
-        viewports: [this.context.viewport]
-      });
-      // do nothing when mouse position far away from any point
-      if (!picks || !picks.length || !picks[0].object.position) {
-        return;
-      }
-      pivot = picks[0].object.position;
-    } else {
-      pivot = modeConfig.pivot;
+    if (editAction) {
+      this.props.onEdit(editAction);
     }
-    const featureIndex = this.props.selectedFeatureIndexes[0];
-    const feature = this.state.selectedFeatures[0];
-    const rotatedFeature = turfTransformRotate(feature, 2, { pivot });
-
-    const updatedData = this.state.editableFeatureCollection.featureCollection
-      .replaceGeometry(featureIndex, rotatedFeature.geometry)
-      .getObject();
-
-    this.props.onEdit({
-      updatedData,
-      editType: 'transformPosition',
-      featureIndex,
-      positionIndexes: this.props.positionIndexes,
-      position: groundCoords
-    });
-  }
-
-  handleMovePosition(featureIndex: number, positionIndexes: number[], groundCoords: Position) {
-    const updatedData = this.state.editableFeatureCollection.featureCollection
-      .replacePosition(featureIndex, positionIndexes, groundCoords)
-      .getObject();
-
-    this.props.onEdit({
-      updatedData,
-      editType: 'movePosition',
-      featureIndex,
-      positionIndexes,
-      position: groundCoords
-    });
   }
 
   getPickedEditHandle(picks: Object[]) {

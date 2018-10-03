@@ -42,12 +42,10 @@ export type PointerMoveEvent = {
   screenCoords: Position,
   groundCoords: Position,
   picks: DeckGLPick[],
-  draggingInfo: {
-    isDragging: boolean,
-    dragStartPicks: DeckGLPick[],
-    dragStartScreenCoords: Position,
-    dragStartGroundCoords: Position
-  },
+  isDragging: boolean,
+  dragStartPicks: ?(DeckGLPick[]),
+  dragStartScreenCoords: ?Position,
+  dragStartGroundCoords: ?Position,
   sourceEvent: any
 };
 
@@ -230,18 +228,14 @@ export default class EditableLayer extends CompositeLayer {
       depth: 2
     });
 
-    const draggingInfo = {
-      isDragging,
-      dragStartPicks: pointerDownPicks,
-      dragStartScreenCoords: pointerDownScreenCoords,
-      dragStartGroundCoords: pointerDownGroundCoords
-    };
-
     this.onPointerMove({
       screenCoords,
       groundCoords,
       picks,
-      draggingInfo,
+      isDragging,
+      dragStartPicks: pointerDownPicks,
+      dragStartScreenCoords: pointerDownScreenCoords,
+      dragStartGroundCoords: pointerDownGroundCoords,
       sourceEvent: event
     });
   }

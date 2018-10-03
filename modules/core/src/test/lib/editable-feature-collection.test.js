@@ -428,7 +428,7 @@ describe('drawLineString mode', () => {
   beforeEach(() => {
     warnBefore = console.warn; // eslint-disable-line
     // $FlowFixMe
-    console.warn = function () { }; // eslint-disable-line
+    console.warn = function() {}; // eslint-disable-line
   });
 
   afterEach(() => {
@@ -441,9 +441,9 @@ describe('drawLineString mode', () => {
       const editable = new EditableFeatureCollection(featureCollection);
       editable.setMode('drawLineString');
 
-      editable.onPointerMove([1, 2]);
-      editable.onClick([1, 2], null);
-      editable.onPointerMove([2, 3]);
+      editable.onPointerMove([1, 2], [], false, null, null);
+      editable.onClick([1, 2], []);
+      editable.onPointerMove([2, 3], [], false, null, null);
 
       const tentativeFeature = editable.getTentativeFeature();
 
@@ -461,10 +461,10 @@ describe('drawLineString mode', () => {
       const editable = new EditableFeatureCollection(featureCollection);
       editable.setMode('drawLineString');
 
-      editable.onPointerMove([1, 2]);
-      const action1 = editable.onClick([1, 2], null);
-      editable.onPointerMove([2, 3]);
-      const action2 = editable.onClick([2, 3], null);
+      editable.onPointerMove([1, 2], [], false, null, null);
+      const action1 = editable.onClick([1, 2], []);
+      editable.onPointerMove([2, 3], [], false, null, null);
+      const action2 = editable.onClick([2, 3], []);
 
       expect(action1).toBeNull();
       expect(action2).toEqual({
@@ -498,8 +498,8 @@ describe('drawLineString mode', () => {
       editable.setSelectedFeatureIndexes([featureIndex]);
       editable.setMode('drawLineString');
 
-      editable.onPointerMove([7, 8]);
-      const action = editable.onClick([7, 8], null);
+      editable.onPointerMove([7, 8], [], false, null, null);
+      const action = editable.onClick([7, 8], []);
 
       if (!action) {
         throw new Error('action should be defined');
@@ -526,8 +526,8 @@ describe('drawLineString mode', () => {
       editable.setSelectedFeatureIndexes([1, 2]);
       editable.setMode('drawLineString');
 
-      editable.onPointerMove([7, 8]);
-      const action = editable.onClick([7, 8], null);
+      editable.onPointerMove([7, 8], [], false, null, null);
+      const action = editable.onClick([7, 8], []);
 
       expect(action).toBeNull();
     });
@@ -541,8 +541,8 @@ describe('drawLineString mode', () => {
       editable.setSelectedFeatureIndexes([featureIndex]);
       editable.setMode('drawLineString');
 
-      editable.onPointerMove([7, 8]);
-      const action = editable.onClick([7, 8], null);
+      editable.onPointerMove([7, 8], [], false, null, null);
+      const action = editable.onClick([7, 8], []);
 
       expect(action).toBeNull();
     });

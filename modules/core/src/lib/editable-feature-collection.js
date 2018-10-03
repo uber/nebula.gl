@@ -7,7 +7,7 @@ import distance from '@turf/distance';
 import ellipse from '@turf/ellipse';
 import destination from '@turf/destination';
 import bearing from '@turf/bearing';
-// import turfTransformRotate from '@turf/transform-rotate';
+import turfTransformRotate from '@turf/transform-rotate';
 import pointToLineDistance from '@turf/point-to-line-distance';
 import { point, lineString as toLineString } from '@turf/helpers';
 
@@ -43,6 +43,7 @@ export class EditableFeatureCollection {
   featureCollection: ImmutableFeatureCollection;
   _tentativeFeature: ?Feature;
   _mode: string = 'modify';
+  _modeConfig: any = null;
   _selectedFeatureIndexes: number[] = [];
   _drawAtFront: boolean = false;
   _clickSequence: Position[] = [];
@@ -72,6 +73,15 @@ export class EditableFeatureCollection {
     }
 
     this._mode = mode;
+    this._setTentativeFeature(null);
+  }
+
+  setModeConfig(modeConfig: any): void {
+    if (this._modeConfig === modeConfig) {
+      return;
+    }
+
+    this._modeConfig = modeConfig;
     this._setTentativeFeature(null);
   }
 
@@ -194,8 +204,9 @@ export class EditableFeatureCollection {
     return this._tentativeFeature;
   }
 
-  onClick(groundCoords: Position, clickedEditHandle: ?EditHandle): ?EditAction {
+  onClick(groundCoords: Position, picks: any[]): ?EditAction {
     this._clickSequence.push(groundCoords);
+    const clickedEditHandle = getPickedEditHandle(picks);
 
     let editAction: ?EditAction = null;
     if (
@@ -231,7 +242,7 @@ export class EditableFeatureCollection {
     }
 
     // Trigger pointer move handling since that's where most of the tentative feature handling is
-    this.onPointerMove(groundCoords);
+    this.onPointerMove(groundCoords, [], false, null, null);
 
     return editAction;
   }
@@ -380,8 +391,30 @@ export class EditableFeatureCollection {
     };
   }
 
-  onPointerMove(groundCoords: Position): void {
-    if (this._mode === 'drawLineString') {
+  onPointerMove(
+    groundCoords: Position,
+    picks: any[],
+    isDragging: boolean,
+    dragStartPicks: ?(any[]),
+    dragStartGroundCoords: ?Position
+  ): { editAction: ?EditAction, cancelMapPan: boolean } {
+    let editAction: ?EditAction = null;
+
+    const editHandle = getPickedEditHandle(dragStartPicks);
+    const selectedFeatureIndexes = this._selectedFeatureIndexes;
+
+    // Cancel map panning if pointer went down on an edit handle
+    const cancelMapPan: boolean = Boolean(editHandle);
+
+    if (isDragging && selectedFeatureIndexes.length && editHandle) {
+      editAction = this._handleMovePosition(groundCoords, editHandle);
+    } else if (
+      this._mode === 'modify' &&
+      this._modeConfig &&
+      this._modeConfig.action === 'transformRotate'
+    ) {
+      editAction = this._handleTransformRotate(picks, groundCoords);
+    } else if (this._mode === 'drawLineString') {
       this._handlePointerMoveForDrawLineString(groundCoords);
     } else if (this._mode === 'drawPolygon') {
       this._handlePointerMoveForDrawPolygon(groundCoords);
@@ -398,6 +431,57 @@ export class EditableFeatureCollection {
     } else if (this._mode === 'drawEllipseUsing3Points') {
       this._handlePointerMoveForDrawEllipseUsing3Points(groundCoords);
     }
+
+    return { editAction, cancelMapPan };
+  }
+
+  _handleMovePosition(groundCoords: Position, editHandle: EditHandle) {
+    const updatedData = this.featureCollection
+      .replacePosition(editHandle.featureIndex, editHandle.positionIndexes, groundCoords)
+      .getObject();
+
+    return {
+      updatedData,
+      editType: 'movePosition',
+      featureIndex: editHandle.featureIndex,
+      positionIndexes: editHandle.positionIndexes,
+      position: groundCoords
+    };
+  }
+
+  _handleTransformRotate(picks: any[], groundCoords: Position): ?EditAction {
+    const modeConfig = this._modeConfig;
+    let pivot;
+    const selectedFeatureIndexes = this._selectedFeatureIndexes;
+
+    if (selectedFeatureIndexes.length === 0 || selectedFeatureIndexes.length > 1) {
+      return null;
+    }
+
+    if (modeConfig && modeConfig.usePickAsPivot) {
+      // do nothing when mouse position far away from any point
+      if (!picks || !picks.length || !picks[0].object.position) {
+        return null;
+      }
+      pivot = picks[0].object.position;
+    } else {
+      pivot = modeConfig.pivot;
+    }
+    const featureIndex = selectedFeatureIndexes[0];
+    const geometry = this.getSelectedGeometry();
+    const rotatedFeature = turfTransformRotate(geometry, 2, { pivot });
+
+    const updatedData = this.featureCollection
+      .replaceGeometry(featureIndex, rotatedFeature)
+      .getObject();
+
+    return {
+      updatedData,
+      editType: 'transformPosition',
+      featureIndex,
+      positionIndexes: null,
+      position: null
+    };
   }
 
   _handlePointerMoveForDrawLineString(groundCoords: Position): void {
@@ -650,8 +734,8 @@ export class EditableFeatureCollection {
   }
 }
 
-function getPickedEditHandle(picks: any[]): ?EditHandle {
-  const info = picks.find(pick => pick.isEditingHandle);
+function getPickedEditHandle(picks: ?(any[])): ?EditHandle {
+  const info = picks && picks.find(pick => pick.isEditingHandle);
   if (info) {
     return info.object;
   }

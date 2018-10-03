@@ -347,8 +347,8 @@ The pointer moved, regardless of whether the pointer is down, up, and whether or
 
 * `screenCoords` (Array): `[x, y]` screen pixel coordinates relative to the deck.gl canvas where the pointer is now.
 * `groundCoords` (Array): `[lng, lat]` ground coordinates where the pointer is now.
-* `draggingInfo` (Object): Contains the following properties:
-  * `isDragging` (Boolean): `true` if the pointer went down on an object in this layer and has moved enough to consider the movement a drag gesture, otherwise `false`.
-  * `dragStartPicks` (Array): An array containing [deck.gl Picking Info Objects](https://uber.github.io/deck.gl/#/documentation/developer-guide/adding-interactivity?section=what-can-be-picked-) for all objects that were under the pointer when it went down, if any. This will be populated even if the pointer hasn't yet moved enough to consider it a drag.
-  * `dragStartScreenCoords` (Array): `[x, y]` screen pixel coordinates relative to the deck.gl canvas where the pointer went down.
-  * `dragStartGroundCoords` (Array): `[lng, lat]` ground coordinates where the pointer went down.
+* `picks` (Array): An array containing [deck.gl Picking Info Objects](https://uber.github.io/deck.gl/#/documentation/developer-guide/adding-interactivity?section=what-can-be-picked-) for all objects that are under the pointer now.
+* `isDragging` (Boolean): `true` if the pointer went down on an object in this layer and has moved enough to consider the movement a drag gesture, otherwise `false`.
+* `dragStartPicks` (Array): An array containing [deck.gl Picking Info Objects](https://uber.github.io/deck.gl/#/documentation/developer-guide/adding-interactivity?section=what-can-be-picked-) for all objects that were under the pointer when it went down, if any. This will be populated even if the pointer hasn't yet moved enough to set `isDragging` to `true`.
+* `dragStartScreenCoords` (Array): `[x, y]` screen pixel coordinates relative to the deck.gl canvas where the pointer went down.
+* `dragStartGroundCoords` (Array): `[lng, lat]` ground coordinates where the pointer went down.

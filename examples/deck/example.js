@@ -7,10 +7,10 @@ import { StaticMap } from 'react-map-gl';
 import circle from '@turf/circle';
 
 import { EditableGeoJsonLayer } from 'nebula.gl';
-
 import sampleGeoJson from '../data/sample-geojson.json';
-
 import iconSheet from '../data/edit-handles.png';
+
+import { CustomEditableFeatureCollection } from './custom-editable-feature-collection.js';
 
 const initialViewport = {
   bearing: 0,
@@ -75,7 +75,8 @@ export default class Example extends Component<
       drawAtFront: false,
       selectedFeatureIndexes: [],
       editHandleType: 'point',
-      keyHolded: ''
+      keyHolded: '',
+      editableFeatureCollection: new CustomEditableFeatureCollection()
     };
   }
 
@@ -238,11 +239,12 @@ export default class Example extends Component<
             <input
               type="checkbox"
               checked={this.state.drawAtFront}
-              onChange={() =>
+              onChange={() => {
+                this.state.editableFeatureCollection.setDrawAtFront(!this.state.drawAtFront);
                 this.setState({
                   drawAtFront: !this.state.drawAtFront
-                })
-              }
+                });
+              }}
             />
           </dd>
           <dt style={styles.toolboxTerm}>Select Features</dt>
@@ -260,7 +262,13 @@ export default class Example extends Component<
   }
 
   render() {
-    const { testFeatures, selectedFeatureIndexes, mode, drawAtFront, keyHolded } = this.state;
+    const {
+      testFeatures,
+      selectedFeatureIndexes,
+      mode,
+      keyHolded,
+      editableFeatureCollection
+    } = this.state;
 
     const viewport = {
       ...this.state.viewport,
@@ -280,7 +288,7 @@ export default class Example extends Component<
       },
       fp64: true,
       autoHighlight: true,
-      drawAtFront,
+      editableFeatureCollection,
 
       // Editing callbacks
       onEdit: ({ updatedData, editType, featureIndex, positionIndexes, position }) => {

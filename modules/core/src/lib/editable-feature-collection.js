@@ -45,12 +45,7 @@ export class EditableFeatureCollection {
   _mode: string = 'modify';
   _modeConfig: any = null;
   _selectedFeatureIndexes: number[] = [];
-  _drawAtFront: boolean = false;
   _clickSequence: Position[] = [];
-
-  constructor(featureCollection: FeatureCollection) {
-    this.setFeatureCollection(featureCollection);
-  }
 
   getFeatureCollection(): FeatureCollection {
     return this.featureCollection.getObject();
@@ -91,15 +86,6 @@ export class EditableFeatureCollection {
     }
 
     this._selectedFeatureIndexes = indexes;
-    this._setTentativeFeature(null);
-  }
-
-  setDrawAtFront(drawAtFront: boolean): void {
-    if (this._drawAtFront === drawAtFront) {
-      return;
-    }
-
-    this._drawAtFront = drawAtFront;
     this._setTentativeFeature(null);
   }
 
@@ -296,10 +282,7 @@ export class EditableFeatureCollection {
       // Extend the LineString
       const lineString: LineString = selectedGeometry;
 
-      let positionIndexes = [lineString.coordinates.length];
-      if (this._drawAtFront) {
-        positionIndexes = [0];
-      }
+      const positionIndexes = [lineString.coordinates.length];
       const featureIndex = selectedFeatureIndexes[0];
       const updatedData = this.featureCollection
         .addPosition(featureIndex, positionIndexes, groundCoords)
@@ -500,9 +483,6 @@ export class EditableFeatureCollection {
     if (selectedGeometry && selectedGeometry.type === 'LineString') {
       // Draw an extension line starting from one end of the selected LineString
       startPosition = selectedGeometry.coordinates[selectedGeometry.coordinates.length - 1];
-      if (this._drawAtFront) {
-        startPosition = selectedGeometry.coordinates[0];
-      }
     } else if (this._clickSequence.length === 1) {
       startPosition = this._clickSequence[0];
     }

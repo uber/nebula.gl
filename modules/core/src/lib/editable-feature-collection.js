@@ -7,18 +7,19 @@ import distance from '@turf/distance';
 import ellipse from '@turf/ellipse';
 import destination from '@turf/destination';
 import bearing from '@turf/bearing';
+import deepEqual from 'deep-equal';
 // import turfTransformRotate from '@turf/transform-rotate';
 import pointToLineDistance from '@turf/point-to-line-distance';
 import { point, lineString as toLineString } from '@turf/helpers';
 
 import type {
   FeatureCollection,
-    Feature,
-    Geometry,
-    Point,
-    LineString,
-    Polygon,
-    Position
+  Feature,
+  Geometry,
+  Point,
+  LineString,
+  Polygon,
+  Position
 } from '../geojson-types.js';
 
 import { recursivelyTraverseNestedArrays } from './utils';
@@ -76,7 +77,7 @@ export class EditableFeatureCollection {
   }
 
   setSelectedFeatureIndexes(indexes: number[]): void {
-    if (this._selectedFeatureIndexes === indexes) {
+    if (deepEqual(this._selectedFeatureIndexes, indexes)) {
       return;
     }
 

@@ -426,7 +426,13 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         pick => pick.isEditingHandle && pick.object.type === 'intermediate'
       );
       if (existingHandlePicked) {
-        return 'move';
+        // return 'move';
+        // return `url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='utf-8'%3F%3E%3Csvg width='32' height='32' viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1639 1056q0 5-1 7-64 268-268 434.5t-478 166.5q-146 0-282.5-55t-243.5-157l-129 129q-19 19-45 19t-45-19-19-45v-448q0-26 19-45t45-19h448q26 0 45 19t19 45-19 45l-137 137q71 66 161 102t187 36q134 0 250-65t186-179q11-17 53-117 8-23 30-23h192q13 0 22.5 9.5t9.5 22.5zm25-800v448q0 26-19 45t-45 19h-448q-26 0-45-19t-19-45 19-45l138-138q-148-137-349-137-134 0-250 65t-186 179q-11 17-53 117-8 23-30 23h-199q-13 0-22.5-9.5t-9.5-22.5v-7q65-268 270-434.5t480-166.5q146 0 284 55.5t245 156.5l130-129q19-19 45-19t45 19 19 45z'/%3E%3C/svg%3E"), move`;
+        // 24
+        // return `url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABmJLR0QA/wD/AP+gvaeTAAABoElEQVRIidXVz0tVQRQH8E++iBK0hy2ENgYJpdCixVMCwUWrt2jjpvqL+hNaK1Skm/oD2iovQ8TQQolaJyLpRp79cDH3xbzpvrkXrEVfGJg755zvmXvm/OAf40JNvYu4jWv4ga/4VOzPhft4hWP8StY+FnE3sRnBAho54nG8LiEtWz/xDKNo4m1xPj+I/CY+1ySP10e8i77bhNjGGMMbTERnp8XfrBSOu5jEAzzGpULvVi4kPawkt9rCdEZ/EhsD/qidKs8kCtvCg+XQRKeug6VI+B1TFeQjGfI/HAzhMBIuV5ATUjH36LP0F9ocLhf7LaGYcmjgXmQT4xvWa1zyP0AcohauluicYE113xnHnWJ/JFT0b8zKP9hCjcsuR/ofUmE7Q95RXQ9TQmr3bJ7UddARiimHUexENl3c6AmHKoyHcT0jn8aq/qJ8ii+pYi5Ep3iOR0Lvb+Gh0Le6ie4mrpTdJHawjt2Mw0HrvZBJpZjXH/MmXgrDpA75ooq3agipmGZLS5hWByWkh3ih6DmDUHfoN4RJ1wvBPvb8haF/bpwBBca+xkfzCiAAAAAASUVORK5CYII=) 12 12, move`;
+
+        // 16
+        return `url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAAv0lEQVQ4jc3SsWpCMRjF8d9QrU62HQQH30kqOBSuDyC0m+8l3EcQFEQpiJNdCl0dbVcdkuH2muCofwiEnJzDR3K4R9qY4hN/OGKJCZpooMiZ+9jhlFkblHF/QQvbKH7hFR10McJ3LeyCjyjs8VzTGphdC5hHYZDQxjXzIRVwew7+jzlO3BlErUwFVM0z4eGqvAi/c5LpQTXgB2/o4QnDinmBh1xAKTQwV6S10IskRRz7Ee9CfY/4xSqeNXPm23EGcGlDuo+t5h8AAAAASUVORK5CYII=) 8 8, move`;
       }
       if (intermediateHandlePicked) {
         return 'cell';

@@ -89,6 +89,7 @@ type State = {
   editableFeatureCollection: EditableFeatureCollection,
   tentativeFeature: ?Feature,
   editHandles: any[],
+  bboxes: Feature[],
   selectedFeatures: Feature[],
   pointerMovePicks: any[]
 };
@@ -137,6 +138,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
     layers = layers.concat(this.createTentativeLayers());
     layers = layers.concat(this.createEditHandleLayers());
+    layers = layers.concat(this.createBoundingBoxLayers());
 
     return layers;
   }
@@ -184,6 +186,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       editableFeatureCollection.setDrawAtFront(props.drawAtFront);
       this.updateTentativeFeature();
       this.updateEditHandles();
+      this.updateEditBoundingBoxes();
     }
 
     let selectedFeatures = [];
@@ -312,6 +315,39 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     return [layer];
   }
 
+  createBoundingBoxLayers() {
+    if (!this.state.bboxes) {
+      return [];
+    }
+
+    const layer = new GeoJsonLayer(
+      this.getSubLayerProps({
+        id: 'bboxes',
+        data: this.state.bboxes,
+        fp64: this.props.fp64,
+        pickable: true,
+        stroked: true,
+        autoHighlight: false,
+        lineWidthScale: this.props.lineWidthScale,
+        lineWidthMinPixels: this.props.lineWidthMinPixels,
+        lineWidthMaxPixels: this.props.lineWidthMaxPixels,
+        lineJointRounded: this.props.lineJointRounded,
+        lineMiterLimit: this.props.lineMiterLimit,
+        pointRadiusScale: this.props.editHandlePointRadiusScale,
+        outline: this.props.editHandlePointOutline,
+        strokeWidth: this.props.editHandlePointStrokeWidth,
+        pointRadiusMinPixels: this.props.editHandlePointRadiusMinPixels,
+        pointRadiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
+        getRadius: this.props.getEditHandlePointRadius,
+        getLineColor: feature => this.props.getCursorBoundingBoxLineColor(feature, this.props.mode),
+        getLineWidth: feature => this.props.getCursorBoundingBoxLineWidth(feature, this.props.mode),
+        getFillColor: feature => this.props.getCursorBoundingBoxFillColor(feature, this.props.mode)
+      })
+    );
+
+    return [layer];
+  }
+
   updateTentativeFeature() {
     const tentativeFeature = this.state.editableFeatureCollection.getTentativeFeature();
     if (tentativeFeature !== this.state.tentativeFeature) {
@@ -328,6 +364,14 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
   }
 
+  updateEditBoundingBoxes() {
+    const bboxes = this.state.editableFeatureCollection.getEditBoundingBoxes();
+    if (bboxes !== this.state.bboxes) {
+      this.setState({ bboxes });
+      this.setLayerNeedsUpdate();
+    }
+  }
+
   onClick({
     picks,
     screenCoords,
@@ -337,12 +381,16 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     screenCoords: Position,
     groundCoords: Position
   }) {
+    if (this.props.mode === 'cursor') {
+      return;
+    }
     const editHandleInfo = this.getPickedEditHandle(picks);
     const editHandle = editHandleInfo ? editHandleInfo.object : null;
 
     const editAction = this.state.editableFeatureCollection.onClick(groundCoords, editHandle);
     this.updateTentativeFeature();
     this.updateEditHandles();
+    this.updateEditBoundingBoxes();
 
     if (editAction) {
       this.props.onEdit(editAction);
@@ -395,7 +443,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }) {
     const { selectedFeatures } = this.state;
 
-    if (!selectedFeatures.length) {
+    if (!selectedFeatures.length || this.props.mode === 'cursor') {
       return;
     }
 
@@ -424,7 +472,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }) {
     const { selectedFeatures } = this.state;
 
-    if (!selectedFeatures.length) {
+    if (!selectedFeatures.length || this.props.mode === 'cursor') {
       return;
     }
 
@@ -468,6 +516,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     this.state.editableFeatureCollection.onPointerMove(groundCoords);
     this.updateTentativeFeature();
     this.updateEditHandles(picks, groundCoords);
+    this.updateEditBoundingBoxes();
 
     if (
       this.props.mode === 'modify' &&

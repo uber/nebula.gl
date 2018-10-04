@@ -3,6 +3,9 @@
 
 import { GeoJsonLayer, ScatterplotLayer, IconLayer } from 'deck.gl';
 import turfTransformRotate from '@turf/transform-rotate';
+import turfTransformTranslate from '@turf/transform-translate';
+import turfDistance from '@turf/distance';
+import { point } from '@turf/helpers';
 import { EditableFeatureCollection } from '../editable-feature-collection.js';
 import type { EditAction } from '../editable-feature-collection.js';
 import type { Feature, Position } from '../../geojson-types.js';
@@ -89,6 +92,7 @@ type State = {
   editableFeatureCollection: EditableFeatureCollection,
   tentativeFeature: ?Feature,
   editHandles: any[],
+  bboxes: Feature[],
   selectedFeatures: Feature[],
   pointerMovePicks: any[]
 };
@@ -137,6 +141,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
     layers = layers.concat(this.createTentativeLayers());
     layers = layers.concat(this.createEditHandleLayers());
+    layers = layers.concat(this.createBoundingBoxLayers());
 
     return layers;
   }
@@ -184,6 +189,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       editableFeatureCollection.setDrawAtFront(props.drawAtFront);
       this.updateTentativeFeature();
       this.updateEditHandles();
+      this.updateEditBoundingBoxes();
     }
 
     let selectedFeatures = [];
@@ -312,6 +318,39 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     return [layer];
   }
 
+  createBoundingBoxLayers() {
+    if (!this.state.bboxes) {
+      return [];
+    }
+
+    const layer = new GeoJsonLayer(
+      this.getSubLayerProps({
+        id: 'bboxes',
+        data: this.state.bboxes,
+        fp64: this.props.fp64,
+        pickable: true,
+        stroked: true,
+        autoHighlight: false,
+        lineWidthScale: this.props.lineWidthScale,
+        lineWidthMinPixels: this.props.lineWidthMinPixels,
+        lineWidthMaxPixels: this.props.lineWidthMaxPixels,
+        lineJointRounded: this.props.lineJointRounded,
+        lineMiterLimit: this.props.lineMiterLimit,
+        pointRadiusScale: this.props.editHandlePointRadiusScale,
+        outline: this.props.editHandlePointOutline,
+        strokeWidth: this.props.editHandlePointStrokeWidth,
+        pointRadiusMinPixels: this.props.editHandlePointRadiusMinPixels,
+        pointRadiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
+        getRadius: this.props.getEditHandlePointRadius,
+        getLineColor: feature => this.props.getCursorBoundingBoxLineColor(feature, this.props.mode),
+        getLineWidth: feature => this.props.getCursorBoundingBoxLineWidth(feature, this.props.mode),
+        getFillColor: feature => this.props.getCursorBoundingBoxFillColor(feature, this.props.mode)
+      })
+    );
+
+    return [layer];
+  }
+
   updateTentativeFeature() {
     const tentativeFeature = this.state.editableFeatureCollection.getTentativeFeature();
     if (tentativeFeature !== this.state.tentativeFeature) {
@@ -328,6 +367,14 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
   }
 
+  updateEditBoundingBoxes() {
+    const bboxes = this.state.editableFeatureCollection.getEditBoundingBoxes();
+    if (bboxes !== this.state.bboxes) {
+      this.setState({ bboxes });
+      this.setLayerNeedsUpdate();
+    }
+  }
+
   onClick({
     picks,
     screenCoords,
@@ -337,12 +384,16 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     screenCoords: Position,
     groundCoords: Position
   }) {
+    if (this.props.mode === 'cursor') {
+      return;
+    }
     const editHandleInfo = this.getPickedEditHandle(picks);
     const editHandle = editHandleInfo ? editHandleInfo.object : null;
 
     const editAction = this.state.editableFeatureCollection.onClick(groundCoords, editHandle);
     this.updateTentativeFeature();
     this.updateEditHandles();
+    this.updateEditBoundingBoxes();
 
     if (editAction) {
       this.props.onEdit(editAction);
@@ -395,7 +446,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }) {
     const { selectedFeatures } = this.state;
 
-    if (!selectedFeatures.length) {
+    if (!selectedFeatures.length || this.props.mode === 'cursor') {
       return;
     }
 
@@ -424,7 +475,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }) {
     const { selectedFeatures } = this.state;
 
-    if (!selectedFeatures.length) {
+    if (!selectedFeatures.length || this.props.mode === 'cursor') {
       return;
     }
 
@@ -454,6 +505,24 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     pointerDownPicks: any[],
     sourceEvent: any
   }) {
+    const { pointerMovePicks } = this.state;
+    if (
+      this.props.mode === 'cursor' &&
+      this.props.modeConfig &&
+      this.props.modeConfig.action === 'transformTranslate' &&
+      pointerDownPicks &&
+      pointerDownPicks.length > 0
+    ) {
+      sourceEvent.stopPropagation();
+      this.handleTransformTranslate(
+        screenCoords,
+        groundCoords,
+        pointerDownPicks,
+        pointerMovePicks,
+        picks
+      );
+      return;
+    }
     this.setState({ pointerMovePicks: picks });
 
     if (pointerDownPicks && pointerDownPicks.length > 0) {
@@ -468,6 +537,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     this.state.editableFeatureCollection.onPointerMove(groundCoords);
     this.updateTentativeFeature();
     this.updateEditHandles(picks, groundCoords);
+    this.updateEditBoundingBoxes();
 
     if (
       this.props.mode === 'modify' &&
@@ -509,6 +579,57 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
     this.props.onEdit({
       updatedData,
+      editType: 'transformPosition',
+      featureIndex,
+      positionIndexes: this.props.positionIndexes,
+      position: groundCoords
+    });
+  }
+
+  handleTransformTranslate(
+    screenCoords: Position,
+    groundCoords: Position,
+    pointerDownPicks: any[],
+    previousMovePicks: any[],
+    currentMovePicks: any[]
+  ) {
+    let distanceMoved;
+    let direction;
+    if (
+      previousMovePicks &&
+      previousMovePicks.length &&
+      currentMovePicks &&
+      currentMovePicks.length
+    ) {
+      distanceMoved = turfDistance(
+        point(previousMovePicks[0].lngLat),
+        point(currentMovePicks[0].lngLat)
+      );
+      const p2 = { x: previousMovePicks[0].x, y: previousMovePicks[0].y };
+      const p1 = { x: currentMovePicks[0].x, y: currentMovePicks[0].y };
+      const angleFromNorth = (pointA, pointB) => {
+        const angleFromWest =
+          (Math.atan2(pointA.y - pointB.y, pointA.x - pointB.x) * 180) / Math.PI;
+        return angleFromWest > 90 && angleFromWest < 180 ? angleFromWest - 90 : angleFromWest + 270;
+      };
+      direction = angleFromNorth(p2, p1);
+    }
+    this.setState({ pointerMovePicks: currentMovePicks });
+    if (!distanceMoved || !direction) {
+      return;
+    }
+    const featureIndex = this.props.selectedFeatureIndexes[0];
+    const feature = this.state.selectedFeatures[0];
+    const movedFeature = turfTransformTranslate(feature, distanceMoved, direction);
+
+    const updatedData = this.state.editableFeatureCollection.featureCollection
+      .replaceGeometry(featureIndex, movedFeature.geometry)
+      .getObject();
+
+    this.props.onEdit({
+      updatedData,
+      updatedMode: this.props.mode,
+      updatedSelectedFeatureIndexes: this.props.selectedFeatureIndexes,
       editType: 'transformPosition',
       featureIndex,
       positionIndexes: this.props.positionIndexes,

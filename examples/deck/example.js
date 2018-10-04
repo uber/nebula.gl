@@ -202,6 +202,7 @@ export default class Example extends Component<
             >
               <option value="view">view</option>
               <option value="modify">modify</option>
+              <option value="cursor">cursor</option>
               <option value="drawPoint">drawPoint</option>
               <option value="drawLineString">drawLineString</option>
               <option value="drawPolygon">drawPolygon</option>
@@ -274,7 +275,7 @@ export default class Example extends Component<
       selectedFeatureIndexes,
       mode,
       modeConfig: {
-        action: keyHolded === 'Control' ? 'transformRotate' : 'none',
+        action: keyHolded === 'Control' ? 'transformRotate' : 'transformTranslate',
         usePickAsPivot: true,
         pivot: undefined
       },
@@ -348,7 +349,12 @@ export default class Example extends Component<
 
       // customize tentative feature style
       getTentativeLineDashArray: () => [7, 4],
-      getTentativeLineColor: () => [0x8f, 0x8f, 0x8f, 0xff]
+      getTentativeLineColor: () => [0x8f, 0x8f, 0x8f, 0xff],
+
+      // customize cursor mode bounding box selection feature style
+      getCursorBoundingBoxLineColor: () => [0x8f, 0x8f, 0x8f, 0xff],
+      getCursorBoundingBoxLineWidth: () => 2,
+      getCursorBoundingBoxFillColor: () => [0, 0, 0, 0.1]
     });
 
     return (

@@ -2,50 +2,72 @@
 /* eslint-env browser */
 
 import { CompositeLayer } from 'deck.gl';
+import type { Position } from '../../geojson-types.js';
 
 // Minimum number of pixels the pointer must move from the original pointer down to be considered dragging
 const MINIMUM_POINTER_MOVE_THRESHOLD_PIXELS = 7;
 
+export type DeckGLPick = {
+  index: number,
+  object: any
+};
+
+export type ClickEvent = {
+  picks: DeckGLPick[],
+  screenCoords: Position,
+  groundCoords: Position
+};
+
+export type DoubleClickEvent = {
+  groundCoords: Position
+};
+
+export type StartDraggingEvent = {
+  picks: DeckGLPick[],
+  screenCoords: Position,
+  groundCoords: Position,
+  dragStartScreenCoords: Position,
+  dragStartGroundCoords: Position
+};
+
+export type StopDraggingEvent = {
+  picks: DeckGLPick[],
+  screenCoords: Position,
+  groundCoords: Position,
+  dragStartScreenCoords: Position,
+  dragStartGroundCoords: Position
+};
+
+export type PointerMoveEvent = {
+  screenCoords: Position,
+  groundCoords: Position,
+  picks: DeckGLPick[],
+  isDragging: boolean,
+  dragStartPicks: ?(DeckGLPick[]),
+  dragStartScreenCoords: ?Position,
+  dragStartGroundCoords: ?Position,
+  sourceEvent: any
+};
+
 export default class EditableLayer extends CompositeLayer {
   // Overridable interaction event handlers
-  onClick({ picks, screenCoords, groundCoords }: Object) {
-    // default implementation - do nothing
-  }
-  onDoubleClick({ groundCoords }: Object) {
+  onClick(event: ClickEvent) {
     // default implementation - do nothing
   }
 
-  onStartDragging({
-    picks,
-    screenCoords,
-    groundCoords,
-    dragStartScreenCoords,
-    dragStartGroundCoords
-  }: Object) {
+  onDoubleClick(event: DoubleClickEvent) {
     // default implementation - do nothing
   }
 
-  onDragging({
-    picks,
-    screenCoords,
-    groundCoords,
-    dragStartScreenCoords,
-    dragStartGroundCoords
-  }: Object) {
+  onStartDragging(event: StartDraggingEvent) {
     // default implementation - do nothing
   }
 
-  onStopDragging({
-    picks,
-    screenCoords,
-    groundCoords,
-    dragStartScreenCoords,
-    dragStartGroundCoords
-  }: Object) {
+  onStopDragging(event: StopDraggingEvent) {
     // default implementation - do nothing
   }
 
-  onPointerMove({ screenCoords, groundCoords, isDragging, sourceEvent }: Object) {
+  onPointerMove(event: PointerMoveEvent) {
     // default implementation - do nothing
   }
 
@@ -209,21 +231,13 @@ export default class EditableLayer extends CompositeLayer {
     this.onPointerMove({
       screenCoords,
       groundCoords,
-      isDragging,
       picks,
-      pointerDownPicks,
+      isDragging,
+      dragStartPicks: pointerDownPicks,
+      dragStartScreenCoords: pointerDownScreenCoords,
+      dragStartGroundCoords: pointerDownGroundCoords,
       sourceEvent: event
     });
-
-    if (isDragging) {
-      this.onDragging({
-        picks: pointerDownPicks,
-        screenCoords,
-        groundCoords,
-        dragStartScreenCoords: pointerDownScreenCoords,
-        dragStartGroundCoords: pointerDownGroundCoords
-      });
-    }
   }
 
   _onPointerUp(event: Object) {

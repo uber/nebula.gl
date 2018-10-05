@@ -3,15 +3,16 @@
 
 import { GeoJsonLayer, ScatterplotLayer, IconLayer } from 'deck.gl';
 import { EditableFeatureCollection } from '../editable-feature-collection.js';
+import { DrawRectangleHandler } from '../mode-handlers/draw-rectangle-handler.js';
 import type { EditAction } from '../editable-feature-collection.js';
 import type { Feature, Position } from '../../geojson-types.js';
-import EditableLayer from './editable-layer.js';
 import type {
   ClickEvent,
-  PointerMoveEvent,
   StartDraggingEvent,
-  StopDraggingEvent
-} from './editable-layer.js';
+  StopDraggingEvent,
+  PointerMoveEvent
+} from '../event-types.js';
+import EditableLayer from './editable-layer.js';
 
 const DEFAULT_LINE_COLOR = [0x0, 0x0, 0x0, 0xff];
 const DEFAULT_FILL_COLOR = [0x0, 0x0, 0x0, 0x90];
@@ -150,10 +151,15 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     super.initializeState();
 
     this.setState({
-      editableFeatureCollection: new EditableFeatureCollection({
-        type: 'FeatureCollection',
-        features: []
-      }),
+      editableFeatureCollection: new EditableFeatureCollection(
+        {
+          type: 'FeatureCollection',
+          features: []
+        },
+        {
+          drawRectangle: new DrawRectangleHandler()
+        }
+      ),
       selectedFeatures: [],
       editHandles: []
     });
@@ -334,8 +340,8 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
   }
 
-  onClick({ groundCoords, picks }: ClickEvent) {
-    const editAction = this.state.editableFeatureCollection.onClick(groundCoords, picks);
+  onClick(event: ClickEvent) {
+    const editAction = this.state.editableFeatureCollection.onClick(event);
     this.updateTentativeFeature();
     this.updateEditHandles();
 
@@ -376,23 +382,12 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
   }
 
-  onPointerMove({
-    groundCoords,
-    picks,
-    isDragging,
-    dragStartPicks,
-    dragStartGroundCoords,
-    sourceEvent
-  }: PointerMoveEvent) {
+  onPointerMove(event: PointerMoveEvent) {
+    const { groundCoords, picks, sourceEvent } = event;
+
     this.setState({ pointerMovePicks: picks });
 
-    const { editAction, cancelMapPan } = this.state.editableFeatureCollection.onPointerMove(
-      groundCoords,
-      picks,
-      isDragging,
-      dragStartPicks,
-      dragStartGroundCoords
-    );
+    const { editAction, cancelMapPan } = this.state.editableFeatureCollection.onPointerMove(event);
     this.updateTentativeFeature();
     this.updateEditHandles(picks, groundCoords);
 

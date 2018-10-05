@@ -21,6 +21,8 @@ import type {
   Position
 } from '../geojson-types.js';
 
+import type { ClickEvent, PointerMoveEvent } from './event-types.js';
+import type { ModeHandler } from './mode-handlers/mode-handler.js';
 import { recursivelyTraverseNestedArrays } from './utils';
 import { ImmutableFeatureCollection } from './immutable-feature-collection.js';
 
@@ -39,72 +41,98 @@ export type EditAction = {
   position: ?Position
 };
 
+export type EditContext = {
+  featureCollection: ImmutableFeatureCollection,
+  selectedFeatureIndexes: number[],
+  mode: string,
+  modeConfig: any,
+  tentativeFeature: ?Feature,
+  drawAtFront: boolean
+};
+
+export type ModeHandlerMap = {
+  [mode: string]: ModeHandler
+};
+
 export class EditableFeatureCollection {
-  featureCollection: ImmutableFeatureCollection;
-  _tentativeFeature: ?Feature;
-  _mode: string = 'modify';
-  _modeConfig: any = null;
-  _selectedFeatureIndexes: number[] = [];
-  _drawAtFront: boolean = false;
+  _handlerMap: ModeHandlerMap;
+  _activeHandler: ?ModeHandler;
+  _editContext: EditContext;
   _clickSequence: Position[] = [];
 
-  constructor(featureCollection: FeatureCollection) {
-    this.setFeatureCollection(featureCollection);
+  constructor(featureCollection?: FeatureCollection, handlerMap: ModeHandlerMap) {
+    if (!featureCollection) {
+      featureCollection = {
+        type: 'FeatureCollection',
+        features: []
+      };
+    }
+    this._handlerMap = handlerMap;
+    this._editContext = {
+      featureCollection: new ImmutableFeatureCollection(featureCollection),
+      selectedFeatureIndexes: [],
+      mode: 'modify',
+      modeConfig: null,
+      tentativeFeature: null,
+      drawAtFront: false
+    };
   }
 
   getFeatureCollection(): FeatureCollection {
-    return this.featureCollection.getObject();
+    return this._editContext.featureCollection.getObject();
   }
 
   getSelectedGeometry(): ?Geometry {
-    if (this._selectedFeatureIndexes.length === 1) {
-      return this.featureCollection.getObject().features[this._selectedFeatureIndexes[0]].geometry;
+    if (this._editContext.selectedFeatureIndexes.length === 1) {
+      return this.getFeatureCollection().features[this._editContext.selectedFeatureIndexes[0]]
+        .geometry;
     }
     return null;
   }
 
   setFeatureCollection(featureCollection: FeatureCollection): void {
-    this.featureCollection = new ImmutableFeatureCollection(featureCollection);
+    this._editContext.featureCollection = new ImmutableFeatureCollection(featureCollection);
   }
 
   setMode(mode: string): void {
-    if (this._mode === mode) {
+    if (this._editContext.mode === mode) {
       return;
     }
 
-    this._mode = mode;
+    this._editContext.mode = mode;
+    this._activeHandler = this._handlerMap[mode];
     this._setTentativeFeature(null);
   }
 
   setModeConfig(modeConfig: any): void {
-    if (this._modeConfig === modeConfig) {
+    if (this._editContext.modeConfig === modeConfig) {
       return;
     }
 
-    this._modeConfig = modeConfig;
+    this._editContext.modeConfig = modeConfig;
     this._setTentativeFeature(null);
   }
 
   setSelectedFeatureIndexes(indexes: number[]): void {
-    if (this._selectedFeatureIndexes === indexes) {
+    if (this._editContext.selectedFeatureIndexes === indexes) {
       return;
     }
 
-    this._selectedFeatureIndexes = indexes;
+    this._editContext.selectedFeatureIndexes = indexes;
     this._setTentativeFeature(null);
   }
 
   setDrawAtFront(drawAtFront: boolean): void {
-    if (this._drawAtFront === drawAtFront) {
+    if (this._editContext.drawAtFront === drawAtFront) {
       return;
     }
 
-    this._drawAtFront = drawAtFront;
+    this._editContext.drawAtFront = drawAtFront;
     this._setTentativeFeature(null);
   }
 
   _setTentativeFeature(tentativeFeature: ?Feature): void {
-    this._tentativeFeature = tentativeFeature;
+    this._editContext.tentativeFeature = tentativeFeature;
     if (!tentativeFeature) {
       // Reset the click sequence
       this._clickSequence = [];
@@ -119,23 +147,25 @@ export class EditableFeatureCollection {
   getEditHandles(picks?: Array<Object>, groundCoords?: Position): EditHandle[] {
     let handles = [];
 
-    if (this._mode === 'view') {
+    if (this._editContext.mode === 'view') {
       return handles;
     }
 
-    for (const index of this._selectedFeatureIndexes) {
-      const geometry = this.featureCollection.getObject().features[index].geometry;
+    for (const index of this._editContext.selectedFeatureIndexes) {
+      const geometry = this._editContext.featureCollection.getObject().features[index].geometry;
       handles = handles.concat(getEditHandlesForGeometry(geometry, index));
     }
 
-    if (this._tentativeFeature) {
-      if (this._mode === 'drawLineString' || this._mode === 'drawPolygon') {
-        handles = handles.concat(getEditHandlesForGeometry(this._tentativeFeature.geometry, -1));
+    const tentativeFeature = this.getTentativeFeature();
+
+    if (tentativeFeature) {
+      if (this._editContext.mode === 'drawLineString' || this._editContext.mode === 'drawPolygon') {
+        handles = handles.concat(getEditHandlesForGeometry(tentativeFeature.geometry, -1));
         // Slice off the handles that are are next to the pointer
-        if (this._tentativeFeature && this._tentativeFeature.geometry.type === 'LineString') {
+        if (tentativeFeature && tentativeFeature.geometry.type === 'LineString') {
           // Remove the last existing handle
           handles = handles.slice(0, -1);
-        } else if (this._tentativeFeature && this._tentativeFeature.geometry.type === 'Polygon') {
+        } else if (tentativeFeature && tentativeFeature.geometry.type === 'Polygon') {
           // Remove the last existing handle
           handles = handles.slice(0, -1);
         }
@@ -154,7 +184,7 @@ export class EditableFeatureCollection {
       if (
         featureAsPick &&
         !featureAsPick.object.geometry.type.includes('Point') &&
-        this._selectedFeatureIndexes.includes(featureAsPick.index)
+        this._editContext.selectedFeatureIndexes.includes(featureAsPick.index)
       ) {
         let intermediatePoint = null;
         let positionIndexPrefix = [];
@@ -201,36 +231,33 @@ export class EditableFeatureCollection {
   }
 
   getTentativeFeature(): ?Feature {
-    return this._tentativeFeature;
+    return this._editContext.tentativeFeature;
   }
 
-  onClick(groundCoords: Position, picks: any[]): ?EditAction {
+  onClick(event: ClickEvent): ?EditAction {
+    const { groundCoords, picks } = event;
     this._clickSequence.push(groundCoords);
     const clickedEditHandle = getPickedEditHandle(picks);
 
     let editAction: ?EditAction = null;
-    if (
+
+    if (this._activeHandler) {
+      editAction = this._activeHandler.handleClick(event, this._editContext);
+    } else if (
       clickedEditHandle &&
       clickedEditHandle.type === 'existing' &&
       clickedEditHandle.featureIndex >= 0
     ) {
       editAction = this._handleRemovePosition(clickedEditHandle);
-    } else if (this._mode === 'drawPoint') {
+    } else if (this._editContext.mode === 'drawPoint') {
       editAction = this._handleClickDrawPoint(groundCoords, clickedEditHandle);
-    } else if (this._mode === 'drawLineString') {
+    } else if (this._editContext.mode === 'drawLineString') {
       editAction = this._handleClickDrawLineString(groundCoords, clickedEditHandle);
-    } else if (this._mode === 'drawPolygon') {
+    } else if (this._editContext.mode === 'drawPolygon') {
       editAction = this._handleClickDrawPolygon(groundCoords, clickedEditHandle);
     } else if (
-      this._mode === 'drawRectangle' ||
-      this._mode === 'drawCircleFromCenter' ||
-      this._mode === 'drawCircleByBoundingBox' ||
-      this._mode === 'drawEllipseByBoundingBox'
-    ) {
-      editAction = this._handle2ClickPolygon(groundCoords, clickedEditHandle);
-    } else if (
-      this._mode === 'drawRectangleUsing3Points' ||
-      this._mode === 'drawEllipseUsing3Points'
+      this._editContext.mode === 'drawRectangleUsing3Points' ||
+      this._editContext.mode === 'drawEllipseUsing3Points'
     ) {
       editAction = this._handle3ClickPolygon(groundCoords, clickedEditHandle);
     }
@@ -242,7 +269,17 @@ export class EditableFeatureCollection {
     }
 
     // Trigger pointer move handling since that's where most of the tentative feature handling is
-    this.onPointerMove(groundCoords, [], false, null, null);
+    const pointerMoveEvent = {
+      screenCoords: [-1, -1],
+      groundCoords,
+      picks: [],
+      isDragging: false,
+      dragStartPicks: null,
+      dragStartScreenCoords: null,
+      dragStartGroundCoords: null,
+      sourceEvent: null
+    };
+    this.onPointerMove(pointerMoveEvent);
 
     return editAction;
   }
@@ -250,7 +287,7 @@ export class EditableFeatureCollection {
   _handleRemovePosition(clickedEditHandle: EditHandle) {
     let updatedData;
     try {
-      updatedData = this.featureCollection
+      updatedData = this._editContext.featureCollection
         .removePosition(clickedEditHandle.featureIndex, clickedEditHandle.positionIndexes)
         .getObject();
     } catch (ignored) {
@@ -280,9 +317,9 @@ export class EditableFeatureCollection {
 
   _handleClickDrawLineString(groundCoords: Position, clickedEditHandle: ?EditHandle): ?EditAction {
     let editAction: ?EditAction = null;
-    const selectedFeatureIndexes = this._selectedFeatureIndexes;
+    const selectedFeatureIndexes = this._editContext.selectedFeatureIndexes;
     const selectedGeometry = this.getSelectedGeometry();
-    const tentativeFeature = this._tentativeFeature;
+    const tentativeFeature = this.getTentativeFeature();
 
     if (
       selectedFeatureIndexes.length > 1 ||
@@ -297,11 +334,11 @@ export class EditableFeatureCollection {
       const lineString: LineString = selectedGeometry;
 
       let positionIndexes = [lineString.coordinates.length];
-      if (this._drawAtFront) {
+      if (this._editContext.drawAtFront) {
         positionIndexes = [0];
       }
       const featureIndex = selectedFeatureIndexes[0];
-      const updatedData = this.featureCollection
+      const updatedData = this._editContext.featureCollection
         .addPosition(featureIndex, positionIndexes, groundCoords)
         .getObject();
 
@@ -321,7 +358,7 @@ export class EditableFeatureCollection {
 
   _handleClickDrawPolygon(groundCoords: Position, clickedEditHandle: ?EditHandle): ?EditAction {
     let editAction: ?EditAction = null;
-    const tentativeFeature = this._tentativeFeature;
+    const tentativeFeature = this.getTentativeFeature();
 
     if (tentativeFeature && tentativeFeature.geometry.type === 'Polygon') {
       const polygon: Polygon = tentativeFeature.geometry;
@@ -345,22 +382,8 @@ export class EditableFeatureCollection {
     return editAction;
   }
 
-  _handle2ClickPolygon(groundCoords: Position, clickedEditHandle: ?EditHandle): ?EditAction {
-    const tentativeFeature = this._tentativeFeature;
-
-    if (
-      this._clickSequence.length > 1 &&
-      tentativeFeature &&
-      tentativeFeature.geometry.type === 'Polygon'
-    ) {
-      return this._getAddFeatureEditAction(tentativeFeature.geometry);
-    }
-
-    return null;
-  }
-
   _handle3ClickPolygon(groundCoords: Position, clickedEditHandle: ?EditHandle): ?EditAction {
-    const tentativeFeature = this._tentativeFeature;
+    const tentativeFeature = this.getTentativeFeature();
 
     if (
       this._clickSequence.length > 2 &&
@@ -374,7 +397,7 @@ export class EditableFeatureCollection {
   }
 
   _getAddFeatureEditAction(geometry: Geometry): EditAction {
-    const updatedData = this.featureCollection
+    const updatedData = this._editContext.featureCollection
       .addFeature({
         type: 'Feature',
         properties: {},
@@ -391,44 +414,40 @@ export class EditableFeatureCollection {
     };
   }
 
-  onPointerMove(
-    groundCoords: Position,
-    picks: any[],
-    isDragging: boolean,
-    dragStartPicks: ?(any[]),
-    dragStartGroundCoords: ?Position
-  ): { editAction: ?EditAction, cancelMapPan: boolean } {
+  onPointerMove(event: PointerMoveEvent): { editAction: ?EditAction, cancelMapPan: boolean } {
+    const { groundCoords, picks, isDragging, dragStartPicks } = event;
+
     let editAction: ?EditAction = null;
 
     const editHandle = getPickedEditHandle(dragStartPicks);
-    const selectedFeatureIndexes = this._selectedFeatureIndexes;
+    const selectedFeatureIndexes = this._editContext.selectedFeatureIndexes;
 
     // Cancel map panning if pointer went down on an edit handle
     const cancelMapPan: boolean = Boolean(editHandle);
 
-    if (isDragging && selectedFeatureIndexes.length && editHandle) {
+    if (this._activeHandler) {
+      this._activeHandler.handlePointerMove(event, this._editContext);
+    } else if (isDragging && selectedFeatureIndexes.length && editHandle) {
       editAction = this._handleMovePosition(groundCoords, editHandle);
     } else if (
-      this._mode === 'modify' &&
-      this._modeConfig &&
-      this._modeConfig.action === 'transformRotate'
+      this._editContext.mode === 'modify' &&
+      this._editContext.modeConfig &&
+      this._editContext.modeConfig.action === 'transformRotate'
     ) {
       editAction = this._handleTransformRotate(picks, groundCoords);
-    } else if (this._mode === 'drawLineString') {
+    } else if (this._editContext.mode === 'drawLineString') {
       this._handlePointerMoveForDrawLineString(groundCoords);
-    } else if (this._mode === 'drawPolygon') {
+    } else if (this._editContext.mode === 'drawPolygon') {
       this._handlePointerMoveForDrawPolygon(groundCoords);
-    } else if (this._mode === 'drawRectangle') {
-      this._handlePointerMoveForDrawRectangle(groundCoords);
-    } else if (this._mode === 'drawCircleFromCenter') {
+    } else if (this._editContext.mode === 'drawCircleFromCenter') {
       this._handlePointerMoveForDrawCircleFromCenter(groundCoords);
-    } else if (this._mode === 'drawCircleByBoundingBox') {
+    } else if (this._editContext.mode === 'drawCircleByBoundingBox') {
       this._handlePointerMoveForDrawCircleByBoundingBox(groundCoords);
-    } else if (this._mode === 'drawEllipseByBoundingBox') {
+    } else if (this._editContext.mode === 'drawEllipseByBoundingBox') {
       this._handlePointerMoveForDrawEllipseByBoundingBox(groundCoords);
-    } else if (this._mode === 'drawRectangleUsing3Points') {
+    } else if (this._editContext.mode === 'drawRectangleUsing3Points') {
       this._handlePointerMoveForDrawRectangleUsing3Points(groundCoords);
-    } else if (this._mode === 'drawEllipseUsing3Points') {
+    } else if (this._editContext.mode === 'drawEllipseUsing3Points') {
       this._handlePointerMoveForDrawEllipseUsing3Points(groundCoords);
     }
 
@@ -436,7 +455,7 @@ export class EditableFeatureCollection {
   }
 
   _handleMovePosition(groundCoords: Position, editHandle: EditHandle) {
-    const updatedData = this.featureCollection
+    const updatedData = this._editContext.featureCollection
       .replacePosition(editHandle.featureIndex, editHandle.positionIndexes, groundCoords)
       .getObject();
 
@@ -450,9 +469,9 @@ export class EditableFeatureCollection {
   }
 
   _handleTransformRotate(picks: any[], groundCoords: Position): ?EditAction {
-    const modeConfig = this._modeConfig;
+    const modeConfig = this._editContext.modeConfig;
     let pivot;
-    const selectedFeatureIndexes = this._selectedFeatureIndexes;
+    const selectedFeatureIndexes = this._editContext.selectedFeatureIndexes;
 
     if (selectedFeatureIndexes.length === 0 || selectedFeatureIndexes.length > 1) {
       return null;
@@ -471,7 +490,7 @@ export class EditableFeatureCollection {
     const geometry = this.getSelectedGeometry();
     const rotatedFeature = turfTransformRotate(geometry, 2, { pivot });
 
-    const updatedData = this.featureCollection
+    const updatedData = this._editContext.featureCollection
       .replaceGeometry(featureIndex, rotatedFeature)
       .getObject();
 
@@ -486,7 +505,7 @@ export class EditableFeatureCollection {
 
   _handlePointerMoveForDrawLineString(groundCoords: Position): void {
     let startPosition: ?Position = null;
-    const selectedFeatureIndexes = this._selectedFeatureIndexes;
+    const selectedFeatureIndexes = this._editContext.selectedFeatureIndexes;
     const selectedGeometry = this.getSelectedGeometry();
 
     if (
@@ -500,7 +519,7 @@ export class EditableFeatureCollection {
     if (selectedGeometry && selectedGeometry.type === 'LineString') {
       // Draw an extension line starting from one end of the selected LineString
       startPosition = selectedGeometry.coordinates[selectedGeometry.coordinates.length - 1];
-      if (this._drawAtFront) {
+      if (this._editContext.drawAtFront) {
         startPosition = selectedGeometry.coordinates[0];
       }
     } else if (this._clickSequence.length === 1) {
@@ -544,17 +563,6 @@ export class EditableFeatureCollection {
         }
       });
     }
-  }
-
-  _handlePointerMoveForDrawRectangle(groundCoords: Position) {
-    if (this._clickSequence.length === 0) {
-      // nothing to do yet
-      return;
-    }
-
-    const corner1 = this._clickSequence[0];
-    const corner2 = groundCoords;
-    this._setTentativeFeature(bboxPolygon([corner1[0], corner1[1], corner2[0], corner2[1]]));
   }
 
   _handlePointerMoveForDrawCircleFromCenter(groundCoords: Position) {
@@ -691,11 +699,11 @@ export class EditableFeatureCollection {
 
   onStartDragging(picks: any[], groundCoords: Position): ?EditAction {
     let editAction: ?EditAction = null;
-    const selectedFeatureIndexes = this._selectedFeatureIndexes;
+    const selectedFeatureIndexes = this._editContext.selectedFeatureIndexes;
 
     const editHandle = getPickedEditHandle(picks);
     if (selectedFeatureIndexes.length && editHandle && editHandle.type === 'intermediate') {
-      const updatedData = this.featureCollection
+      const updatedData = this._editContext.featureCollection
         .addPosition(editHandle.featureIndex, editHandle.positionIndexes, groundCoords)
         .getObject();
 
@@ -713,11 +721,11 @@ export class EditableFeatureCollection {
 
   onStopDragging(picks: any[], groundCoords: Position): ?EditAction {
     let editAction: ?EditAction = null;
-    const selectedFeatureIndexes = this._selectedFeatureIndexes;
+    const selectedFeatureIndexes = this._editContext.selectedFeatureIndexes;
 
     const editHandle = getPickedEditHandle(picks);
     if (selectedFeatureIndexes.length && editHandle) {
-      const updatedData = this.featureCollection
+      const updatedData = this._editContext.featureCollection
         .replacePosition(editHandle.featureIndex, editHandle.positionIndexes, groundCoords)
         .getObject();
 

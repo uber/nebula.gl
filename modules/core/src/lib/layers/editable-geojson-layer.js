@@ -2,16 +2,27 @@
 /* eslint-env browser */
 
 import { GeoJsonLayer, ScatterplotLayer, IconLayer } from 'deck.gl';
-import { EditableFeatureCollection } from '../editable-feature-collection.js';
-import type { EditAction } from '../editable-feature-collection.js';
-import type { Feature, Position } from '../../geojson-types.js';
-import EditableLayer from './editable-layer.js';
+import { ModeHandler } from '../mode-handlers/mode-handler.js';
+// import { ModifyHandler } from '../mode-handlers/modify-handler.js';
+// import { DrawPointHandler } from '../mode-handlers/draw-point-handler.js';
+// import { DrawLineStringHandler } from '../mode-handlers/draw-line-string-handler.js';
+// import { DrawPolygonHandler } from '../mode-handlers/draw-polygon-handler.js';
+import { DrawRectangleHandler } from '../mode-handlers/draw-rectangle-handler.js';
+// import { DrawRectangleUsingThreePointsHandler } from '../mode-handlers/draw-rectangle-using-three-points-handler.js';
+// import { DrawCircleFromCenterHandler } from '../mode-handlers/draw-circle-from-center-handler.js';
+// import { DrawCircleByBoundingBoxHandler } from '../mode-handlers/draw-circle-by-bounding-box-handler.js';
+// import { DrawEllipseByBoundingBoxHandler } from '../mode-handlers/draw-ellipse-by-bounding-box-handler.js';
+// import { DrawEllipseUsingThreePointsHandler } from '../mode-handlers/draw-ellipse-using-three-points-handler.js';
+
+import type { EditAction } from '../mode-handlers/mode-handler.js';
+import type { Position } from '../../geojson-types.js';
 import type {
   ClickEvent,
-  PointerMoveEvent,
   StartDraggingEvent,
-  StopDraggingEvent
-} from './editable-layer.js';
+  StopDraggingEvent,
+  PointerMoveEvent
+} from '../event-types.js';
+import EditableLayer from './editable-layer.js';
 
 const DEFAULT_LINE_COLOR = [0x0, 0x0, 0x0, 0xff];
 const DEFAULT_FILL_COLOR = [0x0, 0x0, 0x0, 0x90];
@@ -81,28 +92,42 @@ const defaultProps = {
     handle.type === 'existing'
       ? DEFAULT_EDITING_EXISTING_POINT_COLOR
       : DEFAULT_EDITING_INTERMEDIATE_POINT_COLOR,
-  getEditHandleIconAngle: 0
+  getEditHandleIconAngle: 0,
+
+  // Mode handlers
+  modeHandlers: {
+    // modify: new ModifyHandler(),
+    // drawPoint: new DrawPointHandler(),
+    // drawLineString: new DrawLineStringHandler(),
+    // drawPolygon: new DrawPolygonHandler(),
+    drawRectangle: new DrawRectangleHandler()
+    // drawRectangleUsing3Points: new DrawRectangleUsingThreePointsHandler(),
+    // drawCircleFromCenter: new DrawCircleFromCenterHandler(),
+    // drawCircleByBoundingBox: new DrawCircleByBoundingBoxHandler(),
+    // drawEllipseByBoundingBox: new DrawEllipseByBoundingBoxHandler(),
+    // drawEllipseUsing3Points: new DrawEllipseUsingThreePointsHandler()
+  }
 };
 
 type Props = {
+  mode: string,
+  modeHandlers: { [mode: string]: ModeHandler },
   onEdit: EditAction => void,
-  // TODO
+  // TODO: type the rest
   [string]: any
 };
 
-type State = {
-  editableFeatureCollection: EditableFeatureCollection,
-  tentativeFeature: ?Feature,
-  editHandles: any[],
-  selectedFeatures: Feature[],
-  pointerMovePicks: any[]
-};
+// type State = {
+//   modeHandler: EditableFeatureCollection,
+//   tentativeFeature: ?Feature,
+//   editHandles: any[],
+//   selectedFeatures: Feature[],
+//   pointerMovePicks: any[]
+// };
 
 export default class EditableGeoJsonLayer extends EditableLayer {
   // state: State;
-
   // props: Props;
-
   // setState: ($Shape<State>) => void;
 
   renderLayers() {
@@ -150,10 +175,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     super.initializeState();
 
     this.setState({
-      editableFeatureCollection: new EditableFeatureCollection({
-        type: 'FeatureCollection',
-        features: []
-      }),
       selectedFeatures: [],
       editHandles: []
     });
@@ -178,16 +199,30 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }) {
     super.updateState({ props, changeFlags });
 
-    const editableFeatureCollection = this.state.editableFeatureCollection;
-    if (changeFlags.dataChanged) {
-      editableFeatureCollection.setFeatureCollection(props.data);
-    }
-
+    let modeHandler: ModeHandler = this.state.modeHandler;
     if (changeFlags.propsOrDataChanged) {
-      editableFeatureCollection.setMode(props.mode);
-      editableFeatureCollection.setModeConfig(props.modeConfig);
-      editableFeatureCollection.setSelectedFeatureIndexes(props.selectedFeatureIndexes);
-      editableFeatureCollection.setDrawAtFront(props.drawAtFront);
+      if (props.modeHandlers !== oldProps.modeHandlers || props.mode !== oldProps.mode) {
+        modeHandler = props.modeHandlers[props.mode];
+
+        if (!modeHandler) {
+          console.warn(`No handler configured for mode ${props.mode}`); // eslint-disable-line no-console,no-undef
+          // Use default mode handler
+          modeHandler = new ModeHandler();
+        }
+
+        if (modeHandler !== this.state.modeHandler) {
+          // TODO: activate/deactivate
+          this.setState({ modeHandler });
+        }
+
+        modeHandler.setFeatureCollection(props.data);
+      } else if (changeFlags.dataChanged) {
+        modeHandler.setFeatureCollection(props.data);
+      }
+
+      modeHandler.setModeConfig(props.modeConfig);
+      modeHandler.setSelectedFeatureIndexes(props.selectedFeatureIndexes);
+      modeHandler.setDrawAtFront(props.drawAtFront);
       this.updateTentativeFeature();
       this.updateEditHandles();
     }
@@ -319,7 +354,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }
 
   updateTentativeFeature() {
-    const tentativeFeature = this.state.editableFeatureCollection.getTentativeFeature();
+    const tentativeFeature = this.state.modeHandler.getTentativeFeature();
     if (tentativeFeature !== this.state.tentativeFeature) {
       this.setState({ tentativeFeature });
       this.setLayerNeedsUpdate();
@@ -327,15 +362,15 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }
 
   updateEditHandles(picks?: Array<Object>, groundCoords?: Position) {
-    const editHandles = this.state.editableFeatureCollection.getEditHandles(picks, groundCoords);
+    const editHandles = this.state.modeHandler.getEditHandles(picks, groundCoords);
     if (editHandles !== this.state.editHandles) {
       this.setState({ editHandles });
       this.setLayerNeedsUpdate();
     }
   }
 
-  onClick({ groundCoords, picks }: ClickEvent) {
-    const editAction = this.state.editableFeatureCollection.onClick(groundCoords, picks);
+  onClick(event: ClickEvent) {
+    const editAction = this.state.modeHandler.handleClick(event);
     this.updateTentativeFeature();
     this.updateEditHandles();
 
@@ -344,14 +379,8 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
   }
 
-  onStartDragging({
-    picks,
-    screenCoords,
-    groundCoords,
-    dragStartScreenCoords,
-    dragStartGroundCoords
-  }: StartDraggingEvent) {
-    const editAction = this.state.editableFeatureCollection.onStartDragging(picks, groundCoords);
+  onStartDragging(event: StartDraggingEvent) {
+    const editAction = this.state.modeHandler.handleStartDragging(event);
     this.updateTentativeFeature();
     this.updateEditHandles();
 
@@ -360,14 +389,8 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
   }
 
-  onStopDragging({
-    picks,
-    screenCoords,
-    groundCoords,
-    dragStartScreenCoords,
-    dragStartGroundCoords
-  }: StopDraggingEvent) {
-    const editAction = this.state.editableFeatureCollection.onStopDragging(picks, groundCoords);
+  onStopDragging(event: StopDraggingEvent) {
+    const editAction = this.state.modeHandler.handleStopDragging(event);
     this.updateTentativeFeature();
     this.updateEditHandles();
 
@@ -376,23 +399,12 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
   }
 
-  onPointerMove({
-    groundCoords,
-    picks,
-    isDragging,
-    dragStartPicks,
-    dragStartGroundCoords,
-    sourceEvent
-  }: PointerMoveEvent) {
+  onPointerMove(event: PointerMoveEvent) {
+    const { groundCoords, picks, sourceEvent } = event;
+
     this.setState({ pointerMovePicks: picks });
 
-    const { editAction, cancelMapPan } = this.state.editableFeatureCollection.onPointerMove(
-      groundCoords,
-      picks,
-      isDragging,
-      dragStartPicks,
-      dragStartGroundCoords
-    );
+    const { editAction, cancelMapPan } = this.state.modeHandler.handlePointerMove(event);
     this.updateTentativeFeature();
     this.updateEditHandles(picks, groundCoords);
 
@@ -405,10 +417,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     if (editAction) {
       this.props.onEdit(editAction);
     }
-  }
-
-  getPickedEditHandle(picks: Object[]) {
-    return picks.find(pick => pick.isEditingHandle);
   }
 
   getCursor({ isDragging }: { isDragging: boolean }) {

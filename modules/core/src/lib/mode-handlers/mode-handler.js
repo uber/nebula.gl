@@ -1,28 +1,18 @@
 // @flow
 
 import nearestPointOnLine from '@turf/nearest-point-on-line';
-import bboxPolygon from '@turf/bbox-polygon';
-import circle from '@turf/circle';
-import distance from '@turf/distance';
-import ellipse from '@turf/ellipse';
-import destination from '@turf/destination';
-import bearing from '@turf/bearing';
-import turfTransformRotate from '@turf/transform-rotate';
-import pointToLineDistance from '@turf/point-to-line-distance';
 import { point, lineString as toLineString } from '@turf/helpers';
 
+import type { FeatureCollection, Feature, Geometry, Position } from '../../geojson-types.js';
 import type {
-  FeatureCollection,
-  Feature,
-  Geometry,
-  Point,
-  LineString,
-  Polygon,
-  Position
-} from '../geojson-types.js';
+  ClickEvent,
+  PointerMoveEvent,
+  StartDraggingEvent,
+  StopDraggingEvent
+} from '../event-types.js';
 
-import { recursivelyTraverseNestedArrays } from './utils';
-import { ImmutableFeatureCollection } from './immutable-feature-collection.js';
+import { recursivelyTraverseNestedArrays } from '../utils.js';
+import { ImmutableFeatureCollection } from '../immutable-feature-collection.js';
 
 export type EditHandle = {
   position: Position,
@@ -39,17 +29,18 @@ export type EditAction = {
   position: ?Position
 };
 
-export class EditableFeatureCollection {
+export class ModeHandler {
   featureCollection: ImmutableFeatureCollection;
   _tentativeFeature: ?Feature;
-  _mode: string = 'modify';
   _modeConfig: any = null;
   _selectedFeatureIndexes: number[] = [];
   _drawAtFront: boolean = false;
   _clickSequence: Position[] = [];
 
-  constructor(featureCollection: FeatureCollection) {
-    this.setFeatureCollection(featureCollection);
+  constructor(featureCollection?: FeatureCollection) {
+    if (featureCollection) {
+      this.setFeatureCollection(featureCollection);
+    }
   }
 
   getFeatureCollection(): FeatureCollection {
@@ -65,15 +56,6 @@ export class EditableFeatureCollection {
 
   setFeatureCollection(featureCollection: FeatureCollection): void {
     this.featureCollection = new ImmutableFeatureCollection(featureCollection);
-  }
-
-  setMode(mode: string): void {
-    if (this._mode === mode) {
-      return;
-    }
-
-    this._mode = mode;
-    this._setTentativeFeature(null);
   }
 
   setModeConfig(modeConfig: any): void {
@@ -103,6 +85,19 @@ export class EditableFeatureCollection {
     this._setTentativeFeature(null);
   }
 
+  getClickSequence(): Position[] {
+    return this._clickSequence;
+  }
+
+  resetClickSequence(): void {
+    this._clickSequence = [];
+  }
+
+  getTentativeFeature(): ?Feature {
+    return this._tentativeFeature;
+  }
+
+  // TODO: remove the underscore
   _setTentativeFeature(tentativeFeature: ?Feature): void {
     this._tentativeFeature = tentativeFeature;
     if (!tentativeFeature) {
@@ -119,28 +114,28 @@ export class EditableFeatureCollection {
   getEditHandles(picks?: Array<Object>, groundCoords?: Position): EditHandle[] {
     let handles = [];
 
-    if (this._mode === 'view') {
-      return handles;
-    }
+    // if (this._mode === 'view') {
+    //   return handles;
+    // }
 
     for (const index of this._selectedFeatureIndexes) {
       const geometry = this.featureCollection.getObject().features[index].geometry;
       handles = handles.concat(getEditHandlesForGeometry(geometry, index));
     }
 
-    if (this._tentativeFeature) {
-      if (this._mode === 'drawLineString' || this._mode === 'drawPolygon') {
-        handles = handles.concat(getEditHandlesForGeometry(this._tentativeFeature.geometry, -1));
-        // Slice off the handles that are are next to the pointer
-        if (this._tentativeFeature && this._tentativeFeature.geometry.type === 'LineString') {
-          // Remove the last existing handle
-          handles = handles.slice(0, -1);
-        } else if (this._tentativeFeature && this._tentativeFeature.geometry.type === 'Polygon') {
-          // Remove the last existing handle
-          handles = handles.slice(0, -1);
-        }
-      }
-    }
+    // if (this._tentativeFeature) {
+    //   if (this._mode === 'drawLineString' || this._mode === 'drawPolygon') {
+    //     handles = handles.concat(getEditHandlesForGeometry(this._tentativeFeature.geometry, -1));
+    //     // Slice off the handles that are are next to the pointer
+    //     if (this._tentativeFeature && this._tentativeFeature.geometry.type === 'LineString') {
+    //       // Remove the last existing handle
+    //       handles = handles.slice(0, -1);
+    //     } else if (this._tentativeFeature && this._tentativeFeature.geometry.type === 'Polygon') {
+    //       // Remove the last existing handle
+    //       handles = handles.slice(0, -1);
+    //     }
+    //   }
+    // }
 
     // intermediate edit handle
     if (picks && picks.length && groundCoords) {
@@ -200,541 +195,26 @@ export class EditableFeatureCollection {
     return handles;
   }
 
-  getTentativeFeature(): ?Feature {
-    return this._tentativeFeature;
-  }
-
-  onClick(groundCoords: Position, picks: any[]): ?EditAction {
-    this._clickSequence.push(groundCoords);
-    const clickedEditHandle = getPickedEditHandle(picks);
-
-    let editAction: ?EditAction = null;
-    if (
-      clickedEditHandle &&
-      clickedEditHandle.type === 'existing' &&
-      clickedEditHandle.featureIndex >= 0
-    ) {
-      editAction = this._handleRemovePosition(clickedEditHandle);
-    } else if (this._mode === 'drawPoint') {
-      editAction = this._handleClickDrawPoint(groundCoords, clickedEditHandle);
-    } else if (this._mode === 'drawLineString') {
-      editAction = this._handleClickDrawLineString(groundCoords, clickedEditHandle);
-    } else if (this._mode === 'drawPolygon') {
-      editAction = this._handleClickDrawPolygon(groundCoords, clickedEditHandle);
-    } else if (
-      this._mode === 'drawRectangle' ||
-      this._mode === 'drawCircleFromCenter' ||
-      this._mode === 'drawCircleByBoundingBox' ||
-      this._mode === 'drawEllipseByBoundingBox'
-    ) {
-      editAction = this._handle2ClickPolygon(groundCoords, clickedEditHandle);
-    } else if (
-      this._mode === 'drawRectangleUsing3Points' ||
-      this._mode === 'drawEllipseUsing3Points'
-    ) {
-      editAction = this._handle3ClickPolygon(groundCoords, clickedEditHandle);
-    }
-
-    if (editAction) {
-      // Reset the click sequence upon each edit
-      this._clickSequence = [];
-      this._setTentativeFeature(null);
-    }
-
-    // Trigger pointer move handling since that's where most of the tentative feature handling is
-    this.onPointerMove(groundCoords, [], false, null, null);
-
-    return editAction;
-  }
-
-  _handleRemovePosition(clickedEditHandle: EditHandle) {
-    let updatedData;
-    try {
-      updatedData = this.featureCollection
-        .removePosition(clickedEditHandle.featureIndex, clickedEditHandle.positionIndexes)
-        .getObject();
-    } catch (ignored) {
-      // This happens if user attempts to remove the last point
-    }
-
-    if (updatedData) {
-      return {
-        updatedData,
-        editType: 'removePosition',
-        featureIndex: clickedEditHandle.featureIndex,
-        positionIndexes: clickedEditHandle.positionIndexes,
-        position: null
-      };
-    }
-    return null;
-  }
-
-  _handleClickDrawPoint(groundCoords: Position, clickedEditHandle: ?EditHandle): ?EditAction {
-    const geometry: Point = {
-      type: 'Point',
-      coordinates: groundCoords
-    };
-
-    return this._getAddFeatureEditAction(geometry);
-  }
-
-  _handleClickDrawLineString(groundCoords: Position, clickedEditHandle: ?EditHandle): ?EditAction {
-    let editAction: ?EditAction = null;
-    const selectedFeatureIndexes = this._selectedFeatureIndexes;
-    const selectedGeometry = this.getSelectedGeometry();
-    const tentativeFeature = this._tentativeFeature;
-
-    if (
-      selectedFeatureIndexes.length > 1 ||
-      (selectedGeometry && selectedGeometry.type !== 'LineString')
-    ) {
-      console.warn(`drawLineString mode only supported for single LineString selection`); // eslint-disable-line
-      return null;
-    }
-
-    if (selectedGeometry && selectedGeometry.type === 'LineString') {
-      // Extend the LineString
-      const lineString: LineString = selectedGeometry;
-
-      let positionIndexes = [lineString.coordinates.length];
-      if (this._drawAtFront) {
-        positionIndexes = [0];
-      }
-      const featureIndex = selectedFeatureIndexes[0];
-      const updatedData = this.featureCollection
-        .addPosition(featureIndex, positionIndexes, groundCoords)
-        .getObject();
-
-      editAction = {
-        updatedData,
-        editType: 'addPosition',
-        featureIndex,
-        positionIndexes,
-        position: groundCoords
-      };
-    } else if (this._clickSequence.length === 2 && tentativeFeature) {
-      editAction = this._getAddFeatureEditAction(tentativeFeature.geometry);
-    }
-
-    return editAction;
-  }
-
-  _handleClickDrawPolygon(groundCoords: Position, clickedEditHandle: ?EditHandle): ?EditAction {
-    let editAction: ?EditAction = null;
-    const tentativeFeature = this._tentativeFeature;
-
-    if (tentativeFeature && tentativeFeature.geometry.type === 'Polygon') {
-      const polygon: Polygon = tentativeFeature.geometry;
-
-      if (
-        clickedEditHandle &&
-        clickedEditHandle.featureIndex === -1 &&
-        (clickedEditHandle.positionIndexes[1] === 0 ||
-          clickedEditHandle.positionIndexes[1] === polygon.coordinates[0].length - 3)
-      ) {
-        // They clicked the first or last point (or double-clicked), so complete the polygon
-        // Remove the hovered position
-        const polygonToAdd: Polygon = {
-          type: 'Polygon',
-          coordinates: [[...polygon.coordinates[0].slice(0, -2), polygon.coordinates[0][0]]]
-        };
-        editAction = this._getAddFeatureEditAction(polygonToAdd);
-      }
-    }
-
-    return editAction;
-  }
-
-  _handle2ClickPolygon(groundCoords: Position, clickedEditHandle: ?EditHandle): ?EditAction {
-    const tentativeFeature = this._tentativeFeature;
-
-    if (
-      this._clickSequence.length > 1 &&
-      tentativeFeature &&
-      tentativeFeature.geometry.type === 'Polygon'
-    ) {
-      return this._getAddFeatureEditAction(tentativeFeature.geometry);
-    }
+  handleClick(event: ClickEvent): ?EditAction {
+    this._clickSequence.push(event.groundCoords);
 
     return null;
   }
 
-  _handle3ClickPolygon(groundCoords: Position, clickedEditHandle: ?EditHandle): ?EditAction {
-    const tentativeFeature = this._tentativeFeature;
+  handlePointerMove(event: PointerMoveEvent): { editAction: ?EditAction, cancelMapPan: boolean } {
+    return { editAction: null, cancelMapPan: false };
+  }
 
-    if (
-      this._clickSequence.length > 2 &&
-      tentativeFeature &&
-      tentativeFeature.geometry.type === 'Polygon'
-    ) {
-      return this._getAddFeatureEditAction(tentativeFeature.geometry);
-    }
-
+  handleStartDragging(event: StartDraggingEvent): ?EditAction {
     return null;
   }
 
-  _getAddFeatureEditAction(geometry: Geometry): EditAction {
-    const updatedData = this.featureCollection
-      .addFeature({
-        type: 'Feature',
-        properties: {},
-        geometry
-      })
-      .getObject();
-
-    return {
-      updatedData,
-      editType: 'addFeature',
-      featureIndex: updatedData.features.length - 1,
-      positionIndexes: null,
-      position: null
-    };
-  }
-
-  onPointerMove(
-    groundCoords: Position,
-    picks: any[],
-    isDragging: boolean,
-    dragStartPicks: ?(any[]),
-    dragStartGroundCoords: ?Position
-  ): { editAction: ?EditAction, cancelMapPan: boolean } {
-    let editAction: ?EditAction = null;
-
-    const editHandle = getPickedEditHandle(dragStartPicks);
-    const selectedFeatureIndexes = this._selectedFeatureIndexes;
-
-    // Cancel map panning if pointer went down on an edit handle
-    const cancelMapPan: boolean = Boolean(editHandle);
-
-    if (isDragging && selectedFeatureIndexes.length && editHandle) {
-      editAction = this._handleMovePosition(groundCoords, editHandle);
-    } else if (
-      this._mode === 'modify' &&
-      this._modeConfig &&
-      this._modeConfig.action === 'transformRotate'
-    ) {
-      editAction = this._handleTransformRotate(picks, groundCoords);
-    } else if (this._mode === 'drawLineString') {
-      this._handlePointerMoveForDrawLineString(groundCoords);
-    } else if (this._mode === 'drawPolygon') {
-      this._handlePointerMoveForDrawPolygon(groundCoords);
-    } else if (this._mode === 'drawRectangle') {
-      this._handlePointerMoveForDrawRectangle(groundCoords);
-    } else if (this._mode === 'drawCircleFromCenter') {
-      this._handlePointerMoveForDrawCircleFromCenter(groundCoords);
-    } else if (this._mode === 'drawCircleByBoundingBox') {
-      this._handlePointerMoveForDrawCircleByBoundingBox(groundCoords);
-    } else if (this._mode === 'drawEllipseByBoundingBox') {
-      this._handlePointerMoveForDrawEllipseByBoundingBox(groundCoords);
-    } else if (this._mode === 'drawRectangleUsing3Points') {
-      this._handlePointerMoveForDrawRectangleUsing3Points(groundCoords);
-    } else if (this._mode === 'drawEllipseUsing3Points') {
-      this._handlePointerMoveForDrawEllipseUsing3Points(groundCoords);
-    }
-
-    return { editAction, cancelMapPan };
-  }
-
-  _handleMovePosition(groundCoords: Position, editHandle: EditHandle) {
-    const updatedData = this.featureCollection
-      .replacePosition(editHandle.featureIndex, editHandle.positionIndexes, groundCoords)
-      .getObject();
-
-    return {
-      updatedData,
-      editType: 'movePosition',
-      featureIndex: editHandle.featureIndex,
-      positionIndexes: editHandle.positionIndexes,
-      position: groundCoords
-    };
-  }
-
-  _handleTransformRotate(picks: any[], groundCoords: Position): ?EditAction {
-    const modeConfig = this._modeConfig;
-    let pivot;
-    const selectedFeatureIndexes = this._selectedFeatureIndexes;
-
-    if (selectedFeatureIndexes.length === 0 || selectedFeatureIndexes.length > 1) {
-      return null;
-    }
-
-    if (modeConfig && modeConfig.usePickAsPivot) {
-      // do nothing when mouse position far away from any point
-      if (!picks || !picks.length || !picks[0].object.position) {
-        return null;
-      }
-      pivot = picks[0].object.position;
-    } else {
-      pivot = modeConfig.pivot;
-    }
-    const featureIndex = selectedFeatureIndexes[0];
-    const geometry = this.getSelectedGeometry();
-    const rotatedFeature = turfTransformRotate(geometry, 2, { pivot });
-
-    const updatedData = this.featureCollection
-      .replaceGeometry(featureIndex, rotatedFeature)
-      .getObject();
-
-    return {
-      updatedData,
-      editType: 'transformPosition',
-      featureIndex,
-      positionIndexes: null,
-      position: null
-    };
-  }
-
-  _handlePointerMoveForDrawLineString(groundCoords: Position): void {
-    let startPosition: ?Position = null;
-    const selectedFeatureIndexes = this._selectedFeatureIndexes;
-    const selectedGeometry = this.getSelectedGeometry();
-
-    if (
-      selectedFeatureIndexes.length > 1 ||
-      (selectedGeometry && selectedGeometry.type !== 'LineString')
-    ) {
-      // unsupported
-      return;
-    }
-
-    if (selectedGeometry && selectedGeometry.type === 'LineString') {
-      // Draw an extension line starting from one end of the selected LineString
-      startPosition = selectedGeometry.coordinates[selectedGeometry.coordinates.length - 1];
-      if (this._drawAtFront) {
-        startPosition = selectedGeometry.coordinates[0];
-      }
-    } else if (this._clickSequence.length === 1) {
-      startPosition = this._clickSequence[0];
-    }
-
-    if (startPosition) {
-      this._setTentativeFeature({
-        type: 'Feature',
-        properties: {},
-        geometry: {
-          type: 'LineString',
-          coordinates: [startPosition, groundCoords]
-        }
-      });
-    }
-  }
-
-  _handlePointerMoveForDrawPolygon(groundCoords: Position) {
-    if (this._clickSequence.length === 0) {
-      // nothing to do yet
-      return;
-    }
-
-    if (this._clickSequence.length < 3) {
-      // Draw a LineString connecting all the clicked points with the hovered point
-      this._setTentativeFeature({
-        type: 'Feature',
-        geometry: {
-          type: 'LineString',
-          coordinates: [...this._clickSequence, groundCoords]
-        }
-      });
-    } else {
-      // Draw a Polygon connecting all the clicked points with the hovered point
-      this._setTentativeFeature({
-        type: 'Feature',
-        geometry: {
-          type: 'Polygon',
-          coordinates: [[...this._clickSequence, groundCoords, this._clickSequence[0]]]
-        }
-      });
-    }
-  }
-
-  _handlePointerMoveForDrawRectangle(groundCoords: Position) {
-    if (this._clickSequence.length === 0) {
-      // nothing to do yet
-      return;
-    }
-
-    const corner1 = this._clickSequence[0];
-    const corner2 = groundCoords;
-    this._setTentativeFeature(bboxPolygon([corner1[0], corner1[1], corner2[0], corner2[1]]));
-  }
-
-  _handlePointerMoveForDrawCircleFromCenter(groundCoords: Position) {
-    if (this._clickSequence.length === 0) {
-      // nothing to do yet
-      return;
-    }
-
-    const centerCoordinates = this._clickSequence[0];
-    const radius = Math.max(distance(centerCoordinates, groundCoords), 0.001);
-    this._setTentativeFeature(circle(centerCoordinates, radius));
-  }
-
-  _handlePointerMoveForDrawCircleByBoundingBox(groundCoords: Position) {
-    if (this._clickSequence.length === 0) {
-      // nothing to do yet
-      return;
-    }
-
-    const firstClickedPoint = this._clickSequence[0];
-    const centerCoordinates = getIntermediatePosition(firstClickedPoint, groundCoords);
-    const radius = Math.max(distance(firstClickedPoint, centerCoordinates), 0.001);
-    this._setTentativeFeature(circle(centerCoordinates, radius));
-  }
-
-  _handlePointerMoveForDrawEllipseByBoundingBox(groundCoords: Position) {
-    if (this._clickSequence.length === 0) {
-      // nothing to do yet
-      return;
-    }
-
-    const corner1 = this._clickSequence[0];
-    const corner2 = groundCoords;
-
-    const minX = Math.min(corner1[0], corner2[0]);
-    const minY = Math.min(corner1[1], corner2[1]);
-    const maxX = Math.max(corner1[0], corner2[0]);
-    const maxY = Math.max(corner1[1], corner2[1]);
-
-    const polygonPoints = bboxPolygon([minX, minY, maxX, maxY]).geometry.coordinates[0];
-    const centerCoordinates = getIntermediatePosition(corner1, corner2);
-
-    const xSemiAxis = Math.max(distance(point(polygonPoints[0]), point(polygonPoints[1])), 0.001);
-    const ySemiAxis = Math.max(distance(point(polygonPoints[0]), point(polygonPoints[3])), 0.001);
-
-    this._setTentativeFeature(ellipse(centerCoordinates, xSemiAxis, ySemiAxis));
-  }
-
-  _handlePointerMoveForDrawRectangleUsing3Points(groundCoords: Position) {
-    if (this._clickSequence.length === 0) {
-      // nothing to do yet
-      return;
-    }
-
-    if (this._clickSequence.length === 1) {
-      this._setTentativeFeature({
-        type: 'Feature',
-        geometry: {
-          type: 'LineString',
-          coordinates: [this._clickSequence[0], groundCoords]
-        }
-      });
-    } else if (this._clickSequence.length === 2) {
-      const lineString: LineString = {
-        type: 'LineString',
-        coordinates: this._clickSequence
-      };
-
-      const [p1, p2] = this._clickSequence;
-      const pt = point(groundCoords);
-      const options = { units: 'miles' };
-      const ddistance = pointToLineDistance(pt, lineString, options);
-      const lineBearing = bearing(p1, p2);
-
-      // Check if current point is to the left or right of line
-      // Line from A=(x1,y1) to B=(x2,y2) a point P=(x,y)
-      // then (x−x1)(y2−y1)−(y−y1)(x2−x1)
-      const isPointToLeftOfLine =
-        (groundCoords[0] - p1[0]) * (p2[1] - p1[1]) - (groundCoords[1] - p1[1]) * (p2[0] - p1[0]);
-
-      // Bearing to draw perpendicular to the line string
-      const orthogonalBearing = isPointToLeftOfLine < 0 ? lineBearing - 90 : lineBearing - 270;
-
-      // Get coordinates for the point p3 and p4 which are perpendicular to the lineString
-      // Add the distance as the current position moves away from the lineString
-      const p3 = destination(p2, ddistance, orthogonalBearing, options);
-      const p4 = destination(p1, ddistance, orthogonalBearing, options);
-
-      this._setTentativeFeature({
-        type: 'Feature',
-        geometry: {
-          type: 'Polygon',
-          coordinates: [
-            [
-              // Draw a polygon containing all the points of the LineString,
-              // then the points orthogonal to the lineString,
-              // then back to the starting position
-              ...lineString.coordinates,
-              p3.geometry.coordinates,
-              p4.geometry.coordinates,
-              p1
-            ]
-          ]
-        }
-      });
-    }
-  }
-
-  _handlePointerMoveForDrawEllipseUsing3Points(groundCoords: Position) {
-    if (this._clickSequence.length === 0) {
-      // nothing to do yet
-      return;
-    }
-
-    if (this._clickSequence.length === 1) {
-      this._setTentativeFeature({
-        type: 'Feature',
-        geometry: {
-          type: 'LineString',
-          coordinates: [this._clickSequence[0], groundCoords]
-        }
-      });
-    } else if (this._clickSequence.length === 2) {
-      const [p1, p2] = this._clickSequence;
-
-      const centerCoordinates = getIntermediatePosition(p1, p2);
-      const xSemiAxis = Math.max(distance(centerCoordinates, point(groundCoords)), 0.001);
-      const ySemiAxis = Math.max(distance(p1, p2), 0.001) / 2;
-      const options = { angle: bearing(p1, p2) };
-
-      this._setTentativeFeature(ellipse(centerCoordinates, xSemiAxis, ySemiAxis, options));
-    }
-  }
-
-  onStartDragging(picks: any[], groundCoords: Position): ?EditAction {
-    let editAction: ?EditAction = null;
-    const selectedFeatureIndexes = this._selectedFeatureIndexes;
-
-    const editHandle = getPickedEditHandle(picks);
-    if (selectedFeatureIndexes.length && editHandle && editHandle.type === 'intermediate') {
-      const updatedData = this.featureCollection
-        .addPosition(editHandle.featureIndex, editHandle.positionIndexes, groundCoords)
-        .getObject();
-
-      editAction = {
-        updatedData,
-        editType: 'addPosition',
-        featureIndex: editHandle.featureIndex,
-        positionIndexes: editHandle.positionIndexes,
-        position: groundCoords
-      };
-    }
-
-    return editAction;
-  }
-
-  onStopDragging(picks: any[], groundCoords: Position): ?EditAction {
-    let editAction: ?EditAction = null;
-    const selectedFeatureIndexes = this._selectedFeatureIndexes;
-
-    const editHandle = getPickedEditHandle(picks);
-    if (selectedFeatureIndexes.length && editHandle) {
-      const updatedData = this.featureCollection
-        .replacePosition(editHandle.featureIndex, editHandle.positionIndexes, groundCoords)
-        .getObject();
-
-      editAction = {
-        updatedData,
-        editType: 'finishMovePosition',
-        featureIndex: editHandle.featureIndex,
-        positionIndexes: editHandle.positionIndexes,
-        position: groundCoords
-      };
-    }
-
-    return editAction;
+  handleStopDragging(event: StopDraggingEvent): ?EditAction {
+    return null;
   }
 }
 
-function getPickedEditHandle(picks: ?(any[])): ?EditHandle {
+export function getPickedEditHandle(picks: ?(any[])): ?EditHandle {
   const info = picks && picks.find(pick => pick.isEditingHandle);
   if (info) {
     return info.object;
@@ -742,7 +222,7 @@ function getPickedEditHandle(picks: ?(any[])): ?EditHandle {
   return null;
 }
 
-function getIntermediatePosition(position1: Position, position2: Position): Position {
+export function getIntermediatePosition(position1: Position, position2: Position): Position {
   const intermediatePosition = [
     (position1[0] + position2[0]) / 2.0,
     (position1[1] + position2[1]) / 2.0
@@ -821,10 +301,3 @@ function getEditHandlesForCoordinates(
   }
   return editHandles;
 }
-
-// function assert(condition, message) {
-//   if (!condition) {
-//     console.error(`Assertion error: ${message}`); // eslint-disable-line
-//     throw Error(message);
-//   }
-// }

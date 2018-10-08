@@ -213,7 +213,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         }
 
         if (modeHandler !== this.state.modeHandler) {
-          // TODO: activate/deactivate
           this.setState({ modeHandler });
         }
 

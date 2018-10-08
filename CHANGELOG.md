@@ -3,7 +3,16 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-<!-- ## [Unreleased](https://github.com/uber/nebula.gl/compare/v0.5.1...master) -->
+## [Unreleased](https://github.com/uber/nebula.gl/compare/v0.5.1...master)
+
+### Added
+
+* Ability to customize existing modes or add new modes using `ModeHandler`s
+
+### Changed
+
+* Edit handles will now only appear in `modify` and `drawPolygon` modes
+* Can add new intermediate points anywhere along a line rather than just from the midpoint
 
 ## [0.5.1](https://github.com/uber/nebula.gl/compare/v0.4.3...v0.5.1) - 2017-09-24
 

@@ -47,6 +47,7 @@
     "@turf/bearing": ">=4.0.0",
     "@turf/buffer": ">=4.0.0",
     "@turf/center": ">=4.0.0",
+    "@turf/centroid": ">=4.0.0",
     "@turf/circle": ">=4.0.0",
     "@turf/destination": ">=4.0.0",
     "@turf/difference": ">=4.0.0",

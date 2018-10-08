@@ -156,8 +156,8 @@ export default class EditableLayer extends CompositeLayer {
 
     let { isDragging } = this.state._editableLayerState;
 
-    if (pointerDownPicks && pointerDownPicks.length > 0) {
-      // Pointer went down on something and is moving
+    if (pointerDownScreenCoords) {
+      // Pointer went down and is moving
 
       // Did it move enough to consider it a drag
       if (!isDragging && this.movedEnoughForDrag(pointerDownScreenCoords, screenCoords)) {
@@ -168,8 +168,8 @@ export default class EditableLayer extends CompositeLayer {
           picks: pointerDownPicks,
           screenCoords,
           groundCoords,
-          dragStartScreenCoords: pointerDownScreenCoords,
-          dragStartGroundCoords: pointerDownGroundCoords
+          pointerDownScreenCoords,
+          pointerDownGroundCoords
         });
 
         isDragging = true;
@@ -197,9 +197,9 @@ export default class EditableLayer extends CompositeLayer {
       groundCoords,
       picks,
       isDragging,
-      dragStartPicks: pointerDownPicks,
-      dragStartScreenCoords: pointerDownScreenCoords,
-      dragStartGroundCoords: pointerDownGroundCoords,
+      pointerDownPicks,
+      pointerDownScreenCoords,
+      pointerDownGroundCoords,
       sourceEvent: event
     });
   }
@@ -225,8 +225,8 @@ export default class EditableLayer extends CompositeLayer {
         picks: pointerDownPicks,
         screenCoords,
         groundCoords,
-        dragStartScreenCoords: pointerDownScreenCoords,
-        dragStartGroundCoords: pointerDownGroundCoords
+        pointerDownScreenCoords,
+        pointerDownGroundCoords
       });
     } else if (!this.movedEnoughForDrag(pointerDownScreenCoords, screenCoords)) {
       this.onClick({

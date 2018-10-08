@@ -118,7 +118,7 @@ export class ModifyHandler extends ModeHandler {
   handlePointerMove(event: PointerMoveEvent): { editAction: ?EditAction, cancelMapPan: boolean } {
     let editAction: ?EditAction = null;
 
-    const editHandle = getPickedEditHandle(event.dragStartPicks);
+    const editHandle = getPickedEditHandle(event.pointerDownPicks);
 
     if (event.isDragging && editHandle) {
       const updatedData = this.getImmutableFeatureCollection()

@@ -22,16 +22,16 @@ export type StartDraggingEvent = {
   picks: DeckGLPick[],
   screenCoords: Position,
   groundCoords: Position,
-  dragStartScreenCoords: Position,
-  dragStartGroundCoords: Position
+  pointerDownScreenCoords: Position,
+  pointerDownGroundCoords: Position
 };
 
 export type StopDraggingEvent = {
   picks: DeckGLPick[],
   screenCoords: Position,
   groundCoords: Position,
-  dragStartScreenCoords: Position,
-  dragStartGroundCoords: Position
+  pointerDownScreenCoords: Position,
+  pointerDownGroundCoords: Position
 };
 
 export type PointerMoveEvent = {
@@ -39,8 +39,8 @@ export type PointerMoveEvent = {
   groundCoords: Position,
   picks: DeckGLPick[],
   isDragging: boolean,
-  dragStartPicks: ?(DeckGLPick[]),
-  dragStartScreenCoords: ?Position,
-  dragStartGroundCoords: ?Position,
+  pointerDownPicks: ?(DeckGLPick[]),
+  pointerDownScreenCoords: ?Position,
+  pointerDownGroundCoords: ?Position,
   sourceEvent: any
 };

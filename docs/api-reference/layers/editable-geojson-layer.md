@@ -313,10 +313,10 @@ The pointer went down and up without dragging. This method is called regardless 
 The pointer went down on something rendered by this layer and the pointer started to move.
 
 * `picks` (Array): An array containing [deck.gl Picking Info Objects](https://uber.github.io/deck.gl/#/documentation/developer-guide/adding-interactivity?section=what-can-be-picked-) for all objects that were under the pointer when it went down.
-* `screenCoords` (Array): `[x, y]` screen pixel coordinates relative to the deck.gl canvas where the pointer was when it was considered to start dragging (should be very close to `dragStartScreenCoords`).
-* `groundCoords` (Array): `[lng, lat]` ground coordinates where the pointer was when it was considered to start dragging (should be very close to `dragStartGroundCoords`).
-* `dragStartScreenCoords` (Array): `[x, y]` screen pixel coordinates relative to the deck.gl canvas where the pointer went down.
-* `dragStartGroundCoords` (Array): `[lng, lat]` ground coordinates where the pointer went down.
+* `screenCoords` (Array): `[x, y]` screen pixel coordinates relative to the deck.gl canvas where the pointer was when it was considered to start dragging (should be very close to `pointerDownScreenCoords`).
+* `groundCoords` (Array): `[lng, lat]` ground coordinates where the pointer was when it was considered to start dragging (should be very close to `pointerDownGroundCoords`).
+* `pointerDownScreenCoords` (Array): `[x, y]` screen pixel coordinates relative to the deck.gl canvas where the pointer went down.
+* `pointerDownGroundCoords` (Array): `[lng, lat]` ground coordinates where the pointer went down.
 
 _Note: this method is not called if nothing was picked when the pointer went down_
 
@@ -327,8 +327,8 @@ The pointer went down on something rendered by this layer, the pointer moved, an
 * `picks` (Array): An array containing [deck.gl Picking Info Objects](https://uber.github.io/deck.gl/#/documentation/developer-guide/adding-interactivity?section=what-can-be-picked-) for all objects that were under the pointer when it went down.
 * `screenCoords` (Array): `[x, y]` screen pixel coordinates relative to the deck.gl canvas where the pointer went up.
 * `groundCoords` (Array): `[lng, lat]` ground coordinates where the pointer went up.
-* `dragStartScreenCoords` (Array): `[x, y]` screen pixel coordinates relative to the deck.gl canvas where the pointer went down.
-* `dragStartGroundCoords` (Array): `[lng, lat]` ground coordinates where the pointer went down.
+* `pointerDownScreenCoords` (Array): `[x, y]` screen pixel coordinates relative to the deck.gl canvas where the pointer went down.
+* `pointerDownGroundCoords` (Array): `[lng, lat]` ground coordinates where the pointer went down.
 
 ### `onPointerMove`
 
@@ -337,7 +337,7 @@ The pointer moved, regardless of whether the pointer is down, up, and whether or
 * `screenCoords` (Array): `[x, y]` screen pixel coordinates relative to the deck.gl canvas where the pointer is now.
 * `groundCoords` (Array): `[lng, lat]` ground coordinates where the pointer is now.
 * `picks` (Array): An array containing [deck.gl Picking Info Objects](https://uber.github.io/deck.gl/#/documentation/developer-guide/adding-interactivity?section=what-can-be-picked-) for all objects that are under the pointer now.
-* `isDragging` (Boolean): `true` if the pointer went down on an object in this layer and has moved enough to consider the movement a drag gesture, otherwise `false`.
-* `dragStartPicks` (Array): An array containing [deck.gl Picking Info Objects](https://uber.github.io/deck.gl/#/documentation/developer-guide/adding-interactivity?section=what-can-be-picked-) for all objects that were under the pointer when it went down, if any. This will be populated even if the pointer hasn't yet moved enough to set `isDragging` to `true`.
-* `dragStartScreenCoords` (Array): `[x, y]` screen pixel coordinates relative to the deck.gl canvas where the pointer went down.
-* `dragStartGroundCoords` (Array): `[lng, lat]` ground coordinates where the pointer went down.
+* `isDragging` (Boolean): `true` if the pointer went down and has moved enough to consider the movement a drag gesture, otherwise `false`.
+* `pointerDownPicks` (Array): An array containing [deck.gl Picking Info Objects](https://uber.github.io/deck.gl/#/documentation/developer-guide/adding-interactivity?section=what-can-be-picked-) for all objects that were under the pointer when it went down, if any. This will be populated even if the pointer hasn't yet moved enough to set `isDragging` to `true`.
+* `pointerDownScreenCoords` (Array): `[x, y]` screen pixel coordinates relative to the deck.gl canvas where the pointer went down.
+* `pointerDownGroundCoords` (Array): `[lng, lat]` ground coordinates where the pointer went down.

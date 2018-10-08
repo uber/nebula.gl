@@ -76,9 +76,9 @@ export class DrawPolygonHandler extends ModeHandler {
       groundCoords: event.groundCoords,
       picks: [],
       isDragging: false,
-      dragStartPicks: null,
-      dragStartScreenCoords: null,
-      dragStartGroundCoords: null,
+      pointerDownPicks: null,
+      pointerDownScreenCoords: null,
+      pointerDownGroundCoords: null,
       sourceEvent: null
     };
     this.handlePointerMove(fakePointerMoveEvent);

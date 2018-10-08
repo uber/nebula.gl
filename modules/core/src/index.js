@@ -16,6 +16,29 @@ export { default as SegmentsLayer } from './lib/layers/segments-layer';
 
 export { default as NebulaCore } from './lib/nebula';
 
+// Mode Handlers
+export { ModeHandler } from './lib/mode-handlers/mode-handler.js';
+export { ModifyHandler } from './lib/mode-handlers/modify-handler.js';
+export { DrawPointHandler } from './lib/mode-handlers/draw-point-handler.js';
+export { DrawLineStringHandler } from './lib/mode-handlers/draw-line-string-handler.js';
+export { DrawPolygonHandler } from './lib/mode-handlers/draw-polygon-handler.js';
+export { DrawRectangleHandler } from './lib/mode-handlers/draw-rectangle-handler.js';
+export {
+  DrawRectangleUsingThreePointsHandler
+} from './lib/mode-handlers/draw-rectangle-using-three-points-handler.js';
+export {
+  DrawCircleFromCenterHandler
+} from './lib/mode-handlers/draw-circle-from-center-handler.js';
+export {
+  DrawCircleByBoundingBoxHandler
+} from './lib/mode-handlers/draw-circle-by-bounding-box-handler.js';
+export {
+  DrawEllipseByBoundingBoxHandler
+} from './lib/mode-handlers/draw-ellipse-by-bounding-box-handler.js';
+export {
+  DrawEllipseUsingThreePointsHandler
+} from './lib/mode-handlers/draw-ellipse-using-three-points-handler.js';
+
 // Utils
 export { toDeckColor } from './lib/utils';
 

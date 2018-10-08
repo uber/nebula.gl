@@ -3,16 +3,17 @@
 
 import { GeoJsonLayer, ScatterplotLayer, IconLayer } from 'deck.gl';
 import { ModeHandler } from '../mode-handlers/mode-handler.js';
-// import { ModifyHandler } from '../mode-handlers/modify-handler.js';
-// import { DrawPointHandler } from '../mode-handlers/draw-point-handler.js';
-// import { DrawLineStringHandler } from '../mode-handlers/draw-line-string-handler.js';
-// import { DrawPolygonHandler } from '../mode-handlers/draw-polygon-handler.js';
+import { ViewHandler } from '../mode-handlers/view-handler.js';
+import { ModifyHandler } from '../mode-handlers/modify-handler.js';
+import { DrawPointHandler } from '../mode-handlers/draw-point-handler.js';
+import { DrawLineStringHandler } from '../mode-handlers/draw-line-string-handler.js';
+import { DrawPolygonHandler } from '../mode-handlers/draw-polygon-handler.js';
 import { DrawRectangleHandler } from '../mode-handlers/draw-rectangle-handler.js';
-// import { DrawRectangleUsingThreePointsHandler } from '../mode-handlers/draw-rectangle-using-three-points-handler.js';
-// import { DrawCircleFromCenterHandler } from '../mode-handlers/draw-circle-from-center-handler.js';
-// import { DrawCircleByBoundingBoxHandler } from '../mode-handlers/draw-circle-by-bounding-box-handler.js';
-// import { DrawEllipseByBoundingBoxHandler } from '../mode-handlers/draw-ellipse-by-bounding-box-handler.js';
-// import { DrawEllipseUsingThreePointsHandler } from '../mode-handlers/draw-ellipse-using-three-points-handler.js';
+import { DrawRectangleUsingThreePointsHandler } from '../mode-handlers/draw-rectangle-using-three-points-handler.js';
+import { DrawCircleFromCenterHandler } from '../mode-handlers/draw-circle-from-center-handler.js';
+import { DrawCircleByBoundingBoxHandler } from '../mode-handlers/draw-circle-by-bounding-box-handler.js';
+import { DrawEllipseByBoundingBoxHandler } from '../mode-handlers/draw-ellipse-by-bounding-box-handler.js';
+import { DrawEllipseUsingThreePointsHandler } from '../mode-handlers/draw-ellipse-using-three-points-handler.js';
 
 import type { EditAction } from '../mode-handlers/mode-handler.js';
 import type { Position } from '../../geojson-types.js';
@@ -96,16 +97,17 @@ const defaultProps = {
 
   // Mode handlers
   modeHandlers: {
-    // modify: new ModifyHandler(),
-    // drawPoint: new DrawPointHandler(),
-    // drawLineString: new DrawLineStringHandler(),
-    // drawPolygon: new DrawPolygonHandler(),
-    drawRectangle: new DrawRectangleHandler()
-    // drawRectangleUsing3Points: new DrawRectangleUsingThreePointsHandler(),
-    // drawCircleFromCenter: new DrawCircleFromCenterHandler(),
-    // drawCircleByBoundingBox: new DrawCircleByBoundingBoxHandler(),
-    // drawEllipseByBoundingBox: new DrawEllipseByBoundingBoxHandler(),
-    // drawEllipseUsing3Points: new DrawEllipseUsingThreePointsHandler()
+    view: new ViewHandler(),
+    modify: new ModifyHandler(),
+    drawPoint: new DrawPointHandler(),
+    drawLineString: new DrawLineStringHandler(),
+    drawPolygon: new DrawPolygonHandler(),
+    drawRectangle: new DrawRectangleHandler(),
+    drawRectangleUsing3Points: new DrawRectangleUsingThreePointsHandler(),
+    drawCircleFromCenter: new DrawCircleFromCenterHandler(),
+    drawCircleByBoundingBox: new DrawCircleByBoundingBoxHandler(),
+    drawEllipseByBoundingBox: new DrawEllipseByBoundingBoxHandler(),
+    drawEllipseUsing3Points: new DrawEllipseUsingThreePointsHandler()
   }
 };
 

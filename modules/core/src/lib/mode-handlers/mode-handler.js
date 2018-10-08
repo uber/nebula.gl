@@ -1,8 +1,5 @@
 // @flow
 
-import nearestPointOnLine from '@turf/nearest-point-on-line';
-import { point, lineString as toLineString } from '@turf/helpers';
-
 import type { FeatureCollection, Feature, Geometry, Position } from '../../geojson-types.js';
 import type {
   ClickEvent,
@@ -11,7 +8,6 @@ import type {
   StopDraggingEvent
 } from '../event-types.js';
 
-import { recursivelyTraverseNestedArrays } from '../utils.js';
 import { ImmutableFeatureCollection } from '../immutable-feature-collection.js';
 
 export type EditHandle = {
@@ -30,6 +26,7 @@ export type EditAction = {
 };
 
 export class ModeHandler {
+  // TODO: add underscore
   featureCollection: ImmutableFeatureCollection;
   _tentativeFeature: ?Feature;
   _modeConfig: any = null;
@@ -47,6 +44,10 @@ export class ModeHandler {
     return this.featureCollection.getObject();
   }
 
+  getImmutableFeatureCollection(): ImmutableFeatureCollection {
+    return this.featureCollection;
+  }
+
   getSelectedGeometry(): ?Geometry {
     if (this._selectedFeatureIndexes.length === 1) {
       return this.featureCollection.getObject().features[this._selectedFeatureIndexes[0]].geometry;
@@ -58,6 +59,10 @@ export class ModeHandler {
     this.featureCollection = new ImmutableFeatureCollection(featureCollection);
   }
 
+  getModeConfig(): any {
+    return this._modeConfig;
+  }
+
   setModeConfig(modeConfig: any): void {
     if (this._modeConfig === modeConfig) {
       return;
@@ -67,6 +72,10 @@ export class ModeHandler {
     this._setTentativeFeature(null);
   }
 
+  getSelectedFeatureIndexes(): number[] {
+    return this._selectedFeatureIndexes;
+  }
+
   setSelectedFeatureIndexes(indexes: number[]): void {
     if (this._selectedFeatureIndexes === indexes) {
       return;
@@ -74,6 +83,10 @@ export class ModeHandler {
 
     this._selectedFeatureIndexes = indexes;
     this._setTentativeFeature(null);
+  }
+
+  getDrawAtFront(): boolean {
+    return this._drawAtFront;
   }
 
   setDrawAtFront(drawAtFront: boolean): void {
@@ -112,87 +125,7 @@ export class ModeHandler {
    * @param featureIndex The index of the feature to get edit handles
    */
   getEditHandles(picks?: Array<Object>, groundCoords?: Position): EditHandle[] {
-    let handles = [];
-
-    // if (this._mode === 'view') {
-    //   return handles;
-    // }
-
-    for (const index of this._selectedFeatureIndexes) {
-      const geometry = this.featureCollection.getObject().features[index].geometry;
-      handles = handles.concat(getEditHandlesForGeometry(geometry, index));
-    }
-
-    // if (this._tentativeFeature) {
-    //   if (this._mode === 'drawLineString' || this._mode === 'drawPolygon') {
-    //     handles = handles.concat(getEditHandlesForGeometry(this._tentativeFeature.geometry, -1));
-    //     // Slice off the handles that are are next to the pointer
-    //     if (this._tentativeFeature && this._tentativeFeature.geometry.type === 'LineString') {
-    //       // Remove the last existing handle
-    //       handles = handles.slice(0, -1);
-    //     } else if (this._tentativeFeature && this._tentativeFeature.geometry.type === 'Polygon') {
-    //       // Remove the last existing handle
-    //       handles = handles.slice(0, -1);
-    //     }
-    //   }
-    // }
-
-    // intermediate edit handle
-    if (picks && picks.length && groundCoords) {
-      const existingEditHandle = picks.find(
-        pick => pick.isEditingHandle && pick.object && pick.object.type === 'existing'
-      );
-      // don't show intermediate point when too close to an existing edit handle
-      const featureAsPick = !existingEditHandle && picks.find(pick => !pick.isEditingHandle);
-
-      // is the feature in the pick selected
-      if (
-        featureAsPick &&
-        !featureAsPick.object.geometry.type.includes('Point') &&
-        this._selectedFeatureIndexes.includes(featureAsPick.index)
-      ) {
-        let intermediatePoint = null;
-        let positionIndexPrefix = [];
-        const referencePoint = point(groundCoords);
-        // process all lines of the (single) feature
-        recursivelyTraverseNestedArrays(
-          featureAsPick.object.geometry.coordinates,
-          [],
-          (lineString, prefix) => {
-            const lineStringFeature = toLineString(lineString);
-            const candidateIntermediatePoint = nearestPointOnLine(
-              lineStringFeature,
-              referencePoint
-            );
-            if (
-              !intermediatePoint ||
-              candidateIntermediatePoint.properties.dist < intermediatePoint.properties.dist
-            ) {
-              intermediatePoint = candidateIntermediatePoint;
-              positionIndexPrefix = prefix;
-            }
-          }
-        );
-        // tack on the lone intermediate point to the set of handles
-        if (intermediatePoint) {
-          const {
-            geometry: { coordinates: position },
-            properties: { index }
-          } = intermediatePoint;
-          handles = [
-            ...handles,
-            {
-              position,
-              positionIndexes: [...positionIndexPrefix, index + 1],
-              featureIndex: featureAsPick.index,
-              type: 'intermediate'
-            }
-          ];
-        }
-      }
-    }
-
-    return handles;
+    return [];
   }
 
   handleClick(event: ClickEvent): ?EditAction {
@@ -230,8 +163,8 @@ export function getIntermediatePosition(position1: Position, position2: Position
   return intermediatePosition;
 }
 
-function getEditHandlesForGeometry(geometry: Geometry, featureIndex: number) {
-  let handles = [];
+export function getEditHandlesForGeometry(geometry: Geometry, featureIndex: number) {
+  let handles: EditHandle[] = [];
 
   switch (geometry.type) {
     case 'Point':

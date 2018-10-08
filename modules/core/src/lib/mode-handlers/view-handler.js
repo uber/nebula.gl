@@ -1,0 +1,11 @@
+// @flow
+
+import type { Position } from '../../geojson-types.js';
+import type { EditHandle } from './mode-handler.js';
+import { ModeHandler } from './mode-handler.js';
+
+export class ViewHandler extends ModeHandler {
+  getEditHandles(picks?: Array<Object>, groundCoords?: Position): EditHandle[] {
+    return [];
+  }
+}

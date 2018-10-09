@@ -1,8 +1,7 @@
 // @flow
 
-import type { Polygon } from '../../geojson-types.js';
 import type { ClickEvent } from '../event-types.js';
-import { ModeHandler, getAddFeatureAction } from './mode-handler.js';
+import { ModeHandler } from './mode-handler.js';
 import type { EditAction } from './mode-handler.js';
 
 export class TwoClickPolygonHandler extends ModeHandler {
@@ -17,10 +16,10 @@ export class TwoClickPolygonHandler extends ModeHandler {
       tentativeFeature &&
       tentativeFeature.geometry.type === 'Polygon'
     ) {
-      const geometry: Polygon = tentativeFeature.geometry;
+      const editAction = this.getAddFeatureOrBooleanPolygonAction(tentativeFeature.geometry);
       this.resetClickSequence();
-
-      return getAddFeatureAction(this.getImmutableFeatureCollection(), geometry);
+      this._setTentativeFeature(null);
+      return editAction;
     }
 
     return null;

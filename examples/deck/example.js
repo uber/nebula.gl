@@ -61,7 +61,15 @@ const styles = {
 export default class Example extends Component<
   {},
   {
-    viewport: Object
+    viewport: Object,
+    testFeatures: any,
+    mode: string,
+    pointsRemovable: boolean,
+    drawAtFront: boolean,
+    booleanOperation: string,
+    selectedFeatureIndexes: number[],
+    editHandleType: string,
+    keyHolded: string
   }
 > {
   constructor() {
@@ -73,6 +81,7 @@ export default class Example extends Component<
       mode: 'drawPolygon',
       pointsRemovable: true,
       drawAtFront: false,
+      booleanOperation: '',
       selectedFeatureIndexes: [],
       editHandleType: 'point'
     };
@@ -96,7 +105,7 @@ export default class Example extends Component<
     });
   };
 
-  _onLayerClick = info => {
+  _onLayerClick = (info: any) => {
     console.log('onLayerClick', info); // eslint-disable-line
 
     if (this.state.mode !== 'view') {
@@ -137,7 +146,7 @@ export default class Example extends Component<
     }
   };
 
-  _renderCheckbox(index, featureType) {
+  _renderCheckbox(index: number, featureType: string) {
     const { selectedFeatureIndexes } = this.state;
     return (
       <dd style={styles.toolboxDescription} key={index}>
@@ -205,6 +214,18 @@ export default class Example extends Component<
               <option value="drawEllipseUsing3Points">drawEllipseUsing3Points</option>
             </select>
           </dd>
+          <dt style={styles.toolboxTerm}>Boolean operation</dt>
+          <dd style={styles.toolboxDescription}>
+            <select
+              value={this.state.booleanOperation}
+              onChange={event => this.setState({ booleanOperation: event.target.value })}
+            >
+              <option value="">(none)</option>
+              <option value="union">union</option>
+              <option value="difference">difference</option>
+              <option value="intersection">intersection</option>
+            </select>
+          </dd>
           <dt style={styles.toolboxTerm}>Allow removing points</dt>
           <dd style={styles.toolboxDescription}>
             <input
@@ -265,6 +286,9 @@ export default class Example extends Component<
       data: testFeatures,
       selectedFeatureIndexes,
       mode,
+      modeConfig: {
+        booleanOperation: this.state.booleanOperation
+      },
       fp64: true,
       autoHighlight: true,
       drawAtFront,

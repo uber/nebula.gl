@@ -24,6 +24,14 @@ User can rotate a feature about its centroid by clicking and dragging the select
 
 _Note: currently only supports single selection_
 
+## [TranslateHandler](https://github.com/uber/nebula.gl/blob/master/modules/core/src/lib/mode-handlers/translate-handler.js)
+
+* Mode name: `translate`
+
+User can translate a feature by clicking selected feature and dragging anywhere on the screen.
+
+_Note: currently only supports single selection_
+
 ## [DrawPointHandler](https://github.com/uber/nebula.gl/blob/master/modules/core/src/lib/mode-handlers/draw-point-handler.js)
 
 * Mode name: `drawPoint`

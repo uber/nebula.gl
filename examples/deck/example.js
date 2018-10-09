@@ -197,6 +197,7 @@ export default class Example extends Component<
             >
               <option value="view">view</option>
               <option value="modify">modify</option>
+              <option value="translate">translate</option>
               <option value="rotate">rotate</option>
               <option value="drawPoint">drawPoint</option>
               <option value="drawLineString">drawLineString</option>

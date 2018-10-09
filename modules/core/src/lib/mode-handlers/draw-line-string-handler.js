@@ -1,0 +1,114 @@
+// @flow
+
+import type { Position, LineString } from '../../geojson-types.js';
+import type { ClickEvent, PointerMoveEvent } from '../event-types.js';
+import type { EditAction } from './mode-handler.js';
+import { ModeHandler } from './mode-handler.js';
+
+export class DrawLineStringHandler extends ModeHandler {
+  handleClick(event: ClickEvent): ?EditAction {
+    super.handleClick(event);
+
+    let editAction: ?EditAction = null;
+    const selectedFeatureIndexes = this.getSelectedFeatureIndexes();
+    const selectedGeometry = this.getSelectedGeometry();
+    const tentativeFeature = this.getTentativeFeature();
+    const clickSequence = this.getClickSequence();
+
+    if (
+      selectedFeatureIndexes.length > 1 ||
+      (selectedGeometry && selectedGeometry.type !== 'LineString')
+    ) {
+      console.warn(`drawLineString mode only supported for single LineString selection`); // eslint-disable-line
+      this.resetClickSequence();
+      return null;
+    }
+
+    if (selectedGeometry && selectedGeometry.type === 'LineString') {
+      // Extend the LineString
+      const lineString: LineString = selectedGeometry;
+
+      let positionIndexes = [lineString.coordinates.length];
+      if (this.getDrawAtFront()) {
+        positionIndexes = [0];
+      }
+      const featureIndex = selectedFeatureIndexes[0];
+      const updatedData = this.getImmutableFeatureCollection()
+        .addPosition(featureIndex, positionIndexes, event.groundCoords)
+        .getObject();
+
+      editAction = {
+        updatedData,
+        editType: 'addPosition',
+        featureIndex,
+        positionIndexes,
+        position: event.groundCoords
+      };
+
+      this.resetClickSequence();
+    } else if (clickSequence.length === 2 && tentativeFeature) {
+      const geometry: any = tentativeFeature.geometry;
+      const updatedData = this.getImmutableFeatureCollection()
+        .addFeature({
+          type: 'Feature',
+          properties: {},
+          geometry
+        })
+        .getObject();
+
+      editAction = {
+        updatedData,
+        editType: 'addFeature',
+        featureIndex: updatedData.features.length - 1,
+        positionIndexes: null,
+        position: null
+      };
+
+      this.resetClickSequence();
+    }
+
+    return editAction;
+  }
+
+  handlePointerMove(event: PointerMoveEvent): { editAction: ?EditAction, cancelMapPan: boolean } {
+    const result = { editAction: null, cancelMapPan: false };
+
+    const clickSequence = this.getClickSequence();
+    const groundCoords = event.groundCoords;
+
+    let startPosition: ?Position = null;
+    const selectedFeatureIndexes = this.getSelectedFeatureIndexes();
+    const selectedGeometry = this.getSelectedGeometry();
+
+    if (
+      selectedFeatureIndexes.length > 1 ||
+      (selectedGeometry && selectedGeometry.type !== 'LineString')
+    ) {
+      // unsupported
+      return result;
+    }
+
+    if (selectedGeometry && selectedGeometry.type === 'LineString') {
+      // Draw an extension line starting from one end of the selected LineString
+      startPosition = selectedGeometry.coordinates[selectedGeometry.coordinates.length - 1];
+      if (this.getDrawAtFront()) {
+        startPosition = selectedGeometry.coordinates[0];
+      }
+    } else if (clickSequence.length === 1) {
+      startPosition = clickSequence[0];
+    }
+
+    if (startPosition) {
+      this._setTentativeFeature({
+        type: 'Feature',
+        properties: {},
+        geometry: {
+          type: 'LineString',
+          coordinates: [startPosition, groundCoords]
+        }
+      });
+    }
+
+    return result;
+  }
+}

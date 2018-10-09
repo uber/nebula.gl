@@ -2,52 +2,16 @@
 /* eslint-env browser */
 
 import { CompositeLayer } from 'deck.gl';
-import type { Position } from '../../geojson-types.js';
+import type {
+  ClickEvent,
+  StartDraggingEvent,
+  StopDraggingEvent,
+  PointerMoveEvent,
+  DoubleClickEvent
+} from '../event-types.js';
 
 // Minimum number of pixels the pointer must move from the original pointer down to be considered dragging
 const MINIMUM_POINTER_MOVE_THRESHOLD_PIXELS = 7;
-
-export type DeckGLPick = {
-  index: number,
-  object: any
-};
-
-export type ClickEvent = {
-  picks: DeckGLPick[],
-  screenCoords: Position,
-  groundCoords: Position
-};
-
-export type DoubleClickEvent = {
-  groundCoords: Position
-};
-
-export type StartDraggingEvent = {
-  picks: DeckGLPick[],
-  screenCoords: Position,
-  groundCoords: Position,
-  dragStartScreenCoords: Position,
-  dragStartGroundCoords: Position
-};
-
-export type StopDraggingEvent = {
-  picks: DeckGLPick[],
-  screenCoords: Position,
-  groundCoords: Position,
-  dragStartScreenCoords: Position,
-  dragStartGroundCoords: Position
-};
-
-export type PointerMoveEvent = {
-  screenCoords: Position,
-  groundCoords: Position,
-  picks: DeckGLPick[],
-  isDragging: boolean,
-  dragStartPicks: ?(DeckGLPick[]),
-  dragStartScreenCoords: ?Position,
-  dragStartGroundCoords: ?Position,
-  sourceEvent: any
-};
 
 export default class EditableLayer extends CompositeLayer {
   // Overridable interaction event handlers

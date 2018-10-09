@@ -63,56 +63,45 @@ _Note: passing a single `Feature` is not supported. However, you can pass a `Fea
 
 * Default: `modify`
 
-The `mode` property dictates what type of edits the user can perform and how to handle user interaction events (e.g. pointer events) in order to accomplish those edits.
-
-* `view`: no edits are possible, but selection is still possible.
-
-* `modify`: user can move existing points, add intermediate points along lines, and remove points.
-
-* `drawPoint`: user can draw a new `Point` feature by clicking where the point is to be.
-
-* `drawLineString`: user can draw a new `LineString` feature by clicking positions to add.
-
-  * If a `LineString` feature is selected, clicking will add a position to it.
-
-  * If no feature is selected, a new `LineString` feature will be added. *Note*: you must select the new feature (via the `onEdit` callback) in order to start extending it.
-
-  * If multiple features are selected, or a non-`LineString` is selected, the user will be prevented from drawing.
-
-* `drawPolygon`: user can draw a new `Polygon` feature by clicking positions to add then closing the polygon (or double-clicking).
-
-* `drawRectangle`: user can draw a new rectanglular `Polygon` feature by clicking two opposing corners of the rectangle.
-
-* `drawRectangleUsing3Points`: user can draw a new rectanglular `Polygon` feature by clicking three corners of the rectangle.
-
-* `drawCircleFromCenter`: user can draw a new circular `Polygon` feature by clicking the center then along the ring.
-
-* `drawCircleByBoundingBox`: user can draw a new circular `Polygon` feature by clicking the two corners of bounding box.
-
-* `drawEllipseByBoundingBox`: user can draw a new ellipse shape `Polygon` feature by clicking two corners of bounding box.
-
-* `drawEllipseUsing3Points`: user can draw a new ellipse shape `Polygon` feature by clicking center and two corners of the ellipse.
+The `mode` property dictates which `ModeHandler` from the `modeHandlers` prop will be used to handle user interaction events (e.g. pointer events) in order to accomplish edits. See [mode handlers overview](../mode-handlers/overview.md) for a description of the built-in modes.
 
 #### `modeConfig` (Object, optional)
 
-* If action: `transformRotate` means the feature will be transform rotated by default the pivot as centroid.
+* Default: `null`
 
-* If pivot: [120, 5] means the point is used as pivot for rotate. if the value is null or undefined then pivot is centroid.
+An arbitraty object used to further configure the current `ModeHandler`.
 
-* If usePickAsPivot: true, means the pivot will be nearest point of feature for mouse pointer position. pivot value is ignored.
+#### `modeHandlers` (Object, optional)
 
+* Default: see [mode handlers overview](../mode-handlers/overview.md)
+
+A object containing a mapping of mode name (string) to an instance of a `ModeHandler`.
+
+##### Example
+
+For example, you can use this to provide your own custom `ModeHandler`:
+
+```javascript
+{
+  //...
+  modeHandlers: {
+    ...EditableGeoJsonLayer.defaultProps.modeHandlers,
+    myCustomMode: new MyCustomModeHandler()
+  }
+}
+```
 
 #### `selectedFeaturesIndexes` (Array, optional)
 
 * Default: `[]`
 
-* The `selectedFeatueIndexes` property distinguishes which features to treat as selected.
+The `selectedFeatueIndexes` property distinguishes which features to treat as selected.
 
-  * Features are identified by their index in the collection.
+* Features are identified by their index in the collection.
 
-  * Selection of a feature causes style accessors to render a different style, defined in function such as `getLineColor` and `getFillColor`.
+* Selection of a feature causes style accessors to render a different style, defined in function such as `getLineColor` and `getFillColor`.
 
-  * Selected features in mode `modify` will render edit handles. Only one feature may be selected while in mode `drawLineString` or `drawPolygon` to draw a feature.
+* Selected features in mode `modify` will render edit handles. Only one feature may be selected while in mode `drawLineString` or `drawPolygon` to draw a feature.
 
 #### `onEdit` (Function, optional)
 

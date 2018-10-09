@@ -1,6 +1,7 @@
 // @flow
 
 import type {
+  Feature,
   FeatureCollection,
   Geometry,
   Polygon,
@@ -180,7 +181,7 @@ export class ImmutableFeatureCollection {
     return new ImmutableFeatureCollection(updatedFeatureCollection);
   }
 
-  addFeature(feature: Object): ImmutableFeatureCollection {
+  addFeature(feature: Feature): ImmutableFeatureCollection {
     const updatedFeatureCollection = {
       ...this.featureCollection,
       features: [...this.featureCollection.features, feature]

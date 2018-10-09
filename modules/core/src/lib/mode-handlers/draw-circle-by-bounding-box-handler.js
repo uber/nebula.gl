@@ -19,11 +19,11 @@ export class DrawCircleByBoundingBoxHandler extends TwoClickPolygonHandler {
 
     const modeConfig = this.getModeConfig();
     let { options = {} } = modeConfig;
-    if (options.steps < 16) {
-      console.warn(`Minimum steps to draw a circle is 16 `); // eslint-disable-line no-console,no-undef
+    if (options.steps < 4) {
+      console.warn(`Minimum steps to draw a circle is 4 `); // eslint-disable-line no-console,no-undef
       options = {
         ...options,
-        steps: 16
+        steps: 4
       };
     }
     const firstClickedPoint = clickSequence[0];

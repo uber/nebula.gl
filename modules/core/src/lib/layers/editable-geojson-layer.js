@@ -5,6 +5,7 @@ import { GeoJsonLayer, ScatterplotLayer, IconLayer } from 'deck.gl';
 import { ModeHandler } from '../mode-handlers/mode-handler.js';
 import { ViewHandler } from '../mode-handlers/view-handler.js';
 import { ModifyHandler } from '../mode-handlers/modify-handler.js';
+import { RotateHandler } from '../mode-handlers/rotate-handler.js';
 import { DrawPointHandler } from '../mode-handlers/draw-point-handler.js';
 import { DrawLineStringHandler } from '../mode-handlers/draw-line-string-handler.js';
 import { DrawPolygonHandler } from '../mode-handlers/draw-polygon-handler.js';
@@ -99,6 +100,7 @@ const defaultProps = {
   modeHandlers: {
     view: new ViewHandler(),
     modify: new ModifyHandler(),
+    rotate: new RotateHandler(),
     drawPoint: new DrawPointHandler(),
     drawLineString: new DrawLineStringHandler(),
     drawPolygon: new DrawPolygonHandler(),
@@ -123,8 +125,7 @@ type Props = {
 //   modeHandler: EditableFeatureCollection,
 //   tentativeFeature: ?Feature,
 //   editHandles: any[],
-//   selectedFeatures: Feature[],
-//   pointerMovePicks: any[]
+//   selectedFeatures: Feature[]
 // };
 
 export default class EditableGeoJsonLayer extends EditableLayer {
@@ -403,8 +404,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   onPointerMove(event: PointerMoveEvent) {
     const { groundCoords, picks, sourceEvent } = event;
 
-    this.setState({ pointerMovePicks: picks });
-
     const { editAction, cancelMapPan } = this.state.modeHandler.handlePointerMove(event);
     this.updateTentativeFeature();
     this.updateEditHandles(picks, groundCoords);
@@ -421,28 +420,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }
 
   getCursor({ isDragging }: { isDragging: boolean }) {
-    const mode = this.props.mode;
-    if (mode.startsWith('draw')) {
-      return 'cell';
-    }
-
-    const picks = this.state.pointerMovePicks;
-    if (mode === 'modify' && picks && picks.length > 0) {
-      const existingHandlePicked = picks.some(
-        pick => pick.isEditingHandle && pick.object.type === 'existing'
-      );
-      const intermediateHandlePicked = picks.some(
-        pick => pick.isEditingHandle && pick.object.type === 'intermediate'
-      );
-      if (existingHandlePicked) {
-        return 'move';
-      }
-      if (intermediateHandlePicked) {
-        return 'cell';
-      }
-    }
-
-    return isDragging ? 'grabbing' : 'grab';
+    return this.state.modeHandler.getCursor({ isDragging });
   }
 }
 

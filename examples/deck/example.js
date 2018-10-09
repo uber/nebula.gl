@@ -74,8 +74,7 @@ export default class Example extends Component<
       pointsRemovable: true,
       drawAtFront: false,
       selectedFeatureIndexes: [],
-      editHandleType: 'point',
-      keyHolded: ''
+      editHandleType: 'point'
     };
   }
 
@@ -119,14 +118,6 @@ export default class Example extends Component<
 
   _resize = () => {
     this.forceUpdate();
-  };
-
-  _onKeyDown = (event: Object) => {
-    this.setState({ keyHolded: event.key });
-  };
-
-  _onKeyUp = (event: Object) => {
-    this.setState({ keyHolded: '' });
   };
 
   _loadSample = (type: string) => {
@@ -202,6 +193,7 @@ export default class Example extends Component<
             >
               <option value="view">view</option>
               <option value="modify">modify</option>
+              <option value="rotate">rotate</option>
               <option value="drawPoint">drawPoint</option>
               <option value="drawLineString">drawLineString</option>
               <option value="drawPolygon">drawPolygon</option>
@@ -260,7 +252,7 @@ export default class Example extends Component<
   }
 
   render() {
-    const { testFeatures, selectedFeatureIndexes, mode, drawAtFront, keyHolded } = this.state;
+    const { testFeatures, selectedFeatureIndexes, mode, drawAtFront } = this.state;
 
     const viewport = {
       ...this.state.viewport,
@@ -273,11 +265,6 @@ export default class Example extends Component<
       data: testFeatures,
       selectedFeatureIndexes,
       mode,
-      modeConfig: {
-        action: keyHolded === 'Control' ? 'transformRotate' : 'none',
-        usePickAsPivot: true,
-        pivot: undefined
-      },
       fp64: true,
       autoHighlight: true,
       drawAtFront,
@@ -285,7 +272,7 @@ export default class Example extends Component<
       // Editing callbacks
       onEdit: ({ updatedData, editType, featureIndex, positionIndexes, position }) => {
         let updatedSelectedFeatureIndexes = this.state.selectedFeatureIndexes;
-        if (editType !== 'movePosition') {
+        if (editType !== 'movePosition' && editType !== 'rotating') {
           // Don't log moves since they're really chatty
           // eslint-disable-next-line
           console.log('onEdit', editType, featureIndex, positionIndexes, position);

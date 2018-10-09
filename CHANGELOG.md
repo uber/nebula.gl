@@ -8,9 +8,12 @@ All notable changes to this project will be documented in this file. This projec
 ### Added
 
 * Ability to customize existing modes or add new modes using `ModeHandler`s
+* `rotate` mode
 
 ### Changed
 
+* Renamed `dragStartScreenCoords` to `pointerDownScreenCoords` and `dragStartGroundCoords` to `pointerDownGroundCoords` in `onStartDragging()`, `onStopDragging()`, and `onPointerMove()` events
+* `isDragging` is now true whether or not something was picked in `onPointerMove()` event
 * Edit handles will now only appear in `modify` and `drawPolygon` modes
 * Can add new intermediate points anywhere along a line rather than just from the midpoint
 

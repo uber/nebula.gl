@@ -128,6 +128,10 @@ export class ModeHandler {
     return [];
   }
 
+  getCursor({ isDragging }: { isDragging: boolean }): string {
+    return 'cell';
+  }
+
   handleClick(event: ClickEvent): ?EditAction {
     this._clickSequence.push(event.groundCoords);
 

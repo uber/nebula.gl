@@ -16,15 +16,13 @@ No edits are possible, but selection is still possible.
 
 User can move existing points, add intermediate points along lines, and remove points.
 
-### ModeConfig
+## [RotateHandler](https://github.com/uber/nebula.gl/blob/master/modules/core/src/lib/mode-handlers/rotate-handler.js)
 
-A `modeConfig` object can be provided:
+* Mode name: `rotate`
 
-* If action: `transformRotate` means the feature will be transform rotated by default the pivot as centroid.
+User can rotate a feature about its centroid by clicking and dragging anywhere on the screen.
 
-* If pivot: [120, 5] means the point is used as pivot for rotate. if the value is null or undefined then pivot is centroid.
-
-* If usePickAsPivot: true, means the pivot will be nearest point of feature for mouse pointer position. pivot value is ignored.
+_Note: currently only supports single selection_
 
 ## [DrawPointHandler](https://github.com/uber/nebula.gl/blob/master/modules/core/src/lib/mode-handlers/draw-point-handler.js)
 

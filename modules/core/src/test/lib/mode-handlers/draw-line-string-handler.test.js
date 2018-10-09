@@ -21,9 +21,9 @@ function createPointerMoveEvent(groundCoords: Position): PointerMoveEvent {
     groundCoords,
     picks: [],
     isDragging: false,
-    dragStartPicks: null,
-    dragStartScreenCoords: null,
-    dragStartGroundCoords: null,
+    pointerDownPicks: null,
+    pointerDownScreenCoords: null,
+    pointerDownGroundCoords: null,
     sourceEvent: null
   };
 }

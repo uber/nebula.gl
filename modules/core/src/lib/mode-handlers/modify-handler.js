@@ -15,6 +15,8 @@ import type { EditAction, EditHandle } from './mode-handler.js';
 import { ModeHandler, getPickedEditHandle, getEditHandlesForGeometry } from './mode-handler.js';
 
 export class ModifyHandler extends ModeHandler {
+  _lastPointerMovePicks: *;
+
   getEditHandles(picks?: Array<Object>, groundCoords?: Position): EditHandle[] {
     let handles = [];
 
@@ -80,6 +82,7 @@ export class ModifyHandler extends ModeHandler {
 
     return handles;
   }
+
   handleClick(event: ClickEvent): ?EditAction {
     let editAction: ?EditAction = null;
 
@@ -116,6 +119,8 @@ export class ModifyHandler extends ModeHandler {
   }
 
   handlePointerMove(event: PointerMoveEvent): { editAction: ?EditAction, cancelMapPan: boolean } {
+    this._lastPointerMovePicks = event.picks;
+
     let editAction: ?EditAction = null;
 
     const editHandle = getPickedEditHandle(event.pointerDownPicks);
@@ -219,5 +224,18 @@ export class ModifyHandler extends ModeHandler {
     }
 
     return editAction;
+  }
+
+  getCursor({ isDragging }: { isDragging: boolean }): string {
+    const picks = this._lastPointerMovePicks;
+
+    if (picks && picks.length > 0) {
+      const handlePicked = picks.some(pick => pick.isEditingHandle);
+      if (handlePicked) {
+        return 'cell';
+      }
+    }
+
+    return isDragging ? 'grabbing' : 'grab';
   }
 }

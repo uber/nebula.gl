@@ -70,6 +70,7 @@ The `mode` property dictates which `ModeHandler` from the `modeHandlers` prop wi
 * Default: `null`
 
 An arbitraty object used to further configure the current `ModeHandler`.
+For `drawCircleByBoundingBox` mode, options can be passed to configure the circle steps.
 
 #### `modeHandlers` (Object, optional)
 

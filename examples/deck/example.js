@@ -284,12 +284,22 @@ export default class Example extends Component<
       width: window.innerWidth
     };
 
+    let { modeConfig } = this.state;
+    if (mode === 'drawCircleByBoundingBox') {
+      modeConfig = {
+        ...modeConfig,
+        options: {
+          steps: 32
+        }
+      };
+    }
+
     const editableGeoJsonLayer = new EditableGeoJsonLayer({
       id: 'geojson',
       data: testFeatures,
       selectedFeatureIndexes,
       mode,
-      modeConfig: this.state.modeConfig,
+      modeConfig,
       fp64: true,
       autoHighlight: true,
       drawAtFront,

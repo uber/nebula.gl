@@ -167,6 +167,30 @@ export function getIntermediatePosition(position1: Position, position2: Position
   return intermediatePosition;
 }
 
+export function getAddFeatureAction(
+  featureCollection: ImmutableFeatureCollection,
+  geometry: Geometry
+) {
+  // Unsure why flow can't deal with Geometry type, but there I fixed it
+  const geometryAsAny: any = geometry;
+
+  const updatedData = featureCollection
+    .addFeature({
+      type: 'Feature',
+      properties: {},
+      geometry: geometryAsAny
+    })
+    .getObject();
+
+  return {
+    updatedData,
+    editType: 'addFeature',
+    featureIndex: updatedData.features.length - 1,
+    positionIndexes: null,
+    position: null
+  };
+}
+
 export function getEditHandlesForGeometry(geometry: Geometry, featureIndex: number) {
   let handles: EditHandle[] = [];
 

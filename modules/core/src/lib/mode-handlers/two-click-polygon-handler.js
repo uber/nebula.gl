@@ -2,7 +2,7 @@
 
 import type { Polygon } from '../../geojson-types.js';
 import type { ClickEvent } from '../event-types.js';
-import { ModeHandler } from './mode-handler.js';
+import { ModeHandler, getAddFeatureAction } from './mode-handler.js';
 import type { EditAction } from './mode-handler.js';
 
 export class TwoClickPolygonHandler extends ModeHandler {
@@ -20,21 +20,7 @@ export class TwoClickPolygonHandler extends ModeHandler {
       const geometry: Polygon = tentativeFeature.geometry;
       this.resetClickSequence();
 
-      const updatedData = this.getImmutableFeatureCollection()
-        .addFeature({
-          type: 'Feature',
-          properties: {},
-          geometry
-        })
-        .getObject();
-
-      return {
-        updatedData,
-        editType: 'addFeature',
-        featureIndex: updatedData.features.length - 1,
-        positionIndexes: null,
-        position: null
-      };
+      return getAddFeatureAction(this.getImmutableFeatureCollection(), geometry);
     }
 
     return null;

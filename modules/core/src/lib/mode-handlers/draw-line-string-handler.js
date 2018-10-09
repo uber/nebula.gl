@@ -3,7 +3,7 @@
 import type { Position, LineString } from '../../geojson-types.js';
 import type { ClickEvent, PointerMoveEvent } from '../event-types.js';
 import type { EditAction } from './mode-handler.js';
-import { ModeHandler } from './mode-handler.js';
+import { ModeHandler, getAddFeatureAction } from './mode-handler.js';
 
 export class DrawLineStringHandler extends ModeHandler {
   handleClick(event: ClickEvent): ?EditAction {
@@ -47,22 +47,9 @@ export class DrawLineStringHandler extends ModeHandler {
 
       this.resetClickSequence();
     } else if (clickSequence.length === 2 && tentativeFeature) {
+      // Add a new LineString
       const geometry: any = tentativeFeature.geometry;
-      const updatedData = this.getImmutableFeatureCollection()
-        .addFeature({
-          type: 'Feature',
-          properties: {},
-          geometry
-        })
-        .getObject();
-
-      editAction = {
-        updatedData,
-        editType: 'addFeature',
-        featureIndex: updatedData.features.length - 1,
-        positionIndexes: null,
-        position: null
-      };
+      editAction = getAddFeatureAction(this.getImmutableFeatureCollection(), geometry);
 
       this.resetClickSequence();
     }

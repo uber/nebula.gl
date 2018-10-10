@@ -5,18 +5,27 @@ import turfDistance from '@turf/distance';
 import turfTransformTranslate from '@turf/transform-translate';
 import { point } from '@turf/helpers';
 import type { Geometry, Position } from '../../geojson-types.js';
-import type { PointerMoveEvent, StartDraggingEvent, StopDraggingEvent } from '../event-types.js';
+import type {
+  PointerMoveEvent,
+  StartDraggingEvent,
+  StopDraggingEvent,
+  DeckGLPick
+} from '../event-types.js';
 import type { EditAction } from './mode-handler.js';
 import { ModeHandler } from './mode-handler.js';
 
 export class TranslateHandler extends ModeHandler {
   _geometryBeforeTranslate: ?Geometry;
+  _isTranslatable: boolean;
 
   handlePointerMove(event: PointerMoveEvent): { editAction: ?EditAction, cancelMapPan: boolean } {
     let editAction: ?EditAction = null;
     let cancelMapPan = false;
 
     const selectedFeatureIndexes = this.getSelectedFeatureIndexes();
+
+    this._isTranslatable =
+      Boolean(this._geometryBeforeTranslate) || this.isSingleSelectionPicked(event.picks);
 
     if (
       event.isDragging &&
@@ -69,9 +78,28 @@ export class TranslateHandler extends ModeHandler {
       if (editAction) {
         editAction.editType = 'translated';
       }
+      this._geometryBeforeTranslate = null;
     }
 
     return editAction;
+  }
+
+  isSingleSelectionPicked(picks: DeckGLPick[]): boolean {
+    const selectedFeatureIndexes = this.getSelectedFeatureIndexes();
+    const singleSelectedFeature =
+      selectedFeatureIndexes.length === 1
+        ? this.getFeatureCollection().features[selectedFeatureIndexes[0]]
+        : null;
+
+    return picks.some(p => p.object === singleSelectedFeature);
+  }
+
+  getCursor({ isDragging }: { isDragging: boolean }): string {
+    if (this._isTranslatable) {
+      // TODO: look at doing SVG cursors to get a better "translate" cursor
+      return 'move';
+    }
+    return isDragging ? 'grabbing' : 'grab';
   }
 
   getEditAction(startDragPoint: Position, currentPoint: Position): ?EditAction {

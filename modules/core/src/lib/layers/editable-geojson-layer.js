@@ -6,6 +6,7 @@ import { ModeHandler } from '../mode-handlers/mode-handler.js';
 import { ViewHandler } from '../mode-handlers/view-handler.js';
 import { ModifyHandler } from '../mode-handlers/modify-handler.js';
 import { RotateHandler } from '../mode-handlers/rotate-handler.js';
+import { ScaleHandler } from '../mode-handlers/scale-handler.js';
 import { DrawPointHandler } from '../mode-handlers/draw-point-handler.js';
 import { DrawLineStringHandler } from '../mode-handlers/draw-line-string-handler.js';
 import { DrawPolygonHandler } from '../mode-handlers/draw-polygon-handler.js';
@@ -101,6 +102,7 @@ const defaultProps = {
     view: new ViewHandler(),
     modify: new ModifyHandler(),
     rotate: new RotateHandler(),
+    scale: new ScaleHandler(),
     drawPoint: new DrawPointHandler(),
     drawLineString: new DrawLineStringHandler(),
     drawPolygon: new DrawPolygonHandler(),

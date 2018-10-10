@@ -64,12 +64,11 @@ export default class Example extends Component<
     viewport: Object,
     testFeatures: any,
     mode: string,
+    modeConfig: any,
     pointsRemovable: boolean,
     drawAtFront: boolean,
-    booleanOperation: string,
     selectedFeatureIndexes: number[],
-    editHandleType: string,
-    keyHolded: string
+    editHandleType: string
   }
 > {
   constructor() {
@@ -79,9 +78,9 @@ export default class Example extends Component<
       viewport: initialViewport,
       testFeatures: sampleGeoJson,
       mode: 'drawPolygon',
+      modeConfig: null,
       pointsRemovable: true,
       drawAtFront: false,
-      booleanOperation: '',
       selectedFeatureIndexes: [],
       editHandleType: 'point'
     };
@@ -89,14 +88,10 @@ export default class Example extends Component<
 
   componentDidMount() {
     window.addEventListener('resize', this._resize);
-    window.addEventListener('keydown', this._onKeyDown);
-    window.addEventListener('keyup', this._onKeyUp);
   }
 
   componentWillUnmount() {
     window.removeEventListener('resize', this._resize);
-    window.removeEventListener('keydown', this._onKeyDown);
-    window.removeEventListener('keyup', this._onKeyUp);
   }
 
   _onChangeViewport = (viewport: Object) => {
@@ -217,8 +212,14 @@ export default class Example extends Component<
           <dt style={styles.toolboxTerm}>Boolean operation</dt>
           <dd style={styles.toolboxDescription}>
             <select
-              value={this.state.booleanOperation}
-              onChange={event => this.setState({ booleanOperation: event.target.value })}
+              value={this.state.modeConfig ? this.state.modeConfig.booleanOperation : ''}
+              onChange={event =>
+                this.setState({
+                  modeConfig: {
+                    booleanOperation: event.target.value
+                  }
+                })
+              }
             >
               <option value="">(none)</option>
               <option value="union">union</option>
@@ -286,9 +287,7 @@ export default class Example extends Component<
       data: testFeatures,
       selectedFeatureIndexes,
       mode,
-      modeConfig: {
-        booleanOperation: this.state.booleanOperation
-      },
+      modeConfig: this.state.modeConfig,
       fp64: true,
       autoHighlight: true,
       drawAtFront,

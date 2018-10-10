@@ -1,6 +1,5 @@
 // @flow
 /* eslint-env jest */
-/* eslint-disable max-nested-callbacks */
 
 import { ImmutableFeatureCollection } from '../../lib/immutable-feature-collection';
 

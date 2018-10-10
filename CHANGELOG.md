@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file. This projec
 
 * Ability to customize existing modes or add new modes using `ModeHandler`s
 * `rotate` mode
+* Boolean operations (union, difference, intersection) for polygon draw modes
 
 ### Changed
 

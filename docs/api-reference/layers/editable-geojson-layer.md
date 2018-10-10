@@ -127,6 +127,10 @@ The `onEdit` event is the core event provided by this layer and must be handled 
 
   * `finishMovePosition`: A position finished moving (e.g. user finished dragging).
 
+  * `scaling`: A feature is being scaled.
+
+  * `scaled`: A feature finished scaling (increase/decrease) (e.g. user finished dragging).
+
   * `rotating`: A feature is being rotated.
 
   * `rotated`: A feature finished rotating (e.g. user finished dragging).

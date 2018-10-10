@@ -29,7 +29,6 @@ export class DrawPolygonHandler extends ModeHandler {
 
     const { picks } = event;
     const tentativeFeature = this.getTentativeFeature();
-    const featureCollection = this.getImmutableFeatureCollection();
 
     let editAction: ?EditAction = null;
     const clickedEditHandle = getPickedEditHandle(picks);
@@ -43,30 +42,17 @@ export class DrawPolygonHandler extends ModeHandler {
         (clickedEditHandle.positionIndexes[1] === 0 ||
           clickedEditHandle.positionIndexes[1] === polygon.coordinates[0].length - 3)
       ) {
-        this.resetClickSequence();
-
         // They clicked the first or last point (or double-clicked), so complete the polygon
+
         // Remove the hovered position
         const polygonToAdd: Polygon = {
           type: 'Polygon',
           coordinates: [[...polygon.coordinates[0].slice(0, -2), polygon.coordinates[0][0]]]
         };
 
-        const updatedData = featureCollection
-          .addFeature({
-            type: 'Feature',
-            properties: {},
-            geometry: polygonToAdd
-          })
-          .getObject();
-
-        editAction = {
-          updatedData,
-          editType: 'addFeature',
-          featureIndex: updatedData.features.length - 1,
-          positionIndexes: null,
-          position: null
-        };
+        this.resetClickSequence();
+        this._setTentativeFeature(null);
+        editAction = this.getAddFeatureOrBooleanPolygonAction(polygonToAdd);
       }
     }
 

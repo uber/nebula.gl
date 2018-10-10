@@ -1,6 +1,9 @@
 // @flow
 /* eslint-env jest */
 
+import type { Position } from '../../geojson-types.js';
+import type { ClickEvent, PointerMoveEvent } from '../../lib/event-types.js';
+
 export function createPointFeature() {
   return {
     type: 'Feature',
@@ -88,5 +91,23 @@ export function createFeatureCollection() {
   };
 }
 
-// Tooling requires at least one test in files under the test folder
-test('dummy test', () => {});
+export function createClickEvent(groundCoords: Position): ClickEvent {
+  return {
+    screenCoords: [-1, -1],
+    groundCoords,
+    picks: []
+  };
+}
+
+export function createPointerMoveEvent(groundCoords: Position): PointerMoveEvent {
+  return {
+    screenCoords: [-1, -1],
+    groundCoords,
+    picks: [],
+    isDragging: false,
+    pointerDownPicks: null,
+    pointerDownScreenCoords: null,
+    pointerDownGroundCoords: null,
+    sourceEvent: null
+  };
+}

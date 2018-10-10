@@ -1,6 +1,5 @@
 // @flow
 /* eslint-env jest */
-/* eslint-disable max-nested-callbacks */
 
 import { ModifyHandler } from '../../../lib/mode-handlers/modify-handler.js';
 

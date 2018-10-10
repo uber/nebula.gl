@@ -61,7 +61,14 @@ const styles = {
 export default class Example extends Component<
   {},
   {
-    viewport: Object
+    viewport: Object,
+    testFeatures: any,
+    mode: string,
+    modeConfig: any,
+    pointsRemovable: boolean,
+    drawAtFront: boolean,
+    selectedFeatureIndexes: number[],
+    editHandleType: string
   }
 > {
   constructor() {
@@ -71,6 +78,7 @@ export default class Example extends Component<
       viewport: initialViewport,
       testFeatures: sampleGeoJson,
       mode: 'drawPolygon',
+      modeConfig: null,
       pointsRemovable: true,
       drawAtFront: false,
       selectedFeatureIndexes: [],
@@ -80,14 +88,10 @@ export default class Example extends Component<
 
   componentDidMount() {
     window.addEventListener('resize', this._resize);
-    window.addEventListener('keydown', this._onKeyDown);
-    window.addEventListener('keyup', this._onKeyUp);
   }
 
   componentWillUnmount() {
     window.removeEventListener('resize', this._resize);
-    window.removeEventListener('keydown', this._onKeyDown);
-    window.removeEventListener('keyup', this._onKeyUp);
   }
 
   _onChangeViewport = (viewport: Object) => {
@@ -96,7 +100,7 @@ export default class Example extends Component<
     });
   };
 
-  _onLayerClick = info => {
+  _onLayerClick = (info: any) => {
     console.log('onLayerClick', info); // eslint-disable-line
 
     if (this.state.mode !== 'view') {
@@ -137,7 +141,7 @@ export default class Example extends Component<
     }
   };
 
-  _renderCheckbox(index, featureType) {
+  _renderCheckbox(index: number, featureType: string) {
     const { selectedFeatureIndexes } = this.state;
     return (
       <dd style={styles.toolboxDescription} key={index}>
@@ -205,6 +209,24 @@ export default class Example extends Component<
               <option value="drawEllipseUsing3Points">drawEllipseUsing3Points</option>
             </select>
           </dd>
+          <dt style={styles.toolboxTerm}>Boolean operation</dt>
+          <dd style={styles.toolboxDescription}>
+            <select
+              value={this.state.modeConfig ? this.state.modeConfig.booleanOperation : ''}
+              onChange={event =>
+                this.setState({
+                  modeConfig: {
+                    booleanOperation: event.target.value
+                  }
+                })
+              }
+            >
+              <option value="">(none)</option>
+              <option value="union">union</option>
+              <option value="difference">difference</option>
+              <option value="intersection">intersection</option>
+            </select>
+          </dd>
           <dt style={styles.toolboxTerm}>Allow removing points</dt>
           <dd style={styles.toolboxDescription}>
             <input
@@ -265,6 +287,7 @@ export default class Example extends Component<
       data: testFeatures,
       selectedFeatureIndexes,
       mode,
+      modeConfig: this.state.modeConfig,
       fp64: true,
       autoHighlight: true,
       drawAtFront,

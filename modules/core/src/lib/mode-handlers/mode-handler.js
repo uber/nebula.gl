@@ -1,13 +1,22 @@
 // @flow
 
-import type { FeatureCollection, Feature, Geometry, Position } from '../../geojson-types.js';
+import turfUnion from '@turf/union';
+import turfDifference from '@turf/difference';
+import turfIntersect from '@turf/intersect';
+
+import type {
+  FeatureCollection,
+  Feature,
+  Polygon,
+  Geometry,
+  Position
+} from '../../geojson-types.js';
 import type {
   ClickEvent,
   PointerMoveEvent,
   StartDraggingEvent,
   StopDraggingEvent
 } from '../event-types.js';
-
 import { ImmutableFeatureCollection } from '../immutable-feature-collection.js';
 
 export type EditHandle = {
@@ -130,6 +139,80 @@ export class ModeHandler {
 
   getCursor({ isDragging }: { isDragging: boolean }): string {
     return 'cell';
+  }
+
+  getAddFeatureAction(geometry: Geometry) {
+    // Unsure why flow can't deal with Geometry type, but there I fixed it
+    const geometryAsAny: any = geometry;
+
+    const updatedData = this.getImmutableFeatureCollection()
+      .addFeature({
+        type: 'Feature',
+        properties: {},
+        geometry: geometryAsAny
+      })
+      .getObject();
+
+    return {
+      updatedData,
+      editType: 'addFeature',
+      featureIndex: updatedData.features.length - 1,
+      positionIndexes: null,
+      position: null
+    };
+  }
+
+  getAddFeatureOrBooleanPolygonAction(geometry: Polygon) {
+    const selectedGeometry = this.getSelectedGeometry();
+    const modeConfig = this.getModeConfig();
+    if (modeConfig && modeConfig.booleanOperation) {
+      if (
+        !selectedGeometry ||
+        (selectedGeometry.type !== 'Polygon' && selectedGeometry.type !== 'MultiPolygon')
+      ) {
+        // eslint-disable-next-line no-console,no-undef
+        console.warn(
+          'booleanOperation only supported for single Polygon or MultiPolygon selection'
+        );
+        return null;
+      }
+
+      let updatedGeometry;
+      if (modeConfig.booleanOperation === 'union') {
+        updatedGeometry = turfUnion(selectedGeometry, geometry);
+      } else if (modeConfig.booleanOperation === 'difference') {
+        updatedGeometry = turfDifference(selectedGeometry, geometry);
+      } else if (modeConfig.booleanOperation === 'intersection') {
+        updatedGeometry = turfIntersect(selectedGeometry, geometry);
+      } else {
+        // eslint-disable-next-line no-console,no-undef
+        console.warn(`Invalid booleanOperation ${modeConfig.booleanOperation}`);
+        return null;
+      }
+
+      if (!updatedGeometry) {
+        // eslint-disable-next-line no-console,no-undef
+        console.warn('Canceling edit. Boolean operation erased entire polygon.');
+        return null;
+      }
+
+      const featureIndex = this.getSelectedFeatureIndexes()[0];
+
+      const updatedData = this.getImmutableFeatureCollection()
+        .replaceGeometry(featureIndex, updatedGeometry.geometry)
+        .getObject();
+
+      const editAction: EditAction = {
+        updatedData,
+        editType: 'unionGeometry',
+        featureIndex,
+        positionIndexes: null,
+        position: null
+      };
+
+      return editAction;
+    }
+    return this.getAddFeatureAction(geometry);
   }
 
   handleClick(event: ClickEvent): ?EditAction {

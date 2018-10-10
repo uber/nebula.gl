@@ -11,20 +11,6 @@ export class DrawPointHandler extends ModeHandler {
       coordinates: groundCoords
     };
 
-    const updatedData = this.getImmutableFeatureCollection()
-      .addFeature({
-        type: 'Feature',
-        properties: {},
-        geometry
-      })
-      .getObject();
-
-    return {
-      updatedData,
-      editType: 'addFeature',
-      featureIndex: updatedData.features.length - 1,
-      positionIndexes: null,
-      position: null
-    };
+    return this.getAddFeatureAction(geometry);
   }
 }

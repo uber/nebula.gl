@@ -1,32 +1,13 @@
 // @flow
 /* eslint-env jest */
-/* eslint-disable max-nested-callbacks */
 
-import type { Position, Feature, FeatureCollection } from '../../../geojson-types.js';
-import type { ClickEvent, PointerMoveEvent } from '../../../lib/event-types.js';
+import type { Feature, FeatureCollection } from '../../../geojson-types.js';
 import { DrawLineStringHandler } from '../../../lib/mode-handlers/draw-line-string-handler.js';
-import { createFeatureCollection } from '../test-utils.js';
-
-function createClickEvent(groundCoords: Position): ClickEvent {
-  return {
-    screenCoords: [-1, -1],
-    groundCoords,
-    picks: []
-  };
-}
-
-function createPointerMoveEvent(groundCoords: Position): PointerMoveEvent {
-  return {
-    screenCoords: [-1, -1],
-    groundCoords,
-    picks: [],
-    isDragging: false,
-    pointerDownPicks: null,
-    pointerDownScreenCoords: null,
-    pointerDownGroundCoords: null,
-    sourceEvent: null
-  };
-}
+import {
+  createFeatureCollection,
+  createClickEvent,
+  createPointerMoveEvent
+} from '../test-utils.js';
 
 let featureCollection: FeatureCollection;
 let lineStringFeature: Feature;

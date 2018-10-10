@@ -20,7 +20,7 @@ User can move existing points, add intermediate points along lines, and remove p
 
 * Mode name: `rotate`
 
-User can rotate a feature about its centroid by clicking and dragging anywhere on the screen.
+User can rotate a feature about its centroid by clicking and dragging the selected geometry.
 
 _Note: currently only supports single selection_
 
@@ -83,3 +83,14 @@ User can draw a new ellipse shape `Polygon` feature by clicking two corners of b
 * Mode name: `drawEllipseUsing3Points`
 
 User can draw a new ellipse shape `Polygon` feature by clicking center and two corners of the ellipse.
+
+## Boolean Operations
+
+For all polygon drawing modes, the following options can be provided in the `modeConfig` object:
+
+* `booleanOperation` (optional):  `null|'union'|'difference'|'intersection'`
+  * If non-null, requires a single `Polygon` or `MultiPolygon` selection
+  * If `null`, the drawn `Polygon` is added as a new feature regardless of selection
+  * If `union`, the drawn `Polygon` is unioned with the selected geometry
+  * If `difference`, the drawn `Polygon` is subtracted from the selected geometry
+  * If `intersection`, the drawn `Polygon` is intersected with the selected geometry

@@ -47,22 +47,9 @@ export class DrawLineStringHandler extends ModeHandler {
 
       this.resetClickSequence();
     } else if (clickSequence.length === 2 && tentativeFeature) {
+      // Add a new LineString
       const geometry: any = tentativeFeature.geometry;
-      const updatedData = this.getImmutableFeatureCollection()
-        .addFeature({
-          type: 'Feature',
-          properties: {},
-          geometry
-        })
-        .getObject();
-
-      editAction = {
-        updatedData,
-        editType: 'addFeature',
-        featureIndex: updatedData.features.length - 1,
-        positionIndexes: null,
-        position: null
-      };
+      editAction = this.getAddFeatureAction(geometry);
 
       this.resetClickSequence();
     }

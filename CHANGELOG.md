@@ -3,12 +3,16 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/uber/nebula.gl/compare/v0.5.1...master)
+<!-- ## [Unreleased](https://github.com/uber/nebula.gl/compare/v0.6.1...master) -->
+
+## [0.6.1](https://github.com/uber/nebula.gl/compare/v0.5.1...v0.6.1) - 2018-10-10
 
 ### Added
 
 * Ability to customize existing modes or add new modes using `ModeHandler`s
 * `rotate` mode
+* `translate` mode
+* `scale` mode
 * Boolean operations (union, difference, intersection) for polygon draw modes
 
 ### Changed
@@ -18,7 +22,7 @@ All notable changes to this project will be documented in this file. This projec
 * Edit handles will now only appear in `modify` and `drawPolygon` modes
 * Can add new intermediate points anywhere along a line rather than just from the midpoint
 
-## [0.5.1](https://github.com/uber/nebula.gl/compare/v0.4.3...v0.5.1) - 2017-09-24
+## [0.5.1](https://github.com/uber/nebula.gl/compare/v0.4.3...v0.5.1) - 2018-09-24
 
 ### Removed
 

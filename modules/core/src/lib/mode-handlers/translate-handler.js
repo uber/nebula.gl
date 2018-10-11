@@ -20,45 +20,35 @@ export class TranslateHandler extends ModeHandler {
 
   handlePointerMove(event: PointerMoveEvent): { editAction: ?EditAction, cancelMapPan: boolean } {
     let editAction: ?EditAction = null;
-    let cancelMapPan = false;
-
-    const selectedFeatureIndexes = this.getSelectedFeatureIndexes();
 
     this._isTranslatable =
       Boolean(this._geometryBeforeTranslate) || this.isSingleSelectionPicked(event.picks);
 
-    if (
-      event.isDragging &&
-      event.pointerDownGroundCoords &&
-      this._geometryBeforeTranslate &&
-      selectedFeatureIndexes.length === 1
-    ) {
+    if (!this._isTranslatable || !event.pointerDownGroundCoords) {
+      // Nothing to do
+      return { editAction: null, cancelMapPan: false };
+    }
+
+    if (event.isDragging && this._geometryBeforeTranslate) {
       // Translate the geometry
-      editAction = this.getEditAction(event.pointerDownGroundCoords, event.groundCoords);
+      editAction = this.getTranslateAction(
+        event.pointerDownGroundCoords,
+        event.groundCoords,
+        'translating'
+      );
     }
 
-    if (
-      event.pointerDownGroundCoords &&
-      event.pointerDownPicks &&
-      event.pointerDownPicks.length &&
-      event.pointerDownPicks[0].index === selectedFeatureIndexes[0]
-    ) {
-      cancelMapPan = true;
-    }
-
-    return { editAction, cancelMapPan };
+    return { editAction, cancelMapPan: true };
   }
 
   handleStartDragging(event: StartDraggingEvent): ?EditAction {
     const selectedFeatureIndexes = this.getSelectedFeatureIndexes();
     const geometryBefore = this.getSelectedGeometry();
-    const { picks } = event;
-
-    this._geometryBeforeTranslate =
-      picks.length && selectedFeatureIndexes[0] === picks[0].index ? geometryBefore : null;
 
     if (selectedFeatureIndexes.length !== 1 || !geometryBefore) {
       console.warn('translate only supported for single feature selection'); // eslint-disable-line no-console,no-undef
+    } else if (this._isTranslatable) {
+      this._geometryBeforeTranslate = geometryBefore;
     }
 
     return null;
@@ -67,17 +57,13 @@ export class TranslateHandler extends ModeHandler {
   handleStopDragging(event: StopDraggingEvent): ?EditAction {
     let editAction: ?EditAction = null;
 
-    const selectedFeatureIndexes = this.getSelectedFeatureIndexes();
-    if (
-      event.pointerDownGroundCoords &&
-      this._geometryBeforeTranslate &&
-      selectedFeatureIndexes.length === 1
-    ) {
+    if (this._geometryBeforeTranslate) {
       // Translate the geometry
-      editAction = this.getEditAction(event.pointerDownGroundCoords, event.groundCoords);
-      if (editAction) {
-        editAction.editType = 'translated';
-      }
+      editAction = this.getTranslateAction(
+        event.pointerDownGroundCoords,
+        event.groundCoords,
+        'translated'
+      );
       this._geometryBeforeTranslate = null;
     }
 
@@ -96,13 +82,16 @@ export class TranslateHandler extends ModeHandler {
 
   getCursor({ isDragging }: { isDragging: boolean }): string {
     if (this._isTranslatable) {
-      // TODO: look at doing SVG cursors to get a better "translate" cursor
       return 'move';
     }
     return isDragging ? 'grabbing' : 'grab';
   }
 
-  getEditAction(startDragPoint: Position, currentPoint: Position): ?EditAction {
+  getTranslateAction(
+    startDragPoint: Position,
+    currentPoint: Position,
+    editType: string
+  ): ?EditAction {
     if (!this._geometryBeforeTranslate) {
       return null;
     }
@@ -124,7 +113,7 @@ export class TranslateHandler extends ModeHandler {
 
     return {
       updatedData,
-      editType: 'translating',
+      editType,
       featureIndex,
       positionIndexes: null,
       position: null

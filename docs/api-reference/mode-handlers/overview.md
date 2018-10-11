@@ -82,6 +82,12 @@ User can draw a new rectanglular `Polygon` feature by clicking three corners of 
 
 User can draw a new circular `Polygon` feature by clicking the center then along the ring.
 
+### ModeConfig
+
+The following options can be provided in the `modeConfig` object:
+* `steps` (optional):  `x <number>`
+  * If steps: `x` means the circle will be drawn using `x` number of points.
+
 ## [DrawCircleByBoundingBoxHandler](https://github.com/uber/nebula.gl/blob/master/modules/core/src/lib/mode-handlers/draw-circle-by-bounding-box-handler.js)
 
 * Mode name: `drawCircleByBoundingBox`
@@ -90,9 +96,9 @@ User can draw a new circular `Polygon` feature by clicking the two corners of bo
 
 ### ModeConfig
 
-A `modeConfig` object can be provided:
-
-* If options: `{steps: x}` means the circle will be drawn using `x` number of points.
+The following options can be provided in the `modeConfig` object:
+* `steps` (optional):  `x <number>`
+  * If steps: `x` means the circle will be drawn using `x` number of points.
 
 ## [DrawEllipseByBoundingBoxHandler](https://github.com/uber/nebula.gl/blob/master/modules/core/src/lib/mode-handlers/draw-ellipse-by-bounding-box-handler.js)
 

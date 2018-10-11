@@ -193,7 +193,15 @@ export default class Example extends Component<
           <dd style={styles.toolboxDescription}>
             <select
               value={this.state.mode}
-              onChange={event => this.setState({ mode: event.target.value })}
+              onChange={event => {
+                let modeConfig = {};
+                if (event.target.value === 'drawCircleByBoundingBox') {
+                  modeConfig = {
+                    steps: 32
+                  };
+                }
+                this.setState({ mode: event.target.value, modeConfig });
+              }}
             >
               <option value="view">view</option>
               <option value="modify">modify</option>
@@ -276,23 +284,13 @@ export default class Example extends Component<
   }
 
   render() {
-    const { testFeatures, selectedFeatureIndexes, mode, drawAtFront } = this.state;
+    const { testFeatures, selectedFeatureIndexes, mode, modeConfig, drawAtFront } = this.state;
 
     const viewport = {
       ...this.state.viewport,
       height: window.innerHeight,
       width: window.innerWidth
     };
-
-    let { modeConfig } = this.state;
-    if (mode === 'drawCircleByBoundingBox') {
-      modeConfig = {
-        ...modeConfig,
-        options: {
-          steps: 32
-        }
-      };
-    }
 
     const editableGeoJsonLayer = new EditableGeoJsonLayer({
       id: 'geojson',

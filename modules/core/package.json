@@ -4,6 +4,10 @@
   "license": "MIT",
   "version": "0.6.1",
   "author": "Georgios Karnas <georgios@uber.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/uber/nebula.gl"
+  },
   "keywords": [
     "webgl",
     "visualization",

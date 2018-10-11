@@ -1,7 +1,7 @@
 {
   "description": "A suite of 3D-enabled data editing layers for deck.gl",
   "license": "MIT",
-  "private": "true",
+  "private": true,
   "author": "Georgios Karnas <georgios@uber.com>",
   "keywords": [
     "webgl",

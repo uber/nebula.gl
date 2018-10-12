@@ -45,7 +45,7 @@ _Note: currently only supports single selection_
 * Mode name: `duplicate`
 
 User can duplicate and translate a feature by clicking selected feature and dragging anywhere on the screen.
-This mode is extended on TranslatedHandler.
+This mode is extended on TranslateHandler.
 
 _Note: currently only supports single selection_
 

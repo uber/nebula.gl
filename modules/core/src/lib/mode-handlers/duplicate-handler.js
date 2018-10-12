@@ -16,7 +16,14 @@ export class DuplicateHandler extends TranslateHandler {
     }
 
     return this._geometryBeforeTranslate
-      ? { ...this.getAddFeatureAction(this._geometryBeforeTranslate), editType: 'duplicateFeature' }
+      ? this.getAddFeatureAction(this._geometryBeforeTranslate)
       : null;
+  }
+
+  getCursor({ isDragging }: { isDragging: boolean }): string {
+    if (this._isTranslatable) {
+      return 'copy';
+    }
+    return isDragging ? 'grabbing' : 'grab';
   }
 }

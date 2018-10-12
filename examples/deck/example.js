@@ -307,7 +307,7 @@ export default class Example extends Component<
           // reject the edit
           return;
         }
-        if (editType === 'addFeature') {
+        if (editType === 'addFeature' && mode !== 'duplicate') {
           // Add the new feature to the selection
           updatedSelectedFeatureIndexes = [...this.state.selectedFeatureIndexes, featureIndex];
         }

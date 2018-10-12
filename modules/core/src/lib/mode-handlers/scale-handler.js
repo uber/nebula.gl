@@ -57,7 +57,7 @@ export class ScaleHandler extends ModeHandler {
     let editAction: ?EditAction = null;
 
     if (this._geometryBeingScaled) {
-      // Sclae the geometry
+      // Scale the geometry
       editAction = this.getScaleAction(event.pointerDownGroundCoords, event.groundCoords, 'scaled');
       this._geometryBeingScaled = null;
     }

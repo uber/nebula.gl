@@ -40,6 +40,15 @@ User can translate a feature by clicking selected feature and dragging anywhere 
 
 _Note: currently only supports single selection_
 
+## [DuplicateHandler](https://github.com/uber/nebula.gl/blob/master/modules/core/src/lib/mode-handlers/duplicate-handler.js)
+
+* Mode name: `duplicate`
+
+User can duplicate and translate a feature by clicking selected feature and dragging anywhere on the screen.
+This mode is extended on TranslateHandler.
+
+_Note: currently only supports single selection_
+
 ## [DrawPointHandler](https://github.com/uber/nebula.gl/blob/master/modules/core/src/lib/mode-handlers/draw-point-handler.js)
 
 * Mode name: `drawPoint`

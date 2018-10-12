@@ -206,6 +206,7 @@ export default class Example extends Component<
               <option value="view">view</option>
               <option value="modify">modify</option>
               <option value="translate">translate</option>
+              <option value="duplicate">duplicate</option>
               <option value="rotate">rotate</option>
               <option value="scale">scale</option>
               <option value="drawPoint">drawPoint</option>
@@ -305,7 +306,7 @@ export default class Example extends Component<
       // Editing callbacks
       onEdit: ({ updatedData, editType, featureIndex, positionIndexes, position }) => {
         let updatedSelectedFeatureIndexes = this.state.selectedFeatureIndexes;
-        if (editType !== 'movePosition' && editType !== 'rotating') {
+        if (!['movePosition', 'rotating', 'translating', 'scaling'].includes(editType)) {
           // Don't log moves since they're really chatty
           // eslint-disable-next-line
           console.log('onEdit', editType, featureIndex, positionIndexes, position);
@@ -314,7 +315,7 @@ export default class Example extends Component<
           // reject the edit
           return;
         }
-        if (editType === 'addFeature') {
+        if (editType === 'addFeature' && mode !== 'duplicate') {
           // Add the new feature to the selection
           updatedSelectedFeatureIndexes = [...this.state.selectedFeatureIndexes, featureIndex];
         }

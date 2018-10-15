@@ -57,9 +57,17 @@ export class ModeHandler {
     return this.featureCollection;
   }
 
-  getSelectedGeometry(): ?Geometry {
+  getSelectedFeature(): ?Feature {
     if (this._selectedFeatureIndexes.length === 1) {
-      return this.featureCollection.getObject().features[this._selectedFeatureIndexes[0]].geometry;
+      return this.featureCollection.getObject().features[this._selectedFeatureIndexes[0]];
+    }
+    return null;
+  }
+
+  getSelectedGeometry(): ?Geometry {
+    const feature = this.getSelectedFeature();
+    if (feature) {
+      return feature.geometry;
     }
     return null;
   }
@@ -163,12 +171,13 @@ export class ModeHandler {
   }
 
   getAddFeatureOrBooleanPolygonAction(geometry: Polygon) {
-    const selectedGeometry = this.getSelectedGeometry();
+    const selectedFeature = this.getSelectedFeature();
     const modeConfig = this.getModeConfig();
     if (modeConfig && modeConfig.booleanOperation) {
       if (
-        !selectedGeometry ||
-        (selectedGeometry.type !== 'Polygon' && selectedGeometry.type !== 'MultiPolygon')
+        !selectedFeature ||
+        (selectedFeature.geometry.type !== 'Polygon' &&
+          selectedFeature.geometry.type !== 'MultiPolygon')
       ) {
         // eslint-disable-next-line no-console,no-undef
         console.warn(
@@ -177,13 +186,18 @@ export class ModeHandler {
         return null;
       }
 
+      const feature = {
+        type: 'Feature',
+        geometry
+      };
+
       let updatedGeometry;
       if (modeConfig.booleanOperation === 'union') {
-        updatedGeometry = turfUnion(selectedGeometry, geometry);
+        updatedGeometry = turfUnion(selectedFeature, feature);
       } else if (modeConfig.booleanOperation === 'difference') {
-        updatedGeometry = turfDifference(selectedGeometry, geometry);
+        updatedGeometry = turfDifference(selectedFeature, feature);
       } else if (modeConfig.booleanOperation === 'intersection') {
-        updatedGeometry = turfIntersect(selectedGeometry, geometry);
+        updatedGeometry = turfIntersect(selectedFeature, feature);
       } else {
         // eslint-disable-next-line no-console,no-undef
         console.warn(`Invalid booleanOperation ${modeConfig.booleanOperation}`);

@@ -131,25 +131,6 @@ describe('setSelectedFeatureIndexes()', () => {
   });
 });
 
-// describe('setDrawAtFront()', () => {
-//   it('should set drawAtFront', () => {
-//     const handler = new ModeHandler(featureCollection);
-
-//     handler.setDrawAtFront(true);
-
-//     expect(handler._drawAtFront).toEqual(true);
-//   });
-
-//   it('should do nothing if already set', () => {
-//     const handler = new ModeHandler(featureCollection);
-
-//     handler.setDrawAtFront(true);
-//     handler.setDrawAtFront(true);
-
-//     expect(handler._drawAtFront).toEqual(true);
-//   });
-// });
-
 describe('handleClick', () => {
   it('tracks click sequence', () => {
     const handler = new ModeHandler(featureCollection);

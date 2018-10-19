@@ -55,7 +55,6 @@ const defaultProps = {
   pointRadiusMinPixels: 2,
   pointRadiusMaxPixels: Number.MAX_SAFE_INTEGER,
   lineDashJustified: false,
-  drawAtFront: false,
   getLineColor: (feature, isSelected, mode) =>
     isSelected ? DEFAULT_SELECTED_LINE_COLOR : DEFAULT_LINE_COLOR,
   getFillColor: (feature, isSelected, mode) =>
@@ -230,7 +229,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
       modeHandler.setModeConfig(props.modeConfig);
       modeHandler.setSelectedFeatureIndexes(props.selectedFeatureIndexes);
-      modeHandler.setDrawAtFront(props.drawAtFront);
       this.updateTentativeFeature();
       this.updateEditHandles();
     }

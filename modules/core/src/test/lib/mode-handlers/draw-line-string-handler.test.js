@@ -17,7 +17,7 @@ let warnBefore;
 beforeEach(() => {
   warnBefore = console.warn; // eslint-disable-line
   // $FlowFixMe
-  console.warn = function() {}; // eslint-disable-line
+  console.warn = function () { }; // eslint-disable-line
 
   featureCollection = createFeatureCollection();
 
@@ -107,6 +107,35 @@ describe('when single LineString selected', () => {
       geometry: {
         type: 'LineString',
         coordinates: [...lineStringFeature.geometry.coordinates, [7, 8]]
+      }
+    });
+  });
+});
+
+describe('when single LineString selected and drawAtFront enabled', () => {
+  test('extends LineString from front of array on click', () => {
+    const handler = new DrawLineStringHandler(featureCollection);
+    handler.setModeConfig({
+      drawAtFront: true
+    });
+    handler.setSelectedFeatureIndexes([lineStringFeatureIndex]);
+
+    handler.handlePointerMove(createPointerMoveEvent([7, 8]));
+    const action = handler.handleClick(createClickEvent([7, 8]));
+
+    if (!action) {
+      throw new Error('action should be defined');
+    }
+    expect(action.editType).toEqual('addPosition');
+    expect(action.featureIndex).toEqual(lineStringFeatureIndex);
+    expect(action.position).toEqual([7, 8]);
+    expect(action.positionIndexes).toEqual([0]);
+    expect(action.updatedData.features[lineStringFeatureIndex]).toEqual({
+      type: 'Feature',
+      properties: {},
+      geometry: {
+        type: 'LineString',
+        coordinates: [[7, 8], ...lineStringFeature.geometry.coordinates]
       }
     });
   });

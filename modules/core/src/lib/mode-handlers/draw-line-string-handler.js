@@ -29,7 +29,9 @@ export class DrawLineStringHandler extends ModeHandler {
       const lineString: LineString = selectedGeometry;
 
       let positionIndexes = [lineString.coordinates.length];
-      if (this.getDrawAtFront()) {
+
+      const modeConfig = this.getModeConfig();
+      if (modeConfig && modeConfig.drawAtFront) {
         positionIndexes = [0];
       }
       const featureIndex = selectedFeatureIndexes[0];
@@ -78,7 +80,9 @@ export class DrawLineStringHandler extends ModeHandler {
     if (selectedGeometry && selectedGeometry.type === 'LineString') {
       // Draw an extension line starting from one end of the selected LineString
       startPosition = selectedGeometry.coordinates[selectedGeometry.coordinates.length - 1];
-      if (this.getDrawAtFront()) {
+
+      const modeConfig = this.getModeConfig();
+      if (modeConfig && modeConfig.drawAtFront) {
         startPosition = selectedGeometry.coordinates[0];
       }
     } else if (clickSequence.length === 1) {

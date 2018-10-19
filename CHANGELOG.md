@@ -21,6 +21,7 @@ All notable changes to this project will be documented in this file. This projec
 * `isDragging` is now true whether or not something was picked in `onPointerMove()` event
 * Edit handles will now only appear in `modify` and `drawPolygon` modes
 * Can add new intermediate points anywhere along a line rather than just from the midpoint
+* `EditableGeoJsonLayer`'s `drawAtFront` prop should now be supplied via `modeConfig` prop
 
 ## [0.5.1](https://github.com/uber/nebula.gl/compare/v0.4.3...v0.5.1) - 2018-09-24
 

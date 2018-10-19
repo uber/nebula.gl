@@ -67,6 +67,12 @@ User can draw a new `LineString` feature by clicking positions to add.
 
 * If multiple features are selected, or a non-`LineString` is selected, the user will be prevented from drawing.
 
+### ModeConfig
+
+The following options can be provided in the `modeConfig` object:
+* `drawAtFront` (optional):  `<boolean>`
+  * If `true`, will render the tentative feature at the "beginning" of the line, i.e. relative to the start of the coordinates array.
+
 ## [DrawPolygonHandler](https://github.com/uber/nebula.gl/blob/master/modules/core/src/lib/mode-handlers/draw-polygon-handler.js)
 
 * Mode name: `drawPolygon`

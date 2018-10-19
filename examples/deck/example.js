@@ -265,7 +265,11 @@ export default class Example extends Component<
               checked={this.state.drawAtFront}
               onChange={() =>
                 this.setState({
-                  drawAtFront: !this.state.drawAtFront
+                  drawAtFront: !this.state.drawAtFront,
+                  modeConfig: {
+                    ...this.state.modeConfig,
+                    drawAtFront: !this.state.drawAtFront
+                  }
                 })
               }
             />

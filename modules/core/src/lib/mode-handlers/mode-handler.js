@@ -40,7 +40,6 @@ export class ModeHandler {
   _tentativeFeature: ?Feature;
   _modeConfig: any = null;
   _selectedFeatureIndexes: number[] = [];
-  _drawAtFront: boolean = false;
   _clickSequence: Position[] = [];
 
   constructor(featureCollection?: FeatureCollection) {
@@ -99,19 +98,6 @@ export class ModeHandler {
     }
 
     this._selectedFeatureIndexes = indexes;
-    this._setTentativeFeature(null);
-  }
-
-  getDrawAtFront(): boolean {
-    return this._drawAtFront;
-  }
-
-  setDrawAtFront(drawAtFront: boolean): void {
-    if (this._drawAtFront === drawAtFront) {
-      return;
-    }
-
-    this._drawAtFront = drawAtFront;
     this._setTentativeFeature(null);
   }
 

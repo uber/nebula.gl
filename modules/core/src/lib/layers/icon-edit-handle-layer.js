@@ -20,7 +20,7 @@ const defaultProps = {
 };
 
 export default class IconEditHandleLayer extends IconLayer {
-  constructor(props) {
+  constructor(props: Object) {
     super({
       ...defaultProps,
       ...props

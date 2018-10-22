@@ -19,7 +19,7 @@ const defaultProps = {
 };
 
 export default class ScatterplotEditHandleLayer extends ScatterplotLayer {
-  constructor(props) {
+  constructor(props: Object) {
     super({
       ...defaultProps,
       ...props

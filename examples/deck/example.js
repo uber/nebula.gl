@@ -11,6 +11,8 @@ import { EditableGeoJsonLayer } from 'nebula.gl';
 import sampleGeoJson from '../data/sample-geojson.json';
 
 import iconSheet from '../data/edit-handles.png';
+import ScatterplotEditHandleLayer from '../../modules/core/src/lib/layers/scatterplot-edit-handle-layer.js';
+import IconEditHandleLayer from '../../modules/core/src/lib/layers/icon-edit-handle-layer.js';
 
 const initialViewport = {
   bearing: 0,
@@ -289,7 +291,7 @@ export default class Example extends Component<
   }
 
   render() {
-    const { testFeatures, selectedFeatureIndexes, mode, modeConfig, drawAtFront } = this.state;
+    const { testFeatures, selectedFeatureIndexes, mode, modeConfig } = this.state;
 
     const viewport = {
       ...this.state.viewport,
@@ -305,7 +307,44 @@ export default class Example extends Component<
       modeConfig,
       fp64: true,
       autoHighlight: true,
-      drawAtFront,
+
+      // Can customize editing points prop
+      layerOverrides: {
+        ['point-edit-handles']: {
+          Layer: ScatterplotEditHandleLayer,
+          props: {
+            fp64: true,
+            getColor: handle =>
+              handle.type === 'existing' ? [0xff, 0x80, 0x00, 0xff] : [0x0, 0x0, 0x0, 0x80],
+            radiusScale: 2
+          }
+        },
+        ['icon-edit-handles']: {
+          Layer: IconEditHandleLayer,
+          props: {
+            iconAtlas: iconSheet,
+            iconMapping: {
+              intermediate: {
+                x: 0,
+                y: 0,
+                width: 58,
+                height: 58,
+                mask: false
+              },
+              existing: {
+                x: 58,
+                y: 0,
+                width: 58,
+                height: 58,
+                mask: false
+              }
+            },
+            getColor: handle =>
+              handle.type === 'existing' ? [0xff, 0x80, 0x00, 0xff] : [0x0, 0x0, 0x0, 0x80],
+            getSize: 40
+          }
+        }
+      },
 
       // Editing callbacks
       onEdit: ({ updatedData, editType, featureIndex, positionIndexes, position }) => {
@@ -331,27 +370,6 @@ export default class Example extends Component<
 
       // test using icons for edit handles
       editHandleType: this.state.editHandleType,
-      editHandleIconAtlas: iconSheet,
-      editHandleIconMapping: {
-        intermediate: {
-          x: 0,
-          y: 0,
-          width: 58,
-          height: 58,
-          mask: false
-        },
-        existing: {
-          x: 58,
-          y: 0,
-          width: 58,
-          height: 58,
-          mask: false
-        }
-      },
-      getEditHandleIcon: d => d.type,
-      getEditHandleIconSize: 40,
-      getEditHandleIconColor: handle =>
-        handle.type === 'existing' ? [0xff, 0x80, 0x00, 0xff] : [0x0, 0x0, 0x0, 0x80],
 
       // Specify the same GeoJsonLayer props
       lineWidthMinPixels: 2,
@@ -365,11 +383,6 @@ export default class Example extends Component<
       getLineColor: (feature, isSelected) => {
         return isSelected ? [0x00, 0x20, 0x90, 0xff] : [0x20, 0x20, 0x20, 0xff];
       },
-
-      // Can customize editing points props
-      getEditHandlePointColor: handle =>
-        handle.type === 'existing' ? [0xff, 0x80, 0x00, 0xff] : [0x0, 0x0, 0x0, 0x80],
-      editHandlePointRadiusScale: 2,
 
       // customize tentative feature style
       getTentativeLineDashArray: () => [7, 4],

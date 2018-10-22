@@ -1,7 +1,7 @@
 // @flow
 /* eslint-env browser */
 
-import { GeoJsonLayer, ScatterplotLayer, IconLayer } from 'deck.gl';
+import { GeoJsonLayer } from 'deck.gl';
 import { ModeHandler } from '../mode-handlers/mode-handler.js';
 import { ViewHandler } from '../mode-handlers/view-handler.js';
 import { ModifyHandler } from '../mode-handlers/modify-handler.js';
@@ -28,6 +28,8 @@ import type {
   PointerMoveEvent
 } from '../event-types.js';
 import EditableLayer from './editable-layer.js';
+import ScatterplotEditHandleLayer from './scatterplot-edit-handle-layer';
+import IconEditHandleLayer from './icon-edit-handle-layer';
 
 const DEFAULT_LINE_COLOR = [0x0, 0x0, 0x0, 0xff];
 const DEFAULT_FILL_COLOR = [0x0, 0x0, 0x0, 0x90];
@@ -73,30 +75,6 @@ const defaultProps = {
 
   editHandleType: 'point',
   editHandleParameters: {},
-
-  // point handles
-  editHandlePointRadiusScale: 1,
-  editHandlePointOutline: false,
-  editHandlePointStrokeWidth: 1,
-  editHandlePointRadiusMinPixels: 4,
-  editHandlePointRadiusMaxPixels: 8,
-  getEditHandlePointColor: handle =>
-    handle.type === 'existing'
-      ? DEFAULT_EDITING_EXISTING_POINT_COLOR
-      : DEFAULT_EDITING_INTERMEDIATE_POINT_COLOR,
-  getEditHandlePointRadius: handle => (handle.type === 'existing' ? 5 : 3),
-
-  // icon handles
-  editHandleIconAtlas: null,
-  editHandleIconMapping: null,
-  editHandleIconSizeScale: 1,
-  getEditHandleIcon: handle => handle.type,
-  getEditHandleIconSize: 10,
-  getEditHandleIconColor: handle =>
-    handle.type === 'existing'
-      ? DEFAULT_EDITING_EXISTING_POINT_COLOR
-      : DEFAULT_EDITING_INTERMEDIATE_POINT_COLOR,
-  getEditHandleIconAngle: 0,
 
   // Mode handlers
   modeHandlers: {
@@ -274,48 +252,16 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       return [];
     }
 
-    const sharedProps = {
-      id: `${this.props.editHandleType}-edit-handles`,
-      data: this.state.editHandles,
-      fp64: this.props.fp64
-    };
-
+    const { editHandleType } = this.props;
     const layer =
-      this.props.editHandleType === 'icon'
-        ? new IconLayer(
-            this.getSubLayerProps({
-              ...sharedProps,
-              iconAtlas: this.props.editHandleIconAtlas,
-              iconMapping: this.props.editHandleIconMapping,
-              sizeScale: this.props.editHandleIconSizeScale,
-              getIcon: this.props.getEditHandleIcon,
-              getSize: this.props.getEditHandleIconSize,
-              getColor: this.props.getEditHandleIconColor,
-              getAngle: this.props.getEditHandleIconAngle,
-
-              getPosition: d => d.position,
-
-              parameters: this.props.editHandleParameters
-            })
-          )
-        : this.props.editHandleType === 'point'
-          ? new ScatterplotLayer(
-              this.getSubLayerProps({
-                ...sharedProps,
-
-                // Proxy editing point props
-                radiusScale: this.props.editHandlePointRadiusScale,
-                outline: this.props.editHandlePointOutline,
-                strokeWidth: this.props.editHandlePointStrokeWidth,
-                radiusMinPixels: this.props.editHandlePointRadiusMinPixels,
-                radiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
-                getRadius: this.props.getEditHandlePointRadius,
-                getColor: this.props.getEditHandlePointColor,
-
-                parameters: this.props.editHandleParameters
-              })
-            )
-          : null;
+      ['point', 'icon'].includes(editHandleType) &&
+      new (editHandleType === 'icon' ? IconEditHandleLayer : ScatterplotEditHandleLayer)(
+        this.getSubLayerProps({
+          id: `${editHandleType}-edit-handles`,
+          data: this.state.editHandles,
+          fp64: this.props.fp64
+        })
+      );
 
     return [layer];
   }

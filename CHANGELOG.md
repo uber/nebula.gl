@@ -3,13 +3,23 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/uber/nebula.gl/compare/v0.6.1...master)
+<!-- ## [Unreleased](https://github.com/uber/nebula.gl/compare/v0.7.0...master) -->
+
+## [0.7.0](https://github.com/uber/nebula.gl/compare/v0.6.1...v0.7.0) - 2018-10-23
 
 ### Added
 
+* Ability to duplicate a feature ([#109](https://github.com/uber/nebula.gl/pull/109))
+* Option to configure number of points for circle ([#103](https://github.com/uber/nebula.gl/pull/103))
+
 ### Changed
 
-* `EditableGeoJsonLayer`'s `drawAtFront` prop should now be supplied via `modeConfig` prop
+* `EditableGeoJsonLayer`'s `drawAtFront` prop should now be supplied via `modeConfig` prop ([#115](https://github.com/uber/nebula.gl/pull/115))
+
+### Fixed
+
+* Specify 6.0.5 as the minimum version for [deck.gl](https://github.com/uber/deck.gl)
+* Fix turf v5 compatibility with boolean operations ([#111](https://github.com/uber/nebula.gl/pull/111))
 
 ## [0.6.1](https://github.com/uber/nebula.gl/compare/v0.5.1...v0.6.1) - 2018-10-10
 

@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file. This projec
 
 <!-- ## [Unreleased](https://github.com/uber/nebula.gl/compare/v0.7.0...master) -->
 
+## [0.7.1] - 2018-10-24
+* Fix Nebula crashes on attempt to edit polygon layer over segment layer
+
 ## [0.7.0](https://github.com/uber/nebula.gl/compare/v0.6.1...v0.7.0) - 2018-10-23
 
 ### Added

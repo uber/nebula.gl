@@ -49,37 +49,8 @@ export default class NebulaReact extends Component<Props> {
     this.nebula.forceUpdate = () => this.forceUpdate();
   }
 
-  componentDidMount() {
-    const { deckgl } = this.nebula;
-    if (deckgl) {
-      deckgl.deck.animationLoop._startPromise.then(() => {
-        deckgl.deck.animationLoop.stop();
-      });
-    }
-  }
-
   componentWillReceiveProps(props: Props) {
     this.nebula.updateProps(props);
-  }
-
-  componentDidUpdate() {
-    if (!this.nebula.deckgl) return;
-    const { deck } = this.nebula.deckgl;
-
-    if (!deck.animationLoop.gl) {
-      // the GL context isn't ready.
-      return;
-    }
-
-    // We hijack the animationLoop so that DeckGL rendering will
-    // be in-sync with the React and Mapbox render cycle.
-    deck.animationLoop._setupFrame();
-    deck.animationLoop._updateCallbackData();
-    deck._needsRedraw = true;
-    deck._onRenderFrame({
-      gl: deck.animationLoop.gl,
-      canvas: deck.animationLoop.gl.canvas
-    });
   }
 
   nebula: NebulaCore;

@@ -22,28 +22,11 @@ There are 2 issues motivating this RFC:
 
 ## Marketing Pitch
 
-* Add new tentative feature API to enable customizing handling of work-in-progress edits.
+* Separate tentative features from the FeatureCollection being edited in the `data` prop.
 
 ## Proposal
 
-Introduce two new props: `tentativeFeature` and `onTentativeFeatureUpdate` to hold and update, respectively, the edits that are not yet valid or complete to be "committed" back to the `data` prop (through the `onEdit` callback). Both props are optional and only need to be supplied if a consuming application wants to customize tentative feature handling (e.g. snapping points). These props only apply to `draw*` modes (they are ignored for `view` and `modify` modes).
-
-### API
-
-```javascript
-new EditableGeoJsonLayer({
-  data: this.state.data,
-  onEdit: ({updatedData}) =>
-    this.setState({data: updatedData}), // just as onEdit functions today
-
-  // optional: if caller wants to customize tentative feature handling
-  tentativeFeature: this.state.tentativeFeature,
-
-  // optional: if caller wants to customize tentative feature handling
-  onTentativeFeatureUpdate: ({updatedTentativeFeature}) =>
-    this.setState({tentativeFeature: updatedTentativeFeature}),
-})
-```
+Store and update `tentativeFeature` state internally in `EditableGeoJsonLayer` separate from the `data` prop. Updates to `tentativeFeature` will not trigger `onEdit` callbacks until the tentative feature is "complete" and of the desired geometry type. The tentative feature functionality will only apply to `draw*` modes (they are ignored for `view` and `modify` modes).
 
 ### Upgrading/Downgrading Geometry Types
 
@@ -58,35 +41,31 @@ For example, adding points in `drawPolygon` mode would update the `tentativeFeat
 * `selectedFeatureIndexes=[]`
 * `mode='drawLineString'`
 * user moves pointer around
-  * `onTentativeFeatureUpdate` called repeatedly as pointer moves around
-    * `updatedTentativeFeature` is a point feature whose coordinates follow the mouse
+  * `tentativeFeature` is a point feature whose coordinates follow the mouse
 * user clicks
   * `onEdit` is not called because it isn't a LineString yet
-  * `onTentativeFeatureUpdate` called repeatedly as pointer moves around
-    * `updatedTentativeFeature` is a LineString with first coordinate where user clicked, second coordinate follows the mouse
+  * `tentativeFeature` is a LineString with first coordinate where user clicked, second coordinate follows the mouse
 * user clicks
-  * `onEdit` called, updatedData has a new LineString feature, updatedSelectedIndexes would have the new one selected
-  * `onTentativeFeatureUpdate` called repeatedly as pointer moves around
-    * `updatedTentativeFeature` is a LineString with first coordinate where user clicked the second time, second coordinate follows the mouse
+  * `onEdit` called, `updatedData` has a new LineString feature, `featureIndex` is the index of the new feature
+* user selects a `LineString`
+* user moves pointer around
+  * `tentativeFeature` is a LineString with first coordinate is the end of the selected `LineString`; second coordinate follows the mouse
 
 ### Draw new line polygon
 
 * `selectedFeatureIndexes=[]`
 * `mode='drawPolygon'`
 * user moves pointer around
-  * `onTentativeFeatureUpdate` called repeatedly as pointer moves around
-    * `updatedTentativeFeature` is a point feature whose coordinates follow the mouse
+  * `tentativeFeature` is a point feature whose coordinates follow the mouse
 * user clicks
   * `onEdit` is not called because it isn't a Polygon yet
-  * `onTentativeFeatureUpdate` called repeatedly as pointer moves around
-    * `updatedTentativeFeature` is a LineString with first coordinate where user clicked, second coordinate follows the mouse
+  * `tentativeFeature` is a LineString with first coordinate where user clicked, second coordinate follows the mouse
 * user clicks
   * `onEdit` is not called because it isn't a Polygon yet
-  * `onTentativeFeatureUpdate` called repeatedly as pointer moves around
-    * `updatedTentativeFeature` is a Polygon (triangle) with first coordinate where user clicked the first time, the second coordinate where the user clicked the second time, the third coordinate follows the mouse, and the fourth coordinate loops back to the first coordinate (completing the triangle)
-* user clicks
-  * `onEdit` called, updatedData has a new Polygon feature, updatedSelectedIndexes would have the new one selected
-    * `updatedTentativeFeature` is a new a Point again following the mouse in order to add another Polygon to the feature (thus upgrading it to a MultiPolygon)
+  * `tentativeFeature` is a Polygon (triangle) with first coordinate where user clicked the first time, the second coordinate where the user clicked the second time, the third coordinate follows the mouse, and the fourth coordinate loops back to the first coordinate (completing the triangle)
+* user clicks a few more times then clicks the starting point
+  * `onEdit` called, `updatedData` has a new Polygon feature, `featureIndex` is the index of the new feature
+  * `tentativeFeature` is a new Point again following the mouse in order to add a new Polygon
 
 ## Future
 

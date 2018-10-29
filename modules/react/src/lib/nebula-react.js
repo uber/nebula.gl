@@ -12,10 +12,9 @@ type Props = {
   viewport: Object,
   eventFilter?: Function,
   logger?: Object,
-  enableLoopSync?: boolean,
   children?: any,
-  extraDeckProps?: Object
-  
+  extraDeckProps?: Object,
+  enableLoopSync?: boolean
 };
 
 const styles = {

@@ -19,10 +19,15 @@ export class ModifyHandler extends ModeHandler {
 
   getEditHandles(picks?: Array<Object>, groundCoords?: Position): EditHandle[] {
     let handles = [];
+    const { features } = this.featureCollection.getObject();
 
     for (const index of this._selectedFeatureIndexes) {
-      const geometry = this.featureCollection.getObject().features[index].geometry;
-      handles = handles.concat(getEditHandlesForGeometry(geometry, index));
+      if (index < features.length) {
+        const { geometry } = features[index];
+        handles.push(...getEditHandlesForGeometry(geometry, index));
+      } else {
+        console.warn(`selectedFeatureIndexes out of range ${index}`); // eslint-disable-line no-console,no-undef
+      }
     }
 
     // intermediate edit handle

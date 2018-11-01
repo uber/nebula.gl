@@ -54,6 +54,7 @@ export default class NebulaReact extends Component<Props> {
   }
 
   nebula: NebulaCore;
+  deckReady: boolean;
 
   updateAllDeckObjects() {
     this.nebula.updateAllDeckObjects();
@@ -75,7 +76,12 @@ export default class NebulaReact extends Component<Props> {
     return (
       <div style={style} ref={div => this.nebula.setMainContainer(div)}>
         <DeckGL
-          ref={deckgl => this.nebula.setDeck(deckgl)}
+          ref={deckgl => {
+            if (this.deckReady) {
+              this.nebula.setDeck(deckgl);
+            }
+          }}
+          onLoad={() => (this.deckReady = true)}
           width={width}
           height={height}
           viewState={viewport}

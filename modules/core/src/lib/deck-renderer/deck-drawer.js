@@ -17,9 +17,9 @@ const LAYER_ID_VIEW = 'DeckDrawerView';
 const LAYER_ID_PICK = 'DeckDrawerPick';
 
 export const SELECTION_TYPE = {
-  NONE: 0,
-  RECTANGLE: 1,
-  POLYGON: 2
+  NONE: null,
+  RECTANGLE: 'rectangle',
+  POLYGON: 'polygon'
 };
 
 export default class DeckDrawer {

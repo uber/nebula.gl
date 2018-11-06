@@ -95,7 +95,8 @@ export function createClickEvent(groundCoords: Position): ClickEvent {
   return {
     screenCoords: [-1, -1],
     groundCoords,
-    picks: []
+    picks: [],
+    sourceEvent: null
   };
 }
 

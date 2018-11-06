@@ -1,5 +1,4 @@
 // @flow
-
 import type { Position } from '../geojson-types.js';
 
 export type DeckGLPick = {
@@ -11,11 +10,13 @@ export type DeckGLPick = {
 export type ClickEvent = {
   picks: DeckGLPick[],
   screenCoords: Position,
-  groundCoords: Position
+  groundCoords: Position,
+  sourceEvent: any
 };
 
 export type DoubleClickEvent = {
-  groundCoords: Position
+  groundCoords: Position,
+  sourceEvent: any
 };
 
 export type StartDraggingEvent = {
@@ -23,7 +24,8 @@ export type StartDraggingEvent = {
   screenCoords: Position,
   groundCoords: Position,
   pointerDownScreenCoords: Position,
-  pointerDownGroundCoords: Position
+  pointerDownGroundCoords: Position,
+  sourceEvent: any
 };
 
 export type StopDraggingEvent = {
@@ -31,7 +33,8 @@ export type StopDraggingEvent = {
   screenCoords: Position,
   groundCoords: Position,
   pointerDownScreenCoords: Position,
-  pointerDownGroundCoords: Position
+  pointerDownGroundCoords: Position,
+  sourceEvent: any
 };
 
 export type PointerMoveEvent = {

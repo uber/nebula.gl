@@ -50,6 +50,10 @@ export default class NebulaReact extends Component<Props> {
     this.nebula.forceUpdate = () => this.forceUpdate();
   }
 
+  componentWillUnmount() {
+    this.nebula.detach();
+  }
+
   componentDidMount() {
     if (!this.props.enableLoopSync) return;
     const { deckgl } = this.nebula;

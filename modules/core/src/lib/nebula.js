@@ -21,6 +21,13 @@ export default class Nebula {
     );
   }
 
+  detach() {
+    // TODO: Properly use pointer events: ['click', 'dblclick', 'pointermove', 'pointerup', 'pointerdown']
+    ['click', 'dblclick', 'mousemove', 'mouseup', 'mousedown'].forEach(name =>
+      document.removeEventListener(name, this._onMouseEvent, true)
+    );
+  }
+
   updateProps(newProps: Object) {
     this.props = newProps;
     const { viewport } = this.props;

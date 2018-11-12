@@ -2,11 +2,11 @@
 
 import window from 'global/window';
 import React, { Component } from 'react';
-import DeckGL, { MapView, MapController } from 'deck.gl';
+import DeckGL, { MapView, MapController, COORDINATE_SYSTEM } from 'deck.gl';
 import { StaticMap } from 'react-map-gl';
 import circle from '@turf/circle';
 
-import { EditableGeoJsonLayer } from 'nebula.gl';
+import { EditableGeoJsonLayer, SelectionLayer, SELECTION_TYPE } from 'nebula.gl';
 
 import sampleGeoJson from '../data/sample-geojson.json';
 
@@ -68,7 +68,8 @@ export default class Example extends Component<
     pointsRemovable: boolean,
     drawAtFront: boolean,
     selectedFeatureIndexes: number[],
-    editHandleType: string
+    editHandleType: string,
+    selectionTool: ?string
   }
 > {
   constructor() {
@@ -82,7 +83,8 @@ export default class Example extends Component<
       pointsRemovable: true,
       drawAtFront: false,
       selectedFeatureIndexes: [],
-      editHandleType: 'point'
+      editHandleType: 'point',
+      selectionTool: null
     };
   }
 
@@ -103,7 +105,7 @@ export default class Example extends Component<
   _onLayerClick = (info: any) => {
     console.log('onLayerClick', info); // eslint-disable-line
 
-    if (this.state.mode !== 'view') {
+    if (this.state.mode !== 'view' || this.state.selectionTool) {
       // don't change selection while editing
       return;
     }
@@ -200,7 +202,7 @@ export default class Example extends Component<
                     steps: 32
                   };
                 }
-                this.setState({ mode: event.target.value, modeConfig });
+                this.setState({ mode: event.target.value, modeConfig, selectionTool: null });
               }}
             >
               <option value="view">view</option>
@@ -278,8 +280,22 @@ export default class Example extends Component<
           <dd style={styles.toolboxDescription}>
             <input
               type="button"
-              value="Clear selection"
-              onClick={() => this.setState({ selectedFeatureIndexes: [] })}
+              value="Clear"
+              onClick={() =>
+                this.setState({ selectedFeatureIndexes: [], selectionTool: SELECTION_TYPE.NONE })
+              }
+            />
+            <input
+              type="button"
+              value="Rect"
+              onClick={() =>
+                this.setState({ mode: 'view', selectionTool: SELECTION_TYPE.RECTANGLE })
+              }
+            />
+            <input
+              type="button"
+              value="Lasso"
+              onClick={() => this.setState({ mode: 'view', selectionTool: SELECTION_TYPE.POLYGON })}
             />
           </dd>
           {this._renderAllCheckboxes()}
@@ -303,8 +319,11 @@ export default class Example extends Component<
       selectedFeatureIndexes,
       mode,
       modeConfig,
-      fp64: true,
-      autoHighlight: true,
+      // TODO: remove this after update to 6.2
+      fp64: false,
+      coordinateSystem: COORDINATE_SYSTEM.LNGLAT_EXPERIMENTAL,
+      //
+      autoHighlight: false,
       drawAtFront,
 
       // Editing callbacks
@@ -376,19 +395,39 @@ export default class Example extends Component<
       getTentativeLineColor: () => [0x8f, 0x8f, 0x8f, 0xff]
     });
 
+    const layers = [editableGeoJsonLayer];
+
+    if (this.state.selectionTool) {
+      layers.push(
+        new SelectionLayer({
+          id: 'selection',
+          selectionType: this.state.selectionTool,
+          onSelect: ({ pickingInfos }) => {
+            this.setState({ selectedFeatureIndexes: pickingInfos.map(pi => pi.index) });
+          },
+          layerIds: ['geojson'],
+
+          getTentativeFillColor: () => [255, 0, 255, 100],
+          getTentativeLineColor: () => [0, 0, 255, 255],
+          getTentativeLineDashArray: () => [0, 0],
+          lineWidthMinPixels: 3
+        })
+      );
+    }
+
     return (
       <div style={styles.mapContainer}>
         <link href="https://api.mapbox.com/mapbox-gl-js/v0.44.0/mapbox-gl.css" rel="stylesheet" />
         <DeckGL
           {...viewport}
           getCursor={editableGeoJsonLayer.getCursor.bind(editableGeoJsonLayer)}
-          layers={[editableGeoJsonLayer]}
+          layers={layers}
           views={
             new MapView({
               id: 'basemap',
               controller: {
                 type: MapController,
-                doubleClickZoom: this.state.mode === 'view'
+                doubleClickZoom: this.state.mode === 'view' && !this.state.selectionTool
               }
             })
           }

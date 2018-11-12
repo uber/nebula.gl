@@ -138,12 +138,14 @@ describe('handleClick', () => {
     handler.handleClick({
       screenCoords: [-1, -1],
       groundCoords: [0, 1],
-      picks: []
+      picks: [],
+      sourceEvent: null
     });
     handler.handleClick({
       screenCoords: [-1, -1],
       groundCoords: [2, 3],
-      picks: []
+      picks: [],
+      sourceEvent: null
     });
 
     expect(handler.getClickSequence()).toEqual([[0, 1], [2, 3]]);

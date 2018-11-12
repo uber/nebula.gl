@@ -116,7 +116,8 @@ export default class EditableLayer extends CompositeLayer {
     const screenCoords = this.getScreenCoords(event);
     const groundCoords = this.getGroundCoords(screenCoords);
     this.onDoubleClick({
-      groundCoords
+      groundCoords,
+      sourceEvent: event
     });
   }
 
@@ -169,7 +170,8 @@ export default class EditableLayer extends CompositeLayer {
           screenCoords,
           groundCoords,
           pointerDownScreenCoords,
-          pointerDownGroundCoords
+          pointerDownGroundCoords,
+          sourceEvent: event
         });
 
         isDragging = true;
@@ -226,13 +228,15 @@ export default class EditableLayer extends CompositeLayer {
         screenCoords,
         groundCoords,
         pointerDownScreenCoords,
-        pointerDownGroundCoords
+        pointerDownGroundCoords,
+        sourceEvent: event
       });
     } else if (!this.movedEnoughForDrag(pointerDownScreenCoords, screenCoords)) {
       this.onClick({
         picks: pointerDownPicks,
         screenCoords,
-        groundCoords
+        groundCoords,
+        sourceEvent: event
       });
     }
 

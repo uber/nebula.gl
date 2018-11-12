@@ -13,6 +13,7 @@ export { default as EditableJunctionsLayer } from './lib/layers/editable-junctio
 export { default as EditableGeoJsonLayer } from './lib/layers/editable-geojson-layer';
 export { default as TextsLayer } from './lib/layers/texts-layer';
 export { default as SegmentsLayer } from './lib/layers/segments-layer';
+export { default as SelectionLayer } from './lib/layers/selection-layer';
 
 export { default as NebulaCore } from './lib/nebula';
 

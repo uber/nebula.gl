@@ -101,6 +101,14 @@ export default [
         name: 'API Reference',
         children: [
           {
+            name: 'EditableGeoJsonLayer',
+            markdown: require('../../docs/api-reference/layers/editable-geojson-layer.md')
+          },
+          {
+            name: 'SelectionLayer',
+            markdown: require('../../docs/api-reference/layers/selection-layer.md')
+          },
+          {
             name: 'Nebula (React class)',
             markdown: require('../../docs/api-reference/nebula.md')
           },
@@ -113,27 +121,27 @@ export default [
             markdown: require('../../docs/api-reference/layers/feature.md')
           },
           {
-            name: 'JunctionsLayer',
+            name: 'JunctionsLayer (deprecated)',
             markdown: require('../../docs/api-reference/layers/junctions-layer.md')
           },
           {
-            name: 'EditableJunctionsLayer',
+            name: 'EditableJunctionsLayer (deprecated)',
             markdown: require('../../docs/api-reference/layers/editable-junctions-layer.md')
           },
           {
-            name: 'PolygonLayer',
+            name: 'PolygonLayer (deprecated)',
             markdown: require('../../docs/api-reference/layers/polygons-layer.md')
           },
           {
-            name: 'EditablePolygonLayer',
+            name: 'EditablePolygonLayer (deprecated)',
             markdown: require('../../docs/api-reference/layers/editable-polygons-layer.md')
           },
           {
-            name: 'EditableLinesLayer',
+            name: 'EditableLinesLayer (deprecated)',
             markdown: require('../../docs/api-reference/layers/editable-lines-layer.md')
           },
           {
-            name: 'SegmentLayer',
+            name: 'SegmentLayer (deprecated)',
             markdown: require('../../docs/api-reference/layers/segment-layer.md')
           },
           {

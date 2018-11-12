@@ -1,7 +1,7 @@
 // @flow
 /* eslint-env browser */
 import { PolygonLayer, CompositeLayer, COORDINATE_SYSTEM } from 'deck.gl';
-import { point, polygon } from '@turf/helpers';
+import { polygon } from '@turf/helpers';
 import turfBuffer from '@turf/buffer';
 import turfDifference from '@turf/difference';
 
@@ -23,6 +23,27 @@ const EMPTY_DATA = {
 const EXPANSION_KM = 50;
 const LAYER_ID_GEOJSON = 'selection-geojson';
 const LAYER_ID_BLOCKER = 'selection-blocker';
+
+const PASS_THROUGH_PROPS = [
+  'lineWidthScale',
+  'lineWidthMinPixels',
+  'lineWidthMaxPixels',
+  'lineJointRounded',
+  'lineMiterLimit',
+  'pointRadiusScale',
+  'pointRadiusMinPixels',
+  'pointRadiusMaxPixels',
+  'lineDashJustified',
+  'getLineColor',
+  'getFillColor',
+  'getRadius',
+  'getLineWidth',
+  'getLineDashArray',
+  'getTentativeLineDashArray',
+  'getTentativeLineColor',
+  'getTentativeFillColor',
+  'getTentativeLineWidth'
+];
 
 export default class SelectionLayer extends CompositeLayer {
   _selectRectangleObjects(coordinates: any) {
@@ -103,6 +124,13 @@ export default class SelectionLayer extends CompositeLayer {
         [SELECTION_TYPE.POLYGON]: 'drawPolygon'
       }[this.props.selectionType] || 'view';
 
+    const inheritedProps = {};
+    PASS_THROUGH_PROPS.forEach(p => {
+      if (this.props[p] !== undefined) inheritedProps[p] = this.props[p];
+    });
+
+    console.log(inheritedProps);
+
     const layers = [
       new EditableGeoJsonLayer(
         this.getSubLayerProps({
@@ -125,7 +153,8 @@ export default class SelectionLayer extends CompositeLayer {
                 this._selectPolygonObjects(coordinates);
               }
             }
-          }
+          },
+          ...inheritedProps
         })
       )
     ];

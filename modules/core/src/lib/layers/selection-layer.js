@@ -20,8 +20,6 @@ const EMPTY_DATA = {
   features: []
 };
 
-const DEFAULT_SELECTION_INDEX = [0];
-
 const EXPANSION_KM = 50;
 const LAYER_ID_GEOJSON = 'selection-geojson';
 const LAYER_ID_BLOCKER = 'selection-blocker';
@@ -59,7 +57,7 @@ export default class SelectionLayer extends CompositeLayer {
     // Use a polygon to hide the outside, because pickObjects()
     // does not support polygons
     const landPointsPoly = polygon(coordinates);
-    const bigBuffer = turfBuffer(point(coordinates[0][0]), EXPANSION_KM);
+    const bigBuffer = turfBuffer(landPointsPoly, EXPANSION_KM);
     let bigPolygon;
     try {
       // turfDifference throws an exception if the polygon
@@ -106,47 +104,51 @@ export default class SelectionLayer extends CompositeLayer {
       }[this.props.selectionType] || 'view';
 
     const layers = [
-      new EditableGeoJsonLayer({
-        id: `${this.props.id}-${LAYER_ID_GEOJSON}`,
-        // TODO: remove this after update to 6.2
-        fp64: false,
-        coordinateSystem: COORDINATE_SYSTEM.LNGLAT_EXPERIMENTAL,
-        //
-        pickable: true,
-        mode,
-        selectedFeatureIndexes: DEFAULT_SELECTION_INDEX,
-        data: EMPTY_DATA,
-        onEdit: ({ updatedData, editType }) => {
-          if (editType === 'addFeature') {
-            const { coordinates } = updatedData.features[0].geometry;
-
-            if (this.props.selectionType === SELECTION_TYPE.RECTANGLE) {
-              this._selectRectangleObjects(coordinates);
-            } else if (this.props.selectionType === SELECTION_TYPE.POLYGON) {
-              this._selectPolygonObjects(coordinates);
-            }
-          }
-        }
-      })
-    ];
-
-    if (pendingPolygonSelection) {
-      const { bigPolygon } = pendingPolygonSelection;
-      layers.push(
-        new PolygonLayer({
-          id: `${this.props.id}-${LAYER_ID_BLOCKER}`,
+      new EditableGeoJsonLayer(
+        this.getSubLayerProps({
+          id: LAYER_ID_GEOJSON,
           // TODO: remove this after update to 6.2
           fp64: false,
           coordinateSystem: COORDINATE_SYSTEM.LNGLAT_EXPERIMENTAL,
           //
           pickable: true,
-          stroked: false,
-          opacity: 1.0,
-          data: [bigPolygon],
-          getLineColor: obj => [0, 0, 0, 1],
-          getFillColor: obj => [0, 0, 0, 1],
-          getPolygon: o => o.geometry.coordinates
+          mode,
+          selectedFeatureIndexes: [],
+          data: EMPTY_DATA,
+          onEdit: ({ updatedData, editType }) => {
+            if (editType === 'addFeature') {
+              const { coordinates } = updatedData.features[0].geometry;
+
+              if (this.props.selectionType === SELECTION_TYPE.RECTANGLE) {
+                this._selectRectangleObjects(coordinates);
+              } else if (this.props.selectionType === SELECTION_TYPE.POLYGON) {
+                this._selectPolygonObjects(coordinates);
+              }
+            }
+          }
         })
+      )
+    ];
+
+    if (pendingPolygonSelection) {
+      const { bigPolygon } = pendingPolygonSelection;
+      layers.push(
+        new PolygonLayer(
+          this.getSubLayerProps({
+            id: LAYER_ID_BLOCKER,
+            // TODO: remove this after update to 6.2
+            fp64: false,
+            coordinateSystem: COORDINATE_SYSTEM.LNGLAT_EXPERIMENTAL,
+            //
+            pickable: true,
+            stroked: false,
+            opacity: 1.0,
+            data: [bigPolygon],
+            getLineColor: obj => [0, 0, 0, 1],
+            getFillColor: obj => [0, 0, 0, 1],
+            getPolygon: o => o.geometry.coordinates
+          })
+        )
       );
     }
 

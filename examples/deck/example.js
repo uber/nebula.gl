@@ -202,7 +202,7 @@ export default class Example extends Component<
                     steps: 32
                   };
                 }
-                this.setState({ mode: event.target.value, modeConfig });
+                this.setState({ mode: event.target.value, modeConfig, selectionTool: null });
               }}
             >
               <option value="view">view</option>

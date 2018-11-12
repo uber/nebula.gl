@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file. This projec
 
 <!-- ## [Unreleased](https://github.com/uber/nebula.gl/compare/v0.7.0...master) -->
 
+## [0.7.2] - 2018-11-12
+
+* Implement selection-layer
+* Detach event listeners on component unmount
+* Disable hacky loop sync behind feature flag property
+
 ## [0.7.1] - 2018-10-24
 * Fix Nebula crashes on attempt to edit polygon layer over segment layer
 

@@ -330,7 +330,9 @@ export default class Example extends Component<
       // Editing callbacks
       onEdit: ({ updatedData, editType, featureIndex, positionIndexes, position }) => {
         let updatedSelectedFeatureIndexes = this.state.selectedFeatureIndexes;
-        if (!['movePosition', 'rotating', 'translating', 'scaling'].includes(editType)) {
+        if (
+          !['movePosition', 'moveEdge', 'rotating', 'translating', 'scaling'].includes(editType)
+        ) {
           // Don't log moves since they're really chatty
           // eslint-disable-next-line
           console.log('onEdit', editType, featureIndex, positionIndexes, position);

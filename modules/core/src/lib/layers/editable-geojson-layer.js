@@ -27,6 +27,7 @@ import type {
   StopDraggingEvent,
   PointerMoveEvent
 } from '../event-types.js';
+import { ExtrudeHandler } from '../mode-handlers/extrude-handler.js';
 import EditableLayer from './editable-layer.js';
 
 const DEFAULT_LINE_COLOR = [0x0, 0x0, 0x0, 0xff];
@@ -102,6 +103,7 @@ const defaultProps = {
   modeHandlers: {
     view: new ViewHandler(),
     modify: new ModifyHandler(),
+    extrude: new ExtrudeHandler(),
     rotate: new RotateHandler(),
     translate: new TranslateHandler(),
     duplicate: new DuplicateHandler(),

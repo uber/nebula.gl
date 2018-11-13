@@ -207,6 +207,7 @@ export default class Example extends Component<
             >
               <option value="view">view</option>
               <option value="modify">modify</option>
+              <option value="extrude">extrude</option>
               <option value="translate">translate</option>
               <option value="duplicate">duplicate</option>
               <option value="rotate">rotate</option>

@@ -1,7 +1,6 @@
 // @flow
 
 import nearestPointOnLine from '@turf/nearest-point-on-line';
-import turfTransformRotate from '@turf/transform-rotate';
 import { point, lineString as toLineString } from '@turf/helpers';
 import { recursivelyTraverseNestedArrays } from '../utils.js';
 import type { Position } from '../../geojson-types.js';
@@ -141,42 +140,6 @@ export class ModifyHandler extends ModeHandler {
         featureIndex: editHandle.featureIndex,
         positionIndexes: editHandle.positionIndexes,
         position: event.groundCoords
-      };
-    }
-
-    const modeConfig = this.getModeConfig();
-    if (modeConfig && modeConfig.action === 'transformRotate') {
-      let pivot;
-      const selectedFeatureIndexes = this.getSelectedFeatureIndexes();
-      const picks = event.picks;
-
-      if (selectedFeatureIndexes.length === 0 || selectedFeatureIndexes.length > 1) {
-        return { editAction: null, cancelMapPan: false };
-      }
-
-      if (modeConfig && modeConfig.usePickAsPivot) {
-        // do nothing when mouse position far away from any point
-        if (!picks || !picks.length || !picks[0].object.position) {
-          return { editAction: null, cancelMapPan: false };
-        }
-        pivot = picks[0].object.position;
-      } else {
-        pivot = modeConfig.pivot;
-      }
-      const featureIndex = selectedFeatureIndexes[0];
-      const geometry = this.getSelectedGeometry();
-      const rotatedFeature = turfTransformRotate(geometry, 2, { pivot });
-
-      const updatedData = this.getImmutableFeatureCollection()
-        .replaceGeometry(featureIndex, rotatedFeature)
-        .getObject();
-
-      editAction = {
-        updatedData,
-        editType: 'transformPosition',
-        featureIndex,
-        positionIndexes: null,
-        position: null
       };
     }
 

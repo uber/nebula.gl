@@ -1,10 +1,6 @@
 // @flow
 
-import destination from '@turf/destination';
-import bearing from '@turf/bearing';
-import pointToLineDistance from '@turf/point-to-line-distance';
-import { point } from '@turf/helpers';
-import type { LineString, Feature } from '../../geojson-types.js';
+import { generatePointsParallelToLinePoints } from '../utils';
 import type { PointerMoveEvent, StartDraggingEvent, StopDraggingEvent } from '../event-types.js';
 import type { EditAction } from './mode-handler.js';
 import { getPickedEditHandle } from './mode-handler.js';
@@ -19,51 +15,34 @@ export class ExtrudeHandler extends ModifyHandler {
     const editHandle = getPickedEditHandle(event.pointerDownPicks);
 
     if (event.isDragging && editHandle) {
-      const [row, index] = editHandle.positionIndexes;
-      const feature: Feature = this.getImmutableFeatureCollection().getObject().features[
+      // p1 and p1 are end points for edge
+      const p1 = this.getPointForPositionIndexes(
+        editHandle.positionIndexes,
         editHandle.featureIndex
-      ];
-      const coordinates: any = feature.geometry.coordinates;
-
-      if (coordinates.length && coordinates[row].length) {
-        const p1 = coordinates[row][index];
-        const p2 = coordinates[row][index + 1];
-        const lineString: LineString = {
-          type: 'LineString',
-          coordinates: [p1, p2]
-        };
-
-        const pt = point(event.groundCoords);
-        const options = { units: 'miles' };
-        const ddistance = pointToLineDistance(pt, lineString, options);
-        const lineBearing = bearing(p1, p2);
-
-        // Check if current point is to the left or right of line
-        // Line from A=(x1,y1) to B=(x2,y2) a point P=(x,y)
-        // then (x−x1)(y2−y1)−(y−y1)(x2−x1)
-        const isPointToLeftOfLine =
-          (event.groundCoords[0] - p1[0]) * (p2[1] - p1[1]) -
-          (event.groundCoords[1] - p1[1]) * (p2[0] - p1[0]);
-
-        // Bearing to draw perpendicular to the line string
-        const orthogonalBearing = isPointToLeftOfLine < 0 ? lineBearing - 90 : lineBearing - 270;
-
-        // Get coordinates for the point p3 and p4 which are perpendicular to the lineString
-        // Add the distance as the current position moves away from the lineString
-        const p3 = destination(p2, ddistance, orthogonalBearing, options);
-        const p4 = destination(p1, ddistance, orthogonalBearing, options);
+      );
+      const p2 = this.getPointForPositionIndexes(
+        this.nextPositionIndexes(editHandle.positionIndexes),
+        editHandle.featureIndex
+      );
+      if (p1 && p2) {
+        // p3 and p4 are end points for moving (extruding) edge
+        const [p3, p4] = generatePointsParallelToLinePoints(p1, p2, event.groundCoords);
 
         const updatedData = this.getImmutableFeatureCollection()
-          .replacePosition(editHandle.featureIndex, [row, index], p4.geometry.coordinates)
-          .replacePosition(editHandle.featureIndex, [row, index + 1], p3.geometry.coordinates)
+          .replacePosition(editHandle.featureIndex, editHandle.positionIndexes, p4)
+          .replacePosition(
+            editHandle.featureIndex,
+            this.nextPositionIndexes(editHandle.positionIndexes),
+            p3
+          )
           .getObject();
 
         editAction = {
           updatedData,
-          editType: 'movePosition',
+          editType: 'moveEdge',
           featureIndex: editHandle.featureIndex,
-          positionIndexes: [row, index + 1],
-          position: p4.geometry.coordinates
+          positionIndexes: this.nextPositionIndexes(editHandle.positionIndexes),
+          position: p3
         };
       }
     }
@@ -81,27 +60,27 @@ export class ExtrudeHandler extends ModifyHandler {
 
     const editHandle = getPickedEditHandle(event.picks);
     if (selectedFeatureIndexes.length && editHandle && editHandle.type === 'intermediate') {
-      const [row, index] = editHandle.positionIndexes;
-      const feature = this.getImmutableFeatureCollection().getObject().features[
+      // p1 and p1 are end points for edge
+      const p1 = this.getPointForPositionIndexes(
+        this.prevPositionIndexes(editHandle.positionIndexes),
         editHandle.featureIndex
-      ];
-
-      const coordinates: any = feature.geometry.coordinates;
-      if (coordinates.length && coordinates[row].length) {
-        const p1 = coordinates[row][index - 1];
-        const p2 = coordinates[row][index];
-
+      );
+      const p2 = this.getPointForPositionIndexes(
+        editHandle.positionIndexes,
+        editHandle.featureIndex
+      );
+      if (p1 && p2) {
         const updatedData = this.getImmutableFeatureCollection()
-          .addPosition(editHandle.featureIndex, [row, index], p1)
-          .addPosition(editHandle.featureIndex, [row, index + 1], p2)
+          .addPosition(editHandle.featureIndex, editHandle.positionIndexes, p2)
+          .addPosition(editHandle.featureIndex, editHandle.positionIndexes, p1)
           .getObject();
 
         editAction = {
           updatedData,
-          editType: 'addPositions',
+          editType: 'addEdge',
           featureIndex: editHandle.featureIndex,
-          positionIndexes: [row, index + 1],
-          position: p2
+          positionIndexes: editHandle.positionIndexes,
+          position: p1
         };
       }
     }
@@ -115,53 +94,74 @@ export class ExtrudeHandler extends ModifyHandler {
     const selectedFeatureIndexes = this.getSelectedFeatureIndexes();
     const editHandle = getPickedEditHandle(event.picks);
     if (selectedFeatureIndexes.length && editHandle) {
-      const [row, index] = editHandle.positionIndexes;
-      const feature = this.getImmutableFeatureCollection().getObject().features[
+      // p1 and p1 are end points for edge
+      const p1 = this.getPointForPositionIndexes(
+        editHandle.positionIndexes,
         editHandle.featureIndex
-      ];
+      );
+      const p2 = this.getPointForPositionIndexes(
+        this.nextPositionIndexes(editHandle.positionIndexes),
+        editHandle.featureIndex
+      );
 
-      const coordinates: any = feature.geometry.coordinates;
-      if (coordinates.length && coordinates[row].length) {
-        const p1 = coordinates[row][index];
-        const p2 = coordinates[row][index + 1];
-        const lineString: LineString = {
-          type: 'LineString',
-          coordinates: [p1, p2]
-        };
-        const pt = point(event.groundCoords);
-        const options = { units: 'miles' };
-        const ddistance = pointToLineDistance(pt, lineString, options);
-        const lineBearing = bearing(p1, p2);
+      if (p1 && p2) {
+        // p3 and p4 are end points for new moved (extruded) edge
+        const [p3, p4] = generatePointsParallelToLinePoints(p1, p2, event.groundCoords);
 
-        // Check if current point is to the left or right of line
-        // Line from A=(x1,y1) to B=(x2,y2) a point P=(x,y)
-        // then (x−x1)(y2−y1)−(y−y1)(x2−x1)
-        const isPointToLeftOfLine =
-          (event.groundCoords[0] - p1[0]) * (p2[1] - p1[1]) -
-          (event.groundCoords[1] - p1[1]) * (p2[0] - p1[0]);
-
-        // Bearing to draw perpendicular to the line string
-        const orthogonalBearing = isPointToLeftOfLine < 0 ? lineBearing - 90 : lineBearing - 270;
-
-        // Get coordinates for the point p3 and p4 which are perpendicular to the lineString
-        // Add the distance as the current position moves away from the lineString
-        const p3 = destination(p2, ddistance, orthogonalBearing, options);
-        const p4 = destination(p1, ddistance, orthogonalBearing, options);
         const updatedData = this.getImmutableFeatureCollection()
-          .replacePosition(editHandle.featureIndex, [row, index], p4.geometry.coordinates)
-          .replacePosition(editHandle.featureIndex, [row, index + 1], p3.geometry.coordinates)
+          .replacePosition(editHandle.featureIndex, editHandle.positionIndexes, p4)
+          .replacePosition(
+            editHandle.featureIndex,
+            this.nextPositionIndexes(editHandle.positionIndexes),
+            p3
+          )
           .getObject();
 
         editAction = {
           updatedData,
-          editType: 'finishMovePositions',
+          editType: 'finishMoveEdge',
           featureIndex: editHandle.featureIndex,
           positionIndexes: editHandle.positionIndexes,
-          position: event.groundCoords
+          position: p3
         };
       }
     }
 
     return editAction;
+  }
+
+  nextPositionIndexes(positionIndexes: number[]): number[] {
+    const next = [...positionIndexes];
+    if (next.length) {
+      next[next.length - 1] = next[next.length - 1] + 1;
+    }
+    return next;
+  }
+
+  prevPositionIndexes(positionIndexes: number[]): number[] {
+    const next = [...positionIndexes];
+    if (next.length) {
+      next[next.length - 1] = next[next.length - 1] - 1;
+    }
+    return next;
+  }
+
+  getPointForPositionIndexes(positionIndexes: number[], featureIndex: number) {
+    let p1;
+    const feature = this.getImmutableFeatureCollection().getObject().features[featureIndex];
+    const coordinates: any = feature.geometry.coordinates;
+    // for Multi polygons, length will be 3
+    if (positionIndexes.length === 3) {
+      const [a, b, c] = positionIndexes;
+      if (coordinates.length && coordinates[a].length) {
+        p1 = coordinates[a][b][c];
+      }
+    } else {
+      const [b, c] = positionIndexes;
+      if (coordinates.length && coordinates[b].length) {
+        p1 = coordinates[b][c];
+      }
+    }
+    return p1;
   }
 }

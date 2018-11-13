@@ -1,5 +1,11 @@
 // @flow
 
+import destination from '@turf/destination';
+import bearing from '@turf/bearing';
+import pointToLineDistance from '@turf/point-to-line-distance';
+import { point } from '@turf/helpers';
+import type { Position, LineString } from '../geojson-types.js';
+
 export function toDeckColor(
   color?: ?[number, number, number, number],
   defaultColor: [number, number, number, number] = [255, 0, 0, 255]
@@ -50,4 +56,35 @@ export function recursivelyTraverseNestedArrays(
     }
   }
   return false;
+}
+
+export function generatePointsParallelToLinePoints(
+  p1: Position,
+  p2: Position,
+  groundCoords: Position
+): Position[] {
+  const lineString: LineString = {
+    type: 'LineString',
+    coordinates: [p1, p2]
+  };
+  const pt = point(groundCoords);
+  const options = { units: 'miles' };
+  const ddistance = pointToLineDistance(pt, lineString, options);
+  const lineBearing = bearing(p1, p2);
+
+  // Check if current point is to the left or right of line
+  // Line from A=(x1,y1) to B=(x2,y2) a point P=(x,y)
+  // then (x−x1)(y2−y1)−(y−y1)(x2−x1)
+  const isPointToLeftOfLine =
+    (groundCoords[0] - p1[0]) * (p2[1] - p1[1]) - (groundCoords[1] - p1[1]) * (p2[0] - p1[0]);
+
+  // Bearing to draw perpendicular to the line string
+  const orthogonalBearing = isPointToLeftOfLine < 0 ? lineBearing - 90 : lineBearing - 270;
+
+  // Get coordinates for the point p3 and p4 which are perpendicular to the lineString
+  // Add the distance as the current position moves away from the lineString
+  const p3 = destination(p2, ddistance, orthogonalBearing, options);
+  const p4 = destination(p1, ddistance, orthogonalBearing, options);
+
+  return [p3.geometry.coordinates, p4.geometry.coordinates];
 }

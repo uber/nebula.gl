@@ -1,9 +1,5 @@
 // @flow
 
-import destination from '@turf/destination';
-import bearing from '@turf/bearing';
-import pointToLineDistance from '@turf/point-to-line-distance';
-import { point } from '@turf/helpers';
 import { generatePointsParallelToLinePoints } from '../utils';
 import type { LineString } from '../../geojson-types.js';
 import type { PointerMoveEvent } from '../event-types.js';
@@ -36,7 +32,7 @@ export class DrawRectangleUsingThreePointsHandler extends ThreeClickPolygonHandl
         coordinates: clickSequence
       };
       const [p1, p2] = clickSequence;
-      const [p3, p4] = generatePointsParallelToLinePoints(p1, p2, event.groundCoords);
+      const [p3, p4] = generatePointsParallelToLinePoints(p1, p2, groundCoords);
 
       this._setTentativeFeature({
         type: 'Feature',

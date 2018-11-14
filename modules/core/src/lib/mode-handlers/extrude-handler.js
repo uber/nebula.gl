@@ -133,17 +133,17 @@ export class ExtrudeHandler extends ModifyHandler {
   nextPositionIndexes(positionIndexes: number[]): number[] {
     const next = [...positionIndexes];
     if (next.length) {
-      next[next.length - 1] = next[next.length - 1] + 1;
+      next[next.length - 1] += 1;
     }
     return next;
   }
 
   prevPositionIndexes(positionIndexes: number[]): number[] {
-    const next = [...positionIndexes];
-    if (next.length) {
-      next[next.length - 1] = next[next.length - 1] - 1;
+    const prev = [...positionIndexes];
+    if (prev.length) {
+      prev[prev.length - 1] -= 1;
     }
-    return next;
+    return prev;
   }
 
   getPointForPositionIndexes(positionIndexes: number[], featureIndex: number) {

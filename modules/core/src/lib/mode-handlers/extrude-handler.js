@@ -1,5 +1,6 @@
 // @flow
 
+import bearing from '@turf/bearing';
 import { generatePointsParallelToLinePoints } from '../utils';
 import type { PointerMoveEvent, StartDraggingEvent, StopDraggingEvent } from '../event-types.js';
 import type { EditAction } from './mode-handler.js';
@@ -7,6 +8,7 @@ import { getPickedEditHandle } from './mode-handler.js';
 import { ModifyHandler } from './modify-handler';
 
 export class ExtrudeHandler extends ModifyHandler {
+  isPointAdded: boolean = false;
   handlePointerMove(event: PointerMoveEvent): { editAction: ?EditAction, cancelMapPan: boolean } {
     this._lastPointerMovePicks = event.picks;
 
@@ -15,33 +17,34 @@ export class ExtrudeHandler extends ModifyHandler {
     const editHandle = getPickedEditHandle(event.pointerDownPicks);
 
     if (event.isDragging && editHandle) {
+      const size = this.coordinatesSize(editHandle.positionIndexes, editHandle.featureIndex);
+      const positionIndexes = this.isPointAdded
+        ? this.nextPositionIndexes(editHandle.positionIndexes, size)
+        : editHandle.positionIndexes;
       // p1 and p1 are end points for edge
       const p1 = this.getPointForPositionIndexes(
-        editHandle.positionIndexes,
+        this.prevPositionIndexes(positionIndexes, size),
         editHandle.featureIndex
       );
-      const p2 = this.getPointForPositionIndexes(
-        this.nextPositionIndexes(editHandle.positionIndexes),
-        editHandle.featureIndex
-      );
+      const p2 = this.getPointForPositionIndexes(positionIndexes, editHandle.featureIndex);
       if (p1 && p2) {
         // p3 and p4 are end points for moving (extruding) edge
         const [p3, p4] = generatePointsParallelToLinePoints(p1, p2, event.groundCoords);
 
         const updatedData = this.getImmutableFeatureCollection()
-          .replacePosition(editHandle.featureIndex, editHandle.positionIndexes, p4)
           .replacePosition(
             editHandle.featureIndex,
-            this.nextPositionIndexes(editHandle.positionIndexes),
-            p3
+            this.prevPositionIndexes(positionIndexes, size),
+            p4
           )
+          .replacePosition(editHandle.featureIndex, positionIndexes, p3)
           .getObject();
 
         editAction = {
           updatedData,
           editType: 'moveEdge',
           featureIndex: editHandle.featureIndex,
-          positionIndexes: this.nextPositionIndexes(editHandle.positionIndexes),
+          positionIndexes: this.nextPositionIndexes(editHandle.positionIndexes, size),
           position: p3
         };
       }
@@ -60,23 +63,43 @@ export class ExtrudeHandler extends ModifyHandler {
 
     const editHandle = getPickedEditHandle(event.picks);
     if (selectedFeatureIndexes.length && editHandle && editHandle.type === 'intermediate') {
+      const size = this.coordinatesSize(editHandle.positionIndexes, editHandle.featureIndex);
       // p1 and p1 are end points for edge
       const p1 = this.getPointForPositionIndexes(
-        this.prevPositionIndexes(editHandle.positionIndexes),
+        this.prevPositionIndexes(editHandle.positionIndexes, size),
         editHandle.featureIndex
       );
       const p2 = this.getPointForPositionIndexes(
         editHandle.positionIndexes,
         editHandle.featureIndex
       );
+
       if (p1 && p2) {
-        const updatedData = this.getImmutableFeatureCollection()
-          .addPosition(editHandle.featureIndex, editHandle.positionIndexes, p2)
-          .addPosition(editHandle.featureIndex, editHandle.positionIndexes, p1)
-          .getObject();
+        let updatedData = this.getImmutableFeatureCollection();
+        if (!this.isOrthogonal(editHandle.positionIndexes, editHandle.featureIndex, size)) {
+          updatedData = updatedData.addPosition(
+            editHandle.featureIndex,
+            editHandle.positionIndexes,
+            p2
+          );
+        }
+        if (
+          !this.isOrthogonal(
+            this.prevPositionIndexes(editHandle.positionIndexes, size),
+            editHandle.featureIndex,
+            size
+          )
+        ) {
+          updatedData = updatedData.addPosition(
+            editHandle.featureIndex,
+            editHandle.positionIndexes,
+            p1
+          );
+          this.isPointAdded = true;
+        }
 
         editAction = {
-          updatedData,
+          updatedData: updatedData.getObject(),
           editType: 'addEdge',
           featureIndex: editHandle.featureIndex,
           positionIndexes: editHandle.positionIndexes,
@@ -94,27 +117,28 @@ export class ExtrudeHandler extends ModifyHandler {
     const selectedFeatureIndexes = this.getSelectedFeatureIndexes();
     const editHandle = getPickedEditHandle(event.picks);
     if (selectedFeatureIndexes.length && editHandle) {
+      const size = this.coordinatesSize(editHandle.positionIndexes, editHandle.featureIndex);
+      const positionIndexes = this.isPointAdded
+        ? this.nextPositionIndexes(editHandle.positionIndexes, size)
+        : editHandle.positionIndexes;
       // p1 and p1 are end points for edge
       const p1 = this.getPointForPositionIndexes(
-        editHandle.positionIndexes,
+        this.prevPositionIndexes(positionIndexes, size),
         editHandle.featureIndex
       );
-      const p2 = this.getPointForPositionIndexes(
-        this.nextPositionIndexes(editHandle.positionIndexes),
-        editHandle.featureIndex
-      );
+      const p2 = this.getPointForPositionIndexes(positionIndexes, editHandle.featureIndex);
 
       if (p1 && p2) {
         // p3 and p4 are end points for new moved (extruded) edge
         const [p3, p4] = generatePointsParallelToLinePoints(p1, p2, event.groundCoords);
 
         const updatedData = this.getImmutableFeatureCollection()
-          .replacePosition(editHandle.featureIndex, editHandle.positionIndexes, p4)
           .replacePosition(
             editHandle.featureIndex,
-            this.nextPositionIndexes(editHandle.positionIndexes),
-            p3
+            this.prevPositionIndexes(positionIndexes, size),
+            p4
           )
+          .replacePosition(editHandle.featureIndex, positionIndexes, p3)
           .getObject();
 
         editAction = {
@@ -126,22 +150,65 @@ export class ExtrudeHandler extends ModifyHandler {
         };
       }
     }
+    this.isPointAdded = false;
 
     return editAction;
   }
 
-  nextPositionIndexes(positionIndexes: number[]): number[] {
+  coordinatesSize(positionIndexes: number[], featureIndex: number) {
+    let size = 0;
+    const feature = this.getImmutableFeatureCollection().getObject().features[featureIndex];
+    const coordinates: any = feature.geometry.coordinates;
+    // for Multi polygons, length will be 3
+    if (positionIndexes.length === 3) {
+      const [a, b] = positionIndexes;
+      if (coordinates.length && coordinates[a].length) {
+        size = coordinates[a][b].length;
+      }
+    } else {
+      const [b] = positionIndexes;
+      if (coordinates.length && coordinates[b].length) {
+        size = coordinates[b].length;
+      }
+    }
+    return size;
+  }
+
+  getBearing(p1: any, p2: any) {
+    const angle = bearing(p1, p2);
+    if (angle < 0) {
+      return Math.floor(360 + angle);
+    }
+    return Math.floor(angle);
+  }
+
+  isOrthogonal(positionIndexes: number[], featureIndex: number, size: number) {
+    const prevPoint = this.getPointForPositionIndexes(
+      this.prevPositionIndexes(positionIndexes, size),
+      featureIndex
+    );
+    const nextPoint = this.getPointForPositionIndexes(
+      this.nextPositionIndexes(positionIndexes, size),
+      featureIndex
+    );
+    const currentPoint = this.getPointForPositionIndexes(positionIndexes, featureIndex);
+    const prevAngle = this.getBearing(currentPoint, prevPoint);
+    const nextAngle = this.getBearing(currentPoint, nextPoint);
+    return [89, 90, 91, 269, 270, 271].includes(Math.abs(prevAngle - nextAngle));
+  }
+
+  nextPositionIndexes(positionIndexes: number[], size: number): number[] {
     const next = [...positionIndexes];
     if (next.length) {
-      next[next.length - 1] += 1;
+      next[next.length - 1] = next[next.length - 1] === size - 1 ? 0 : next[next.length - 1] + 1;
     }
     return next;
   }
 
-  prevPositionIndexes(positionIndexes: number[]): number[] {
+  prevPositionIndexes(positionIndexes: number[], size: number): number[] {
     const prev = [...positionIndexes];
     if (prev.length) {
-      prev[prev.length - 1] -= 1;
+      prev[prev.length - 1] = prev[prev.length - 1] === 0 ? size - 2 : prev[prev.length - 1] - 1;
     }
     return prev;
   }

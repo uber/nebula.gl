@@ -92,33 +92,46 @@ export class ModifyHandler extends ModeHandler {
 
     const clickedEditHandle = getPickedEditHandle(event.picks);
 
-    if (
-      clickedEditHandle &&
-      clickedEditHandle.type === 'existing' &&
-      clickedEditHandle.featureIndex >= 0
-    ) {
-      let updatedData;
-      try {
-        updatedData = this.getImmutableFeatureCollection()
-          .removePosition(clickedEditHandle.featureIndex, clickedEditHandle.positionIndexes)
-          .getObject();
-      } catch (ignored) {
-        // This happens if user attempts to remove the last point
-      }
+    if (clickedEditHandle && clickedEditHandle.featureIndex >= 0) {
+      if (clickedEditHandle.type === 'existing') {
+        let updatedData;
+        try {
+          updatedData = this.getImmutableFeatureCollection()
+            .removePosition(clickedEditHandle.featureIndex, clickedEditHandle.positionIndexes)
+            .getObject();
+        } catch (ignored) {
+          // This happens if user attempts to remove the last point
+        }
 
-      if (updatedData) {
-        editAction = {
-          updatedData,
-          editType: 'removePosition',
-          featureIndex: clickedEditHandle.featureIndex,
-          positionIndexes: clickedEditHandle.positionIndexes,
-          position: null
-        };
+        if (updatedData) {
+          editAction = {
+            updatedData,
+            editType: 'removePosition',
+            featureIndex: clickedEditHandle.featureIndex,
+            positionIndexes: clickedEditHandle.positionIndexes,
+            position: null
+          };
+        }
+      } else if (clickedEditHandle.type === 'intermediate') {
+        const updatedData = this.getImmutableFeatureCollection()
+          .addPosition(
+            clickedEditHandle.featureIndex,
+            clickedEditHandle.positionIndexes,
+            clickedEditHandle.position
+          )
+          .getObject();
+
+        if (updatedData) {
+          editAction = {
+            updatedData,
+            editType: 'addPosition',
+            featureIndex: clickedEditHandle.featureIndex,
+            positionIndexes: clickedEditHandle.positionIndexes,
+            position: clickedEditHandle.position
+          };
+        }
       }
     }
-
-    // TODO: also check if clicked on intermediate handle. should probably addPosition
-
     return editAction;
   }
 

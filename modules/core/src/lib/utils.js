@@ -68,8 +68,7 @@ export function generatePointsParallelToLinePoints(
     coordinates: [p1, p2]
   };
   const pt = point(groundCoords);
-  const options = { units: 'miles' };
-  const ddistance = pointToLineDistance(pt, lineString, options);
+  const ddistance = pointToLineDistance(pt, lineString);
   const lineBearing = bearing(p1, p2);
 
   // Check if current point is to the left or right of line
@@ -83,8 +82,8 @@ export function generatePointsParallelToLinePoints(
 
   // Get coordinates for the point p3 and p4 which are perpendicular to the lineString
   // Add the distance as the current position moves away from the lineString
-  const p3 = destination(p2, ddistance, orthogonalBearing, options);
-  const p4 = destination(p1, ddistance, orthogonalBearing, options);
+  const p3 = destination(p2, ddistance, orthogonalBearing);
+  const p4 = destination(p1, ddistance, orthogonalBearing);
 
   return [p3.geometry.coordinates, p4.geometry.coordinates];
 }

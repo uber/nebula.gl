@@ -42,7 +42,7 @@ export class ExtrudeHandler extends ModifyHandler {
 
         editAction = {
           updatedData,
-          editType: 'moveEdge',
+          editType: 'extruding',
           featureIndex: editHandle.featureIndex,
           positionIndexes: this.nextPositionIndexes(editHandle.positionIndexes, size),
           position: p3
@@ -100,7 +100,7 @@ export class ExtrudeHandler extends ModifyHandler {
 
         editAction = {
           updatedData: updatedData.getObject(),
-          editType: 'addEdge',
+          editType: 'startExtruding',
           featureIndex: editHandle.featureIndex,
           positionIndexes: editHandle.positionIndexes,
           position: p1
@@ -143,7 +143,7 @@ export class ExtrudeHandler extends ModifyHandler {
 
         editAction = {
           updatedData,
-          editType: 'finishMoveEdge',
+          editType: 'extruded',
           featureIndex: editHandle.featureIndex,
           positionIndexes: editHandle.positionIndexes,
           position: p3
@@ -183,6 +183,9 @@ export class ExtrudeHandler extends ModifyHandler {
   }
 
   isOrthogonal(positionIndexes: number[], featureIndex: number, size: number) {
+    if (positionIndexes[positionIndexes.length - 1] === size - 1) {
+      positionIndexes[positionIndexes.length - 1] = 0;
+    }
     const prevPoint = this.getPointForPositionIndexes(
       this.prevPositionIndexes(positionIndexes, size),
       featureIndex

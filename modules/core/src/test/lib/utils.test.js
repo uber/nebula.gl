@@ -1,4 +1,7 @@
-import { recursivelyTraverseNestedArrays } from '../../lib/utils';
+import {
+  recursivelyTraverseNestedArrays,
+  generatePointsParallelToLinePoints
+} from '../../lib/utils';
 
 const Point = {
   type: 'Feature',
@@ -94,5 +97,23 @@ describe('recursivelyTraverseNestedArrays()', () => {
     expect(JSON.stringify(results[1].prefix)).toBe('[1,0]');
     expect(JSON.stringify(results[2].array)).toBe('[[30,20],[20,15],[20,25],[30,20]]');
     expect(JSON.stringify(results[2].prefix)).toBe('[1,1]');
+  });
+});
+
+describe('generatePointsParallelToLinePoints()', () => {
+  it('generate Points Parallel to Line Points -- empty points', () => {
+    const p1 = [0, 0];
+    const p2 = [0, 0];
+    const [p3, p4] = generatePointsParallelToLinePoints(p1, p2, [0, 0]);
+    expect(p3).toEqual([0, 0]);
+    expect(p4).toEqual([0, 0]);
+  });
+
+  it('generate Points Parallel to Line Points -- valid points', () => {
+    const p1 = [-122.32, 37.81800998554937];
+    const p2 = [-122.37, 37.83386913944292];
+    const [p3, p4] = generatePointsParallelToLinePoints(p1, p2, [-124.5, 37.9]);
+    expect(p3).toEqual([-123.14819346449626, 36.26988514860277]);
+    expect(p4).toEqual([-123.09803547871964, 36.254027457172775]);
   });
 });

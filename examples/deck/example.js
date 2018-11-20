@@ -331,7 +331,7 @@ export default class Example extends Component<
       onEdit: ({ updatedData, editType, featureIndex, positionIndexes, position }) => {
         let updatedSelectedFeatureIndexes = this.state.selectedFeatureIndexes;
         if (
-          !['movePosition', 'moveEdge', 'rotating', 'translating', 'scaling'].includes(editType)
+          !['movePosition', 'extruding', 'rotating', 'translating', 'scaling'].includes(editType)
         ) {
           // Don't log moves since they're really chatty
           // eslint-disable-next-line

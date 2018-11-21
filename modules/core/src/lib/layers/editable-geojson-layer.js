@@ -13,6 +13,7 @@ import { DrawPointHandler } from '../mode-handlers/draw-point-handler.js';
 import { DrawLineStringHandler } from '../mode-handlers/draw-line-string-handler.js';
 import { DrawPolygonHandler } from '../mode-handlers/draw-polygon-handler.js';
 import { DrawRectangleHandler } from '../mode-handlers/draw-rectangle-handler.js';
+import { SplitPolygonHandler } from '../mode-handlers/split-polygon-handler.js';
 import { DrawRectangleUsingThreePointsHandler } from '../mode-handlers/draw-rectangle-using-three-points-handler.js';
 import { DrawCircleFromCenterHandler } from '../mode-handlers/draw-circle-from-center-handler.js';
 import { DrawCircleByBoundingBoxHandler } from '../mode-handlers/draw-circle-by-bounding-box-handler.js';
@@ -111,6 +112,7 @@ const defaultProps = {
     drawPoint: new DrawPointHandler(),
     drawLineString: new DrawLineStringHandler(),
     drawPolygon: new DrawPolygonHandler(),
+    split: new SplitPolygonHandler(),
     drawRectangle: new DrawRectangleHandler(),
     drawRectangleUsing3Points: new DrawRectangleUsingThreePointsHandler(),
     drawCircleFromCenter: new DrawCircleFromCenterHandler(),

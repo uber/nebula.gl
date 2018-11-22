@@ -2,6 +2,11 @@
 /* eslint-env jest */
 
 import { ExtrudeHandler } from '../../../lib/mode-handlers/extrude-handler';
+import type {
+  PointerMoveEvent,
+  StartDraggingEvent,
+  StopDraggingEvent
+} from '../../../lib/event-types.js';
 
 let polygonFeature2;
 let polygonFeature;
@@ -223,5 +228,110 @@ describe('getPointForPositionIndexes()', () => {
     actual = features.getPointForPositionIndexes([0, 0, 2], 0);
     expected = multiPolygonFeature.geometry.coordinates[0][0][2];
     expect(actual).toEqual(expected);
+  });
+});
+
+describe('handleStartDragging()', () => {
+  it('handle Start Dragging', () => {
+    const features = new ExtrudeHandler({
+      type: 'FeatureCollection',
+      features: [polygonFeature2]
+    });
+    features.setSelectedFeatureIndexes([0]);
+
+    const startEvent: StartDraggingEvent = {
+      picks: [
+        {
+          index: 0,
+          object: {
+            featureIndex: 0,
+            type: 'intermediate',
+            positionIndexes: [0, 1]
+          },
+          isEditingHandle: true
+        }
+      ],
+      screenCoords: [0, 0],
+      groundCoords: [0, 0],
+      pointerDownScreenCoords: [0, 0],
+      pointerDownGroundCoords: [0, 0],
+      sourceEvent: null
+    };
+    const actual: any = features.handleStartDragging(startEvent);
+    expect(actual.editType).toEqual('startExtruding');
+    expect(actual.updatedData.features[0].geometry.coordinates[0].length).toEqual(
+      polygonFeature2.geometry.coordinates[0].length + 1
+    );
+  });
+});
+
+describe('handleStopDragging()', () => {
+  it('handle Stop Dragging', () => {
+    const features = new ExtrudeHandler({
+      type: 'FeatureCollection',
+      features: [polygonFeature2]
+    });
+    features.setSelectedFeatureIndexes([0]);
+
+    const event: StopDraggingEvent = {
+      picks: [
+        {
+          index: 0,
+          object: {
+            featureIndex: 0,
+            type: 'intermediate',
+            positionIndexes: [0, 1]
+          },
+          isEditingHandle: true
+        }
+      ],
+      screenCoords: [0, 0],
+      groundCoords: [0, 0],
+      pointerDownScreenCoords: [0, 0],
+      pointerDownGroundCoords: [0, 0],
+      sourceEvent: null
+    };
+    const actual: any = features.handleStopDragging(event);
+    expect(actual.editType).toEqual('extruded');
+    expect(actual.updatedData.features[0].geometry.coordinates[0].length).toEqual(
+      polygonFeature2.geometry.coordinates[0].length
+    );
+  });
+});
+
+describe('handlePointerMove()', () => {
+  it('handle Pointer Move', () => {
+    const features = new ExtrudeHandler({
+      type: 'FeatureCollection',
+      features: [polygonFeature2]
+    });
+    features.setSelectedFeatureIndexes([0]);
+
+    const event: PointerMoveEvent = {
+      picks: [],
+      isDragging: true,
+      pointerDownPicks: [
+        {
+          index: 0,
+          object: {
+            featureIndex: 0,
+            type: 'intermediate',
+            positionIndexes: [0, 1]
+          },
+          isEditingHandle: true
+        }
+      ],
+      screenCoords: [0, 0],
+      groundCoords: [0, 0],
+      pointerDownScreenCoords: [0, 0],
+      pointerDownGroundCoords: [0, 0],
+      sourceEvent: null
+    };
+    const actual: any = features.handlePointerMove(event);
+
+    expect(actual.editAction.editType).toEqual('extruding');
+    expect(actual.editAction.updatedData.features[0].geometry.coordinates[0].length).toEqual(
+      polygonFeature2.geometry.coordinates[0].length
+    );
   });
 });

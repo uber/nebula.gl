@@ -139,11 +139,11 @@ The `onEdit` event is the core event provided by this layer and must be handled 
 
   * `translated`: A feature finished translating (e.g. user finished dragging).
 
-  * `startExtruding`: A feature started extruding.
+  * `startExtruding`: An edge started extruding (e.g. user started dragging).
 
-  * `extruding`: A feature being extruded.
+  * `extruding`: An edge is extruding.
 
-  * `extruded`: A feature finished extruding.
+  * `extruded`: An edge finished extruding (e.g. user finished dragging).
 
 * `featureIndex` (Number): The index of the edited/added feature.
 

@@ -20,7 +20,7 @@ User can move existing points, add intermediate points along lines, and remove p
 
 * Mode name: `extrude`
 
-User can move edge. drag from any where between 2 points in edge.
+User can move edge. Click and drag from anywhere between 2 points in edge.
 
 ## [SclaeHandler](https://github.com/uber/nebula.gl/blob/master/modules/core/src/lib/mode-handlers/scale-handler.js)
 

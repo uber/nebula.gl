@@ -50,6 +50,7 @@
     "@turf/bbox-polygon": ">=4.0.0",
     "@turf/bearing": ">=4.0.0",
     "@turf/boolean-point-in-polygon": ">=4.0.0",
+    "@turf/line-intersect": ">=4.0.0",
     "@turf/buffer": ">=4.0.0",
     "@turf/center": ">=4.0.0",
     "@turf/centroid": ">=4.0.0",

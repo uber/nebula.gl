@@ -3,7 +3,7 @@
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import turfDifference from '@turf/difference';
 import turfBuffer from '@turf/buffer';
-import type { Feature, Polygon } from '../../geojson-types.js';
+import lineIntersect from '@turf/line-intersect';
 import type { ClickEvent, PointerMoveEvent } from '../event-types.js';
 import type { EditAction } from './mode-handler.js';
 import { ModeHandler } from './mode-handler.js';
@@ -21,7 +21,7 @@ export class SplitPolygonHandler extends ModeHandler {
       // eslint-disable-next-line no-console,no-undef
       console.warn('A polygon must be selected for splitting');
       this._setTentativeFeature(null);
-      return;
+      return editAction;
     }
     const pt = {
       type: 'Point',
@@ -30,6 +30,11 @@ export class SplitPolygonHandler extends ModeHandler {
     const isPointInPolygon = booleanPointInPolygon(pt, selectedGeometry);
     if (clickSequence.length > 1 && tentativeFeature && !isPointInPolygon) {
       this.resetClickSequence();
+      const isLineInterectingWithPolygon = lineIntersect(tentativeFeature, selectedGeometry);
+      if (isLineInterectingWithPolygon.features.length === 0) {
+        this._setTentativeFeature(null);
+        return editAction;
+      }
       return this.splitPolygon();
     }
 
@@ -63,8 +68,13 @@ export class SplitPolygonHandler extends ModeHandler {
     const tentativeFeature = this.getTentativeFeature();
     const featureIndex = this.getSelectedFeatureIndexes()[0];
     const modeConfig = this.getModeConfig();
+
     // Default gap in between the polygon
-    const { gap = 0.001, units = 'miles' } = modeConfig;
+    let { gap = 0.1, units = 'centimeters' } = modeConfig;
+    if (gap === 0) {
+      gap = 0.1;
+      units = 'centimeters';
+    }
 
     const buffer = turfBuffer(tentativeFeature, gap, { units });
     const updatedGeometry = turfDifference(selectedGeometry, buffer);
@@ -75,29 +85,25 @@ export class SplitPolygonHandler extends ModeHandler {
       return null;
     }
 
-    const pieces = updatedGeometry.geometry.coordinates.map(coordinates => {
-      if (updatedGeometry.geometry.type === 'Polygon') {
-        coordinates = [coordinates];
-      }
-      return {
-        type: 'Polygon',
-        coordinates
-      };
-    });
+    const { type, coordinates } = updatedGeometry.geometry;
+    let updatedCoordinates = [];
+    if (type === 'Polygon') {
+      // Update the coordinates as per Multipolygon
+      updatedCoordinates = coordinates.map(c => [c]);
+    } else {
+      // Handle Case when Multipolygon has holes
+      updatedCoordinates = coordinates.reduce((agg, prev) => {
+        prev.forEach(p => {
+          agg.push([p]);
+        });
+        return agg;
+      }, []);
+    }
 
-    let updatedData = this.getImmutableFeatureCollection().replaceGeometry(
-      featureIndex,
-      pieces.shift()
-    );
-
-    pieces.forEach(polygon => {
-      updatedData = updatedData.addFeature(
-        ({
-          type: 'Feature',
-          properties: {},
-          geometry: (polygon: any)
-        }: Feature)
-      );
+    // Update the type to Mulitpolygon
+    const updatedData = this.getImmutableFeatureCollection().replaceGeometry(featureIndex, {
+      type: 'MultiPolygon',
+      coordinates: updatedCoordinates
     });
 
     const editAction: EditAction = {

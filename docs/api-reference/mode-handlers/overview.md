@@ -16,6 +16,12 @@ No edits are possible, but selection is still possible.
 
 User can move existing points, add intermediate points along lines, and remove points.
 
+## [ExtrudeHandler](https://github.com/uber/nebula.gl/blob/master/modules/core/src/lib/mode-handlers/extrude-handler.js)
+
+* Mode name: `extrude`
+
+User can move edge. Click and drag from anywhere between 2 points in edge.
+
 ## [SclaeHandler](https://github.com/uber/nebula.gl/blob/master/modules/core/src/lib/mode-handlers/scale-handler.js)
 
 * Mode name: `scale`

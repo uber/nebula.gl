@@ -145,6 +145,8 @@ The `onEdit` event is the core event provided by this layer and must be handled 
 
   * `extruded`: An edge finished extruding (e.g. user finished dragging).
 
+  * `split`: A feature finished splitting.
+
 * `featureIndex` (Number): The index of the edited/added feature.
 
 * `positionIndexes` (Array): An array of numbers representing the indexes of the edited position within the features' `coordinates` array

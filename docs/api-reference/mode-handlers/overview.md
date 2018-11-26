@@ -148,8 +148,12 @@ User can split a polygon by drawing a new `LineString` feature on top of the pol
 The following options can be provided in the `modeConfig` object:
 * `gap` (optional):  `x <number>`
   * If gap: `x` means the spacing between the polygon would be `x`.
-* `unit` (optional):  `x <string>`
+  * Gap value should be greater than 0.
+  * Default gap is `0.1`
+
+* `unit` (optional):  `centimeters|feet|inches|meters|kilometers|miles|yards`
   * If unit: `x` means the unit used for the spacing would be of `x` unit.
+  * Default unit is `centimeters`
 
 ## Boolean Operations
 

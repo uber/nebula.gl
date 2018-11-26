@@ -133,6 +133,28 @@ User can draw a new ellipse shape `Polygon` feature by clicking two corners of b
 
 User can draw a new ellipse shape `Polygon` feature by clicking center and two corners of the ellipse.
 
+## [SplitPolygonHandler](https://github.com/uber/nebula.gl/blob/master/modules/core/src/lib/mode-handlers/split-polygon-handler.js)
+
+* Mode name: `split`
+
+User can split a polygon by drawing a new `LineString` feature on top of the polygon.
+
+* If the first and the last click is outside the polygon, it will split the polygon
+
+* If the clicked position is inside the polygon, it will not split the polygon
+
+### ModeConfig
+
+The following options can be provided in the `modeConfig` object:
+* `gap` (optional):  `x <number>`
+  * If gap: `x` means the spacing between the polygon would be `x`.
+  * Gap value should be greater than 0.
+  * Default gap is `0.1`
+
+* `unit` (optional):  `centimeters|feet|inches|meters|kilometers|miles|yards`
+  * If unit: `x` means the unit used for the spacing would be of `x` unit.
+  * Default unit is `centimeters`
+
 ## Boolean Operations
 
 For all polygon drawing modes, the following options can be provided in the `modeConfig` object:

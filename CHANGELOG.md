@@ -3,15 +3,21 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-<!-- ## [Unreleased](https://github.com/uber/nebula.gl/compare/v0.7.0...master) -->
+<!-- ## [Unreleased](https://github.com/uber/nebula.gl/compare/v0.7.3...master) -->
 
-## [0.7.2] - 2018-11-12
+## [0.7.3](https://github.com/uber/nebula.gl/compare/v0.7.2...v0.7.3) - 2018-11-26
+
+* Handle null modeConfig
+* Implement Split Polygon
+* Ability to drag(extrude) an edge
+
+## [0.7.2](https://github.com/uber/nebula.gl/compare/v0.7.1...v0.7.2) - 2018-11-12
 
 * Implement selection-layer
 * Detach event listeners on component unmount
 * Disable hacky loop sync behind feature flag property
 
-## [0.7.1] - 2018-10-24
+## [0.7.1](https://github.com/uber/nebula.gl/compare/v0.7.0...v0.7.1) - 2018-10-24
 * Fix Nebula crashes on attempt to edit polygon layer over segment layer
 
 ## [0.7.0](https://github.com/uber/nebula.gl/compare/v0.6.1...v0.7.0) - 2018-10-23

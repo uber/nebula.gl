@@ -67,7 +67,7 @@ export class SplitPolygonHandler extends ModeHandler {
     const selectedGeometry = this.getSelectedGeometry();
     const tentativeFeature = this.getTentativeFeature();
     const featureIndex = this.getSelectedFeatureIndexes()[0];
-    const modeConfig = this.getModeConfig();
+    const modeConfig = this.getModeConfig() || {};
 
     // Default gap in between the polygon
     let { gap = 0.1, units = 'centimeters' } = modeConfig;

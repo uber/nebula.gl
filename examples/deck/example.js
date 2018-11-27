@@ -196,7 +196,7 @@ export default class Example extends Component<
             <select
               value={this.state.mode}
               onChange={event => {
-                let modeConfig = {};
+                let modeConfig = null;
                 if (event.target.value === 'drawCircleByBoundingBox') {
                   modeConfig = {
                     steps: 32
@@ -271,7 +271,7 @@ export default class Example extends Component<
                 this.setState({
                   drawAtFront: !this.state.drawAtFront,
                   modeConfig: {
-                    ...this.state.modeConfig,
+                    ...(this.state.modeConfig || {}),
                     drawAtFront: !this.state.drawAtFront
                   }
                 })

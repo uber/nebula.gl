@@ -16,7 +16,7 @@ export class DrawCircleFromCenterHandler extends TwoClickPolygonHandler {
       return result;
     }
 
-    const modeConfig = this.getModeConfig();
+    const modeConfig = this.getModeConfig() || {};
     // Default turf value for circle is 64
     const { steps = 64 } = modeConfig;
     const options = { steps };

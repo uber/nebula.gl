@@ -12,6 +12,7 @@ import { ScaleHandler } from '../mode-handlers/scale-handler.js';
 import { DrawPointHandler } from '../mode-handlers/draw-point-handler.js';
 import { DrawLineStringHandler } from '../mode-handlers/draw-line-string-handler.js';
 import { DrawPolygonHandler } from '../mode-handlers/draw-polygon-handler.js';
+import { Draw90DegreePolygonHandler } from '../mode-handlers/draw-90degree-polygon-handler.js';
 import { DrawRectangleHandler } from '../mode-handlers/draw-rectangle-handler.js';
 import { SplitPolygonHandler } from '../mode-handlers/split-polygon-handler.js';
 import { DrawRectangleUsingThreePointsHandler } from '../mode-handlers/draw-rectangle-using-three-points-handler.js';
@@ -112,6 +113,7 @@ const defaultProps = {
     drawPoint: new DrawPointHandler(),
     drawLineString: new DrawLineStringHandler(),
     drawPolygon: new DrawPolygonHandler(),
+    draw90DegreePolygon: new Draw90DegreePolygonHandler(),
     split: new SplitPolygonHandler(),
     drawRectangle: new DrawRectangleHandler(),
     drawRectangleUsing3Points: new DrawRectangleUsingThreePointsHandler(),

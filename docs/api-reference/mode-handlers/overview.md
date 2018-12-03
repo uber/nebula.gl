@@ -85,6 +85,12 @@ The following options can be provided in the `modeConfig` object:
 
 User can draw a new `Polygon` feature by clicking positions to add then closing the polygon (or double-clicking).
 
+## [Draw90DegreePolygonHandler](https://github.com/uber/nebula.gl/blob/master/modules/core/src/lib/mode-handlers/draw-90degree-polygon-handler.js)
+
+* Mode name: `draw90DegreePolygon`
+
+User can draw a new `Polygon` feature with 90 degree corners (right angle) by clicking positions to add then closing the polygon (or double-clicking). After clicking the 2 points, the draw mode guides/allows to have right angle polygon. 
+
 ## [DrawRectangleHandler](https://github.com/uber/nebula.gl/blob/master/modules/core/src/lib/mode-handlers/draw-rectangle-handler.js)
 
 * Mode name: `drawRectangle`

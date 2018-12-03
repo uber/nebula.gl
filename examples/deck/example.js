@@ -215,6 +215,7 @@ export default class Example extends Component<
               <option value="drawPoint">drawPoint</option>
               <option value="drawLineString">drawLineString</option>
               <option value="drawPolygon">drawPolygon</option>
+              <option value="draw90DegreePolygon">draw90DegreePolygon</option>
               <option value="drawRectangle">drawRectangle</option>
               <option value="split">split</option>
               <option value="drawRectangleUsing3Points">drawRectangleUsing3Points</option>

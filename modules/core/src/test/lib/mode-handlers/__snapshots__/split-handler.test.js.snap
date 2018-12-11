@@ -1,0 +1,245 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Split Polygon Handler  should reset tentativeFeature on handleClick  when lineString is outside the polygon lock90Degree 1`] = `
+Object {
+  "editType": "split",
+  "featureIndex": 2,
+  "position": null,
+  "positionIndexes": null,
+  "updatedData": Object {
+    "features": Array [
+      Object {
+        "geometry": Object {
+          "coordinates": Array [
+            1,
+            2,
+          ],
+          "type": "Point",
+        },
+        "properties": Object {},
+        "type": "Feature",
+      },
+      Object {
+        "geometry": Object {
+          "coordinates": Array [
+            Array [
+              1,
+              2,
+            ],
+            Array [
+              2,
+              3,
+            ],
+            Array [
+              3,
+              4,
+            ],
+          ],
+          "type": "LineString",
+        },
+        "properties": Object {},
+        "type": "Feature",
+      },
+      Object {
+        "geometry": Object {
+          "coordinates": Array [
+            Array [
+              Array [
+                Array [
+                  -1,
+                  -1,
+                ],
+                Array [
+                  1,
+                  -1,
+                ],
+                Array [
+                  1,
+                  1,
+                ],
+                Array [
+                  -1,
+                  1,
+                ],
+                Array [
+                  -1,
+                  -0.9995433745041463,
+                ],
+                Array [
+                  -0.5,
+                  -0.49931506810778264,
+                ],
+                Array [
+                  -0.5,
+                  0.5,
+                ],
+                Array [
+                  0.5,
+                  0.5,
+                ],
+                Array [
+                  0.5,
+                  -0.5,
+                ],
+                Array [
+                  -0.5,
+                  -0.5,
+                ],
+                Array [
+                  -0.5,
+                  -0.4993150935198374,
+                ],
+                Array [
+                  -1,
+                  -0.999543399914269,
+                ],
+                Array [
+                  -1,
+                  -1,
+                ],
+              ],
+            ],
+          ],
+          "type": "MultiPolygon",
+        },
+        "properties": Object {},
+        "type": "Feature",
+      },
+      Object {
+        "geometry": Object {
+          "coordinates": Array [
+            Array [
+              1,
+              2,
+            ],
+            Array [
+              3,
+              4,
+            ],
+          ],
+          "type": "MultiPoint",
+        },
+        "properties": Object {},
+        "type": "Feature",
+      },
+      Object {
+        "geometry": Object {
+          "coordinates": Array [
+            Array [
+              Array [
+                1,
+                2,
+              ],
+              Array [
+                2,
+                3,
+              ],
+              Array [
+                3,
+                4,
+              ],
+            ],
+            Array [
+              Array [
+                5,
+                6,
+              ],
+              Array [
+                6,
+                7,
+              ],
+              Array [
+                7,
+                8,
+              ],
+            ],
+          ],
+          "type": "MultiLineString",
+        },
+        "properties": Object {},
+        "type": "Feature",
+      },
+      Object {
+        "geometry": Object {
+          "coordinates": Array [
+            Array [
+              Array [
+                Array [
+                  -1,
+                  -1,
+                ],
+                Array [
+                  1,
+                  -1,
+                ],
+                Array [
+                  1,
+                  1,
+                ],
+                Array [
+                  -1,
+                  1,
+                ],
+                Array [
+                  -1,
+                  -1,
+                ],
+              ],
+              Array [
+                Array [
+                  -0.5,
+                  -0.5,
+                ],
+                Array [
+                  -0.5,
+                  0.5,
+                ],
+                Array [
+                  0.5,
+                  0.5,
+                ],
+                Array [
+                  0.5,
+                  -0.5,
+                ],
+                Array [
+                  -0.5,
+                  -0.5,
+                ],
+              ],
+            ],
+            Array [
+              Array [
+                Array [
+                  2,
+                  -1,
+                ],
+                Array [
+                  4,
+                  -1,
+                ],
+                Array [
+                  4,
+                  1,
+                ],
+                Array [
+                  2,
+                  1,
+                ],
+                Array [
+                  2,
+                  -1,
+                ],
+              ],
+            ],
+          ],
+          "type": "MultiPolygon",
+        },
+        "properties": Object {},
+        "type": "Feature",
+      },
+    ],
+    "type": "FeatureCollection",
+  },
+}
+`;

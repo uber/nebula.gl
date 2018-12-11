@@ -183,6 +183,10 @@ export default class Example extends Component<
   }
 
   _renderToolBox() {
+    const currentMode =
+      this.state.modeConfig && this.state.modeConfig.lock90Degree
+        ? 'split90Degree'
+        : this.state.mode;
     return (
       <div style={styles.toolbox}>
         <dl style={styles.toolboxList}>
@@ -194,15 +198,22 @@ export default class Example extends Component<
           <dt style={styles.toolboxTerm}>Mode</dt>
           <dd style={styles.toolboxDescription}>
             <select
-              value={this.state.mode}
+              value={currentMode}
               onChange={event => {
                 let modeConfig = null;
-                if (event.target.value === 'drawCircleByBoundingBox') {
+                let mode = event.target.value;
+                if (mode === 'drawCircleByBoundingBox') {
                   modeConfig = {
                     steps: 32
                   };
                 }
-                this.setState({ mode: event.target.value, modeConfig, selectionTool: null });
+                if (mode === 'split90Degree') {
+                  mode = 'split';
+                  modeConfig = {
+                    lock90Degree: true
+                  };
+                }
+                this.setState({ mode, modeConfig, selectionTool: null });
               }}
             >
               <option value="view">view</option>
@@ -218,6 +229,7 @@ export default class Example extends Component<
               <option value="draw90DegreePolygon">draw90DegreePolygon</option>
               <option value="drawRectangle">drawRectangle</option>
               <option value="split">split</option>
+              <option value="split90Degree">split90Degree</option>
               <option value="drawRectangleUsing3Points">drawRectangleUsing3Points</option>
               <option value="drawCircleFromCenter">drawCircleFromCenter</option>
               <option value="drawCircleByBoundingBox">drawCircleByBoundingBox</option>

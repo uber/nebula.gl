@@ -32,21 +32,24 @@ const styles = {
     borderRadius: 4,
     border: '1px solid gray',
     width: 350,
-    fontFamily: 'Arial, Helvetica, sans-serif'
+    fontFamily: 'Arial, Helvetica, sans-serif',
+    fontSize: '13px'
   },
-  toolboxList: {
-    margin: 0,
+  toolboxRow: {
     display: 'flex',
+    marginBottom: '5px'
+  },
+  toolboxRowWrapping: {
+    display: 'flex',
+    marginBottom: '5px',
     flexWrap: 'wrap'
   },
-  toolboxTerm: {
-    flex: '0 0 50%',
-    marginBottom: 7
+  toolboxDivider: {
+    marginBottom: '5px',
+    borderBottom: '1px solid gray'
   },
-  toolboxDescription: {
-    margin: 0,
-    flex: '0 0 50%',
-    fontSize: '90%'
+  toolboxItem: {
+    flexBasis: '50%'
   },
   mapContainer: {
     alignItems: 'stretch',
@@ -58,6 +61,46 @@ const styles = {
   }
 };
 
+const ToolboxRow = props => <div style={styles.toolboxRow}>{props.children}</div>;
+const ToolboxRowWrapping = props => <div style={styles.toolboxRowWrapping}>{props.children}</div>;
+const ToolboxLabel = props => <div style={styles.toolboxItem}>{props.children}</div>;
+const ToolboxControl = props => <div style={styles.toolboxItem}>{props.children}</div>;
+const ToolboxDivider = props => <div style={styles.toolboxDivider} />;
+
+const ALL_MODES = [
+  { category: 'View', modes: ['view'] },
+  {
+    category: 'Alter',
+    modes: ['modify', 'translate', 'rotate', 'scale', 'duplicate', 'extrude', 'split']
+  },
+  {
+    category: 'Draw',
+    modes: [
+      'drawPoint',
+      'drawLineString',
+      'drawPolygon',
+      'draw90DegreePolygon',
+      'drawRectangle',
+      'drawRectangleUsing3Points',
+      'drawCircleFromCenter',
+      'drawCircleByBoundingBox',
+      'drawEllipseByBoundingBox',
+      'drawEllipseUsing3Points'
+    ]
+  }
+];
+
+const POLYGON_DRAWING_MODES = [
+  'drawPolygon',
+  'draw90DegreePolygon',
+  'drawRectangle',
+  'drawRectangleUsing3Points',
+  'drawCircleFromCenter',
+  'drawCircleByBoundingBox',
+  'drawEllipseByBoundingBox',
+  'drawEllipseUsing3Points'
+];
+
 export default class Example extends Component<
   {},
   {
@@ -66,7 +109,6 @@ export default class Example extends Component<
     mode: string,
     modeConfig: any,
     pointsRemovable: boolean,
-    drawAtFront: boolean,
     selectedFeatureIndexes: number[],
     editHandleType: string,
     selectionTool: ?string
@@ -81,7 +123,6 @@ export default class Example extends Component<
       mode: 'drawPolygon',
       modeConfig: null,
       pointsRemovable: true,
-      drawAtFront: false,
       selectedFeatureIndexes: [],
       editHandleType: 'point',
       selectionTool: null
@@ -143,128 +184,184 @@ export default class Example extends Component<
     }
   };
 
-  _renderCheckbox(index: number, featureType: string) {
+  _renderSelectFeatureCheckbox(index: number, featureType: string) {
     const { selectedFeatureIndexes } = this.state;
     return (
-      <dd style={styles.toolboxDescription} key={index}>
-        <input
-          style={styles.checkbox}
-          type="checkbox"
-          checked={selectedFeatureIndexes.includes(index)}
-          onChange={() => {
-            if (selectedFeatureIndexes.includes(index)) {
-              this.setState({
-                selectedFeatureIndexes: selectedFeatureIndexes.filter(e => e !== index)
-              });
-            } else {
-              this.setState({
-                selectedFeatureIndexes: [...selectedFeatureIndexes, index]
-              });
-            }
-          }}
-        />
-        {index}
-        {': '}
-        {featureType}
-        {''}
-      </dd>
+      <ToolboxLabel key={index}>
+        <label>
+          <input
+            style={styles.checkbox}
+            type="checkbox"
+            checked={selectedFeatureIndexes.includes(index)}
+            onChange={() => {
+              if (selectedFeatureIndexes.includes(index)) {
+                this.setState({
+                  selectedFeatureIndexes: selectedFeatureIndexes.filter(e => e !== index)
+                });
+              } else {
+                this.setState({
+                  selectedFeatureIndexes: [...selectedFeatureIndexes, index]
+                });
+              }
+            }}
+          />
+          {index}
+          {': '}
+          {featureType}
+        </label>
+      </ToolboxLabel>
     );
   }
 
-  _renderAllCheckboxes() {
+  _renderSelectFeatureCheckboxes() {
     const {
       testFeatures: { features }
     } = this.state;
     const checkboxes = [];
     for (let i = 0; i < features.length; ++i) {
-      checkboxes.push(this._renderCheckbox(i, features[i].geometry.type));
+      checkboxes.push(this._renderSelectFeatureCheckbox(i, features[i].geometry.type));
     }
     return checkboxes;
   }
 
-  _renderToolBox() {
-    const currentMode =
-      this.state.modeConfig && this.state.modeConfig.lock90Degree
-        ? 'split90Degree'
-        : this.state.mode;
+  _renderBooleanOperationControls() {
+    const operations = ['union', 'difference', 'intersection'];
     return (
-      <div style={styles.toolbox}>
-        <dl style={styles.toolboxList}>
-          <dt style={styles.toolboxTerm}>Load sample data</dt>
-          <dd style={styles.toolboxDescription}>
-            <button onClick={() => this._loadSample('mixed')}>Mixed</button>
-            <button onClick={() => this._loadSample('complex')}>Complex</button>
-          </dd>
-          <dt style={styles.toolboxTerm}>Mode</dt>
-          <dd style={styles.toolboxDescription}>
-            <select
-              value={currentMode}
-              onChange={event => {
-                let modeConfig = null;
-                let mode = event.target.value;
-                if (mode === 'drawCircleByBoundingBox') {
-                  modeConfig = {
-                    steps: 32
-                  };
+      <ToolboxRow key="booleanOperations">
+        <ToolboxLabel>Boolean operation (requires single selection)</ToolboxLabel>
+        <ToolboxControl>
+          {operations.map(operation => (
+            <button
+              style={{
+                backgroundColor:
+                  this.state.modeConfig && this.state.modeConfig.booleanOperation === operation
+                    ? '#a0cde8'
+                    : ''
+              }}
+              onClick={() => {
+                if (this.state.modeConfig && this.state.modeConfig.booleanOperation === operation) {
+                  this.setState({ modeConfig: null });
+                } else {
+                  this.setState({ modeConfig: { booleanOperation: operation } });
                 }
-                if (mode === 'split90Degree') {
-                  mode = 'split';
-                  modeConfig = {
-                    lock90Degree: true
-                  };
-                }
-                this.setState({ mode, modeConfig, selectionTool: null });
               }}
             >
-              <option value="view">view</option>
-              <option value="modify">modify</option>
-              <option value="extrude">extrude</option>
-              <option value="translate">translate</option>
-              <option value="duplicate">duplicate</option>
-              <option value="rotate">rotate</option>
-              <option value="scale">scale</option>
-              <option value="drawPoint">drawPoint</option>
-              <option value="drawLineString">drawLineString</option>
-              <option value="drawPolygon">drawPolygon</option>
-              <option value="draw90DegreePolygon">draw90DegreePolygon</option>
-              <option value="drawRectangle">drawRectangle</option>
-              <option value="split">split</option>
-              <option value="split90Degree">split90Degree</option>
-              <option value="drawRectangleUsing3Points">drawRectangleUsing3Points</option>
-              <option value="drawCircleFromCenter">drawCircleFromCenter</option>
-              <option value="drawCircleByBoundingBox">drawCircleByBoundingBox</option>
-              <option value="drawEllipseByBoundingBox">drawEllipseByBoundingBox</option>
-              <option value="drawEllipseUsing3Points">drawEllipseUsing3Points</option>
-            </select>
-          </dd>
-          <dt style={styles.toolboxTerm}>Boolean operation</dt>
-          <dd style={styles.toolboxDescription}>
-            <select
-              value={this.state.modeConfig ? this.state.modeConfig.booleanOperation : ''}
-              onChange={event =>
-                this.setState({
-                  modeConfig: {
-                    booleanOperation: event.target.value
-                  }
-                })
-              }
-            >
-              <option value="">(none)</option>
-              <option value="union">union</option>
-              <option value="difference">difference</option>
-              <option value="intersection">intersection</option>
-            </select>
-          </dd>
-          <dt style={styles.toolboxTerm}>Allow removing points</dt>
-          <dd style={styles.toolboxDescription}>
-            <input
-              type="checkbox"
-              checked={this.state.pointsRemovable}
-              onChange={() => this.setState({ pointsRemovable: !this.state.pointsRemovable })}
-            />
-          </dd>
-          <dt style={styles.toolboxTerm}>Use Icons</dt>
-          <dd style={styles.toolboxDescription}>
+              {operation}
+            </button>
+          ))}
+        </ToolboxControl>
+      </ToolboxRow>
+    );
+  }
+
+  _renderDrawLineStringModeControls() {
+    return (
+      <ToolboxRow key="drawLineString">
+        <ToolboxLabel>Draw LineString At Front</ToolboxLabel>
+        <ToolboxControl>
+          <input
+            type="checkbox"
+            checked={Boolean(this.state.modeConfig && this.state.modeConfig.drawAtFront)}
+            onChange={event =>
+              this.setState({
+                modeConfig: {
+                  drawAtFront: Boolean(event.target.checked)
+                }
+              })
+            }
+          />
+        </ToolboxControl>
+      </ToolboxRow>
+    );
+  }
+
+  _renderModifyModeControls() {
+    return (
+      <ToolboxRow key="modify">
+        <ToolboxLabel>Allow removing points</ToolboxLabel>
+        <ToolboxControl>
+          <input
+            type="checkbox"
+            checked={this.state.pointsRemovable}
+            onChange={() => this.setState({ pointsRemovable: !this.state.pointsRemovable })}
+          />
+        </ToolboxControl>
+      </ToolboxRow>
+    );
+  }
+
+  _renderSplitModeControls() {
+    return (
+      <ToolboxRow key="split">
+        <ToolboxLabel>Constrain to 90&deg;</ToolboxLabel>
+        <ToolboxControl>
+          <input
+            type="checkbox"
+            checked={Boolean(this.state.modeConfig && this.state.modeConfig.lock90Degree)}
+            onChange={event =>
+              this.setState({ modeConfig: { lock90Degree: Boolean(event.target.checked) } })
+            }
+          />
+        </ToolboxControl>
+      </ToolboxRow>
+    );
+  }
+
+  _renderModeConfigControls() {
+    const controls = [];
+
+    if (POLYGON_DRAWING_MODES.indexOf(this.state.mode) > -1) {
+      controls.push(this._renderBooleanOperationControls());
+    }
+    if (this.state.mode === 'drawLineString') {
+      controls.push(this._renderDrawLineStringModeControls());
+    }
+    if (this.state.mode === 'modify') {
+      controls.push(this._renderModifyModeControls());
+    }
+    if (this.state.mode === 'split') {
+      controls.push(this._renderSplitModeControls());
+    }
+
+    return controls;
+  }
+
+  _renderToolBox() {
+    return (
+      <div style={styles.toolbox}>
+        {ALL_MODES.map(category => (
+          <ToolboxRowWrapping key={category.category}>
+            <div style={{ paddingRight: '4px' }}>{category.category} Modes</div>
+            {category.modes.map(mode => (
+              <button
+                key={mode}
+                style={{
+                  margin: '2px',
+                  // padding: '2px 6px',
+                  backgroundColor: this.state.mode === mode ? '#a0cde8' : ''
+                }}
+                onClick={() => {
+                  this.setState({ mode, modeConfig: {}, selectionTool: null });
+                }}
+              >
+                {mode}
+              </button>
+            ))}
+          </ToolboxRowWrapping>
+        ))}
+        {this._renderModeConfigControls()}
+        <ToolboxDivider />
+        <ToolboxRow>
+          <ToolboxLabel>Load sample data</ToolboxLabel>
+          <ToolboxControl>
+            <button onClick={() => this._loadSample('mixed')}>Mixed</button>
+            <button onClick={() => this._loadSample('complex')}>Complex</button>
+          </ToolboxControl>
+        </ToolboxRow>
+
+        <ToolboxRow>
+          <ToolboxLabel>Use Icons</ToolboxLabel>
+          <ToolboxControl>
             <input
               type="checkbox"
               checked={this.state.editHandleType === 'icon'}
@@ -274,25 +371,12 @@ export default class Example extends Component<
                 })
               }
             />
-          </dd>
-          <dt style={styles.toolboxTerm}>Draw LineString At Front</dt>
-          <dd style={styles.toolboxDescription}>
-            <input
-              type="checkbox"
-              checked={this.state.drawAtFront}
-              onChange={() =>
-                this.setState({
-                  drawAtFront: !this.state.drawAtFront,
-                  modeConfig: {
-                    ...(this.state.modeConfig || {}),
-                    drawAtFront: !this.state.drawAtFront
-                  }
-                })
-              }
-            />
-          </dd>
-          <dt style={styles.toolboxTerm}>Select Features</dt>
-          <dd style={styles.toolboxDescription}>
+          </ToolboxControl>
+        </ToolboxRow>
+
+        <ToolboxRow>
+          <ToolboxLabel>Select Features</ToolboxLabel>
+          <ToolboxControl>
             <input
               type="button"
               value="Clear"
@@ -312,15 +396,15 @@ export default class Example extends Component<
               value="Lasso"
               onClick={() => this.setState({ mode: 'view', selectionTool: SELECTION_TYPE.POLYGON })}
             />
-          </dd>
-          {this._renderAllCheckboxes()}
-        </dl>
+          </ToolboxControl>
+        </ToolboxRow>
+        <ToolboxRowWrapping>{this._renderSelectFeatureCheckboxes()}</ToolboxRowWrapping>
       </div>
     );
   }
 
   render() {
-    const { testFeatures, selectedFeatureIndexes, mode, modeConfig, drawAtFront } = this.state;
+    const { testFeatures, selectedFeatureIndexes, mode, modeConfig } = this.state;
 
     const viewport = {
       ...this.state.viewport,
@@ -339,7 +423,6 @@ export default class Example extends Component<
       coordinateSystem: COORDINATE_SYSTEM.LNGLAT_EXPERIMENTAL,
       //
       autoHighlight: false,
-      drawAtFront,
 
       // Editing callbacks
       onEdit: ({ updatedData, editType, featureIndex, positionIndexes, position }) => {
@@ -352,6 +435,7 @@ export default class Example extends Component<
           console.log('onEdit', editType, featureIndex, positionIndexes, position);
         }
         if (editType === 'removePosition' && !this.state.pointsRemovable) {
+          // This is a simple example of custom handling of edits
           // reject the edit
           return;
         }

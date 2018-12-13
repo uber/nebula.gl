@@ -161,6 +161,10 @@ The following options can be provided in the `modeConfig` object:
   * If unit: `x` means the unit used for the spacing would be of `x` unit.
   * Default unit is `centimeters`
 
+* `lock90Degree` (Boolean, optional)
+  * Default: `false`
+  * If true, all angles will be guaranteed to be 90 degrees.
+
 ## Boolean Operations
 
 For all polygon drawing modes, the following options can be provided in the `modeConfig` object:

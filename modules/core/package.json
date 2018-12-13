@@ -63,6 +63,7 @@
     "@turf/intersect": ">=4.0.0",
     "@turf/nearest-point-on-line": ">=4.0.0",
     "@turf/point-to-line-distance": ">=4.0.0",
+    "@turf/polygon-to-line": ">=4.0.0",
     "@turf/transform-rotate": ">=4.0.0",
     "@turf/transform-scale": ">=4.0.0",
     "@turf/union": ">=4.0.0",

@@ -57,6 +57,18 @@ describe('Split Polygon Handler ', () => {
       expect(action1).toBeNull();
       expect(action).toBeNull();
     });
+
+    test('when lineString is outside the polygon lock90Degree', () => {
+      const featureCollection = createFeatureCollection();
+      const handler = new SplitPolygonHandler(featureCollection);
+      handler.setModeConfig({ lock90Degree: true });
+      handler.setSelectedFeatureIndexes([2]);
+      const action1 = handler.handleClick(createClickEvent([-2, -2]));
+      handler.handlePointerMove(createPointerMoveEvent([-4, -4]));
+      const action = handler.handleClick(createClickEvent([-4, -4]));
+      expect(action1).toBeNull();
+      expect(action).toMatchSnapshot();
+    });
   });
 
   test('should split the polygon with holes and upgrade to MultiPolygon ', () => {

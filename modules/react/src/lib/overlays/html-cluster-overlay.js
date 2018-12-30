@@ -12,7 +12,7 @@ export default class HtmlClusterOverlay<Props, ObjType> extends HtmlOverlay<Prop
     // when necessary and not for every frame.
     const newObjects = this.getAllObjects();
     if (newObjects !== this._lastObjects) {
-      this._superCluster = supercluster({ maxZoom: 20 });
+      this._superCluster = supercluster(this.getClusterOptions());
       this._superCluster.load(
         newObjects.map(object => point(this.getObjectCoordinates(object), { object }))
       );
@@ -51,6 +51,13 @@ export default class HtmlClusterOverlay<Props, ObjType> extends HtmlOverlay<Prop
   // override to provide coordinates for each object of getAllObjects()
   getObjectCoordinates(obj: ObjType): [number, number] {
     return [0, 0];
+  }
+
+  // Get options object used when instantiating supercluster
+  getClusterOptions(): ?Object {
+    return {
+      maxZoom: 20
+    };
   }
 
   // override to return an HtmlOverlayItem

@@ -40,4 +40,8 @@ Use `getClusterObjects(clusterId)` to get cluster contents.
 ### getClusterObjects(clusterId)
 Returns an array of objects.
 
+### getClusterOptions()
+Override to return options used when instantiating the 
+underlying [supercluster](https://www.npmjs.com/package/supercluster#options) object.
+
 

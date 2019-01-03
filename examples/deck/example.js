@@ -232,6 +232,7 @@ export default class Example extends Component<
         <ToolboxControl>
           {operations.map(operation => (
             <button
+              key={operation}
               style={{
                 backgroundColor:
                   this.state.modeConfig && this.state.modeConfig.booleanOperation === operation

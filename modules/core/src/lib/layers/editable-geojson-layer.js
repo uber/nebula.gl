@@ -381,7 +381,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
   }
 
-  onClick(event: ClickEvent) {
+  onLayerClick(event: ClickEvent) {
     const editAction = this.state.modeHandler.handleClick(event);
     this.updateTentativeFeature();
     this.updateEditHandles();

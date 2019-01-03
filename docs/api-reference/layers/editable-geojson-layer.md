@@ -312,7 +312,7 @@ The rotating angle of each object, in degrees.
 
 These methods can be overridden in a derived class in order to customize event handling.
 
-### `onClick`
+### `onLayerClick`
 
 The pointer went down and up without dragging. This method is called regardless if something was picked.
 

@@ -15,7 +15,7 @@ const MINIMUM_POINTER_MOVE_THRESHOLD_PIXELS = 7;
 
 export default class EditableLayer extends CompositeLayer {
   // Overridable interaction event handlers
-  onClick(event: ClickEvent) {
+  onLayerClick(event: ClickEvent) {
     // default implementation - do nothing
   }
 
@@ -232,7 +232,7 @@ export default class EditableLayer extends CompositeLayer {
         sourceEvent: event
       });
     } else if (!this.movedEnoughForDrag(pointerDownScreenCoords, screenCoords)) {
-      this.onClick({
+      this.onLayerClick({
         picks: pointerDownPicks,
         screenCoords,
         groundCoords,

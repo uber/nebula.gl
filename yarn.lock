@@ -756,7 +756,7 @@
     lodash "^4.17.10"
     to-fast-properties "^2.0.0"
 
-"@deck.gl/core@^6.3.2", "@deck.gl/core@^6.3.3":
+"@deck.gl/core@^6.3.3":
   version "6.3.3"
   resolved "https://registry.yarnpkg.com/@deck.gl/core/-/core-6.3.3.tgz#416fb380c8db1d4882ae7563a953ac71af1641a7"
   dependencies:
@@ -767,14 +767,14 @@
     seer "^0.2.4"
     viewport-mercator-project "^6.0.0"
 
-"@deck.gl/experimental-layers@6.3.2":
-  version "6.3.2"
-  resolved "https://registry.yarnpkg.com/@deck.gl/experimental-layers/-/experimental-layers-6.3.2.tgz#aa153103efd0865867ab778cc93c558d7698b6ab"
+"@deck.gl/experimental-layers@>=6.0.3":
+  version "6.3.3"
+  resolved "https://registry.yarnpkg.com/@deck.gl/experimental-layers/-/experimental-layers-6.3.3.tgz#c0e678f299d65c5bb2bc3c7e3ab099e9273ee959"
   dependencies:
-    "@deck.gl/core" "^6.3.2"
-    "@deck.gl/layers" "^6.3.2"
+    "@deck.gl/core" "^6.3.3"
+    "@deck.gl/layers" "^6.3.3"
 
-"@deck.gl/layers@^6.3.2":
+"@deck.gl/layers@^6.3.3":
   version "6.3.3"
   resolved "https://registry.yarnpkg.com/@deck.gl/layers/-/layers-6.3.3.tgz#99f92706d709381e668f2c4848de694c1938aaf0"
   dependencies:
@@ -782,7 +782,7 @@
     d3-hexbin "^0.2.1"
     earcut "^2.0.6"
 
-"@deck.gl/react@^6.3.2":
+"@deck.gl/react@^6.3.3":
   version "6.3.3"
   resolved "https://registry.yarnpkg.com/@deck.gl/react/-/react-6.3.3.tgz#18b681dbb0fc7a070cd590188f12421c11bce4ec"
   dependencies:
@@ -2579,13 +2579,13 @@ decamelize@^1.0.0, decamelize@^1.1.1, decamelize@^1.1.2:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/decamelize/-/decamelize-1.2.0.tgz#f6534d15148269b20352e7bee26f501f9a191290"
 
-deck.gl@6.3.2:
-  version "6.3.2"
-  resolved "https://registry.yarnpkg.com/deck.gl/-/deck.gl-6.3.2.tgz#0cfa8f0bcdce8ecf3b564f11fc9f6bd4edb20572"
+deck.gl@>=6.0.3:
+  version "6.3.3"
+  resolved "https://registry.yarnpkg.com/deck.gl/-/deck.gl-6.3.3.tgz#67065055187af2415978b08a5f5ccd86cc01d40c"
   dependencies:
-    "@deck.gl/core" "^6.3.2"
-    "@deck.gl/layers" "^6.3.2"
-    "@deck.gl/react" "^6.3.2"
+    "@deck.gl/core" "^6.3.3"
+    "@deck.gl/layers" "^6.3.3"
+    "@deck.gl/react" "^6.3.3"
 
 decode-uri-component@^0.2.0:
   version "0.2.0"

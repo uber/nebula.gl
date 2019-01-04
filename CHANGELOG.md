@@ -3,7 +3,12 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-<!-- ## [Unreleased](https://github.com/uber/nebula.gl/compare/v0.7.5...master) -->
+## [Unreleased](https://github.com/uber/nebula.gl/compare/v0.7.5...master)
+
+### Changed
+
+* Upgraded deck.gl to 6.3.2
+* Renamed `EditableGeoJsonLayer.onClick` to `EditableGeoJsonLayer.onLayerClick`
 
 ## [0.7.5](https://github.com/uber/nebula.gl/compare/v0.7.4...v0.7.5) - 2018-12-12
 

@@ -37,6 +37,9 @@ export default class NebulaReact extends Component<Props> {
 
   getChildContext() {
     const { nebula } = this;
+    if (!nebula) {
+      return {};
+    }
     const {
       props: { viewport },
       wmViewport

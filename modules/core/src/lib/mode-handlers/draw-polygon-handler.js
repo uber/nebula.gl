@@ -33,6 +33,12 @@ export class DrawPolygonHandler extends ModeHandler {
     let editAction: ?EditAction = null;
     const clickedEditHandle = getPickedEditHandle(picks);
 
+    if (clickedEditHandle) {
+      // remove the last element from the click sequence
+      const clickSequence = this.getClickSequence();
+      clickSequence.splice(clickSequence.length - 1, 1);
+    }
+
     if (tentativeFeature && tentativeFeature.geometry.type === 'Polygon') {
       const polygon: Polygon = tentativeFeature.geometry;
 

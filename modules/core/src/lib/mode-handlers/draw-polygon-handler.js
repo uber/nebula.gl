@@ -33,6 +33,13 @@ export class DrawPolygonHandler extends ModeHandler {
     let editAction: ?EditAction = null;
     const clickedEditHandle = getPickedEditHandle(picks);
 
+    if (clickedEditHandle) {
+      // User clicked an edit handle.
+      // Remove it from the click sequence, so it isn't added as a new point.
+      const clickSequence = this.getClickSequence();
+      clickSequence.splice(clickSequence.length - 1, 1);
+    }
+
     if (tentativeFeature && tentativeFeature.geometry.type === 'Polygon') {
       const polygon: Polygon = tentativeFeature.geometry;
 

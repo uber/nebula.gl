@@ -34,7 +34,8 @@ export class DrawPolygonHandler extends ModeHandler {
     const clickedEditHandle = getPickedEditHandle(picks);
 
     if (clickedEditHandle) {
-      // remove the last element from the click sequence
+      // User clicked an edit handle.
+      // Remove it from the click sequence, so it isn't added as a new point.
       const clickSequence = this.getClickSequence();
       clickSequence.splice(clickSequence.length - 1, 1);
     }

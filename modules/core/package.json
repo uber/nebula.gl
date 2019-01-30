@@ -2,7 +2,7 @@
   "name": "nebula.gl",
   "description": "A suite of 3D-enabled data editing overlays, suitable for deck.gl",
   "license": "MIT",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "author": "Georgios Karnas <georgios@uber.com>",
   "repository": {
     "type": "git",
@@ -50,7 +50,6 @@
     "@turf/bbox-polygon": ">=4.0.0",
     "@turf/bearing": ">=4.0.0",
     "@turf/boolean-point-in-polygon": ">=4.0.0",
-    "@turf/line-intersect": ">=4.0.0",
     "@turf/buffer": ">=4.0.0",
     "@turf/center": ">=4.0.0",
     "@turf/centroid": ">=4.0.0",
@@ -61,19 +60,19 @@
     "@turf/ellipse": ">=4.0.0",
     "@turf/helpers": ">=4.0.0",
     "@turf/intersect": ">=4.0.0",
+    "@turf/line-intersect": ">=4.0.0",
     "@turf/nearest-point-on-line": ">=4.0.0",
     "@turf/point-to-line-distance": ">=4.0.0",
     "@turf/polygon-to-line": ">=4.0.0",
     "@turf/transform-rotate": ">=4.0.0",
     "@turf/transform-scale": ">=4.0.0",
-    "@turf/union": ">=4.0.0",
     "@turf/transform-translate": ">=4.0.0",
+    "@turf/union": ">=4.0.0",
     "cubic-hermite-spline": "^1.0.1",
     "deck.gl": ">=6.0.5",
     "geojson-types": "^2.0.1",
     "global": ">=4.3.0",
     "supercluster": ">=2.3.0",
     "viewport-mercator-project": ">=5.0.0"
-  },
-  "peerDependencies": {}
+  }
 }

@@ -126,8 +126,9 @@ export default class NebulaReact extends Component<Props> {
           viewState={viewport}
           layers={this.nebula.getRenderedLayers()}
           {...extraDeckProps}
-        />
-        {children}
+        >
+          {children}
+        </DeckGL>
       </div>
     );
   }

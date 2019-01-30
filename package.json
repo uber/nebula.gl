@@ -18,7 +18,8 @@
   ],
   "scripts": {
     "start": "open http://neb.gl/#/documentation/overview",
-    "build": "./all-modules.sh npm run build",
+    "bootstrap": "lerna bootstrap",
+    "build": "lerna exec npm run build",
     "pretty": "prettier --write \"{modules,examples,test}/**/*.js\" --loglevel warn",
     "lint": "prettier-check \"{src,examples,test}/**/*.js\" && eslint src test examples #&& npm run lint-yarn",
     "lint-yarn": "!(grep -q unpm.u yarn.lock) && echo 'Lockfile valid.' || (echo 'Please rebuild yarn file using public npmrc' && false)",
@@ -74,6 +75,7 @@
     "flow-bin": "^0.81.0",
     "jest": "^22.4.2",
     "jsdom": "^9.11.0",
+    "lerna": "^3.10.7",
     "module-alias": "^2.0.0",
     "nyc": "^10.2.0",
     "pre-commit": "^1.2.2",

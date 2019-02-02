@@ -1,6 +1,6 @@
 // @flow
 import { point } from '@turf/helpers';
-import supercluster from 'supercluster';
+import Supercluster from 'supercluster';
 import HtmlOverlay from './html-overlay';
 
 export default class HtmlClusterOverlay<Props, ObjType> extends HtmlOverlay<Props> {
@@ -12,7 +12,7 @@ export default class HtmlClusterOverlay<Props, ObjType> extends HtmlOverlay<Prop
     // when necessary and not for every frame.
     const newObjects = this.getAllObjects();
     if (newObjects !== this._lastObjects) {
-      this._superCluster = supercluster(this.getClusterOptions());
+      this._superCluster = new Supercluster(this.getClusterOptions());
       this._superCluster.load(
         newObjects.map(object => point(this.getObjectCoordinates(object), { object }))
       );

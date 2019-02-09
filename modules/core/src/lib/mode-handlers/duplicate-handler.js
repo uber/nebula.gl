@@ -1,22 +1,19 @@
 // @flow
 
 import type { StartDraggingEvent } from '../event-types.js';
+import { convertFeatureListToFeatureCollection } from '../utils';
 import type { EditAction } from './mode-handler.js';
 import { TranslateHandler } from './translate-handler';
 
 export class DuplicateHandler extends TranslateHandler {
   handleStartDragging(event: StartDraggingEvent): ?EditAction {
-    const selectedFeatureIndexes = this.getSelectedFeatureIndexes();
-    const geometryBefore = this.getSelectedGeometry();
-
-    if (selectedFeatureIndexes.length !== 1 || !geometryBefore) {
-      console.warn('duplicate only supported for single feature selection'); // eslint-disable-line no-console,no-undef
-    } else if (this._isTranslatable) {
-      this._geometryBeforeTranslate = geometryBefore;
+    const geometryBefore = this.getSelectedGeometries();
+    if (this._isTranslatable) {
+      this._geometryBeforeTranslate = convertFeatureListToFeatureCollection(geometryBefore);
     }
 
     return this._geometryBeforeTranslate
-      ? this.getAddFeatureAction(this._geometryBeforeTranslate)
+      ? this.getAddManyFeaturesAction(this._geometryBeforeTranslate)
       : null;
   }
 

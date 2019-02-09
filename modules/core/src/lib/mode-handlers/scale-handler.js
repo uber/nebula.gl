@@ -3,25 +3,23 @@
 import turfCentroid from '@turf/centroid';
 import turfDistance from '@turf/distance';
 import turfTransformScale from '@turf/transform-scale';
-import type { Geometry, Position } from '../../geojson-types.js';
-import type {
-  PointerMoveEvent,
-  StartDraggingEvent,
-  StopDraggingEvent,
-  DeckGLPick
-} from '../event-types.js';
+import {
+  convertFeatureListToFeatureCollection,
+  convertFeatureCollectionToFeatureList
+} from '../utils';
+import type { FeatureCollection, Position } from '../../geojson-types.js';
+import type { PointerMoveEvent, StartDraggingEvent, StopDraggingEvent } from '../event-types.js';
 import type { EditAction } from './mode-handler.js';
 import { ModeHandler } from './mode-handler.js';
 
 export class ScaleHandler extends ModeHandler {
   _isScalable: boolean;
-  _geometryBeingScaled: ?Geometry;
+  _geometryBeingScaled: ?FeatureCollection;
 
   handlePointerMove(event: PointerMoveEvent): { editAction: ?EditAction, cancelMapPan: boolean } {
     let editAction: ?EditAction = null;
 
-    this._isScalable =
-      Boolean(this._geometryBeingScaled) || this.isSingleSelectionPicked(event.picks);
+    this._isScalable = Boolean(this._geometryBeingScaled) || true;
 
     if (!this._isScalable || !event.pointerDownGroundCoords) {
       // Nothing to do
@@ -41,13 +39,11 @@ export class ScaleHandler extends ModeHandler {
   }
 
   handleStartDragging(event: StartDraggingEvent): ?EditAction {
-    const selectedFeatureIndexes = this.getSelectedFeatureIndexes();
-    const geometryBefore = this.getSelectedGeometry();
+    const geometryBefore = this.getSelectedGeometries();
+    const combinedGeometry = convertFeatureListToFeatureCollection(geometryBefore);
 
-    if (selectedFeatureIndexes.length !== 1 || !geometryBefore) {
-      console.warn('scaling only supported for single feature selection'); // eslint-disable-line no-console,no-undef
-    } else if (this._isScalable) {
-      this._geometryBeingScaled = geometryBefore;
+    if (this._isScalable) {
+      this._geometryBeingScaled = combinedGeometry;
     }
 
     return null;
@@ -65,16 +61,6 @@ export class ScaleHandler extends ModeHandler {
     return editAction;
   }
 
-  isSingleSelectionPicked(picks: DeckGLPick[]): boolean {
-    const selectedFeatureIndexes = this.getSelectedFeatureIndexes();
-    const singleSelectedFeature =
-      selectedFeatureIndexes.length === 1
-        ? this.getFeatureCollection().features[selectedFeatureIndexes[0]]
-        : null;
-
-    return picks.some(p => p.object === singleSelectedFeature);
-  }
-
   getCursor({ isDragging }: { isDragging: boolean }): string {
     if (this._isScalable) {
       // TODO: look at doing SVG cursors to get a better "scale" cursor
@@ -87,17 +73,23 @@ export class ScaleHandler extends ModeHandler {
     const startPosition = startDragPoint;
     const centroid = turfCentroid(this._geometryBeingScaled);
     const factor = getScaleFactor(centroid, startPosition, currentPoint);
-    const scaledFeature = turfTransformScale(this._geometryBeingScaled, factor);
+    const scaledFeature = turfTransformScale(this._geometryBeingScaled, factor, {
+      origin: centroid
+    });
 
-    const featureIndex = this.getSelectedFeatureIndexes()[0];
-    const updatedData = this.getImmutableFeatureCollection()
-      .replaceGeometry(featureIndex, scaledFeature)
-      .getObject();
+    const scaledFeatures = convertFeatureCollectionToFeatureList(scaledFeature);
+    const featureIndexes = [];
+    let updatedData = this.getImmutableFeatureCollection();
+    for (const feature of scaledFeatures) {
+      const { index } = feature.properties;
+      updatedData = updatedData.replaceGeometry(index, feature);
+      featureIndexes.push(index);
+    }
 
     return {
-      updatedData,
+      updatedData: updatedData.getObject(),
       editType,
-      featureIndexes: [featureIndex],
+      featureIndexes,
       editContext: null
     };
   }

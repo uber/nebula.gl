@@ -4,25 +4,23 @@ import turfBearing from '@turf/bearing';
 import turfDistance from '@turf/distance';
 import turfTransformTranslate from '@turf/transform-translate';
 import { point } from '@turf/helpers';
-import type { Geometry, Position } from '../../geojson-types.js';
-import type {
-  PointerMoveEvent,
-  StartDraggingEvent,
-  StopDraggingEvent,
-  DeckGLPick
-} from '../event-types.js';
+import {
+  convertFeatureListToFeatureCollection,
+  convertFeatureCollectionToFeatureList
+} from '../utils';
+import type { FeatureCollection, Position } from '../../geojson-types.js';
+import type { PointerMoveEvent, StartDraggingEvent, StopDraggingEvent } from '../event-types.js';
 import type { EditAction } from './mode-handler.js';
 import { ModeHandler } from './mode-handler.js';
 
 export class TranslateHandler extends ModeHandler {
-  _geometryBeforeTranslate: ?Geometry;
+  _geometryBeforeTranslate: ?FeatureCollection;
   _isTranslatable: boolean;
 
   handlePointerMove(event: PointerMoveEvent): { editAction: ?EditAction, cancelMapPan: boolean } {
     let editAction: ?EditAction = null;
 
-    this._isTranslatable =
-      Boolean(this._geometryBeforeTranslate) || this.isSingleSelectionPicked(event.picks);
+    this._isTranslatable = Boolean(this._geometryBeforeTranslate) || true;
 
     if (!this._isTranslatable || !event.pointerDownGroundCoords) {
       // Nothing to do
@@ -42,13 +40,10 @@ export class TranslateHandler extends ModeHandler {
   }
 
   handleStartDragging(event: StartDraggingEvent): ?EditAction {
-    const selectedFeatureIndexes = this.getSelectedFeatureIndexes();
-    const geometryBefore = this.getSelectedGeometry();
-
-    if (selectedFeatureIndexes.length !== 1 || !geometryBefore) {
-      console.warn('translate only supported for single feature selection'); // eslint-disable-line no-console,no-undef
-    } else if (this._isTranslatable) {
-      this._geometryBeforeTranslate = geometryBefore;
+    const geometryBefore = this.getSelectedGeometries();
+    const combinedGeometry = convertFeatureListToFeatureCollection(geometryBefore);
+    if (this._isTranslatable) {
+      this._geometryBeforeTranslate = combinedGeometry;
     }
 
     return null;
@@ -68,16 +63,6 @@ export class TranslateHandler extends ModeHandler {
     }
 
     return editAction;
-  }
-
-  isSingleSelectionPicked(picks: DeckGLPick[]): boolean {
-    const selectedFeatureIndexes = this.getSelectedFeatureIndexes();
-    const singleSelectedFeature =
-      selectedFeatureIndexes.length === 1
-        ? this.getFeatureCollection().features[selectedFeatureIndexes[0]]
-        : null;
-
-    return picks.some(p => p.object === singleSelectedFeature);
   }
 
   getCursor({ isDragging }: { isDragging: boolean }): string {
@@ -106,16 +91,20 @@ export class TranslateHandler extends ModeHandler {
       distanceMoved,
       direction
     );
-    const featureIndex = this.getSelectedFeatureIndexes()[0];
-    const updatedData = this.getImmutableFeatureCollection()
-      .replaceGeometry(featureIndex, movedFeature)
-      .getObject();
+
+    const movedFeatures = convertFeatureCollectionToFeatureList(movedFeature);
+    const featureIndexes = [];
+    let updatedData = this.getImmutableFeatureCollection();
+    for (const feature of movedFeatures) {
+      const { index } = feature.properties;
+      updatedData = updatedData.replaceGeometry(index, feature);
+      featureIndexes.push(index);
+    }
 
     return {
-      updatedData,
+      updatedData: updatedData.getObject(),
       editType,
-      featureIndex,
-      featureIndexes: [featureIndex],
+      featureIndexes,
       editContext: null
     };
   }

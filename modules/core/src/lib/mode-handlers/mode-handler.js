@@ -18,6 +18,7 @@ import type {
   StopDraggingEvent
 } from '../event-types.js';
 import { ImmutableFeatureCollection } from '../immutable-feature-collection.js';
+import { convertFeatureCollectionToFeatureList } from '../utils';
 
 export type EditHandle = {
   position: Position,
@@ -68,6 +69,32 @@ export class ModeHandler {
       return feature.geometry;
     }
     return null;
+  }
+
+  getSelectedFeatures(): Array<Feature> {
+    const { features } = this.featureCollection.getObject();
+    return this._selectedFeatureIndexes.map(index => {
+      // Preserve feature index in geojson properties
+      const feature = features[index];
+      feature.properties = { index };
+      return feature;
+    });
+  }
+
+  getSelectedGeometries(): Array<Geometry> {
+    const features = this.getSelectedFeatures();
+    if (features) {
+      return features.map(feature => {
+        const { geometry } = feature;
+        // Since the only thing that is returned is the feature's geometry, to retain
+        // the index property, the indexneeds to be assigned to the geometry object
+        if (feature.properties) {
+          geometry.properties = { index: feature.properties.index };
+        }
+        return geometry;
+      });
+    }
+    return [];
   }
 
   setFeatureCollection(featureCollection: FeatureCollection): void {
@@ -151,6 +178,30 @@ export class ModeHandler {
       editType: 'addFeature',
       featureIndexes: [updatedData.features.length - 1],
       editContext: null
+    };
+  }
+
+  getAddManyFeaturesAction(featureCollection: FeatureCollection) {
+    const geometries = convertFeatureCollectionToFeatureList(featureCollection);
+    let updatedData = this.getImmutableFeatureCollection();
+    const initialIndex = updatedData.getObject().features.length;
+    const updatedIndexes = [];
+    for (const geometry of geometries) {
+      const geometryAsAny: any = geometry;
+      updatedData = updatedData.addFeature({
+        type: 'Feature',
+        properties: {},
+        geometry: geometryAsAny
+      });
+      updatedIndexes.push(initialIndex + updatedIndexes.length);
+    }
+
+    return {
+      updatedData: updatedData.getObject(),
+      editType: 'addFeature',
+      featureIndex: updatedIndexes,
+      positionIndexes: null,
+      position: null
     };
   }
 

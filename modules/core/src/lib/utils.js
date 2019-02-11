@@ -109,6 +109,12 @@ export function convertFeatureListToFeatureCollection(featuresList: Array<any>):
 
 export function convertFeatureCollectionToFeatureList({ features }: FeatureCollection): Array<any> {
   return features.map(({ geometry, properties }) => {
+    // Turf functions do not preserve a properties value of index: 0
+    // It is important for the properties.index value to be present to prevent
+    // a strange mass duplication bug.
+    if (properties && !Object.keys(properties).length) {
+      properties = { index: 0 };
+    }
     geometry.properties = properties;
     return geometry;
   });

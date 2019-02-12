@@ -34,34 +34,26 @@ User can move edge. Click and drag from anywhere between 2 points in edge.
 
 * Mode name: `scale`
 
-User can scale a feature about its centroid by clicking and dragging (inward or outward) the selected geometry.
-
-_Note: currently only supports single selection_
+User can scale a feature about its centroid by clicking and dragging (inward or outward) the selected geometry. This mode supports multiple selections.
 
 ## [RotateHandler](https://github.com/uber/nebula.gl/blob/master/modules/core/src/lib/mode-handlers/rotate-handler.js)
 
 * Mode name: `rotate`
 
-User can rotate a feature about its centroid by clicking and dragging the selected geometry.
-
-_Note: currently only supports single selection_
+User can rotate a feature about its centroid by clicking and dragging the selected geometry. This mode supports multiple selections.
 
 ## [TranslateHandler](https://github.com/uber/nebula.gl/blob/master/modules/core/src/lib/mode-handlers/translate-handler.js)
 
 * Mode name: `translate`
 
-User can translate a feature by clicking selected feature and dragging anywhere on the screen.
-
-_Note: currently only supports single selection_
+User can translate a feature by clicking selected feature and dragging anywhere on the screen. This mode supports multiple selections.
 
 ## [DuplicateHandler](https://github.com/uber/nebula.gl/blob/master/modules/core/src/lib/mode-handlers/duplicate-handler.js)
 
 * Mode name: `duplicate`
 
 User can duplicate and translate a feature by clicking selected feature and dragging anywhere on the screen.
-This mode is extended on TranslateHandler.
-
-_Note: currently only supports single selection_
+This mode is extends TranslateHandler. This mode supports multiple selections.
 
 ## [DrawPointHandler](https://github.com/uber/nebula.gl/blob/master/modules/core/src/lib/mode-handlers/draw-point-handler.js)
 

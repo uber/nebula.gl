@@ -13,11 +13,15 @@
   </a>
 </p>
 
-# Nebula.gl
+<h1 align="center">Nebula.gl | <a href="https://neb.gl">Website</a></h1>
 
-A suite of 3D-enabled data editing overlays, suitable for deck.gl.
+<h5 align="center">An editing framework for deck.gl</h5>
 
-## To run the example
+[![docs](https://i.imgur.com/BTVrsR4.jpg)](https://neb.gl)
+
+# Getting started
+
+## Running the example
 
 1.  `git clone git@github.com:uber/nebula.gl.git`
 2.  `cd nebula.gl`
@@ -27,3 +31,52 @@ A suite of 3D-enabled data editing overlays, suitable for deck.gl.
 6.  `export MapboxAccessToken='<Add your key>'`
 7.  `yarn start-local`
 8.  You can view/edit geometry.
+
+## Installation
+
+```
+yarn add nebula.gl
+```
+
+nebula.gl will automatically install a compatible version of deck.gl.
+
+## EditableGeoJsonLayer
+
+The Editable GeoJSON layer accepts a [GeoJSON](http://geojson.org) `FeatureCollection` and renders the features as editable polygons, lines, and points. See the example below and for the official documentation click [here](https://github.com/uber/nebula.gl/blob/master/docs/overview.md).
+
+```js
+import DeckGL from 'deck.gl';
+import { EditableGeoJsonLayer } from 'nebula.gl';
+
+const myFeatureCollection = {
+  type: 'FeatureCollection',
+  features: [
+    /* insert features here */
+  ]
+};
+
+class App extends React.Component {
+  state = {
+    mode: 'modify',
+    selectedFeatureIndexes: [0],
+    data: myFeatureCollection
+  };
+
+  render() {
+    const layer = new EditableGeoJsonLayer({
+      id: 'geojson-layer',
+      data: this.state.data,
+      mode: this.state.mode,
+      selectedFeatureIndexes: this.state.selectedFeatureIndexes,
+
+      onEdit: ({ updatedData }) => {
+        this.setState({
+          data: updatedData,
+        });
+      }
+    });
+
+    return <DeckGL {...this.props.viewport} layers={[layer]} />;
+  }
+}
+```

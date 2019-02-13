@@ -13,6 +13,7 @@ type Props = {
   eventFilter?: Function,
   logger?: Object,
   children?: any,
+  deckChildren?: any,
   extraDeckProps?: Object,
   enableLoopSync?: boolean
 };
@@ -104,7 +105,7 @@ export default class NebulaReact extends Component<Props> {
   }
 
   render() {
-    const { viewport, children, extraDeckProps } = this.props;
+    const { viewport, children, deckChildren, extraDeckProps } = this.props;
     const { width, height } = viewport;
 
     const style =
@@ -126,7 +127,9 @@ export default class NebulaReact extends Component<Props> {
           viewState={viewport}
           layers={this.nebula.getRenderedLayers()}
           {...extraDeckProps}
-        />
+        >
+          {deckChildren}
+        </DeckGL>
         {children}
       </div>
     );

@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file. This projec
 
 <!-- ## [Unreleased](https://github.com/uber/nebula.gl/compare/v0.8.0...master) -->
 
+## [0.10.0](https://github.com/uber/nebula.gl/compare/v0.9.1...v0.10.0)
+
+### Changes
+
+* `featureIndex` renamed to `featureIndexes` (now an array of numbers instead of single number) for the `onEdit` callback.
+* `positionIndexes` and `position` now nested under a new `editContext` property for the `onEdit` callback
+
+## [0.9.1](https://github.com/uber/nebula.gl/compare/v0.9.0...v0.9.1)
+
+* move supercluster to react module, upgrade version
+
+## [0.9.0](https://github.com/uber/nebula.gl/compare/v0.8.0...v0.9.0)
+
+### Fixes
+
+* Fix issue with clicking edit handle while drawing polygon (#156)
+* Issue 157. Pass Nebula childrens to Deck. (#158)
+* Issue 154, avoid crash when nebula getChildContext being called before didMount (#155)
+
 ## [0.8.0](https://github.com/uber/nebula.gl/compare/v0.7.6...v0.8.0)
 
 ### Changed

@@ -19,7 +19,7 @@ export class ScaleHandler extends ModeHandler {
   handlePointerMove(event: PointerMoveEvent): { editAction: ?EditAction, cancelMapPan: boolean } {
     let editAction: ?EditAction = null;
 
-    this._isScalable = Boolean(this._geometryBeingScaled) || true;
+    this._isScalable = Boolean(this._geometryBeingScaled) || this.isSelectionPicked(event.picks);
 
     if (!this._isScalable || !event.pointerDownGroundCoords) {
       // Nothing to do

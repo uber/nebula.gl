@@ -20,7 +20,8 @@ export class TranslateHandler extends ModeHandler {
   handlePointerMove(event: PointerMoveEvent): { editAction: ?EditAction, cancelMapPan: boolean } {
     let editAction: ?EditAction = null;
 
-    this._isTranslatable = Boolean(this._geometryBeforeTranslate) || true;
+    this._isTranslatable =
+      Boolean(this._geometryBeforeTranslate) || this.isSelectionPicked(event.picks);
 
     if (!this._isTranslatable || !event.pointerDownGroundCoords) {
       // Nothing to do

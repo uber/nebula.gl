@@ -19,7 +19,7 @@ export class RotateHandler extends ModeHandler {
   handlePointerMove(event: PointerMoveEvent): { editAction: ?EditAction, cancelMapPan: boolean } {
     let editAction: ?EditAction = null;
 
-    this._isRotatable = Boolean(this._geometryBeingRotated) || true;
+    this._isRotatable = Boolean(this._geometryBeingRotated) || this.isSelectionPicked(event.picks);
 
     if (!this._isRotatable || !event.pointerDownGroundCoords) {
       // Nothing to do

@@ -15,7 +15,8 @@ import type {
   ClickEvent,
   PointerMoveEvent,
   StartDraggingEvent,
-  StopDraggingEvent
+  StopDraggingEvent,
+  DeckGLPick
 } from '../event-types.js';
 import { ImmutableFeatureCollection } from '../immutable-feature-collection.js';
 import { convertFeatureCollectionToFeatureList } from '../utils';
@@ -159,6 +160,15 @@ export class ModeHandler {
 
   getCursor({ isDragging }: { isDragging: boolean }): string {
     return 'cell';
+  }
+
+  isSelectionPicked(picks: DeckGLPick[]): boolean {
+    if (!picks.length) return false;
+    const selectedFeatureIndexes = this.getSelectedFeatureIndexes();
+    const features = this.getFeatureCollection().features;
+    const selectedFeatures = selectedFeatureIndexes.map(index => features[index]);
+
+    return picks.some(p => selectedFeatures.includes(p.object));
   }
 
   getAddFeatureAction(geometry: Geometry): EditAction {

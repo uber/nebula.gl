@@ -164,11 +164,9 @@ export class ModeHandler {
 
   isSelectionPicked(picks: DeckGLPick[]): boolean {
     if (!picks.length) return false;
+    const pickedIndexes = picks.map(({ index }) => index);
     const selectedFeatureIndexes = this.getSelectedFeatureIndexes();
-    const features = this.getFeatureCollection().features;
-    const selectedFeatures = selectedFeatureIndexes.map(index => features[index]);
-
-    return picks.some(p => selectedFeatures.includes(p.object));
+    return selectedFeatureIndexes.some(index => pickedIndexes.includes(index));
   }
 
   getAddFeatureAction(geometry: Geometry): EditAction {

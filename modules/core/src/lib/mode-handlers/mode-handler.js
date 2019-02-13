@@ -189,7 +189,7 @@ export class ModeHandler {
     };
   }
 
-  getAddManyFeaturesAction(featureCollection: FeatureCollection) {
+  getAddManyFeaturesAction(featureCollection: FeatureCollection): EditAction {
     const geometries = convertFeatureCollectionToFeatureList(featureCollection);
     let updatedData = this.getImmutableFeatureCollection();
     const initialIndex = updatedData.getObject().features.length;
@@ -207,9 +207,8 @@ export class ModeHandler {
     return {
       updatedData: updatedData.getObject(),
       editType: 'addFeature',
-      featureIndex: updatedIndexes,
-      positionIndexes: null,
-      position: null
+      featureIndexes: updatedIndexes,
+      editContext: null
     };
   }
 

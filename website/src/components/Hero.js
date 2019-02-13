@@ -348,11 +348,11 @@ class Hero extends Component {
       extruded: this.state.extrude,
 
       // Editing callbacks
-      onEdit: ({ updatedData, editType, featureIndex, positionIndexes, position }) => {
+      onEdit: ({ updatedData, editType, featureIndexes, editContext }) => {
         if (editType !== 'movePosition') {
           // Don't log moves since they're really chatty
           // eslint-disable-next-line
-          console.log('onEdit', editType, featureIndex, positionIndexes, position);
+          console.log('onEdit', editType, featureIndexes, editContext);
         }
         if (editType === 'removePosition' && !this.state.pointsRemovable) {
           // reject the edit

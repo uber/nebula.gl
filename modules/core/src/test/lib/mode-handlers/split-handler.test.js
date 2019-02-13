@@ -1,6 +1,7 @@
 // @flow
 /* eslint-env jest */
-import { SplitPolygonHandler } from '../../../lib/mode-handlers/split-polygon-handler';
+import { SplitPolygonHandler } from '../../../lib/mode-handlers/split-polygon-handler.js';
+import type { EditAction } from '../../../lib/mode-handlers/mode-handler.js';
 import {
   createFeatureCollection,
   createMultiPolygonFeature,
@@ -82,7 +83,8 @@ describe('Split Polygon Handler ', () => {
     handler.handleClick(createClickEvent([-2, -2]));
     handler.handlePointerMove(createPointerMoveEvent([2, 3]));
     const action = handler.handleClick(createClickEvent([2, 3]));
-    expect(action).toEqual({
+
+    const expectedAction: EditAction = {
       updatedData: {
         type: 'FeatureCollection',
         features: [
@@ -124,10 +126,11 @@ describe('Split Polygon Handler ', () => {
         ]
       },
       editType: 'split',
-      featureIndex: 0,
-      positionIndexes: null,
-      position: null
-    });
+      featureIndexes: [0],
+      editContext: null
+    };
+
+    expect(action).toEqual(expectedAction);
   });
 
   test('should split the multiPolygon ', () => {
@@ -141,7 +144,8 @@ describe('Split Polygon Handler ', () => {
     handler.handleClick(createClickEvent([-2, -2]));
     handler.handlePointerMove(createPointerMoveEvent([2, 3]));
     const action = handler.handleClick(createClickEvent([2, 3]));
-    expect(action).toEqual({
+
+    const expectedAction: EditAction = {
       updatedData: {
         type: 'FeatureCollection',
         features: [
@@ -184,9 +188,10 @@ describe('Split Polygon Handler ', () => {
         ]
       },
       editType: 'split',
-      featureIndex: 0,
-      positionIndexes: null,
-      position: null
-    });
+      featureIndexes: [0],
+      editContext: null
+    };
+
+    expect(action).toEqual(expectedAction);
   });
 });

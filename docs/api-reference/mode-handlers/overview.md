@@ -16,6 +16,14 @@ No edits are possible, but selection is still possible.
 
 User can move existing points, add intermediate points along lines, and remove points.
 
+### Edit Context
+
+`editContext` argument to the `onEdit` callback contains the following properties:
+
+* `positionIndexes` (Array): An array of numbers representing the indexes of the edited position within the feature's `coordinates` array
+
+* `position` (Array): An array containing the ground coordinates (i.e. [lng, lat]) of the edited position
+
 ## [ExtrudeHandler](https://github.com/uber/nebula.gl/blob/master/modules/core/src/lib/mode-handlers/extrude-handler.js)
 
 * Mode name: `extrude`
@@ -76,8 +84,17 @@ User can draw a new `LineString` feature by clicking positions to add.
 ### ModeConfig
 
 The following options can be provided in the `modeConfig` object:
+
 * `drawAtFront` (optional):  `<boolean>`
   * If `true`, will render the tentative feature at the "beginning" of the line, i.e. relative to the start of the coordinates array.
+
+### Edit Context
+
+`editContext` argument to the `onEdit` callback contains the following properties:
+
+* `positionIndexes` (Array): An array of numbers representing the indexes of the added position within the feature's `coordinates` array
+
+* `position` (Array): An array containing the ground coordinates (i.e. [lng, lat]) of the added position
 
 ## [DrawPolygonHandler](https://github.com/uber/nebula.gl/blob/master/modules/core/src/lib/mode-handlers/draw-polygon-handler.js)
 
@@ -85,11 +102,19 @@ The following options can be provided in the `modeConfig` object:
 
 User can draw a new `Polygon` feature by clicking positions to add then closing the polygon (or double-clicking).
 
+### Edit Context
+
+`editContext` argument to the `onEdit` callback contains the following properties:
+
+* `positionIndexes` (Array): An array of numbers representing the indexes of the added position within the feature's `coordinates` array
+
+* `position` (Array): An array containing the ground coordinates (i.e. [lng, lat]) of the added position
+
 ## [Draw90DegreePolygonHandler](https://github.com/uber/nebula.gl/blob/master/modules/core/src/lib/mode-handlers/draw-90degree-polygon-handler.js)
 
 * Mode name: `draw90DegreePolygon`
 
-User can draw a new `Polygon` feature with 90 degree corners (right angle) by clicking positions to add then closing the polygon (or double-clicking). After clicking the 2 points, the draw mode guides/allows to have right angle polygon. 
+User can draw a new `Polygon` feature with 90 degree corners (right angle) by clicking positions to add then closing the polygon (or double-clicking). After clicking the 2 points, the draw mode guides/allows to have right angle polygon.
 
 ## [DrawRectangleHandler](https://github.com/uber/nebula.gl/blob/master/modules/core/src/lib/mode-handlers/draw-rectangle-handler.js)
 

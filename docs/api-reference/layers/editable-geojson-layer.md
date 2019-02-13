@@ -123,7 +123,7 @@ The `onEdit` event is the core event provided by this layer and must be handled 
 
   * `removePosition`: A position was removed. Note: it may result in multiple positions being removed in order to maintain valid GeoJSON (e.g. removing a point from a triangular hole will remove the hole entirely).
 
-  * `addFeature`: A new feature was added. Its index is reflected in `featureIndex`
+  * `addFeature`: A new feature was added. Its index is reflected in `featureIndexes`
 
   * `finishMovePosition`: A position finished moving (e.g. user finished dragging).
 
@@ -147,11 +147,9 @@ The `onEdit` event is the core event provided by this layer and must be handled 
 
   * `split`: A feature finished splitting.
 
-* `featureIndex` (Number): The index of the edited/added feature.
+* `featureIndexes` (Array&lt;number&gt;): The indexes of the edited/added features.
 
-* `positionIndexes` (Array): An array of numbers representing the indexes of the edited position within the features' `coordinates` array
-
-* `position` (Array): An array containing the ground coordinates (i.e. [lng, lat]) of the edited position (or `null` if it doesn't apply to the type of edit performed)
+* `editContext` (Object): `null` or an object containing additional context about the edit. This is populated by the active mode handler, see [mode handlers overview](../mode-handlers/overview.md).
 
 ##### Example
 
@@ -161,9 +159,11 @@ Consider the user removed the third position from a `Polygon`'s first ring, and 
 {
   updatedData: {...},
   editType: 'removePosition',
-  featureIndex: 3,
-  positionIndexes: [1, 2],
-  position: null
+  featureIndexes: [3],
+  editContext: {
+    positionIndexes: [1, 2],
+    position: null
+  }
 }
 ```
 

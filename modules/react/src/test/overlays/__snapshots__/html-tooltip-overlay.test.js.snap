@@ -27,5 +27,15 @@ exports[`test HtmlTooltipOverlay no items shown 1`] = `
       }
     />
   </div>
+  <div
+    style={
+      Object {
+        "height": "100%",
+        "pointerEvents": "none",
+        "position": "absolute",
+        "width": "100%",
+      }
+    }
+  />
 </div>
 `;

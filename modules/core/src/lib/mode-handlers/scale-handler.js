@@ -97,9 +97,8 @@ export class ScaleHandler extends ModeHandler {
     return {
       updatedData,
       editType,
-      featureIndex,
-      positionIndexes: null,
-      position: null
+      featureIndexes: [featureIndex],
+      editContext: null
     };
   }
 }

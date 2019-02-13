@@ -2,10 +2,11 @@
 
 exports[`Split Polygon Handler  should reset tentativeFeature on handleClick  when lineString is outside the polygon lock90Degree 1`] = `
 Object {
+  "editContext": null,
   "editType": "split",
-  "featureIndex": 2,
-  "position": null,
-  "positionIndexes": null,
+  "featureIndexes": Array [
+    2,
+  ],
   "updatedData": Object {
     "features": Array [
       Object {

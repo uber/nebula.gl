@@ -43,9 +43,11 @@ export class ExtrudeHandler extends ModifyHandler {
         editAction = {
           updatedData,
           editType: 'extruding',
-          featureIndex: editHandle.featureIndex,
-          positionIndexes: this.nextPositionIndexes(editHandle.positionIndexes, size),
-          position: p3
+          featureIndexes: [editHandle.featureIndex],
+          editContext: {
+            positionIndexes: this.nextPositionIndexes(editHandle.positionIndexes, size),
+            position: p3
+          }
         };
       }
     }
@@ -101,9 +103,11 @@ export class ExtrudeHandler extends ModifyHandler {
         editAction = {
           updatedData: updatedData.getObject(),
           editType: 'startExtruding',
-          featureIndex: editHandle.featureIndex,
-          positionIndexes: editHandle.positionIndexes,
-          position: p1
+          featureIndexes: [editHandle.featureIndex],
+          editContext: {
+            positionIndexes: editHandle.positionIndexes,
+            position: p1
+          }
         };
       }
     }
@@ -144,9 +148,11 @@ export class ExtrudeHandler extends ModifyHandler {
         editAction = {
           updatedData,
           editType: 'extruded',
-          featureIndex: editHandle.featureIndex,
-          positionIndexes: editHandle.positionIndexes,
-          position: p3
+          featureIndexes: [editHandle.featureIndex],
+          editContext: {
+            positionIndexes: editHandle.positionIndexes,
+            position: p3
+          }
         };
       }
     }

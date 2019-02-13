@@ -9,6 +9,7 @@ import {
   createClickEvent,
   createPointerMoveEvent
 } from '../test-utils.js';
+import type { EditAction } from '../../../lib/mode-handlers/mode-handler.js';
 
 let featureCollection: FeatureCollection;
 let polygonFeature: Feature;
@@ -62,8 +63,7 @@ test('adds a new feature after two clicks', () => {
   handler.handlePointerMove(createPointerMoveEvent([2, 3]));
   const action2 = handler.handleClick(createClickEvent([2, 3]));
 
-  expect(action1).toBeNull();
-  expect(action2).toEqual({
+  const expectedAction2: EditAction = {
     editType: 'addFeature',
     updatedData: {
       ...featureCollection,
@@ -79,10 +79,12 @@ test('adds a new feature after two clicks', () => {
         }
       ]
     },
-    featureIndex: featureCollection.features.length,
-    position: null,
-    positionIndexes: null
-  });
+    featureIndexes: [featureCollection.features.length],
+    editContext: null
+  };
+
+  expect(action1).toBeNull();
+  expect(action2).toEqual(expectedAction2);
 });
 
 describe('modeConfig.booleanOperation', () => {

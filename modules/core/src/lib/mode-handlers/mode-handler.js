@@ -29,9 +29,8 @@ export type EditHandle = {
 export type EditAction = {
   updatedData: FeatureCollection,
   editType: string,
-  featureIndex: number,
-  positionIndexes: ?(number[]),
-  position: ?Position
+  featureIndexes: number[],
+  editContext: any
 };
 
 export class ModeHandler {
@@ -135,7 +134,7 @@ export class ModeHandler {
     return 'cell';
   }
 
-  getAddFeatureAction(geometry: Geometry) {
+  getAddFeatureAction(geometry: Geometry): EditAction {
     // Unsure why flow can't deal with Geometry type, but there I fixed it
     const geometryAsAny: any = geometry;
 
@@ -150,13 +149,12 @@ export class ModeHandler {
     return {
       updatedData,
       editType: 'addFeature',
-      featureIndex: updatedData.features.length - 1,
-      positionIndexes: null,
-      position: null
+      featureIndexes: [updatedData.features.length - 1],
+      editContext: null
     };
   }
 
-  getAddFeatureOrBooleanPolygonAction(geometry: Polygon) {
+  getAddFeatureOrBooleanPolygonAction(geometry: Polygon): ?EditAction {
     const selectedFeature = this.getSelectedFeature();
     const modeConfig = this.getModeConfig();
     if (modeConfig && modeConfig.booleanOperation) {
@@ -205,9 +203,8 @@ export class ModeHandler {
       const editAction: EditAction = {
         updatedData,
         editType: 'unionGeometry',
-        featureIndex,
-        positionIndexes: null,
-        position: null
+        featureIndexes: [featureIndex],
+        editContext: null
       };
 
       return editAction;

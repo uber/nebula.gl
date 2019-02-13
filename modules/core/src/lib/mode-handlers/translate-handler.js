@@ -115,8 +115,8 @@ export class TranslateHandler extends ModeHandler {
       updatedData,
       editType,
       featureIndex,
-      positionIndexes: null,
-      position: null
+      featureIndexes: [featureIndex],
+      editContext: null
     };
   }
 }

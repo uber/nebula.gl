@@ -165,9 +165,8 @@ export class SplitPolygonHandler extends ModeHandler {
     const editAction: EditAction = {
       updatedData: updatedData.getObject(),
       editType: 'split',
-      featureIndex,
-      positionIndexes: null,
-      position: null
+      featureIndexes: [featureIndex],
+      editContext: null
     };
 
     return editAction;

@@ -107,9 +107,11 @@ export class ModifyHandler extends ModeHandler {
           editAction = {
             updatedData,
             editType: 'removePosition',
-            featureIndex: clickedEditHandle.featureIndex,
-            positionIndexes: clickedEditHandle.positionIndexes,
-            position: null
+            featureIndexes: [clickedEditHandle.featureIndex],
+            editContext: {
+              positionIndexes: clickedEditHandle.positionIndexes,
+              position: clickedEditHandle.position
+            }
           };
         }
       } else if (clickedEditHandle.type === 'intermediate') {
@@ -125,9 +127,11 @@ export class ModifyHandler extends ModeHandler {
           editAction = {
             updatedData,
             editType: 'addPosition',
-            featureIndex: clickedEditHandle.featureIndex,
-            positionIndexes: clickedEditHandle.positionIndexes,
-            position: clickedEditHandle.position
+            featureIndexes: [clickedEditHandle.featureIndex],
+            editContext: {
+              positionIndexes: clickedEditHandle.positionIndexes,
+              position: clickedEditHandle.position
+            }
           };
         }
       }
@@ -150,9 +154,11 @@ export class ModifyHandler extends ModeHandler {
       editAction = {
         updatedData,
         editType: 'movePosition',
-        featureIndex: editHandle.featureIndex,
-        positionIndexes: editHandle.positionIndexes,
-        position: event.groundCoords
+        featureIndexes: [editHandle.featureIndex],
+        editContext: {
+          positionIndexes: editHandle.positionIndexes,
+          position: event.groundCoords
+        }
       };
     }
 
@@ -176,9 +182,11 @@ export class ModifyHandler extends ModeHandler {
       editAction = {
         updatedData,
         editType: 'addPosition',
-        featureIndex: editHandle.featureIndex,
-        positionIndexes: editHandle.positionIndexes,
-        position: event.groundCoords
+        featureIndexes: [editHandle.featureIndex],
+        editContext: {
+          positionIndexes: editHandle.positionIndexes,
+          position: event.groundCoords
+        }
       };
     }
 
@@ -198,9 +206,11 @@ export class ModifyHandler extends ModeHandler {
       editAction = {
         updatedData,
         editType: 'finishMovePosition',
-        featureIndex: editHandle.featureIndex,
-        positionIndexes: editHandle.positionIndexes,
-        position: event.groundCoords
+        featureIndexes: [editHandle.featureIndex],
+        editContext: {
+          positionIndexes: editHandle.positionIndexes,
+          position: event.groundCoords
+        }
       };
     }
 

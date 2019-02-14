@@ -17,7 +17,7 @@ let warnBefore;
 beforeEach(() => {
   warnBefore = console.warn; // eslint-disable-line
   // $FlowFixMe
-  console.warn = function () { }; // eslint-disable-line
+  console.warn = function() {}; // eslint-disable-line
 
   featureCollection = createFeatureCollection();
 
@@ -79,9 +79,8 @@ describe('when no selection', () => {
           }
         ]
       },
-      featureIndex: featureCollection.features.length,
-      position: null,
-      positionIndexes: null
+      featureIndexes: [featureCollection.features.length],
+      editContext: null
     });
   });
 });
@@ -98,9 +97,11 @@ describe('when single LineString selected', () => {
       throw new Error('action should be defined');
     }
     expect(action.editType).toEqual('addPosition');
-    expect(action.featureIndex).toEqual(lineStringFeatureIndex);
-    expect(action.position).toEqual([7, 8]);
-    expect(action.positionIndexes).toEqual([lineStringFeature.geometry.coordinates.length]);
+    expect(action.featureIndexes).toEqual([lineStringFeatureIndex]);
+    expect(action.editContext.position).toEqual([7, 8]);
+    expect(action.editContext.positionIndexes).toEqual([
+      lineStringFeature.geometry.coordinates.length
+    ]);
     expect(action.updatedData.features[lineStringFeatureIndex]).toEqual({
       type: 'Feature',
       properties: {},
@@ -127,9 +128,9 @@ describe('when single LineString selected and drawAtFront enabled', () => {
       throw new Error('action should be defined');
     }
     expect(action.editType).toEqual('addPosition');
-    expect(action.featureIndex).toEqual(lineStringFeatureIndex);
-    expect(action.position).toEqual([7, 8]);
-    expect(action.positionIndexes).toEqual([0]);
+    expect(action.featureIndexes).toEqual([lineStringFeatureIndex]);
+    expect(action.editContext.position).toEqual([7, 8]);
+    expect(action.editContext.positionIndexes).toEqual([0]);
     expect(action.updatedData.features[lineStringFeatureIndex]).toEqual({
       type: 'Feature',
       properties: {},

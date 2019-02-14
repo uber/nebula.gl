@@ -42,9 +42,11 @@ export class DrawLineStringHandler extends ModeHandler {
       editAction = {
         updatedData,
         editType: 'addPosition',
-        featureIndex,
-        positionIndexes,
-        position: event.groundCoords
+        featureIndexes: [featureIndex],
+        editContext: {
+          positionIndexes,
+          position: event.groundCoords
+        }
       };
 
       this.resetClickSequence();

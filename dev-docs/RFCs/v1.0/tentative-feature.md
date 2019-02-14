@@ -46,7 +46,7 @@ For example, adding points in `drawPolygon` mode would update the `tentativeFeat
   * `onEdit` is not called because it isn't a LineString yet
   * `tentativeFeature` is a LineString with first coordinate where user clicked, second coordinate follows the mouse
 * user clicks
-  * `onEdit` called, `updatedData` has a new LineString feature, `featureIndex` is the index of the new feature
+  * `onEdit` called, `updatedData` has a new LineString feature, `featureIndexes` is the index of the new feature
 * user selects a `LineString`
 * user moves pointer around
   * `tentativeFeature` is a LineString with first coordinate is the end of the selected `LineString`; second coordinate follows the mouse
@@ -64,7 +64,7 @@ For example, adding points in `drawPolygon` mode would update the `tentativeFeat
   * `onEdit` is not called because it isn't a Polygon yet
   * `tentativeFeature` is a Polygon (triangle) with first coordinate where user clicked the first time, the second coordinate where the user clicked the second time, the third coordinate follows the mouse, and the fourth coordinate loops back to the first coordinate (completing the triangle)
 * user clicks a few more times then clicks the starting point
-  * `onEdit` called, `updatedData` has a new Polygon feature, `featureIndex` is the index of the new feature
+  * `onEdit` called, `updatedData` has a new Polygon feature, `featureIndexes` is the index of the new feature
   * `tentativeFeature` is a new Point again following the mouse in order to add a new Polygon
 
 ## Future

@@ -37,7 +37,7 @@ export default class HtmlClusterOverlay<Props, ObjType> extends HtmlOverlay<Prop
 
   getClusterObjects(clusterId: number): ObjType[] {
     return this._superCluster
-      .getLeaves(clusterId, Math.round(this.getZoom()), Infinity)
+      .getLeaves(clusterId, Infinity)
       .map(object => object.properties.object);
   }
 

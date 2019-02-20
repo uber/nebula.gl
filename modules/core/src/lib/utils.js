@@ -97,7 +97,6 @@ export function convertFeatureListToFeatureCollection(featuresList: Array<any>):
       geometry: feature,
       properties: feature.properties || {}
     };
-    delete feature.properties;
     return featureObject;
   });
   return {

@@ -5,7 +5,9 @@ import { FeatureType, createFeatureCollection, getMockFeatureDetails } from '../
 import { testModeHandlerHandlePointMove, mockHandleStartDragging } from './mode-handler-utils';
 
 const modeName = 'duplicate';
-const featureCollection: FeatureCollection = createFeatureCollection();
+const featureCollection: FeatureCollection = createFeatureCollection({
+  mockGeoJsonProperties: true
+});
 
 testModeHandlerHandlePointMove(modeName, DuplicateHandler, featureCollection, '_isTranslatable');
 

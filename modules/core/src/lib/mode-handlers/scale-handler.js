@@ -80,10 +80,11 @@ export class ScaleHandler extends ModeHandler {
     const scaledFeatures = convertFeatureCollectionToFeatureList(scaledFeature);
     const featureIndexes = [];
     let updatedData = this.getImmutableFeatureCollection();
-    for (const feature of scaledFeatures) {
-      const { index } = feature.properties;
-      updatedData = updatedData.replaceGeometry(index, feature);
-      featureIndexes.push(index);
+    for (const geometry of scaledFeatures) {
+      const { _internalIndex } = geometry.properties;
+      delete geometry.properties;
+      updatedData = updatedData.replaceGeometry(_internalIndex, geometry);
+      featureIndexes.push(_internalIndex);
     }
 
     return {

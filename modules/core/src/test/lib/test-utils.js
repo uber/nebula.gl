@@ -89,45 +89,56 @@ const mockFeatures = {
   }
 };
 
-export function createPointFeature() {
-  return mockFeatures.Point.geoJson;
+export const mockedGeoJsonProperties = { testString: 'hi', testNumber: 10 };
+
+function createFeature(featureType: string, options: ?{ [key: string]: any }) {
+  const feature = mockFeatures[featureType].geoJson;
+  const { mockGeoJsonProperties } = options || {};
+  if (mockGeoJsonProperties) {
+    feature.properties = mockedGeoJsonProperties;
+  }
+  return feature;
 }
 
-export function createLineStringFeature() {
-  return mockFeatures.LineString.geoJson;
+export function createPointFeature(options: ?{ [key: string]: any }) {
+  return createFeature(FeatureType.POINT, options);
 }
 
-export function createPolygonFeature() {
-  return mockFeatures.Polygon.geoJson;
+export function createLineStringFeature(options: ?{ [key: string]: any }) {
+  return createFeature(FeatureType.LINE_STRING, options);
 }
 
-export function createMultiPointFeature() {
-  return mockFeatures.MultiPoint.geoJson;
+export function createPolygonFeature(options: ?{ [key: string]: any }) {
+  return createFeature(FeatureType.POLYGON, options);
 }
 
-export function createMultiLineStringFeature() {
-  return mockFeatures.MultiLineString.geoJson;
+export function createMultiPointFeature(options: ?{ [key: string]: any }) {
+  return createFeature(FeatureType.MULTI_POINT, options);
 }
 
-export function createMultiPolygonFeature() {
-  return mockFeatures.MultiPolygon.geoJson;
+export function createMultiLineStringFeature(options: ?{ [key: string]: any }) {
+  return createFeature(FeatureType.MULTI_LINE_STRING, options);
 }
 
-export function getFeatureCollectionFeatures() {
+export function createMultiPolygonFeature(options: ?{ [key: string]: any }) {
+  return createFeature(FeatureType.MULTI_POLYGON, options);
+}
+
+export function getFeatureCollectionFeatures(options: ?{ [key: string]: any }) {
   return [
-    createPointFeature(),
-    createLineStringFeature(),
-    createPolygonFeature(),
-    createMultiPointFeature(),
-    createMultiLineStringFeature(),
-    createMultiPolygonFeature()
+    createPointFeature(options),
+    createLineStringFeature(options),
+    createPolygonFeature(options),
+    createMultiPointFeature(options),
+    createMultiLineStringFeature(options),
+    createMultiPolygonFeature(options)
   ];
 }
 
-export function createFeatureCollection() {
+export function createFeatureCollection(options: ?{ [key: string]: any }) {
   return {
     type: 'FeatureCollection',
-    features: getFeatureCollectionFeatures()
+    features: getFeatureCollectionFeatures(options)
   };
 }
 

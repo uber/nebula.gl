@@ -10,7 +10,9 @@ import {
 } from './mode-handler-utils';
 
 const modeName = 'scale';
-const featureCollection: FeatureCollection = createFeatureCollection();
+const featureCollection: FeatureCollection = createFeatureCollection({
+  mockGeoJsonProperties: true
+});
 
 testModeHandlerHandlePointMove(modeName, ScaleHandler, featureCollection, '_isScalable');
 
@@ -19,7 +21,7 @@ testHandleStartDragging(
   ScaleHandler,
   featureCollection,
   '_isScalable',
-  handler => handler._geometryBeingScaled
+  '_geometryBeingScaled'
 );
 
 // Point features by nature cannot scale

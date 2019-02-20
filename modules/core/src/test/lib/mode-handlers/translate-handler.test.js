@@ -10,7 +10,9 @@ import {
 } from './mode-handler-utils';
 
 const modeName = 'translate';
-const featureCollection: FeatureCollection = createFeatureCollection();
+const featureCollection: FeatureCollection = createFeatureCollection({
+  mockGeoJsonProperties: true
+});
 
 testModeHandlerHandlePointMove(modeName, TranslateHandler, featureCollection, '_isTranslatable');
 
@@ -19,7 +21,7 @@ testHandleStartDragging(
   TranslateHandler,
   featureCollection,
   '_isTranslatable',
-  handler => handler._geometryBeforeTranslate
+  '_geometryBeforeTranslate'
 );
 
 testHandleStopDragging(modeName, TranslateHandler, featureCollection);

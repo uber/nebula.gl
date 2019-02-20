@@ -90,15 +90,14 @@ export function generatePointsParallelToLinePoints(
 
 export function convertFeatureListToFeatureCollection(featuresList: Array<any>): FeatureCollection {
   const features = featuresList.map(feature => {
-    const featureObject: any = { type: 'Feature', geometry: feature, properties: {} };
     // Turf functions do not preserve properties nested inside of a FeatureCollection feature's
     // geometry. This logic moves the nested geometry properties up to the parent feature.
-    if (feature.properties) {
-      const { index } = feature.properties;
-      if (index) {
-        featureObject.properties = { index };
-      }
-    }
+    const featureObject: any = {
+      type: 'Feature',
+      geometry: feature,
+      properties: feature.properties || {}
+    };
+    delete feature.properties;
     return featureObject;
   });
   return {
@@ -109,13 +108,15 @@ export function convertFeatureListToFeatureCollection(featuresList: Array<any>):
 
 export function convertFeatureCollectionToFeatureList({ features }: FeatureCollection): Array<any> {
   return features.map(({ geometry, properties }) => {
-    // Turf functions do not preserve a properties value of index: 0
-    // It is important for the properties.index value to be present to prevent
+    // Turf functions do not preserve a properties value of _internalIndex: 0
+    // It is important for the properties._internalIndex value to be present to prevent
     // a strange mass duplication bug.
-    if (properties && !Object.keys(properties).length) {
-      properties = { index: 0 };
+    if (properties) {
+      geometry.properties = properties;
+      if (!properties._internalIndex) {
+        geometry.properties = { ...properties, _internalIndex: 0 };
+      }
     }
-    geometry.properties = properties;
     return geometry;
   });
 }

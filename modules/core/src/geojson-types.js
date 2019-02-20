@@ -65,7 +65,7 @@ export type BoundingBoxArray = [number, number, number, number];
 export type FeatureOf<T: Geometry> = {
   type: 'Feature',
   geometry: T,
-  properties?: { index?: number },
+  properties?: { _internalIndex?: number },
   id?: string | number,
   bbox?: BoundingBoxArray
 };

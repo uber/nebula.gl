@@ -10,7 +10,9 @@ import {
 } from './mode-handler-utils';
 
 const modeName = 'rotate';
-const featureCollection: FeatureCollection = createFeatureCollection();
+const featureCollection: FeatureCollection = createFeatureCollection({
+  mockGeoJsonProperties: true
+});
 
 testModeHandlerHandlePointMove(modeName, RotateHandler, featureCollection, '_isRotatable');
 
@@ -19,7 +21,7 @@ testHandleStartDragging(
   RotateHandler,
   featureCollection,
   '_isRotatable',
-  handler => handler._geometryBeingRotated
+  '_geometryBeingRotated'
 );
 
 // Rotating a point feature will not change coordinates

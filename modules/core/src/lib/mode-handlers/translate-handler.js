@@ -96,10 +96,11 @@ export class TranslateHandler extends ModeHandler {
     const movedFeatures = convertFeatureCollectionToFeatureList(movedFeature);
     const featureIndexes = [];
     let updatedData = this.getImmutableFeatureCollection();
-    for (const feature of movedFeatures) {
-      const { index } = feature.properties;
-      updatedData = updatedData.replaceGeometry(index, feature);
-      featureIndexes.push(index);
+    for (const geometry of movedFeatures) {
+      const { _internalIndex } = geometry.properties;
+      delete geometry.properties;
+      updatedData = updatedData.replaceGeometry(_internalIndex, geometry);
+      featureIndexes.push(_internalIndex);
     }
 
     return {

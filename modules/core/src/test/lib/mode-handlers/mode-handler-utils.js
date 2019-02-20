@@ -5,7 +5,8 @@ import {
   createPointerDragEvent,
   createPointerMoveEvent,
   getMockFeatureDetails,
-  FeatureType
+  FeatureType,
+  mockedGeoJsonProperties
 } from '../test-utils.js';
 
 export function mockHandleStartDragging(
@@ -137,7 +138,7 @@ export function testHandleStartDragging(
   HandlerClass: any,
   featureCollection: FeatureCollection,
   isActionEnabledName: string,
-  getGeometryBeforeAction: (...args: Array<any>) => any
+  getGeometryBeforeActionName: string
 ) {
   describe('handleStartDragging()', () => {
     test(`${modeName} mode - initial geometry is assigned under valid conditions`, () => {
@@ -151,7 +152,7 @@ export function testHandleStartDragging(
         moveCoordinates,
         picksIndex: index
       });
-      expect(getGeometryBeforeAction(handler)).toBeDefined();
+      expect(handler[getGeometryBeforeActionName]).toBeDefined();
     });
 
     test(`${modeName} mode - initial geometry is not assigned under invalid conditions`, () => {
@@ -165,7 +166,7 @@ export function testHandleStartDragging(
         moveCoordinates,
         picksIndex: index
       });
-      expect(getGeometryBeforeAction(handler)).toBeUndefined();
+      expect(handler[getGeometryBeforeActionName]).toBeUndefined();
     });
   });
 }
@@ -185,7 +186,6 @@ export function testHandleStopDragging(
             const handler = new HandlerClass(featureCollection);
             const { geoJson, clickCoords, index } = getMockFeatureDetails(featureType);
             handler.setSelectedFeatureIndexes([index]);
-            // eslint-disable-next-line max-nested-callbacks
             const moveCoordinates = clickCoords.map(coord => coord + 0.5);
             const initialFeatureCoords = geoJson.geometry.coordinates;
 
@@ -207,6 +207,26 @@ export function testHandleStopDragging(
           });
         }
       });
+
+    test(`${modeName} mode action - geoJson properties are preserved after mode action`, () => {
+      const handler = new HandlerClass(featureCollection);
+      const { geoJson, clickCoords, index } = getMockFeatureDetails(FeatureType.POLYGON);
+      handler.setSelectedFeatureIndexes([index]);
+      const moveCoordinates = clickCoords.map(coord => coord + 0.5);
+      const initialFeatureCoords = geoJson.geometry.coordinates;
+
+      const { stopDraggingResult: editAction } = mockFeatureMove(handler, {
+        clickCoordinates: clickCoords,
+        moveCoordinates,
+        picksIndex: index
+      });
+      expect(editAction).toBeDefined();
+      if (editAction) {
+        const { updatedData } = editAction;
+        const movedFeature = updatedData.features[index];
+        expect(movedFeature.properties).toEqual(mockedGeoJsonProperties);
+      }
+    });
 
     test(`${modeName} mode action - multiple selected features (multipolygon and point)`, () => {
       const handler = new HandlerClass(featureCollection);

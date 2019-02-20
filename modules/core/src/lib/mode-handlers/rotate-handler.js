@@ -82,10 +82,11 @@ export class RotateHandler extends ModeHandler {
     const rotatedFeatures = convertFeatureCollectionToFeatureList(rotatedFeature);
     const featureIndexes = [];
     let updatedData = this.getImmutableFeatureCollection();
-    for (const feature of rotatedFeatures) {
-      const { index } = feature.properties;
-      updatedData = updatedData.replaceGeometry(index, feature);
-      featureIndexes.push(index);
+    for (const geometry of rotatedFeatures) {
+      const { _internalIndex } = geometry.properties;
+      delete geometry.properties;
+      updatedData = updatedData.replaceGeometry(_internalIndex, geometry);
+      featureIndexes.push(_internalIndex);
     }
 
     return {

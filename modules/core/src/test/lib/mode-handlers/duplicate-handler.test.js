@@ -1,8 +1,17 @@
 // @flow
 import { DuplicateHandler } from '../../../lib/mode-handlers/duplicate-handler';
 import type { FeatureCollection } from '../../../geojson-types.js';
-import { FeatureType, createFeatureCollection, getMockFeatureDetails } from '../test-utils.js';
-import { testModeHandlerHandlePointMove, mockHandleStartDragging } from './mode-handler-utils';
+import {
+  FeatureType,
+  createFeatureCollection,
+  getMockFeatureDetails,
+  mockedGeoJsonProperties
+} from '../test-utils.js';
+import {
+  testModeHandlerHandlePointMove,
+  mockHandlePointerMove,
+  mockHandleStartDragging
+} from './mode-handler-utils';
 
 const modeName = 'duplicate';
 const featureCollection: FeatureCollection = createFeatureCollection({
@@ -70,5 +79,52 @@ describe('handleStartDragging()', () => {
       const featureTypeCount = countFeatureTypesInCollection(updatedData, featureType);
       expect(featureTypeCount).toEqual(1);
     });
+  });
+
+  test('Single duplicated feature retains user supplied geoJson properties', () => {
+    const handler = new DuplicateHandler(featureCollection);
+    const { index, clickCoords } = getMockFeatureDetails(FeatureType.POLYGON);
+    handler.setSelectedFeatureIndexes([index]);
+    handler._isTranslatable = true;
+
+    const moveCoordinates = clickCoords.map(coord => coord + 0.5);
+    const mockMouseOptions = {
+      clickCoordinates: clickCoords,
+      moveCoordinates,
+      picksIndex: index
+    };
+    mockHandlePointerMove(handler, mockMouseOptions);
+    const editAction = mockHandleStartDragging(handler, mockMouseOptions);
+    expect(editAction).toBeDefined();
+    if (editAction) {
+      const { updatedData, featureIndexes } = editAction;
+      const dupledPoly = updatedData.features[featureIndexes[0]];
+      expect(dupledPoly.properties).toEqual(mockedGeoJsonProperties);
+    }
+  });
+
+  test('Multiple duplicated features retain user supplied geoJson properties (multipolygon and polygon)', () => {
+    const handler = new DuplicateHandler(featureCollection);
+    const poly = getMockFeatureDetails(FeatureType.POLYGON);
+    const multiPoly = getMockFeatureDetails(FeatureType.MULTI_POLYGON);
+    handler.setSelectedFeatureIndexes([poly.index, multiPoly.index]);
+    handler._isTranslatable = true;
+
+    const moveCoordinates = poly.clickCoords.map(coord => coord + 0.5);
+    const mockMouseOptions = {
+      clickCoordinates: poly.clickCoords,
+      moveCoordinates,
+      picksIndex: poly.index
+    };
+    mockHandlePointerMove(handler, mockMouseOptions);
+    const editAction = mockHandleStartDragging(handler, mockMouseOptions);
+    expect(editAction).toBeDefined();
+    if (editAction) {
+      const { updatedData, featureIndexes } = editAction;
+      const dupledPoly = updatedData.features[featureIndexes[0]];
+      const dupedMultiPoly = updatedData.features[featureIndexes[1]];
+      expect(dupledPoly.properties).toEqual(mockedGeoJsonProperties);
+      expect(dupedMultiPoly.properties).toEqual(mockedGeoJsonProperties);
+    }
   });
 });

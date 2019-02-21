@@ -4,10 +4,6 @@ import turfBearing from '@turf/bearing';
 import turfDistance from '@turf/distance';
 import turfTransformTranslate from '@turf/transform-translate';
 import { point } from '@turf/helpers';
-import {
-  convertFeatureListToFeatureCollection,
-  convertFeatureCollectionToFeatureList
-} from '../utils';
 import type { FeatureCollection, Position } from '../../geojson-types.js';
 import type { PointerMoveEvent, StartDraggingEvent, StopDraggingEvent } from '../event-types.js';
 import type { EditAction } from './mode-handler.js';
@@ -41,12 +37,11 @@ export class TranslateHandler extends ModeHandler {
   }
 
   handleStartDragging(event: StartDraggingEvent): ?EditAction {
-    const geometryBefore = this.getSelectedGeometries();
-    const combinedGeometry = convertFeatureListToFeatureCollection(geometryBefore);
-    if (this._isTranslatable) {
-      this._geometryBeforeTranslate = combinedGeometry;
+    if (!this._isTranslatable) {
+      return null;
     }
 
+    this._geometryBeforeTranslate = this.getSelectedFeaturesAsFeatureCollection();
     return null;
   }
 
@@ -87,26 +82,25 @@ export class TranslateHandler extends ModeHandler {
     const distanceMoved = turfDistance(p1, p2);
     const direction = turfBearing(p1, p2);
 
-    const movedFeature = turfTransformTranslate(
+    const movedFeatures = turfTransformTranslate(
       this._geometryBeforeTranslate,
       distanceMoved,
       direction
     );
 
-    const movedFeatures = convertFeatureCollectionToFeatureList(movedFeature);
-    const featureIndexes = [];
     let updatedData = this.getImmutableFeatureCollection();
-    for (const geometry of movedFeatures) {
-      const { _internalIndex } = geometry.properties;
-      delete geometry.properties;
-      updatedData = updatedData.replaceGeometry(_internalIndex, geometry);
-      featureIndexes.push(_internalIndex);
+
+    const selectedIndexes = this.getSelectedFeatureIndexes();
+    for (let i = 0; i < selectedIndexes.length; i++) {
+      const selectedIndex = selectedIndexes[i];
+      const movedFeature = movedFeatures.features[i];
+      updatedData = updatedData.replaceGeometry(selectedIndex, movedFeature.geometry);
     }
 
     return {
       updatedData: updatedData.getObject(),
       editType,
-      featureIndexes,
+      featureIndexes: selectedIndexes,
       editContext: null
     };
   }

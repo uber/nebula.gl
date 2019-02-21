@@ -19,7 +19,6 @@ import type {
   DeckGLPick
 } from '../event-types.js';
 import { ImmutableFeatureCollection } from '../immutable-feature-collection.js';
-import { convertFeatureCollectionToFeatureList } from '../utils';
 
 export type EditHandle = {
   position: Position,
@@ -95,6 +94,17 @@ export class ModeHandler {
       });
     }
     return [];
+  }
+
+  getSelectedFeaturesAsFeatureCollection(): FeatureCollection {
+    const { features } = this.featureCollection.getObject();
+    const selectedFeatures = this.getSelectedFeatureIndexes().map(
+      selectedIndex => features[selectedIndex]
+    );
+    return {
+      type: 'FeatureCollection',
+      features: selectedFeatures
+    };
   }
 
   setFeatureCollection(featureCollection: FeatureCollection): void {
@@ -189,15 +199,16 @@ export class ModeHandler {
   }
 
   getAddManyFeaturesAction(featureCollection: FeatureCollection): EditAction {
-    const geometries = convertFeatureCollectionToFeatureList(featureCollection);
+    const features = featureCollection.features;
     let updatedData = this.getImmutableFeatureCollection();
     const initialIndex = updatedData.getObject().features.length;
     const updatedIndexes = [];
-    for (const geometry of geometries) {
+    for (const feature of features) {
+      const { properties, geometry } = feature;
       const geometryAsAny: any = geometry;
       updatedData = updatedData.addFeature({
         type: 'Feature',
-        properties: {},
+        properties,
         geometry: geometryAsAny
       });
       updatedIndexes.push(initialIndex + updatedIndexes.length);

@@ -177,44 +177,46 @@ export function testHandleStopDragging(
   featureCollection: FeatureCollection,
   featureFilter: (...args: Array<any>) => any = feature => feature
 ) {
+  function testHandleStopDraggingForFeatureType(featureType: string) {
+    test(`${modeName} mode action - single selected ${featureType} feature`, () => {
+      const handler = new HandlerClass(featureCollection);
+      const { geoJson, clickCoords, index } = getMockFeatureDetails(featureType);
+      handler.setSelectedFeatureIndexes([index]);
+      const moveCoordinates = clickCoords.map(coord => coord + 0.5);
+      const initialFeatureCoords = geoJson.geometry.coordinates;
+
+      const { stopDraggingResult: editAction } = mockFeatureMove(handler, {
+        clickCoordinates: clickCoords,
+        moveCoordinates,
+        picksIndex: index
+      });
+      expect(editAction).toBeDefined();
+      if (editAction) {
+        const { updatedData, featureIndexes } = editAction;
+        expect(featureIndexes.length).toBe(1);
+        expect(featureIndexes.includes(index)).toBeTruthy();
+        const movedFeature = updatedData.features[index];
+        const movedFeatureCoords = movedFeature.geometry.coordinates;
+        // Ensure feature coordinates changed after mode action was performed
+        expect(movedFeatureCoords).not.toEqual(initialFeatureCoords);
+      }
+    });
+  }
+
   describe('handleStopDragging()', () => {
     Object.values(FeatureType)
       .filter(featureFilter)
       .forEach(featureType => {
         if (typeof featureType === 'string') {
-          test(`${modeName} mode action - single selected ${featureType} feature`, () => {
-            const handler = new HandlerClass(featureCollection);
-            const { geoJson, clickCoords, index } = getMockFeatureDetails(featureType);
-            handler.setSelectedFeatureIndexes([index]);
-            const moveCoordinates = clickCoords.map(coord => coord + 0.5);
-            const initialFeatureCoords = geoJson.geometry.coordinates;
-
-            const { stopDraggingResult: editAction } = mockFeatureMove(handler, {
-              clickCoordinates: clickCoords,
-              moveCoordinates,
-              picksIndex: index
-            });
-            expect(editAction).toBeDefined();
-            if (editAction) {
-              const { updatedData, featureIndexes } = editAction;
-              expect(featureIndexes.length).toBe(1);
-              expect(featureIndexes.includes(index)).toBeTruthy();
-              const movedFeature = updatedData.features[index];
-              const movedFeatureCoords = movedFeature.geometry.coordinates;
-              // Ensure feature coordinates changed after mode action was performed
-              expect(movedFeatureCoords).not.toEqual(initialFeatureCoords);
-            }
-          });
+          testHandleStopDraggingForFeatureType(featureType);
         }
       });
 
     test(`${modeName} mode action - geoJson properties are preserved after mode action`, () => {
       const handler = new HandlerClass(featureCollection);
-      const { geoJson, clickCoords, index } = getMockFeatureDetails(FeatureType.POLYGON);
+      const { clickCoords, index } = getMockFeatureDetails(FeatureType.POLYGON);
       handler.setSelectedFeatureIndexes([index]);
       const moveCoordinates = clickCoords.map(coord => coord + 0.5);
-      const initialFeatureCoords = geoJson.geometry.coordinates;
-
       const { stopDraggingResult: editAction } = mockFeatureMove(handler, {
         clickCoordinates: clickCoords,
         moveCoordinates,

@@ -3,10 +3,6 @@
 import turfCentroid from '@turf/centroid';
 import turfBearing from '@turf/bearing';
 import turfTransformRotate from '@turf/transform-rotate';
-import {
-  convertFeatureListToFeatureCollection,
-  convertFeatureCollectionToFeatureList
-} from '../utils';
 import type { FeatureCollection, Position } from '../../geojson-types.js';
 import type { PointerMoveEvent, StartDraggingEvent, StopDraggingEvent } from '../event-types.js';
 import type { EditAction } from './mode-handler.js';
@@ -39,13 +35,11 @@ export class RotateHandler extends ModeHandler {
   }
 
   handleStartDragging(event: StartDraggingEvent): ?EditAction {
-    const geometryBefore = this.getSelectedGeometries();
-    const combinedGeometry = convertFeatureListToFeatureCollection(geometryBefore);
-
-    if (this._isRotatable) {
-      this._geometryBeingRotated = combinedGeometry;
+    if (!this._isRotatable) {
+      return null;
     }
 
+    this._geometryBeingRotated = this.getSelectedFeaturesAsFeatureCollection();
     return null;
   }
 
@@ -78,21 +72,21 @@ export class RotateHandler extends ModeHandler {
     const centroid = turfCentroid(this._geometryBeingRotated);
     const angle = getRotationAngle(centroid, startPosition, currentPoint);
 
-    const rotatedFeature = turfTransformRotate(this._geometryBeingRotated, angle);
-    const rotatedFeatures = convertFeatureCollectionToFeatureList(rotatedFeature);
-    const featureIndexes = [];
+    const rotatedFeatures = turfTransformRotate(this._geometryBeingRotated, angle);
+
     let updatedData = this.getImmutableFeatureCollection();
-    for (const geometry of rotatedFeatures) {
-      const { _internalIndex } = geometry.properties;
-      delete geometry.properties;
-      updatedData = updatedData.replaceGeometry(_internalIndex, geometry);
-      featureIndexes.push(_internalIndex);
+
+    const selectedIndexes = this.getSelectedFeatureIndexes();
+    for (let i = 0; i < selectedIndexes.length; i++) {
+      const selectedIndex = selectedIndexes[i];
+      const movedFeature = rotatedFeatures.features[i];
+      updatedData = updatedData.replaceGeometry(selectedIndex, movedFeature.geometry);
     }
 
     return {
       updatedData: updatedData.getObject(),
       editType,
-      featureIndexes,
+      featureIndexes: selectedIndexes,
       editContext: null
     };
   }

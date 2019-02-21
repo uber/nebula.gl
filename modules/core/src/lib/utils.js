@@ -4,7 +4,7 @@ import destination from '@turf/destination';
 import bearing from '@turf/bearing';
 import pointToLineDistance from '@turf/point-to-line-distance';
 import { point } from '@turf/helpers';
-import type { Position, LineString, FeatureCollection } from '../geojson-types.js';
+import type { Position, LineString } from '../geojson-types.js';
 
 export function toDeckColor(
   color?: ?[number, number, number, number],
@@ -86,36 +86,4 @@ export function generatePointsParallelToLinePoints(
   const p4 = destination(p1, ddistance, orthogonalBearing);
 
   return [p3.geometry.coordinates, p4.geometry.coordinates];
-}
-
-export function convertFeatureListToFeatureCollection(featuresList: Array<any>): FeatureCollection {
-  const features = featuresList.map(feature => {
-    // Turf functions do not preserve properties nested inside of a FeatureCollection feature's
-    // geometry. This logic moves the nested geometry properties up to the parent feature.
-    const featureObject: any = {
-      type: 'Feature',
-      geometry: feature,
-      properties: feature.properties || {}
-    };
-    return featureObject;
-  });
-  return {
-    type: 'FeatureCollection',
-    features
-  };
-}
-
-export function convertFeatureCollectionToFeatureList({ features }: FeatureCollection): Array<any> {
-  return features.map(({ geometry, properties }) => {
-    // Turf functions do not preserve a properties value of _internalIndex: 0
-    // It is important for the properties._internalIndex value to be present to prevent
-    // a strange mass duplication bug.
-    if (properties) {
-      geometry.properties = properties;
-      if (!properties._internalIndex) {
-        geometry.properties = { ...properties, _internalIndex: 0 };
-      }
-    }
-    return geometry;
-  });
 }

@@ -71,31 +71,6 @@ export class ModeHandler {
     return null;
   }
 
-  getSelectedFeatures(): Array<Feature> {
-    const { features } = this.featureCollection.getObject();
-    return this._selectedFeatureIndexes.map(index => {
-      const feature = features[index];
-      const featureCopy: any = { ...feature };
-      // Preserve feature index in geojson properties
-      featureCopy.properties = { ...featureCopy.properties, _internalIndex: index };
-      return featureCopy;
-    });
-  }
-
-  getSelectedGeometries(): Array<Geometry> {
-    const features = this.getSelectedFeatures();
-    if (features) {
-      return features.map(feature => {
-        const { geometry } = feature;
-        // Since the only thing that is returned is the feature's geometry, to retain
-        // the index property, the index needs to be assigned to the geometry object
-        geometry.properties = feature.properties;
-        return geometry;
-      });
-    }
-    return [];
-  }
-
   getSelectedFeaturesAsFeatureCollection(): FeatureCollection {
     const { features } = this.featureCollection.getObject();
     const selectedFeatures = this.getSelectedFeatureIndexes().map(

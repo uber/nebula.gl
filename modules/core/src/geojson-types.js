@@ -20,38 +20,32 @@ export type AnyCoordinates =
 
 export type Point = {
   type: 'Point',
-  coordinates: PointCoordinates,
-  properties?: { [key: string]: any }
+  coordinates: PointCoordinates
 };
 
 export type LineString = {
   type: 'LineString',
-  coordinates: LineStringCoordinates,
-  properties?: { [key: string]: any }
+  coordinates: LineStringCoordinates
 };
 
 export type Polygon = {
   type: 'Polygon',
-  coordinates: PolygonCoordinates,
-  properties?: { [key: string]: any }
+  coordinates: PolygonCoordinates
 };
 
 export type MultiPoint = {
   type: 'MultiPoint',
-  coordinates: MultiPointCoordinates,
-  properties?: { [key: string]: any }
+  coordinates: MultiPointCoordinates
 };
 
 export type MultiLineString = {
   type: 'MultiLineString',
-  coordinates: MultiLineStringCoordinates,
-  properties?: { [key: string]: any }
+  coordinates: MultiLineStringCoordinates
 };
 
 export type MultiPolygon = {
   type: 'MultiPolygon',
-  coordinates: MultiPolygonCoordinates,
-  properties?: { [key: string]: any }
+  coordinates: MultiPolygonCoordinates
 };
 
 export type Geometry = Point | LineString | Polygon | MultiPoint | MultiLineString | MultiPolygon;
@@ -65,7 +59,7 @@ export type BoundingBoxArray = [number, number, number, number];
 export type FeatureOf<T: Geometry> = {
   type: 'Feature',
   geometry: T,
-  properties?: { _internalIndex?: number },
+  properties?: {},
   id?: string | number,
   bbox?: BoundingBoxArray
 };

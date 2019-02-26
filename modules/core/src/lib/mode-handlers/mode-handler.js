@@ -15,7 +15,8 @@ import type {
   ClickEvent,
   PointerMoveEvent,
   StartDraggingEvent,
-  StopDraggingEvent
+  StopDraggingEvent,
+  DeckGLPick
 } from '../event-types.js';
 import { ImmutableFeatureCollection } from '../immutable-feature-collection.js';
 
@@ -68,6 +69,17 @@ export class ModeHandler {
       return feature.geometry;
     }
     return null;
+  }
+
+  getSelectedFeaturesAsFeatureCollection(): FeatureCollection {
+    const { features } = this.featureCollection.getObject();
+    const selectedFeatures = this.getSelectedFeatureIndexes().map(
+      selectedIndex => features[selectedIndex]
+    );
+    return {
+      type: 'FeatureCollection',
+      features: selectedFeatures
+    };
   }
 
   setFeatureCollection(featureCollection: FeatureCollection): void {
@@ -134,6 +146,13 @@ export class ModeHandler {
     return 'cell';
   }
 
+  isSelectionPicked(picks: DeckGLPick[]): boolean {
+    if (!picks.length) return false;
+    const pickedIndexes = picks.map(({ index }) => index);
+    const selectedFeatureIndexes = this.getSelectedFeatureIndexes();
+    return selectedFeatureIndexes.some(index => pickedIndexes.includes(index));
+  }
+
   getAddFeatureAction(geometry: Geometry): EditAction {
     // Unsure why flow can't deal with Geometry type, but there I fixed it
     const geometryAsAny: any = geometry;
@@ -150,6 +169,30 @@ export class ModeHandler {
       updatedData,
       editType: 'addFeature',
       featureIndexes: [updatedData.features.length - 1],
+      editContext: null
+    };
+  }
+
+  getAddManyFeaturesAction(featureCollection: FeatureCollection): EditAction {
+    const features = featureCollection.features;
+    let updatedData = this.getImmutableFeatureCollection();
+    const initialIndex = updatedData.getObject().features.length;
+    const updatedIndexes = [];
+    for (const feature of features) {
+      const { properties, geometry } = feature;
+      const geometryAsAny: any = geometry;
+      updatedData = updatedData.addFeature({
+        type: 'Feature',
+        properties,
+        geometry: geometryAsAny
+      });
+      updatedIndexes.push(initialIndex + updatedIndexes.length);
+    }
+
+    return {
+      updatedData: updatedData.getObject(),
+      editType: 'addFeature',
+      featureIndexes: updatedIndexes,
       editContext: null
     };
   }

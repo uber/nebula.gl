@@ -20,11 +20,13 @@ if [ -f $FILE ]; then
   CUR_VER=`cat lerna.json | grep version | tr -Cs "0123456789." " " | awk '{ print $1 }'`
   D=`date "+%Y-%m-%d"`
   rm $TMP
-  echo "## [$CUR_VER](https://github.com/uber/nebula.gl/compare/v$PREV_VER...v$CUR_VER) - $D" >$TMP
+  echo >>$TMP
+  echo "## [$CUR_VER](https://github.com/uber/nebula.gl/compare/v$PREV_VER...v$CUR_VER) - $D" >>$TMP
   echo >>$TMP
   echo "### Changes" >>$TMP
   echo >>$TMP
   git log v$PREV_VER... --pretty="format:* %s" >>$TMP
+  echo >>$TMP
   $EDITOR $TMP
   sed -i "" "/<!-- INSERT HERE -->/r $TMP" "$FILE"
 else

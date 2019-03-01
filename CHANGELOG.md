@@ -74,6 +74,7 @@ _All notable changes to this project will be documented in this file. This proje
 * Disable hacky loop sync behind feature flag property
 
 ## [0.7.1](https://github.com/uber/nebula.gl/compare/v0.7.0...v0.7.1) - 2018-10-24
+
 * Fix Nebula crashes on attempt to edit polygon layer over segment layer
 
 ## [0.7.0](https://github.com/uber/nebula.gl/compare/v0.6.1...v0.7.0) - 2018-10-23

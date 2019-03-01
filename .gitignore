@@ -17,3 +17,6 @@ yarn-error.log
 *.zip
 *.rar
 .vscode
+
+# copied as part of a build step
+modules/core/README.md

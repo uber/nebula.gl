@@ -109,44 +109,17 @@ export default [
             markdown: require('../../docs/api-reference/layers/selection-layer.md')
           },
           {
+            name: 'Mode Handlers',
+            markdown: require('../../docs/api-reference/mode-handlers/overview.md')
+          }
+        ]
+      },
+      {
+        name: 'API Reference (React)',
+        children: [
+          {
             name: 'Nebula (React class)',
             markdown: require('../../docs/api-reference/nebula.md')
-          },
-          {
-            name: 'Layer',
-            markdown: require('../../docs/api-reference/layers/layer.md')
-          },
-          {
-            name: 'Feature',
-            markdown: require('../../docs/api-reference/layers/feature.md')
-          },
-          {
-            name: 'JunctionsLayer (deprecated)',
-            markdown: require('../../docs/api-reference/layers/junctions-layer.md')
-          },
-          {
-            name: 'EditableJunctionsLayer (deprecated)',
-            markdown: require('../../docs/api-reference/layers/editable-junctions-layer.md')
-          },
-          {
-            name: 'PolygonLayer (deprecated)',
-            markdown: require('../../docs/api-reference/layers/polygons-layer.md')
-          },
-          {
-            name: 'EditablePolygonLayer (deprecated)',
-            markdown: require('../../docs/api-reference/layers/editable-polygons-layer.md')
-          },
-          {
-            name: 'EditableLinesLayer (deprecated)',
-            markdown: require('../../docs/api-reference/layers/editable-lines-layer.md')
-          },
-          {
-            name: 'SegmentLayer (deprecated)',
-            markdown: require('../../docs/api-reference/layers/segment-layer.md')
-          },
-          {
-            name: 'TextsLayer',
-            markdown: require('../../docs/api-reference/layers/texts-layer.md')
           },
           {
             name: 'HtmlOverlay',

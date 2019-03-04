@@ -4,13 +4,7 @@ import React, { Component } from 'react';
 import DeckGL, { TextLayer } from 'deck.gl';
 import MapGL from 'react-map-gl';
 
-import {
-  EditableJunctionsLayer,
-  EditableGeoJsonLayer,
-  Feature,
-  SegmentsLayer,
-  SELECTION_TYPE
-} from 'nebula.gl';
+import { EditableJunctionsLayer, Feature, SegmentsLayer, SELECTION_TYPE } from 'nebula.gl';
 
 import { HtmlTooltipOverlay, Nebula } from 'nebula.gl-react';
 
@@ -66,6 +60,7 @@ export default class Example extends Component<
       toNebulaFeature: data => this._toNebulaFeature(data)
     });
     this.segmentsLayer.highlightColor = [1, 1, 1, 1];
+    this.segmentsLayer.arrowSize = 50;
 
     this.testJunctions = [];
     this.editableJunctionsLayer = new EditableJunctionsLayer({
@@ -168,15 +163,12 @@ export default class Example extends Component<
       },
       properties: null
     };
-    const { SERVICE: service, LINE: line } = segment;
-    const code =
-      (line.charCodeAt(0) ^ (line.charCodeAt(1) || 0)) * 89599 +
-      (service.charCodeAt(0) ^ (service.charCodeAt(1) * 349));
-    const lineColor = [code & 0xff, (code >> 8) & 0xff, (code >> 16) & 0xff, 255];
     const style = {
-      lineColor: lineColor.map(x => x / 255),
+      lineColor: [0, 0, 1, 1],
       lineWidthMeters: 5.0,
-      tooltip: segment.LINE
+      tooltip: segment.LINE,
+      arrowStyle: 3,
+      zLevel: Math.random()
     };
     return new Feature(geojson, style);
   }
@@ -231,29 +223,29 @@ export default class Example extends Component<
     const { innerHeight: height, innerWidth: width } = window;
     viewport = Object.assign(viewport, { height, width });
 
-    const editableGeoJsonLayer = new EditableGeoJsonLayer({
-      data: this.state.testFeatures,
-      selectedFeatureIndexes: this.state.selectedFeatureIndexes,
-      pickable: true,
-      editable: this.state.allowEdit,
+    // const editableGeoJsonLayer = new EditableGeoJsonLayer({
+    //   data: this.state.testFeatures,
+    //   selectedFeatureIndexes: this.state.selectedFeatureIndexes,
+    //   pickable: true,
+    //   editable: this.state.allowEdit,
 
-      onEdit: ({ data }) => {
-        if (this.state.allowEdit) {
-          this.setState({ testFeatures: data });
-        }
-      },
+    //   onEdit: ({ data }) => {
+    //     if (this.state.allowEdit) {
+    //       this.setState({ testFeatures: data });
+    //     }
+    //   },
 
-      // Can specify GeoJsonLayer props
-      getFillColor: () => [0x00, 0x20, 0x70, 0x30],
-      getLineColor: () => [0x00, 0x20, 0x70, 0xc0],
-      getLineWidth: () => 30,
-      lineWidthMinPixels: 2,
-      lineWidthMaxPixels: 10,
+    //   // Can specify GeoJsonLayer props
+    //   getFillColor: () => [0x00, 0x20, 0x70, 0x30],
+    //   getLineColor: () => [0x00, 0x20, 0x70, 0xc0],
+    //   getLineWidth: () => 30,
+    //   lineWidthMinPixels: 2,
+    //   lineWidthMaxPixels: 10,
 
-      // As well as point layer props
-      getPointColor: () => [0x00, 0x20, 0x70, 0xff],
-      pointHighlightColor: [0xff, 0xff, 0xff, 0xff]
-    });
+    //   // As well as point layer props
+    //   getPointColor: () => [0x00, 0x20, 0x70, 0xff],
+    //   pointHighlightColor: [0xff, 0xff, 0xff, 0xff]
+    // });
 
     const textLayer = new TextLayer({
       id: 'text-layer',
@@ -265,7 +257,7 @@ export default class Example extends Component<
       ]
     });
     const nebulaLayers = [segmentsLayer, editableJunctionsLayer];
-    const deckLayers = [editableGeoJsonLayer, textLayer];
+    const deckLayers = [textLayer];
 
     return (
       <div style={styles.mapContainer}>

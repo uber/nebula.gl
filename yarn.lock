@@ -757,7 +757,7 @@
     lodash "^4.17.10"
     to-fast-properties "^2.0.0"
 
-"@deck.gl/core@^6.3.9", "@deck.gl/core@^6.4.5":
+"@deck.gl/core@^6.4.5":
   version "6.4.5"
   resolved "https://registry.yarnpkg.com/@deck.gl/core/-/core-6.4.5.tgz#b64e3371c75b9dd55fd6664e4dd890d373067c09"
   integrity sha512-7VKzlpxEfk62yl/WGsVCq6H2oYpiHGf+lWA22d2nRv2EWdU4Q0k6pDiorDGl785Hzo5fqax0Bpl/fBv/BCQxCQ==
@@ -770,15 +770,7 @@
     seer "^0.2.4"
     viewport-mercator-project "^6.1.0"
 
-"@deck.gl/experimental-layers@>=6.0.5":
-  version "6.3.9"
-  resolved "https://registry.yarnpkg.com/@deck.gl/experimental-layers/-/experimental-layers-6.3.9.tgz#732565f446e37b96d8b0af5eed2c3a68674af706"
-  integrity sha512-u1zcX54H+PSydB4hI5++Bvx4t8hIjWmrxB1pN9oSx2Kv1c/sPkZPF9MW5QMRVGoYmmz/XqjCsbiVCM/0qfWBMA==
-  dependencies:
-    "@deck.gl/core" "^6.3.9"
-    "@deck.gl/layers" "^6.3.9"
-
-"@deck.gl/layers@^6.3.9", "@deck.gl/layers@^6.4.5":
+"@deck.gl/layers@^6.4.5":
   version "6.4.5"
   resolved "https://registry.yarnpkg.com/@deck.gl/layers/-/layers-6.4.5.tgz#d027254e1e24f0445b424c71682c8059326d11f0"
   integrity sha512-UX7F2Fr2DUjxsX4/rv0aIdjEmTr7Y7FgDst8eo0Ly6IcOcdFjr8JmZtkEGNEic8V0A1DJciAwjeZ2LitxOOxrg==
@@ -1387,6 +1379,11 @@
   dependencies:
     libnpm "^2.0.1"
     write-file-atomic "^2.3.0"
+
+"@luma.gl/constants@^7.0.0-alpha.3":
+  version "7.0.0-alpha.3"
+  resolved "https://registry.yarnpkg.com/@luma.gl/constants/-/constants-7.0.0-alpha.3.tgz#c3b86a6c9acaff27fed887e9731a19d8fe7c562e"
+  integrity sha512-ZVaVt1dr5D3L7IRrjK9a7diIxjzX96suaFQBn9D3e+h1IjI0YA8RuO3U9/o1GHxO8N7FXmAUBVd0Kgrn/B7bOg==
 
 "@mapbox/tiny-sdf@^1.1.0":
   version "1.1.0"

@@ -17,6 +17,10 @@ export { default as SelectionLayer } from './lib/layers/selection-layer';
 
 export { default as NebulaCore } from './lib/nebula';
 
+// layers moved from deck.gl
+export { default as PathOutlineLayer } from './lib/layers/path-outline-layer/path-outline-layer';
+export { default as PathMarkerLayer } from './lib/layers/path-marker-layer/path-marker-layer';
+
 // Mode Handlers
 export { ModeHandler } from './lib/mode-handlers/mode-handler.js';
 export { ModifyHandler } from './lib/mode-handlers/modify-handler.js';

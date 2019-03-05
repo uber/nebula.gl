@@ -4,7 +4,7 @@
     "start-local": "webpack-dev-server --env.local --progress --hot --open"
   },
   "dependencies": {
-    "deck.gl": "^6.0.3",
+    "deck.gl": "^6.4.5",
     "mapbox-gl": "0.43",
     "nebula.gl": "^0.5.1",
     "react": "^16.0.0",

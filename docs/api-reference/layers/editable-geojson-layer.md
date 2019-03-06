@@ -308,6 +308,18 @@ The height of each edit handle, in pixels.
 
 The rotating angle of each object, in degrees.
 
+#### Experimental: `enablePolygonSnapping` (Boolean, optional)
+
+* Default: false
+
+When a polygon is dragged close enough to another polygon, the polygon being moved will snap to the nearby polygon.
+
+#### Experimental: `snapStrength` (Number, optional)
+
+* Default: 0.2
+
+A larger snapStrength value will result in polygon snapping to trigger when polygons are further apart.
+
 ## Methods
 
 These methods can be overridden in a derived class in order to customize event handling.

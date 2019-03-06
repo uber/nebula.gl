@@ -9,6 +9,8 @@ import {
   mockedGeoJsonProperties
 } from '../test-utils.js';
 
+const polySnappingOptions = { enablePolygonSnapping: false };
+
 export function mockHandleStartDragging(
   handler: { [key: string]: any },
   eventOptions: { [key: string]: any }
@@ -17,7 +19,7 @@ export function mockHandleStartDragging(
   const dragEvent = createPointerDragEvent(clickCoordinates, moveCoordinates, [
     { index: picksIndex }
   ]);
-  return handler.handleStartDragging(dragEvent);
+  return handler.handleStartDragging(dragEvent, polySnappingOptions);
 }
 
 export function mockHandlePointerMove(
@@ -26,7 +28,7 @@ export function mockHandlePointerMove(
 ) {
   const { clickCoordinates, picksIndex } = eventOptions;
   const moveEvent = createPointerMoveEvent(clickCoordinates, [{ index: picksIndex }]);
-  return handler.handlePointerMove(moveEvent);
+  return handler.handlePointerMove(moveEvent, polySnappingOptions);
 }
 
 export function mockHandleStopDragging(
@@ -37,7 +39,7 @@ export function mockHandleStopDragging(
   const dragEvent = createPointerDragEvent(clickCoordinates, moveCoordinates, [
     { index: picksIndex }
   ]);
-  return handler.handleStopDragging(dragEvent);
+  return handler.handleStopDragging(dragEvent, polySnappingOptions);
 }
 
 export function mockFeatureMove(

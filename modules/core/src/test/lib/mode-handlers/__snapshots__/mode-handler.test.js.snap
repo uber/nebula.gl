@@ -1,0 +1,169 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`polygon snapping calculateDistanceAndDirection() 1`] = `
+Object {
+  "direction": -141.98757457397292,
+  "distanceMoved": 18.25477674085755,
+}
+`;
+
+exports[`polygon snapping calculateSnapMove() - polygon distance within threshold 1`] = `
+Object {
+  "movedPolygon": Object {
+    "geometry": Object {
+      "coordinates": Array [
+        Array [
+          Array [
+            -122.40928980342125,
+            37.975257502756534,
+          ],
+          Array [
+            -122.37851062171308,
+            37.975257502756534,
+          ],
+          Array [
+            -122.37851148032331,
+            37.95290895570644,
+          ],
+          Array [
+            -122.40929066203148,
+            37.95290895570644,
+          ],
+          Array [
+            -122.40928980342125,
+            37.975257502756534,
+          ],
+        ],
+      ],
+      "type": "Polygon",
+    },
+    "properties": Object {},
+    "type": "Feature",
+  },
+  "selectedIndex": 1,
+}
+`;
+
+exports[`polygon snapping getPolygonEdgeDetailsFromAzimuth() 1`] = `
+Object {
+  "length": 0.47643289905068764,
+  "midpoint": Object {
+    "geometry": Object {
+      "coordinates": Array [
+        -122.51501193505067,
+        37.76935784447388,
+      ],
+      "type": "Point",
+    },
+    "properties": Object {},
+    "type": "Feature",
+  },
+}
+`;
+
+exports[`polygon snapping getPolygonOuterRing() 1`] = `
+Object {
+  "geometry": Object {
+    "coordinates": Array [
+      Array [
+        Array [
+          -122.51552705327066,
+          37.771461121222295,
+        ],
+        Array [
+          -122.47012273204086,
+          37.77342862160346,
+        ],
+        Array [
+          -122.45887898548045,
+          37.77471764518967,
+        ],
+        Array [
+          -122.4570760666428,
+          37.76644036576543,
+        ],
+        Array [
+          -122.46171088672446,
+          37.765761859152995,
+        ],
+        Array [
+          -122.46325587621311,
+          37.76644036576543,
+        ],
+        Array [
+          -122.51423916746319,
+          37.76399771282799,
+        ],
+        Array [
+          -122.51449684613294,
+          37.76725456548338,
+        ],
+        Array [
+          -122.51552705327066,
+          37.771461121222295,
+        ],
+      ],
+    ],
+    "type": "Polygon",
+  },
+  "properties": Object {},
+  "type": "Feature",
+}
+`;
+
+exports[`polygon snapping getPolygonPointsClosestToAzimuth() 1`] = `
+Array [
+  Object {
+    "geometry": Object {
+      "coordinates": Array [
+        -122.51552705327066,
+        37.771461121222295,
+      ],
+      "type": "Point",
+    },
+    "properties": Object {},
+    "type": "Feature",
+  },
+  Object {
+    "geometry": Object {
+      "coordinates": Array [
+        -122.51449684613294,
+        37.76725456548338,
+      ],
+      "type": "Point",
+    },
+    "properties": Object {},
+    "type": "Feature",
+  },
+]
+`;
+
+exports[`polygon snapping getSnapDetailsFromCandidates() 1`] = `
+Object {
+  "index": 0,
+  "nonSelectedSnapPoint": Object {
+    "geometry": Object {
+      "coordinates": Array [
+        -122.4425271525049,
+        37.96332765658352,
+      ],
+      "type": "Point",
+    },
+    "properties": Object {},
+    "type": "Feature",
+  },
+  "selectedSnapEdgeLength": 2.4850484845856666,
+  "selectedSnapPoint": Object {
+    "geometry": Object {
+      "coordinates": Array [
+        -122.40815000473599,
+        37.964108978087694,
+      ],
+      "type": "Point",
+    },
+    "properties": Object {},
+    "type": "Feature",
+  },
+  "snapDistance": 3.014967683946658,
+}
+`;

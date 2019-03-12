@@ -41,6 +41,7 @@ export class ModeHandler {
   _modeConfig: any = null;
   _selectedFeatureIndexes: number[] = [];
   _clickSequence: Position[] = [];
+  _context: Object;
 
   constructor(featureCollection?: FeatureCollection) {
     if (featureCollection) {
@@ -110,6 +111,10 @@ export class ModeHandler {
 
     this._selectedFeatureIndexes = indexes;
     this._setTentativeFeature(null);
+  }
+
+  setDeckGlContext(context: Object) {
+    this._context = context;
   }
 
   getClickSequence(): Position[] {

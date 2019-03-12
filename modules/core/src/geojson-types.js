@@ -2,7 +2,7 @@
 
 // Geometry types
 
-export type Position = [number, number];
+export type Position = [number, number] | [number, number, number];
 export type PointCoordinates = Position;
 export type LineStringCoordinates = Position[];
 export type PolygonCoordinates = Position[][];

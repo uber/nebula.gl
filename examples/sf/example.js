@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import DeckGL, { TextLayer } from 'deck.gl';
 import MapGL from 'react-map-gl';
 
-import { EditableJunctionsLayer, Feature, SegmentsLayer, SELECTION_TYPE } from 'nebula.gl';
+import { Feature, SegmentsLayer, SELECTION_TYPE } from 'nebula.gl';
 
 import { HtmlTooltipOverlay, Nebula } from 'nebula.gl-react';
 
@@ -62,25 +62,6 @@ export default class Example extends Component<
     this.segmentsLayer.highlightColor = [1, 1, 1, 1];
     this.segmentsLayer.arrowSize = 50;
 
-    this.testJunctions = [];
-    this.editableJunctionsLayer = new EditableJunctionsLayer({
-      getData: () => this.testJunctions,
-      toNebulaFeature: data => this._toNebulaFeatureJunc(data),
-      on: {
-        editStart: (event, info) => console.log('Junctions editStart', event, info), // eslint-disable-line
-        editEnd: (event, info) => {
-          console.log('Junctions editEnd', event, info); // eslint-disable-line
-
-          if (this.state.allowEdit) {
-            const original = this.testJunctions.find(j => j.id === info.id);
-            if (original) {
-              original.position = info.feature.geoJson.geometry.coordinates;
-            }
-          }
-        }
-      }
-    });
-
     this._loadData(
       'https://raw.githubusercontent.com/uber-common/deck.gl-data/master/examples/layer-browser/sfmta.routes.json'
     );
@@ -97,7 +78,6 @@ export default class Example extends Component<
   nebula: Nebula;
   testSegments: Object[];
   segmentsLayer: SegmentsLayer;
-  editableJunctionsLayer: EditableJunctionsLayer;
 
   /**
    * Loads the test data from a static json file.
@@ -216,7 +196,7 @@ export default class Example extends Component<
   }
 
   render() {
-    const { editableJunctionsLayer, segmentsLayer, state } = this;
+    const { segmentsLayer, state } = this;
     let { viewport } = state;
     const { selectionType } = state;
 
@@ -256,7 +236,7 @@ export default class Example extends Component<
         }
       ]
     });
-    const nebulaLayers = [segmentsLayer, editableJunctionsLayer];
+    const nebulaLayers = [segmentsLayer];
     const deckLayers = [textLayer];
 
     return (

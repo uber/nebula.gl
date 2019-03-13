@@ -12,6 +12,7 @@ const webpack = require('webpack');
 const LIB_DIR = resolve(__dirname, '..');
 const CORE_SRC_DIR = resolve(LIB_DIR, './modules/core/src');
 const REACT_SRC_DIR = resolve(LIB_DIR, './modules/react/src');
+const OVERLAYS_SRC_DIR = resolve(LIB_DIR, './modules/overlays/src');
 
 // const babelConfig = require('../babel.config');
 
@@ -29,15 +30,14 @@ function makeLocalDevConfig(EXAMPLE_DIR = LIB_DIR) {
 
     resolve: {
       alias: {
-        // For importing modules that are not exported at root
         'nebula.gl/dist': CORE_SRC_DIR,
-        // Imports the nebula.gl library from the src directory in this repo
         'nebula.gl': CORE_SRC_DIR,
 
-        // For importing modules that are not exported at root
         'nebula.gl-react/dist': REACT_SRC_DIR,
-        // Imports the nebula.gl library from the src directory in this repo
         'nebula.gl-react': REACT_SRC_DIR,
+
+        '@nebula.gl/overlays/dist': OVERLAYS_SRC_DIR,
+        '@nebula.gl/overlays': OVERLAYS_SRC_DIR,
 
         'deck.gl': resolve(LIB_DIR, './node_modules/deck.gl'),
         '@deck.gl/experimental-layers': resolve(

@@ -1,18 +1,17 @@
 // @flow
 import window from 'global/window';
 import React, { Component } from 'react';
-import MapGL from 'react-map-gl';
+import DeckGL from 'deck.gl';
+import { StaticMap } from 'react-map-gl';
 
-import { HtmlClusterOverlay, HtmlOverlayItem, Nebula } from 'nebula.gl-react';
+import { HtmlOverlay, HtmlClusterOverlay, HtmlOverlayItem } from '@nebula.gl/overlays';
 
-const initialViewport = {
-  bearing: 0,
-  height: 0,
-  latitude: 37.75,
-  longitude: -122.445,
+const initialViewState = {
+  longitude: -122.4,
+  latitude: 37.7,
+  zoom: 10,
   pitch: 0,
-  width: 0,
-  zoom: 10
+  bearing: 0
 };
 
 const styles = {
@@ -20,10 +19,18 @@ const styles = {
     alignItems: 'stretch',
     display: 'flex',
     height: '100vh'
+  },
+  box: {
+    background: 'white'
+  },
+  image: {
+    float: 'left',
+    margin: 10
   }
 };
 
 const DATA_URL = 'https://cors-anywhere.herokuapp.com/http://whc.unesco.org/en/list/georss/';
+// const DATA_URL = 'georss.xml';
 
 class WorldHeritage extends HtmlClusterOverlay {
   getAllObjects() {
@@ -40,14 +47,14 @@ class WorldHeritage extends HtmlClusterOverlay {
       return (
         <HtmlOverlayItem
           style={{ background: 'red', padding: 8, color: 'white', maxWidth: 300 }}
-          key={object.name}
+          key={object.title}
           coordinates={coordinates}
         >
           <center>{object.title}</center>
-          <div
-            style={{ fontSize: 12, lineHeight: '12px', maxWidth: 300 }}
-            dangerouslySetInnerHTML={{ __html: object.description }}
-          />
+          <div style={{ fontSize: 12, lineHeight: '12px', maxWidth: 300 }}>
+            <img style={styles.image} src={object.image} />
+            {object.description}
+          </div>
         </HtmlOverlayItem>
       );
     } else if (this.getZoom() > 5) {
@@ -62,7 +69,7 @@ class WorldHeritage extends HtmlClusterOverlay {
             lineHeight: '10px',
             maxWidth: 300
           }}
-          key={object.name}
+          key={object.title}
           coordinates={coordinates}
         >
           {object.title}
@@ -74,7 +81,7 @@ class WorldHeritage extends HtmlClusterOverlay {
     return (
       <HtmlOverlayItem
         style={{ background: 'red', padding: 4 }}
-        key={object.name}
+        key={object.title}
         coordinates={coordinates}
       />
     );
@@ -106,15 +113,13 @@ class WorldHeritage extends HtmlClusterOverlay {
 export default class Example extends Component<
   {},
   {
-    viewport: Object,
     data: ?(Object[])
   }
 > {
-  constructor() {
-    super();
+  constructor(props: any) {
+    super(props);
 
     this.state = {
-      viewport: initialViewport,
       data: null
     };
 
@@ -127,12 +132,13 @@ export default class Example extends Component<
           const title = item.getElementsByTagName('title')[0].textContent;
           const description = item.getElementsByTagName('description')[0].textContent;
           const link = item.getElementsByTagName('link')[0].textContent;
-          const lat = item.getElementsByTagName('geo:lat')[0].textContent;
-          const lng = item.getElementsByTagName('geo:long')[0].textContent;
+          const lat = Number(item.getElementsByTagName('geo:lat')[0].textContent);
+          const lng = Number(item.getElementsByTagName('geo:long')[0].textContent);
 
           return {
             title,
-            description,
+            description: description.replace(/<.+?>/gi, ''),
+            image: (/src='(.+?)'/.exec(description) || [])[1],
             link,
             lat,
             lng
@@ -144,27 +150,19 @@ export default class Example extends Component<
     });
   }
 
-  componentDidMount() {
-    window.addEventListener('resize', this._resize);
-  }
+  // componentDidMount() {
+  //   window.addEventListener('resize', this._resize);
+  // }
 
-  componentWillUnmount() {
-    window.removeEventListener('resize', this._resize);
-  }
+  // componentWillUnmount() {
+  //   window.removeEventListener('resize', this._resize);
+  // }
 
-  nebula: Nebula;
+  // _resize = () => {
+  //   this.forceUpdate();
+  // };
 
-  _onChangeViewport = (viewport: Object) => {
-    this.setState({
-      viewport: { ...this.state.viewport, ...viewport }
-    });
-  };
-
-  _resize = () => {
-    this.forceUpdate();
-  };
-
-  getNebulaContents() {
+  getWorldHeritage() {
     const { data } = this.state;
     if (data) {
       return <WorldHeritage data={data} />;
@@ -173,26 +171,27 @@ export default class Example extends Component<
     return <div>Loading...</div>;
   }
 
+  getElevationTest() {
+    return (
+      <HtmlOverlay>
+        <HtmlOverlayItem style={styles.box} coordinates={[0, 0, 0]}>
+          Map Center Zero Elevation
+        </HtmlOverlayItem>
+        <HtmlOverlayItem style={styles.box} coordinates={[0, 0, 50000]}>
+          Map Center 50km Elevation
+        </HtmlOverlayItem>
+      </HtmlOverlay>
+    );
+  }
+
   render() {
-    const { state } = this;
-    let { viewport } = state;
-
-    const { innerHeight: height, innerWidth: width } = window;
-    viewport = Object.assign(viewport, { height, width });
-
     return (
       <div style={styles.mapContainer}>
-        <link href="https://api.mapbox.com/mapbox-gl-js/v0.44.0/mapbox-gl.css" rel="stylesheet" />
-        <MapGL {...viewport} onChangeViewport={this._onChangeViewport}>
-          <Nebula
-            ref={nebula => (this.nebula = nebula || this.nebula)}
-            viewport={viewport}
-            layers={[]}
-            onMapMouseEvent={() => this.forceUpdate()}
-          >
-            {this.getNebulaContents()}
-          </Nebula>
-        </MapGL>
+        <link href="https://api.mapbox.com/mapbox-gl-js/v0.47.0/mapbox-gl.css" rel="stylesheet" />
+        <DeckGL initialViewState={initialViewState} controller={true} layers={[]}>
+          <StaticMap />
+          {this.getWorldHeritage()}
+        </DeckGL>
       </div>
     );
   }

@@ -1,0 +1,18 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`test HtmlOverlay map center 1`] = `
+<div
+  id="deckgl-wrapper"
+>
+  <canvas
+    id="deckgl-overlay"
+    style={
+      Object {
+        "left": 0,
+        "position": "absolute",
+        "top": 0,
+      }
+    }
+  />
+</div>
+`;

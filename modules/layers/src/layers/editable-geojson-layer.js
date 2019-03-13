@@ -102,10 +102,6 @@ const defaultProps = {
       : DEFAULT_EDITING_INTERMEDIATE_POINT_COLOR,
   getEditHandleIconAngle: 0,
 
-  // Snapping configs
-  enablePolygonSnapping: false,
-  snapStrength: 0.2,
-
   // Mode handlers
   modeHandlers: {
     view: new ViewHandler(),
@@ -409,11 +405,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }
 
   onStopDragging(event: StopDraggingEvent) {
-    const { enablePolygonSnapping, snapStrength } = this.props;
-    const editAction = this.state.modeHandler.handleStopDragging(event, {
-      enablePolygonSnapping,
-      snapStrength
-    });
+    const editAction = this.state.modeHandler.handleStopDragging(event);
     this.updateTentativeFeature();
     this.updateEditHandles();
 
@@ -424,12 +416,8 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
   onPointerMove(event: PointerMoveEvent) {
     const { groundCoords, picks, sourceEvent } = event;
-    const { enablePolygonSnapping, snapStrength } = this.props;
 
-    const { editAction, cancelMapPan } = this.state.modeHandler.handlePointerMove(event, {
-      enablePolygonSnapping,
-      snapStrength
-    });
+    const { editAction, cancelMapPan } = this.state.modeHandler.handlePointerMove(event);
     this.updateTentativeFeature();
     this.updateEditHandles(picks, groundCoords);
 

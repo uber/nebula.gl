@@ -12,10 +12,7 @@ export class TranslateHandler extends ModeHandler {
   _isTranslatable: boolean;
   _unsnapMousePointStart: Position;
 
-  handlePointerMove(
-    event: PointerMoveEvent,
-    snapConfigs: Object
-  ): { editAction: ?EditAction, cancelMapPan: boolean } {
+  handlePointerMove(event: PointerMoveEvent): { editAction: ?EditAction, cancelMapPan: boolean } {
     let editAction: ?EditAction = null;
 
     this._isTranslatable =
@@ -31,8 +28,7 @@ export class TranslateHandler extends ModeHandler {
       editAction = this.getTranslateAction(
         event.pointerDownGroundCoords,
         event.groundCoords,
-        'translating',
-        snapConfigs
+        'translating'
       );
     }
 
@@ -49,7 +45,7 @@ export class TranslateHandler extends ModeHandler {
     return null;
   }
 
-  handleStopDragging(event: StopDraggingEvent, snapConfigs: Object): ?EditAction {
+  handleStopDragging(event: StopDraggingEvent): ?EditAction {
     let editAction: ?EditAction = null;
 
     if (this._geometryBeforeTranslate) {
@@ -57,8 +53,7 @@ export class TranslateHandler extends ModeHandler {
       editAction = this.getTranslateAction(
         event.pointerDownGroundCoords,
         event.groundCoords,
-        'translated',
-        snapConfigs
+        'translated'
       );
       this._geometryBeforeTranslate = null;
     }
@@ -76,14 +71,14 @@ export class TranslateHandler extends ModeHandler {
   getTranslateAction(
     startDragPoint: Position,
     currentPoint: Position,
-    editType: string,
-    snapConfigs: { [key: string]: any }
+    editType: string
   ): ?EditAction {
     if (!this._geometryBeforeTranslate) {
       return null;
     }
 
-    const { snapStrength } = snapConfigs || {};
+    const modeConfigs = this.getModeConfig();
+    const { snapStrength } = modeConfigs || {};
 
     let updatedData = this.getImmutableFeatureCollection();
     const selectedIndexes = this.getSelectedFeatureIndexes();
@@ -93,7 +88,7 @@ export class TranslateHandler extends ModeHandler {
     );
 
     // Perform snap
-    if (this.shouldPerformSnap(snapConfigs)) {
+    if (this.shouldPerformSnap(modeConfigs)) {
       const candidateIndexes = this.getNearestPolygonIndexes({ numberToTrack: 8 });
       const snapDetails = this.getSnapDetailsFromCandidates(candidateIndexes);
       if (snapDetails) {
@@ -107,7 +102,7 @@ export class TranslateHandler extends ModeHandler {
     }
 
     // Perform unsnap
-    if (this.shouldPerformUnsnap(snapConfigs)) {
+    if (this.shouldPerformUnsnap(modeConfigs)) {
       const { distanceMoved: unsnapDistanceMoved } = this.calculateDistanceAndDirection(
         this._unsnapMousePointStart,
         currentPoint

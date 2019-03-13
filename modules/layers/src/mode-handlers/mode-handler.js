@@ -270,10 +270,7 @@ export class ModeHandler {
     return null;
   }
 
-  handlePointerMove(
-    event: PointerMoveEvent,
-    snapConfigs: Object
-  ): { editAction: ?EditAction, cancelMapPan: boolean } {
+  handlePointerMove(event: PointerMoveEvent): { editAction: ?EditAction, cancelMapPan: boolean } {
     return { editAction: null, cancelMapPan: false };
   }
 
@@ -281,7 +278,7 @@ export class ModeHandler {
     return null;
   }
 
-  handleStopDragging(event: StopDraggingEvent, snapConfigs: Object): ?EditAction {
+  handleStopDragging(event: StopDraggingEvent): ?EditAction {
     return null;
   }
 
@@ -387,14 +384,14 @@ export class ModeHandler {
   }
 
   shouldPerformSnap(snapConfigs: Object) {
-    const { enablePolygonSnapping } = snapConfigs;
+    const { enablePolygonSnapping } = snapConfigs || {};
     return (
       enablePolygonSnapping && this.isSinglePolygonSelected() && !this.hasSelectedBeenSnapped()
     );
   }
 
   shouldPerformUnsnap(snapConfigs: Object) {
-    const { enablePolygonSnapping } = snapConfigs;
+    const { enablePolygonSnapping } = snapConfigs || {};
     return enablePolygonSnapping && this.isSinglePolygonSelected() && this.hasSelectedBeenSnapped();
   }
 

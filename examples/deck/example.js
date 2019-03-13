@@ -334,6 +334,61 @@ export default class Example extends Component<
     );
   }
 
+  _renderPolygonSnappingControls() {
+    const defaultSnapStrength = 0.2;
+    const snapStrengthValue =
+      (this.state.modeConfig && this.state.modeConfig.snapStrength) || defaultSnapStrength;
+    return (
+      <div key="translate">
+        <ToolboxRow>
+          <ToolboxLabel>Enable polygon snapping</ToolboxLabel>
+          <ToolboxControl>
+            <input
+              type="checkbox"
+              checked={Boolean(
+                this.state.modeConfig && this.state.modeConfig.enablePolygonSnapping
+              )}
+              onChange={event => {
+                const initModeConfig = this.state.modeConfig;
+                const { snapStrength } = initModeConfig;
+                const modeConfig = {
+                  ...initModeConfig,
+                  enablePolygonSnapping: Boolean(event.target.checked)
+                };
+                if (!snapStrength) {
+                  modeConfig.snapStrength = defaultSnapStrength;
+                }
+                this.setState({ modeConfig });
+              }}
+            />
+          </ToolboxControl>
+        </ToolboxRow>
+
+        <ToolboxRow>
+          <ToolboxLabel>Snap strength</ToolboxLabel>
+          <ToolboxControl>
+            <input
+              ref="test"
+              type="range"
+              min="0.1"
+              max="1"
+              step="0.1"
+              value={snapStrengthValue}
+              onChange={event => {
+                const initModeConfig = this.state.modeConfig;
+                const snapStrength = parseFloat(event.target.value);
+                this.setState({
+                  modeConfig: { ...initModeConfig, snapStrength }
+                });
+              }}
+            />
+            <div>{snapStrengthValue}</div>
+          </ToolboxControl>
+        </ToolboxRow>
+      </div>
+    );
+  }
+
   _renderModeConfigControls() {
     const controls = [];
 
@@ -348,6 +403,9 @@ export default class Example extends Component<
     }
     if (this.state.mode === 'split') {
       controls.push(this._renderSplitModeControls());
+    }
+    if (this.state.mode === 'translate') {
+      controls.push(this._renderPolygonSnappingControls());
     }
 
     return controls;

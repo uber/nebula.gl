@@ -166,6 +166,12 @@ User can split a polygon by drawing a new `LineString` feature on top of the pol
 
 * If the clicked position is inside the polygon, it will not split the polygon
 
+## [ElevationHandler](https://github.com/uber/nebula.gl/blob/master/modules/core/src/lib/mode-handlers/)
+
+* Mode name: `elevation`
+
+User can move a point up and down. `min` and `max` can be configured in `modeConfig`.
+
 ### ModeConfig
 
 The following options can be provided in the `modeConfig` object:

@@ -71,7 +71,7 @@ const ALL_MODES = [
   { category: 'View', modes: ['view'] },
   {
     category: 'Alter',
-    modes: ['modify', 'translate', 'rotate', 'scale', 'duplicate', 'extrude', 'split']
+    modes: ['modify', 'elevation', 'translate', 'rotate', 'scale', 'duplicate', 'extrude', 'split']
   },
   {
     category: 'Draw',

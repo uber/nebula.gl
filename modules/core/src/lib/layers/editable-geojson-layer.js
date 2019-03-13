@@ -5,6 +5,7 @@ import { GeoJsonLayer, ScatterplotLayer, IconLayer } from 'deck.gl';
 import { ModeHandler } from '../mode-handlers/mode-handler.js';
 import { ViewHandler } from '../mode-handlers/view-handler.js';
 import { ModifyHandler } from '../mode-handlers/modify-handler.js';
+import { ElevationHandler } from '../mode-handlers/elevation-handler.js';
 import { TranslateHandler } from '../mode-handlers/translate-handler.js';
 import { DuplicateHandler } from '../mode-handlers/duplicate-handler';
 import { RotateHandler } from '../mode-handlers/rotate-handler.js';
@@ -105,6 +106,7 @@ const defaultProps = {
   modeHandlers: {
     view: new ViewHandler(),
     modify: new ModifyHandler(),
+    elevation: new ElevationHandler(),
     extrude: new ExtrudeHandler(),
     rotate: new RotateHandler(),
     translate: new TranslateHandler(),
@@ -235,6 +237,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
       modeHandler.setModeConfig(props.modeConfig);
       modeHandler.setSelectedFeatureIndexes(props.selectedFeatureIndexes);
+      modeHandler.setDeckGlContext(this.context);
       this.updateTentativeFeature();
       this.updateEditHandles();
     }

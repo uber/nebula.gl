@@ -1,12 +1,5 @@
 // @flow
 
-import turfBearing from '@turf/bearing';
-import turfCenter from '@turf/center';
-import turfDistance from '@turf/distance';
-import { point as turfPoint, polygon as turfPolygon, bearingToAzimuth } from '@turf/helpers';
-import { coordAll } from '@turf/meta';
-import turfMidpoint from '@turf/midpoint';
-import turfTransformTranslate from '@turf/transform-translate';
 import turfUnion from '@turf/union';
 import turfDifference from '@turf/difference';
 import turfIntersect from '@turf/intersect';
@@ -19,7 +12,6 @@ import type {
   StopDraggingEvent,
   DeckGLPick
 } from '../event-types.js';
-import { SortedList, SortType } from '../utils';
 import { ImmutableFeatureCollection } from '../immutable-feature-collection.js';
 
 export type EditHandle = {
@@ -44,13 +36,11 @@ export class ModeHandler {
   _selectedFeatureIndexes: number[] = [];
   _clickSequence: Position[] = [];
   _context: Object;
-  _snapAssociations: number[][];
 
   constructor(featureCollection?: FeatureCollection) {
     if (featureCollection) {
       this.setFeatureCollection(featureCollection);
     }
-    this._snapAssociations = [];
   }
 
   getFeatureCollection(): FeatureCollection {
@@ -280,244 +270,6 @@ export class ModeHandler {
 
   handleStopDragging(event: StopDraggingEvent): ?EditAction {
     return null;
-  }
-
-  // Get the indexes of polygons closest to the selected feature. The numberToTrack
-  // optional parameter dictates how many polygons to track e.g. a numberToTrack = 3
-  // will result in the 3 closest polygon indexes being returned by this method.
-  getNearestPolygonIndexes(options: ?{ [key: string]: any }) {
-    let arraySize = 1;
-    if (options) {
-      arraySize = options.numberToTrack;
-    }
-    const allFeatures = this.getImmutableFeatureCollection().getObject().features;
-    const [selectedIndex] = this.getSelectedFeatureIndexes();
-    const selectedCenter = turfCenter(this.getSelectedFeature());
-
-    const minDistanceArray = new SortedList({
-      arraySize,
-      getValueToCompareFn: val => val.distance,
-      sortType: SortType.MIN
-    });
-    for (let i = 0; i < allFeatures.length; i++) {
-      const currentFeature = allFeatures[i];
-      if (i !== selectedIndex && currentFeature.geometry.type === 'Polygon') {
-        const currentFeatureCenter = turfCenter(currentFeature);
-        const distance = turfDistance(currentFeatureCenter, selectedCenter);
-        minDistanceArray.push({ distance, index: i });
-      }
-    }
-    return minDistanceArray.toArray().map(details => details.index);
-  }
-
-  // Get the polygon's outer ring of coordinates if the polygon has an inner
-  // ring of coordinates that makes up a polygon hole.
-  getPolygonOuterRing(originalPoly: Feature) {
-    const { coordinates } = originalPoly.geometry;
-    return coordinates.length > 1 ? turfPolygon([coordinates[0]]) : originalPoly;
-  }
-
-  // Get the point(s) of a specified polygon that have an azimuth (measured from
-  // the polygon center to polygon point) that is closest to the specified azimuth.
-  getPolygonPointsClosestToAzimuth(polygon: Feature, options: { [key: string]: any }) {
-    const arraySize = options.numberToTrack || 1;
-    const azimuth = options.azimuth || 0;
-    const selectedFeature = polygon;
-    const selectedFeatureCenter = turfCenter(selectedFeature);
-
-    const minBearingDiffArray = new SortedList({
-      arraySize,
-      sortType: SortType.MIN,
-      getValueToCompareFn: val => val.azimuthDiff
-    });
-
-    const coordPoints = coordAll(this.getPolygonOuterRing(selectedFeature));
-
-    // Coord points loop back to the original point such that the first and
-    // last points are the same. Do not process the last coordinate.
-    for (let i = 0; i < coordPoints.length - 1; i++) {
-      const coordPoint = turfPoint(coordPoints[i]);
-      const pointAzimuth = bearingToAzimuth(turfBearing(selectedFeatureCenter, coordPoint));
-      const azimuthDiff = Math.min(
-        Math.abs(azimuth - pointAzimuth),
-        360 - Math.abs(azimuth - pointAzimuth)
-      );
-      minBearingDiffArray.push({ azimuthDiff, point: coordPoint });
-    }
-    return minBearingDiffArray.toArray().map(details => details.point);
-  }
-
-  // Get the polygon edge midpoint closest to the specified azimuth. The edge
-  // midpoint azimuth is calculated from the edge midpoint to the polygon center.
-  getPolygonEdgeDetailsFromAzimuth(polygon: any, azimuth: number) {
-    const [p1, p2] = this.getPolygonPointsClosestToAzimuth(polygon, {
-      azimuth,
-      numberToTrack: 2
-    });
-    const length = turfDistance(p1, p2);
-    const midpoint = turfMidpoint(p1, p2);
-    return {
-      midpoint,
-      length
-    };
-  }
-
-  isSinglePolygonSelected() {
-    const selectedIndexes = this.getSelectedFeatureIndexes();
-    const selectedFeature = this.getSelectedFeature();
-    if (selectedFeature) {
-      return selectedIndexes.length === 1 && selectedFeature.geometry.type === 'Polygon';
-    }
-    return false;
-  }
-
-  // Scale the snapping strength proportional to the snapping edge length of the
-  // selected polygon.
-  getSnapStrengthModifier(edgeLength: number) {
-    return Math.pow(edgeLength / 2, 0.8);
-  }
-
-  hasSelectedBeenSnapped() {
-    const [selectedIndex] = this.getSelectedFeatureIndexes();
-    const snapPoints = this._snapAssociations[selectedIndex];
-    return snapPoints ? snapPoints.length : false;
-  }
-
-  shouldPerformSnap(snapConfigs: Object) {
-    const { enablePolygonSnapping } = snapConfigs || {};
-    return (
-      enablePolygonSnapping && this.isSinglePolygonSelected() && !this.hasSelectedBeenSnapped()
-    );
-  }
-
-  shouldPerformUnsnap(snapConfigs: Object) {
-    const { enablePolygonSnapping } = snapConfigs || {};
-    return enablePolygonSnapping && this.isSinglePolygonSelected() && this.hasSelectedBeenSnapped();
-  }
-
-  shouldPerformStandardModeAction() {
-    return !this.isSinglePolygonSelected() || !this.hasSelectedBeenSnapped();
-  }
-
-  // Calculates the closest polygon and the closest edge of said polygon to snap to
-  // and returns the details of the snap from the specified list of candidate
-  // polygon indexes
-  getSnapDetailsFromCandidates(polygonIndexes: number[]) {
-    const selectedPolyon = this.getSelectedFeature();
-    const selectedPolyCenter = turfCenter(selectedPolyon);
-    const { features } = this.getFeatureCollection();
-
-    let minSnapDistance = Number.MAX_VALUE;
-    let snapDetails;
-
-    for (const index of polygonIndexes) {
-      const polygon = features[index];
-      const polyCenter = turfCenter(polygon);
-      const azimuth = bearingToAzimuth(turfBearing(selectedPolyCenter, polyCenter));
-
-      const {
-        midpoint: selectedEdgeMidpoint,
-        length: selectedSnapEdgeLength
-      } = this.getPolygonEdgeDetailsFromAzimuth(selectedPolyon, azimuth);
-      const nonSelectedPolyEdge = this.getPolygonEdgeDetailsFromAzimuth(
-        polygon,
-        Math.max(azimuth - 180, azimuth + 180) % 360
-      );
-      const polyMidpointDistance = turfDistance(selectedEdgeMidpoint, nonSelectedPolyEdge.midpoint);
-
-      if (polyMidpointDistance < minSnapDistance) {
-        minSnapDistance = polyMidpointDistance;
-
-        snapDetails = {
-          index,
-          selectedSnapEdgeLength,
-          snapDistance: polyMidpointDistance,
-          nonSelectedSnapPoint: nonSelectedPolyEdge.midpoint,
-          selectedSnapPoint: selectedEdgeMidpoint
-        };
-      }
-    }
-    return snapDetails;
-  }
-
-  calculateDistanceAndDirection(startDragPoint: Position, currentPoint: Position) {
-    const p1 = turfPoint(startDragPoint);
-    const p2 = turfPoint(currentPoint);
-
-    const distanceMoved = turfDistance(p1, p2);
-    const direction = turfBearing(p1, p2);
-
-    return {
-      distanceMoved,
-      direction
-    };
-  }
-
-  calculateSnapMove(snapDetails: Object, snapStrength: number) {
-    if (snapDetails) {
-      const {
-        nonSelectedSnapPoint,
-        selectedSnapPoint,
-        snapDistance,
-        index,
-        selectedSnapEdgeLength
-      } = snapDetails;
-      const snapStrengthModifier = this.getSnapStrengthModifier(selectedSnapEdgeLength);
-
-      if (snapDistance <= snapStrength * snapStrengthModifier) {
-        const selectedIndexes = this.getSelectedFeatureIndexes();
-        const selectedFeature = this.getSelectedFeature();
-        const [selectedIndex] = selectedIndexes;
-
-        const snapBearing = turfBearing(selectedSnapPoint, nonSelectedSnapPoint);
-        const movedPolygon = turfTransformTranslate(selectedFeature, snapDistance, snapBearing);
-        this.cacheSnapAssociates(index, selectedIndex);
-
-        return {
-          movedPolygon,
-          selectedIndex
-        };
-      }
-    }
-    return null;
-  }
-
-  // Cache the indexes of the polygons that have participated in a snap
-  cacheSnapAssociates(index: number, partnerIndex: number) {
-    // Cache index to partnerIndex association
-    if (!this._snapAssociations[index]) {
-      this._snapAssociations[index] = [];
-    }
-    this._snapAssociations[index].push(partnerIndex);
-
-    // Cache partnerIndex to index association
-    if (!this._snapAssociations[partnerIndex]) {
-      this._snapAssociations[partnerIndex] = [];
-    }
-    this._snapAssociations[partnerIndex].push(index);
-  }
-
-  getSnapAssociates(index: number) {
-    return this._snapAssociations[index] || [];
-  }
-
-  // Clear all the polygon index and all partner polygons
-  clearSnapAssociates(index: number) {
-    const snapPartnerIndexes = this._snapAssociations[index];
-    if (!snapPartnerIndexes || !snapPartnerIndexes.length) return;
-
-    // Clear the specified index from all associated partners
-    for (const partnerIndex of snapPartnerIndexes) {
-      const associatesOfPartner = this._snapAssociations[partnerIndex];
-      if (associatesOfPartner) {
-        this._snapAssociations[partnerIndex] = associatesOfPartner.filter(i => i !== index);
-      }
-    }
-
-    // Clear all associations from index
-    if (this._snapAssociations[index]) {
-      this._snapAssociations[index] = [];
-    }
   }
 }
 

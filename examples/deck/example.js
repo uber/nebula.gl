@@ -154,6 +154,13 @@ export default class Example extends Component<
     window.addEventListener('resize', this._resize);
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.mode === 'translate' && this.state.mode !== prevState.mode) {
+      /* eslint-disable-next-line react/no-did-update-set-state */
+      this.setState({ modeConfig: { enablePolygonSnapping: false, snapStrength: 0.2 } });
+    }
+  }
+
   componentWillUnmount() {
     window.removeEventListener('resize', this._resize);
   }

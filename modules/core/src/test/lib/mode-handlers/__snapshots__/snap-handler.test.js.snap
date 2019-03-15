@@ -1,0 +1,59 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`polygon snapping getEditHandles() 1`] = `
+Array [
+  Object {
+    "featureIndex": -1,
+    "position": Array [
+      1,
+      2,
+    ],
+    "positionIndexes": Array [
+      -1,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": -1,
+    "position": Array [
+      2,
+      3,
+    ],
+    "positionIndexes": Array [
+      -1,
+    ],
+    "type": "intermediate",
+  },
+]
+`;
+
+exports[`polygon snapping getSnapDetailsFromCandidates() 1`] = `
+Object {
+  "index": 0,
+  "nonSelectedSnapPoint": Object {
+    "geometry": Object {
+      "coordinates": Array [
+        -122.44252582524939,
+        37.987923255302974,
+      ],
+      "type": "Point",
+    },
+    "properties": 1,
+    "type": "Feature",
+  },
+  "selectedSnapPoint": Object {
+    "geometry": Object {
+      "coordinates": Array [
+        -122.40814940182412,
+        37.97528325161274,
+      ],
+      "type": "Point",
+    },
+    "properties": Object {},
+    "type": "Feature",
+  },
+  "snapDistance": 3.324623681425176,
+}
+`;
+
+exports[`polygon snapping getSnapStrengthModifier() 1`] = `1.069575674579367`;

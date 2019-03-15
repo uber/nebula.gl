@@ -1,13 +1,16 @@
 // @flow
 
+import turfBearing from '@turf/bearing';
+import turfDistance from '@turf/distance';
+import { point as turfPoint } from '@turf/helpers';
 import turfTransformTranslate from '@turf/transform-translate';
 import { point } from '@turf/helpers';
 import type { FeatureCollection, Position } from '../geojson-types.js';
 import type { PointerMoveEvent, StartDraggingEvent, StopDraggingEvent } from '../event-types.js';
 import type { EditAction } from './mode-handler.js';
-import { ModeHandler } from './mode-handler.js';
+import { SnapHandler } from './snap-handler.js';
 
-export class TranslateHandler extends ModeHandler {
+export class TranslateHandler extends SnapHandler {
   _geometryBeforeTranslate: ?FeatureCollection;
   _isTranslatable: boolean;
   _unsnapMousePointStart: Position;
@@ -36,6 +39,7 @@ export class TranslateHandler extends ModeHandler {
   }
 
   handleStartDragging(event: StartDraggingEvent): ?EditAction {
+    this.renderSnapHandles();
     if (!this._isTranslatable) {
       return null;
     }
@@ -46,6 +50,7 @@ export class TranslateHandler extends ModeHandler {
   }
 
   handleStopDragging(event: StopDraggingEvent): ?EditAction {
+    this.hideSnapHandles();
     let editAction: ?EditAction = null;
 
     if (this._geometryBeforeTranslate) {
@@ -68,6 +73,19 @@ export class TranslateHandler extends ModeHandler {
     return isDragging ? 'grabbing' : 'grab';
   }
 
+  calculateDistanceAndDirection(startDragPoint: Position, currentPoint: Position) {
+    const p1 = turfPoint(startDragPoint);
+    const p2 = turfPoint(currentPoint);
+
+    const distanceMoved = turfDistance(p1, p2);
+    const direction = turfBearing(p1, p2);
+
+    return {
+      distanceMoved,
+      direction
+    };
+  }
+
   getTranslateAction(
     startDragPoint: Position,
     currentPoint: Position,
@@ -77,24 +95,25 @@ export class TranslateHandler extends ModeHandler {
       return null;
     }
 
-    const modeConfigs = this.getModeConfig();
-    const { snapStrength } = modeConfigs || {};
-
-    let updatedData = this.getImmutableFeatureCollection();
+    const { snapStrength } = this.getModeConfig() || {};
     const selectedIndexes = this.getSelectedFeatureIndexes();
+
     const { distanceMoved, direction } = this.calculateDistanceAndDirection(
       startDragPoint,
       currentPoint
     );
+    let updatedData = this.getImmutableFeatureCollection();
 
     // Perform snap
-    if (this.shouldPerformSnap(modeConfigs)) {
-      const candidateIndexes = this.getNearestPolygonIndexes({ numberToTrack: 8 });
+    if (this.shouldPerformSnap()) {
+      const candidateIndexes = this.getNearestPolygonIndexes({ numberToTrack: 100 });
       const snapDetails = this.getSnapDetailsFromCandidates(candidateIndexes);
+
       if (snapDetails) {
         const snapMoveCalculations = this.calculateSnapMove(snapDetails, snapStrength);
         if (snapMoveCalculations) {
           const { movedPolygon, selectedIndex } = snapMoveCalculations;
+
           updatedData = updatedData.replaceGeometry(selectedIndex, movedPolygon.geometry);
           this._unsnapMousePointStart = currentPoint;
         }
@@ -102,30 +121,16 @@ export class TranslateHandler extends ModeHandler {
     }
 
     // Perform unsnap
-    if (this.shouldPerformUnsnap(modeConfigs)) {
+    if (this.shouldPerformUnsnap()) {
       const { distanceMoved: unsnapDistanceMoved } = this.calculateDistanceAndDirection(
         this._unsnapMousePointStart,
         currentPoint
       );
 
-      const [selectedIndex] = selectedIndexes;
-      const snapAssociates = this.getSnapAssociates(selectedIndex);
-
-      // Get the longest edge of the selected polygon that has partcipated in a snap and
-      // calculate the unsnap strength modifier from this edge length.
-      let maxSnappedEdgeLength = 0;
-      for (const snapAssociateIndex of snapAssociates) {
-        const snapDetails = this.getSnapDetailsFromCandidates([snapAssociateIndex]);
-        if (snapDetails) {
-          const { selectedSnapEdgeLength } = snapDetails;
-          maxSnappedEdgeLength = Math.max(maxSnappedEdgeLength, selectedSnapEdgeLength);
-        }
-      }
-
-      const unsnapStrengthModifier = this.getSnapStrengthModifier(maxSnappedEdgeLength);
+      const unsnapStrengthModifier = this.getSnapStrengthModifier();
       const unsnapStrength = snapStrength * 2;
       if (unsnapDistanceMoved >= unsnapStrength * unsnapStrengthModifier) {
-        this.clearSnapAssociates(selectedIndex);
+        this.clearSnapAssociates(selectedIndexes[0]);
       }
     }
 

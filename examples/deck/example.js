@@ -375,7 +375,6 @@ export default class Example extends Component<
           <ToolboxLabel>Snap strength</ToolboxLabel>
           <ToolboxControl>
             <input
-              ref="test"
               type="range"
               min="0.1"
               max="1"

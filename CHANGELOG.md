@@ -4,6 +4,16 @@ _All notable changes to this project will be documented in this file. This proje
 
 <!-- INSERT HERE -->
 
+## [0.10.4](https://github.com/uber/nebula.gl/compare/v0.10.3...v0.10.4) - 2019-03-15
+
+### Changes
+
+* add gitattributes
+* Add elevation-handler mode (experimental) (#178)
+* remove EditableJunctionsLayer (#180)
+* Move path-marker-layer and path-outline-layer from deck.gl, remove experimental-layers dep (#176)
+* Tweak changelog script
+
 ## [0.10.3](https://github.com/uber/nebula.gl/compare/v0.10.2...v0.10.3) - 2019-03-01
 
 ### Changes

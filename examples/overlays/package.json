@@ -5,7 +5,6 @@
   },
   "dependencies": {
     "deck.gl": "^6.0.3",
-    "mapbox-gl": "0.43",
     "nebula.gl": "^0.5.1",
     "nebula.gl-react": "^0.5.1",
     "react": "^16.0.0",

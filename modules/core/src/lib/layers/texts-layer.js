@@ -1,5 +1,5 @@
 // @flow
-import { COORDINATE_SYSTEM, TextLayer } from 'deck.gl';
+import { TextLayer } from '@deck.gl/layers';
 
 import NebulaLayer from '../nebula-layer';
 import { toDeckColor } from '../utils';
@@ -33,7 +33,6 @@ export default class TextsLayer extends NebulaLayer {
       // TODO: layer should offer option to scale with zoom
       sizeScale: 1 / Math.pow(2, 20 - zoom),
 
-      coordinateSystem: COORDINATE_SYSTEM.LNGLAT_EXPERIMENTAL,
       updateTriggers: { all: updateTrigger },
 
       nebulaLayer: this

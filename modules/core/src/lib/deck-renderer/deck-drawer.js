@@ -1,5 +1,5 @@
 // @flow
-import { PolygonLayer, COORDINATE_SYSTEM } from 'deck.gl';
+import { PolygonLayer } from '@deck.gl/layers';
 import { point, polygon } from '@turf/helpers';
 import turfBbox from '@turf/bbox';
 import turfBboxPolygon from '@turf/bbox-polygon';
@@ -235,7 +235,6 @@ export default class DeckDrawer {
         getLineDashArray: x => POLYGON_DASHES,
         getLineColor: obj => obj.lineColor || [0, 0, 0, 255],
         getFillColor: obj => obj.fillColor || [0, 0, 0, 255],
-        coordinateSystem: COORDINATE_SYSTEM.LNGLAT_EXPERIMENTAL,
         getPolygon: o => o.polygon
       }),
       new PolygonLayer({
@@ -247,7 +246,6 @@ export default class DeckDrawer {
         opacity: 1.0,
         stroked: false,
         pickable: true,
-        coordinateSystem: COORDINATE_SYSTEM.LNGLAT_EXPERIMENTAL,
         getPolygon: o => o.polygon
       })
     ];

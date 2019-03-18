@@ -1,6 +1,7 @@
 // @flow
 /* eslint-env browser */
-import { PolygonLayer, CompositeLayer, COORDINATE_SYSTEM } from 'deck.gl';
+import { CompositeLayer } from '@deck.gl/core';
+import { PolygonLayer } from '@deck.gl/layers';
 import { polygon } from '@turf/helpers';
 import turfBuffer from '@turf/buffer';
 import turfDifference from '@turf/difference';
@@ -137,10 +138,6 @@ export default class SelectionLayer extends CompositeLayer {
       new EditableGeoJsonLayer(
         this.getSubLayerProps({
           id: LAYER_ID_GEOJSON,
-          // TODO: remove this after update to 6.2
-          fp64: false,
-          coordinateSystem: COORDINATE_SYSTEM.LNGLAT_EXPERIMENTAL,
-          //
           pickable: true,
           mode,
           selectedFeatureIndexes: [],
@@ -167,10 +164,6 @@ export default class SelectionLayer extends CompositeLayer {
         new PolygonLayer(
           this.getSubLayerProps({
             id: LAYER_ID_BLOCKER,
-            // TODO: remove this after update to 6.2
-            fp64: false,
-            coordinateSystem: COORDINATE_SYSTEM.LNGLAT_EXPERIMENTAL,
-            //
             pickable: true,
             stroked: false,
             opacity: 1.0,

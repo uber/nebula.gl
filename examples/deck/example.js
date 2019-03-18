@@ -2,7 +2,8 @@
 
 import window from 'global/window';
 import React, { Component } from 'react';
-import DeckGL, { MapView, MapController, COORDINATE_SYSTEM } from 'deck.gl';
+import DeckGL from '@deck.gl/react';
+import { MapView, MapController } from '@deck.gl/core';
 import { StaticMap } from 'react-map-gl';
 import GL from '@luma.gl/constants';
 import circle from '@turf/circle';
@@ -536,10 +537,6 @@ export default class Example extends Component<
       modeHandlers,
       mode,
       modeConfig,
-      // TODO: remove this after update to 6.2
-      fp64: false,
-      coordinateSystem: COORDINATE_SYSTEM.LNGLAT_EXPERIMENTAL,
-      //
       autoHighlight: false,
 
       // Editing callbacks
@@ -646,7 +643,7 @@ export default class Example extends Component<
       <div style={styles.mapContainer}>
         <link href="https://api.mapbox.com/mapbox-gl-js/v0.44.0/mapbox-gl.css" rel="stylesheet" />
         <DeckGL
-          {...viewport}
+          viewState={viewport}
           getCursor={editableGeoJsonLayer.getCursor.bind(editableGeoJsonLayer)}
           layers={layers}
           views={
@@ -658,7 +655,7 @@ export default class Example extends Component<
               }
             })
           }
-          onLayerClick={this._onLayerClick}
+          onClick={this._onLayerClick}
           onViewStateChange={({ viewState }) => this.setState({ viewport: viewState })}
         >
           <StaticMap {...viewport} />

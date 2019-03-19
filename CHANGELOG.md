@@ -4,6 +4,13 @@ _All notable changes to this project will be documented in this file. This proje
 
 <!-- INSERT HERE -->
 
+## [0.10.5](https://github.com/uber/nebula.gl/compare/v0.10.4...v0.10.5) - 2019-03-19
+
+### Changes
+
+* Composite Mode Handler for creating and modifying at the same time (#184)
+* Create @nebula.gl/overlays (#182)
+
 ## [0.10.4](https://github.com/uber/nebula.gl/compare/v0.10.3...v0.10.4) - 2019-03-15
 
 ### Changes

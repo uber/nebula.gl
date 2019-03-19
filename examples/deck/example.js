@@ -6,7 +6,14 @@ import DeckGL, { MapView, MapController, COORDINATE_SYSTEM } from 'deck.gl';
 import { StaticMap } from 'react-map-gl';
 import circle from '@turf/circle';
 
-import { EditableGeoJsonLayer, SelectionLayer, SELECTION_TYPE } from 'nebula.gl';
+import {
+  EditableGeoJsonLayer,
+  SelectionLayer,
+  CompositeModeHandler,
+  ModifyHandler,
+  DrawLineStringHandler,
+  SELECTION_TYPE
+} from 'nebula.gl';
 
 import sampleGeoJson from '../data/sample-geojson.json';
 
@@ -87,6 +94,10 @@ const ALL_MODES = [
       'drawEllipseByBoundingBox',
       'drawEllipseUsing3Points'
     ]
+  },
+  {
+    category: 'Composite',
+    modes: ['drawLineString+modify']
   }
 ];
 
@@ -100,6 +111,16 @@ const POLYGON_DRAWING_MODES = [
   'drawEllipseByBoundingBox',
   'drawEllipseUsing3Points'
 ];
+
+const modeHandlers = Object.assign(
+  {
+    'drawLineString+modify': new CompositeModeHandler([
+      new DrawLineStringHandler(),
+      new ModifyHandler()
+    ])
+  },
+  EditableGeoJsonLayer.defaultProps.modeHandlers
+);
 
 export default class Example extends Component<
   {},
@@ -417,6 +438,7 @@ export default class Example extends Component<
       id: 'geojson',
       data: testFeatures,
       selectedFeatureIndexes,
+      modeHandlers,
       mode,
       modeConfig,
       // TODO: remove this after update to 6.2

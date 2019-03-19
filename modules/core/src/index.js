@@ -22,6 +22,8 @@ export { default as PathMarkerLayer } from './lib/layers/path-marker-layer/path-
 
 // Mode Handlers
 export { ModeHandler } from './lib/mode-handlers/mode-handler.js';
+export { CompositeModeHandler } from './lib/mode-handlers/composite-mode-handler.js';
+
 export { ModifyHandler } from './lib/mode-handlers/modify-handler.js';
 export { DrawPointHandler } from './lib/mode-handlers/draw-point-handler.js';
 export { DrawLineStringHandler } from './lib/mode-handlers/draw-line-string-handler.js';

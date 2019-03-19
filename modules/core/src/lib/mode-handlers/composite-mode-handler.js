@@ -19,7 +19,7 @@ export class CompositeModeHandler extends ModeHandler {
     this.options = options;
   }
 
-  _coalesce<T>(callback: any => T, resultEval: ?(T) => boolean = null): T {
+  _coalesce<T>(callback: ModeHandler => T, resultEval: ?(T) => boolean = null): T {
     let result: T;
 
     for (let i = 0; i < this.handlers.length; i++) {
@@ -55,7 +55,7 @@ export class CompositeModeHandler extends ModeHandler {
   handlePointerMove(event: PointerMoveEvent): { editAction: ?EditAction, cancelMapPan: boolean } {
     return this._coalesce(
       handler => handler.handlePointerMove(event),
-      result => result && result.editAction
+      result => result && Boolean(result.editAction)
     );
   }
 
@@ -72,6 +72,9 @@ export class CompositeModeHandler extends ModeHandler {
   }
 
   getEditHandles(picks?: Array<Object>, groundCoords?: Position): EditHandle[] {
+    // TODO: Combine the handles *BUT* make sure if none of the results have
+    // changed to return the same object so that "editHandles !== this.state.editHandles"
+    // in editable-geojson-layer works.
     return this._coalesce(
       handler => handler.getEditHandles(picks, groundCoords),
       handles => Array.isArray(handles) && handles.length > 0

@@ -198,3 +198,30 @@ For all polygon drawing modes, the following options can be provided in the `mod
   * If `union`, the drawn `Polygon` is unioned with the selected geometry
   * If `difference`, the drawn `Polygon` is subtracted from the selected geometry
   * If `intersection`, the drawn `Polygon` is intersected with the selected geometry
+
+# Composite Mode Handler
+
+Use `CompositeModeHandler` to combine multiple handlers.
+_Not all combinations are guaranteed to work._
+
+## Constructor
+`new CompositeModeHandler(handlers, options = {})`
+
+* `handlers`: `Array<ModeHandler>` Handlers you want to combine. **Order is very important.**
+* `options` (optional): Options to be added later.
+
+
+## Example
+
+```
+const modeHandlers = Object.assign(
+  {
+    'drawLineString+modify': new CompositeModeHandler([
+      new DrawLineStringHandler(),
+      new ModifyHandler()
+    ])
+  },
+  EditableGeoJsonLayer.defaultProps.modeHandlers
+);
+```
+

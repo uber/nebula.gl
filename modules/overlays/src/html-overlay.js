@@ -11,7 +11,7 @@ const styles = {
 };
 
 export default class HtmlOverlay<Props> extends Component<
-  Props & { children: any, viewport: Object },
+  Props & { children: any, viewport: Object, zIndex?: number },
   *
 > {
   // Override this to provide your items
@@ -53,6 +53,9 @@ export default class HtmlOverlay<Props> extends Component<
   }
 
   render() {
+    const { zIndex = 1 } = this.props;
+    const style = Object.assign(({ zIndex }: any), styles.mainContainer);
+
     const renderItems = [];
     this.getItems().forEach(item => {
       const [x, y] = this.getCoords(item.props.coordinates);
@@ -61,6 +64,6 @@ export default class HtmlOverlay<Props> extends Component<
       }
     });
 
-    return <div style={styles.mainContainer}>{renderItems}</div>;
+    return <div style={style}>{renderItems}</div>;
   }
 }

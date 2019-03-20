@@ -6,14 +6,15 @@ If you need clustering see [HtmlClusterOverlay](documentation/api-reference/html
 
 
 ```js
-<Nebula
-  ref={nebula => (this.nebula = nebula || this.nebula)}
-  {...{ layers, viewport }}
->
+<Deck ...>
   <YourNewClass />
-</Nebula>
+</Deck>
 ```
 
+## Properties
+### zIndex
+
+Default is `1`. Set to `0` to move items _under_ deck.gl layer.
 
 ## Methods to override
 ### getItems()

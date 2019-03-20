@@ -1,24 +1,27 @@
 {
-  "name": "nebulagl-website",
-  "version": "0.0.1",
-  "description": "",
+  "description": "A website built with ocular",
+  "license": "MIT",
+  "keywords": [
+    "ocular"
+  ],
   "main": "index.js",
   "scripts": {
-    "start": "ocular start open",
-    "build": "ocular build"
+    "start": "yarn clean && yarn develop",
+    "clean": "rm -rf ./.cache ./public",
+    "develop": "gatsby develop",
+    "build": "gatsby build",
+    "serve": "gatsby serve"
   },
-  "keywords": [],
-  "author": "",
-  "license": "MIT",
   "dependencies": {
-    "@deck.gl/core": "6.0.3",
-    "@deck.gl/experimental-layers": "6.0.3",
-    "@deck.gl/layers": "6.0.3",
-    "@deck.gl/react": "6.0.3",
-    "deck.gl": "6.0.3",
-    "nebula.gl": "0.6.0",
-    "nebula.gl-react": "0.6.0",
-    "ocular": "0.6.1",
-    "react-map-gl": "^3.2.7"
+    "@deck.gl/react": "^6.4.7",
+    "deck.gl": "^6.4.7",
+    "math.gl": "^2.3.1",
+    "noise3d": "^1.0.0",
+    "react-map-gl": "^4.1.1"
+  },
+  "devDependencies": {
+    "gatsby": "2.1.38",
+    "ocular-gatsby": "1.0.0-alpha.12",
+    "sharp": "0.21.1"
   }
 }

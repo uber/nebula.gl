@@ -198,7 +198,12 @@ export default class Example extends Component<
       this.setState({
         testFeatures: {
           type: 'FeatureCollection',
-          features: [circle([-122.45, 37.77], 5, { steps: 10000 })]
+          features: [
+            circle([-122.45, 37.81], 4, { steps: 5000 }),
+            circle([-122.33, 37.81], 4, { steps: 5000 }),
+            circle([-122.45, 37.73], 4, { steps: 5000 }),
+            circle([-122.33, 37.73], 4, { steps: 5000 })
+          ]
         },
         selectedFeatureIndexes: []
       });

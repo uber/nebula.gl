@@ -4,9 +4,9 @@ import React, { Component } from 'react';
 import DeckGL, { TextLayer } from 'deck.gl';
 import MapGL from 'react-map-gl';
 
-import { Feature, SegmentsLayer, SELECTION_TYPE } from 'nebula.gl';
+import { NebulaCore, Feature, SegmentsLayer, SELECTION_TYPE } from 'nebula.gl';
 
-import { HtmlTooltipOverlay, Nebula } from 'nebula.gl-react';
+// import { HtmlTooltipOverlay } from '@nebula.gl/overlays';
 
 import testPolygons from '../data/sf-polygons';
 
@@ -62,6 +62,9 @@ export default class Example extends Component<
     this.segmentsLayer.highlightColor = [1, 1, 1, 1];
     this.segmentsLayer.arrowSize = 50;
 
+    this.nebula = new NebulaCore();
+    this.nebula.init({});
+
     this._loadData(
       'https://raw.githubusercontent.com/uber-common/deck.gl-data/master/examples/layer-browser/sfmta.routes.json'
     );
@@ -75,7 +78,7 @@ export default class Example extends Component<
     window.removeEventListener('resize', this._resize);
   }
 
-  nebula: Nebula;
+  nebula: NebulaCore;
   testSegments: Object[];
   segmentsLayer: SegmentsLayer;
 
@@ -198,7 +201,7 @@ export default class Example extends Component<
   render() {
     const { segmentsLayer, state } = this;
     let { viewport } = state;
-    const { selectionType } = state;
+    // const { selectionType } = state;
 
     const { innerHeight: height, innerWidth: width } = window;
     viewport = Object.assign(viewport, { height, width });
@@ -227,22 +230,7 @@ export default class Example extends Component<
     //   pointHighlightColor: [0xff, 0xff, 0xff, 0xff]
     // });
 
-    const textLayer = new TextLayer({
-      id: 'text-layer',
-      data: [
-        {
-          text: 'This DeckGL layer is rendered inside NebulaGL :-)',
-          position: [-122.4, 37.7]
-        }
-      ]
-    });
-    const nebulaLayers = [segmentsLayer];
-    const deckLayers = [textLayer];
-
-    return (
-      <div style={styles.mapContainer}>
-        <link href="https://api.mapbox.com/mapbox-gl-js/v0.44.0/mapbox-gl.css" rel="stylesheet" />
-        <MapGL {...viewport} onChangeViewport={this._onChangeViewport}>
+    /*
           <Nebula
             ref={nebula => (this.nebula = nebula || this.nebula)}
             viewport={viewport}
@@ -253,6 +241,25 @@ export default class Example extends Component<
           >
             <HtmlTooltipOverlay />
           </Nebula>
+*/
+
+    const textLayer = new TextLayer({
+      id: 'text-layer',
+      data: [
+        {
+          text: 'Text Layer :-)',
+          position: [-122.4, 37.7]
+        }
+      ]
+    });
+    const nebulaLayers = [segmentsLayer];
+    const deckLayers = this.nebula.updateAndGetRenderedLayers(nebulaLayers, viewport, this);
+    deckLayers.push(textLayer);
+
+    return (
+      <div style={styles.mapContainer}>
+        <link href="https://api.mapbox.com/mapbox-gl-js/v0.44.0/mapbox-gl.css" rel="stylesheet" />
+        <MapGL {...viewport} onChangeViewport={this._onChangeViewport}>
           <DeckGL {...viewport} onLayerClick={this._onLayerClick} layers={deckLayers} />
         </MapGL>
 

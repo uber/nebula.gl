@@ -1,7 +1,7 @@
 // @flow
 /* eslint-env jest */
 
-import { ImmutableFeatureCollection } from '../../lib/immutable-feature-collection';
+import { ImmutableFeatureCollection } from '../../src/immutable-feature-collection';
 
 let pointFeature;
 let lineStringFeature;

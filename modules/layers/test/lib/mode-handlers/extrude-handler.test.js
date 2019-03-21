@@ -1,12 +1,12 @@
 // @flow
 /* eslint-env jest */
 
-import { ExtrudeHandler } from '../../../lib/mode-handlers/extrude-handler';
+import { ExtrudeHandler } from '../../../src/mode-handlers/extrude-handler';
 import type {
   PointerMoveEvent,
   StartDraggingEvent,
   StopDraggingEvent
-} from '../../../lib/event-types.js';
+} from '../../../src/event-types.js';
 
 let polygonFeature2;
 let polygonFeature;

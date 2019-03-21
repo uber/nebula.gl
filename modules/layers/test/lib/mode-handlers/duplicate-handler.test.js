@@ -1,6 +1,6 @@
 // @flow
-import { DuplicateHandler } from '../../../lib/mode-handlers/duplicate-handler';
-import type { FeatureCollection } from '../../../geojson-types.js';
+import { DuplicateHandler } from '../../../src/mode-handlers/duplicate-handler';
+import type { FeatureCollection } from '../../../src/geojson-types.js';
 import {
   FeatureType,
   createFeatureCollection,

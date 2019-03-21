@@ -1,6 +1,6 @@
 // @flow
 
-import type { Position, LineString } from '../../geojson-types.js';
+import type { Position, LineString } from '../geojson-types.js';
 import type { ClickEvent, PointerMoveEvent } from '../event-types.js';
 import type { EditAction } from './mode-handler.js';
 import { ModeHandler } from './mode-handler.js';

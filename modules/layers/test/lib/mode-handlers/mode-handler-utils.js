@@ -1,5 +1,5 @@
 // @flow
-import type { FeatureCollection } from '../../../geojson-types.js';
+import type { FeatureCollection } from '../../../src/geojson-types.js';
 
 import {
   createPointerDragEvent,

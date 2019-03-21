@@ -1,6 +1,6 @@
 // @flow
-import { ScaleHandler } from '../../../lib/mode-handlers/scale-handler';
-import type { FeatureCollection } from '../../../geojson-types.js';
+import { ScaleHandler } from '../../../src/mode-handlers/scale-handler';
+import type { FeatureCollection } from '../../../src/geojson-types.js';
 import { FeatureType, createFeatureCollection } from '../test-utils.js';
 
 import {

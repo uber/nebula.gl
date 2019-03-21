@@ -2,14 +2,14 @@
 /* eslint-env jest */
 
 import turfArea from '@turf/area';
-import type { Feature, FeatureCollection } from '../../../geojson-types.js';
-import { DrawRectangleHandler } from '../../../lib/mode-handlers/draw-rectangle-handler.js';
+import type { Feature, FeatureCollection } from '../../../src/geojson-types.js';
+import { DrawRectangleHandler } from '../../../src/mode-handlers/draw-rectangle-handler.js';
 import {
   createFeatureCollection,
   createClickEvent,
   createPointerMoveEvent
 } from '../test-utils.js';
-import type { EditAction } from '../../../lib/mode-handlers/mode-handler.js';
+import type { EditAction } from '../../../src/mode-handlers/mode-handler.js';
 
 let featureCollection: FeatureCollection;
 let polygonFeature: Feature;

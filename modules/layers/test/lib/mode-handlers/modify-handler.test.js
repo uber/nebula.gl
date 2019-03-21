@@ -1,7 +1,7 @@
 // @flow
 /* eslint-env jest */
 
-import { ModifyHandler } from '../../../lib/mode-handlers/modify-handler.js';
+import { ModifyHandler } from '../../../src/mode-handlers/modify-handler.js';
 
 let pointFeature;
 let lineStringFeature;

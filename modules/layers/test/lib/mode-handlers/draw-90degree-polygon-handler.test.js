@@ -1,8 +1,8 @@
 // @flow
 /* eslint-env jest */
 
-import type { FeatureCollection } from '../../../geojson-types.js';
-import { Draw90DegreePolygonHandler } from '../../../lib/mode-handlers/draw-90degree-polygon-handler';
+import type { FeatureCollection } from '../../../src/geojson-types.js';
+import { Draw90DegreePolygonHandler } from '../../../src/mode-handlers/draw-90degree-polygon-handler';
 
 import {
   createFeatureCollection,

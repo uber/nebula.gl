@@ -4,13 +4,7 @@ import turfUnion from '@turf/union';
 import turfDifference from '@turf/difference';
 import turfIntersect from '@turf/intersect';
 
-import type {
-  FeatureCollection,
-  Feature,
-  Polygon,
-  Geometry,
-  Position
-} from '../../geojson-types.js';
+import type { FeatureCollection, Feature, Polygon, Geometry, Position } from '../geojson-types.js';
 import type {
   ClickEvent,
   PointerMoveEvent,

@@ -1,8 +1,8 @@
 // @flow
 /* eslint-env jest */
 
-import type { Position } from '../../geojson-types.js';
-import type { ClickEvent, PointerMoveEvent, StopDraggingEvent } from '../../lib/event-types.js';
+import type { Position } from '../../src/geojson-types.js';
+import type { ClickEvent, PointerMoveEvent, StopDraggingEvent } from '../../src/event-types.js';
 
 export const FeatureType = {
   POINT: 'Point',

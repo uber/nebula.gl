@@ -1,5 +1,5 @@
 // @flow
-import type { Position } from '../geojson-types.js';
+import type { Position } from './geojson-types.js';
 
 export type DeckGLPick = {
   index: number,

@@ -1,7 +1,7 @@
 // @flow
 /* eslint-env jest */
 
-import { ModeHandler } from '../../../lib/mode-handlers/mode-handler.js';
+import { ModeHandler } from '../../../src/mode-handlers/mode-handler.js';
 
 let pointFeature;
 let lineStringFeature;

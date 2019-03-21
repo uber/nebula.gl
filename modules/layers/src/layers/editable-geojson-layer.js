@@ -23,7 +23,7 @@ import { DrawEllipseByBoundingBoxHandler } from '../mode-handlers/draw-ellipse-b
 import { DrawEllipseUsingThreePointsHandler } from '../mode-handlers/draw-ellipse-using-three-points-handler.js';
 
 import type { EditAction } from '../mode-handlers/mode-handler.js';
-import type { Position } from '../../geojson-types.js';
+import type { Position } from '../geojson-types.js';
 import type {
   ClickEvent,
   StartDraggingEvent,

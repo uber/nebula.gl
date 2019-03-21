@@ -5,9 +5,13 @@ import { polygon } from '@turf/helpers';
 import turfBuffer from '@turf/buffer';
 import turfDifference from '@turf/difference';
 
-import { SELECTION_TYPE } from '../deck-renderer/deck-drawer';
-
 import EditableGeoJsonLayer from './editable-geojson-layer';
+
+export const SELECTION_TYPE = {
+  NONE: null,
+  RECTANGLE: 'rectangle',
+  POLYGON: 'polygon'
+};
 
 const defaultProps = {
   selectionType: SELECTION_TYPE.RECTANGLE,

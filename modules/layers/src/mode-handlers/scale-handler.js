@@ -3,7 +3,7 @@
 import turfCentroid from '@turf/centroid';
 import turfDistance from '@turf/distance';
 import turfTransformScale from '@turf/transform-scale';
-import type { FeatureCollection, Position } from '../../geojson-types.js';
+import type { FeatureCollection, Position } from '../geojson-types.js';
 import type { PointerMoveEvent, StartDraggingEvent, StopDraggingEvent } from '../event-types.js';
 import type { EditAction } from './mode-handler.js';
 import { ModeHandler } from './mode-handler.js';

@@ -1,7 +1,7 @@
 // @flow
 /* eslint-env jest */
-import { SplitPolygonHandler } from '../../../lib/mode-handlers/split-polygon-handler.js';
-import type { EditAction } from '../../../lib/mode-handlers/mode-handler.js';
+import { SplitPolygonHandler } from '../../../src/mode-handlers/split-polygon-handler.js';
+import type { EditAction } from '../../../src/mode-handlers/mode-handler.js';
 import {
   createFeatureCollection,
   createMultiPolygonFeature,

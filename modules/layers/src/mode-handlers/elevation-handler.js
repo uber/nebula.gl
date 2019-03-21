@@ -1,6 +1,6 @@
 // @flow
 import type { PointerMoveEvent, StopDraggingEvent } from '../event-types.js';
-import type { Position } from '../../geojson-types.js';
+import type { Position } from '../geojson-types.js';
 import type { EditAction } from './mode-handler.js';
 import { getPickedEditHandle } from './mode-handler.js';
 import { ModifyHandler } from './modify-handler.js';

@@ -7,7 +7,7 @@ import turfDistance from '@turf/distance';
 import { point, lineString } from '@turf/helpers';
 import { generatePointsParallelToLinePoints } from '../utils';
 import type { ClickEvent, PointerMoveEvent } from '../event-types.js';
-import type { Polygon, Position } from '../../geojson-types.js';
+import type { Polygon, Position } from '../geojson-types.js';
 import type { EditAction, EditHandle } from './mode-handler.js';
 import { ModeHandler, getPickedEditHandle, getEditHandlesForGeometry } from './mode-handler.js';
 

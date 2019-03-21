@@ -1,7 +1,7 @@
 // @flow
 
 import { generatePointsParallelToLinePoints } from '../utils';
-import type { LineString } from '../../geojson-types.js';
+import type { LineString } from '../geojson-types.js';
 import type { PointerMoveEvent } from '../event-types.js';
 import type { EditAction } from './mode-handler.js';
 import { ThreeClickPolygonHandler } from './three-click-polygon-handler.js';

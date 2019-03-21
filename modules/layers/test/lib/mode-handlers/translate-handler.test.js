@@ -1,6 +1,6 @@
 // @flow
-import { TranslateHandler } from '../../../lib/mode-handlers/translate-handler';
-import type { FeatureCollection } from '../../../geojson-types.js';
+import { TranslateHandler } from '../../../src/mode-handlers/translate-handler';
+import type { FeatureCollection } from '../../../src/geojson-types.js';
 import { createFeatureCollection } from '../test-utils.js';
 
 import {

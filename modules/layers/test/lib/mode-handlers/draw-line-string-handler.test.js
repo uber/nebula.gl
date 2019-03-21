@@ -1,8 +1,8 @@
 // @flow
 /* eslint-env jest */
 
-import type { Feature, FeatureCollection } from '../../../geojson-types.js';
-import { DrawLineStringHandler } from '../../../lib/mode-handlers/draw-line-string-handler.js';
+import type { Feature, FeatureCollection } from '../../../src/geojson-types.js';
+import { DrawLineStringHandler } from '../../../src/mode-handlers/draw-line-string-handler.js';
 import {
   createFeatureCollection,
   createClickEvent,

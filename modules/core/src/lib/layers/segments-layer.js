@@ -1,13 +1,11 @@
 // @flow
-import { COORDINATE_SYSTEM } from 'deck.gl';
+import PathMarkerLayer from '@nebula.gl/layers';
 import { MAX } from 'luma.gl/constants';
 
 import { ArrowStyles, DEFAULT_STYLE, MAX_ARROWS } from '../style';
 import NebulaLayer from '../nebula-layer';
 import { toDeckColor } from '../utils';
 import DeckCache from '../deck-renderer/deck-cache';
-
-import PathMarkerLayer from './path-marker-layer/path-marker-layer';
 
 const NEBULA_TO_DECK_DIRECTIONS = {
   [ArrowStyles.NONE]: { forward: false, backward: false },
@@ -94,7 +92,6 @@ export default class SegmentsLayer extends NebulaLayer {
       getDirection: nf => NEBULA_TO_DECK_DIRECTIONS[nf.style.arrowStyle],
       getMarkerColor: nf => toDeckColor(nf.style.arrowColor, defaultColor),
       getMarkerPercentages: this._calcMarkerPercentages,
-      coordinateSystem: COORDINATE_SYSTEM.LNGLAT_EXPERIMENTAL,
       updateTriggers: { all: updateTrigger },
 
       highlightedObjectIndex: this._getHighlightedObjectIndex({ nebula }),

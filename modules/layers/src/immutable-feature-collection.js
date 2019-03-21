@@ -9,7 +9,7 @@ import type {
   MultiPolygon,
   Position,
   PolygonCoordinates
-} from '../geojson-types.js';
+} from './geojson-types.js';
 
 export class ImmutableFeatureCollection {
   featureCollection: FeatureCollection;

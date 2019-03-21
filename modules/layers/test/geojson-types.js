@@ -12,7 +12,7 @@ import type {
   Position,
   Feature,
   FeatureOf
-} from '../geojson-types.js';
+} from '../src/geojson-types.js';
 
 let point: Point = {
   type: 'Point',

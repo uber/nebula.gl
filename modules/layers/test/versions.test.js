@@ -8,7 +8,7 @@ const NEBULA_GL_DEP = 'nebula.gl';
 it(`Verify all ${PACKAGE} have the same version`, () => {
   let version = null;
 
-  const modules = `${__dirname}/../../../../modules`;
+  const modules = `${__dirname}/../../../modules`;
   readdirSync(modules).forEach(module => {
     const contents = readFileSync(`${modules}/${module}/${PACKAGE}`, 'utf8');
     const json = JSON.parse(contents);

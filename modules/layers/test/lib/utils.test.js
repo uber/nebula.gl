@@ -1,7 +1,7 @@
 import {
   recursivelyTraverseNestedArrays,
   generatePointsParallelToLinePoints
-} from '../../lib/utils';
+} from '../../src/utils';
 
 const Point = {
   type: 'Feature',

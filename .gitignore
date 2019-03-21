@@ -20,3 +20,4 @@ yarn-error.log
 
 # copied as part of a build step
 modules/core/README.md
+modules/layers/README.md

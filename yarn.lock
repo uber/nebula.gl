@@ -1398,10 +1398,10 @@
     call-me-maybe "^1.0.1"
     glob-to-regexp "^0.3.0"
 
-"@nebula.gl/layers@^0.0.1":
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@nebula.gl/layers/-/layers-0.0.1.tgz#873abc90b9cbb1598daf6d62bdb7079a1b8ad30d"
-  integrity sha512-XMq93hGbrBDP67j5n+3jxL8GgWZIQOZypkD8/H3V6WE+sQ9LNDcKd+6dPoFkLuTQlneNaBiQUzGzKXkuAW3hdg==
+"@nebula.gl/layers@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@nebula.gl/layers/-/layers-0.0.2.tgz#d4cc0032ea9dcdf8edcb569fa2ca6abcc1b43e76"
+  integrity sha512-o6PqzffMLEoLe5BPLGms4Vi2Uy6XdEpqTo9KLbr4dC3UwRRJJpf6gs62iiYZtykNMOtEVvaJE4h/ETSXIswSZg==
   dependencies:
     "@luma.gl/constants" "^7.0.0-alpha.3"
     "@turf/bbox" ">=4.0.0"

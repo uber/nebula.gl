@@ -1,5 +1,5 @@
 // @flow
-import PathMarkerLayer from '@nebula.gl/layers';
+import { PathMarkerLayer } from '@nebula.gl/layers';
 import { MAX } from 'luma.gl/constants';
 
 import { ArrowStyles, DEFAULT_STYLE, MAX_ARROWS } from '../style';

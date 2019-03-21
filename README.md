@@ -1,15 +1,18 @@
 <p align="right">
   <a href="https://npmjs.org/package/nebula.gl">
-    <img src="https://img.shields.io/npm/v/nebula.gl.svg" alt="version" />
+    <img src="https://img.shields.io/npm/v/nebula.gl.svg?label=nebula.gl" alt="version" />
   </a>
-  <a href="https://npmjs.org/package/nebula.gl-react">
-    <img src="https://img.shields.io/npm/v/nebula.gl-react.svg" alt="version" />
+  <a href="https://npmjs.org/package/@nebula.gl/layers">
+    <img src="https://img.shields.io/npm/v/@nebula.gl/layers.svg?label=@nebula.gl/layers" alt="version" />
+  </a>
+  <a href="https://npmjs.org/package/@nebula.gl/overlays">
+    <img src="https://img.shields.io/npm/v/@nebula.gl/overlays.svg?label=@nebula.gl/overlays" alt="version" />
   </a>
   <a href="https://travis-ci.org/uber/nebula.gl">
     <img src="https://img.shields.io/travis/uber/nebula.gl/master.svg" alt="build" />
   </a>
-  <a href="https://npmjs.org/package/nebula.gl">
-    <img src="https://img.shields.io/npm/dm/nebula.gl.svg" alt="downloads" />
+  <a href="https://coveralls.io/github/uber/nebula.gl">
+    <img src="https://img.shields.io/coveralls/github/uber/nebula.gl.svg" alt="coveralls" />
   </a>
 </p>
 

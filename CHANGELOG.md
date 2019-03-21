@@ -4,6 +4,16 @@ _All notable changes to this project will be documented in this file. This proje
 
 <!-- INSERT HERE -->
 
+## [0.11.0](https://github.com/uber/nebula.gl/compare/v0.10.5...v0.11.0) - 2019-03-21
+
+### Changes
+
+* Setup coveralls (#191)
+* Create @nebula.gl/layers (#189)
+* Increase complexity of sample data (#190)
+* Remove @nebula.gl/react (#188)
+* Add zIndex property to html-overlay.js (#187)
+
 ## [0.10.5](https://github.com/uber/nebula.gl/compare/v0.10.4...v0.10.5) - 2019-03-19
 
 ### Changes

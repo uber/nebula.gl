@@ -1,0 +1,24 @@
+{
+  "name": "nebulagl-website",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "ocular start open",
+    "build": "ocular build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@deck.gl/core": "6.0.3",
+    "@deck.gl/experimental-layers": "6.0.3",
+    "@deck.gl/layers": "6.0.3",
+    "@deck.gl/react": "6.0.3",
+    "deck.gl": "6.0.3",
+    "nebula.gl": "0.6.0",
+    "nebula.gl-react": "0.6.0",
+    "ocular": "0.6.1",
+    "react-map-gl": "^3.2.7"
+  }
+}

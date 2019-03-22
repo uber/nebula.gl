@@ -1,0 +1,92 @@
+{
+  "id": "table-of-contents",
+  "chapters": [
+    {
+      "title": "Introduction",
+      "chapters": [
+        {
+          "title": "Overview",
+          "entries": [
+            {
+              "entry": "docs/overview"
+            },
+            {
+              "entry": "docs/whats-new"
+            },
+            {
+              "entry": "docs/roadmap"
+            },
+            {
+              "entry": "docs/FAQ"
+            },
+            {
+              "entry": "docs/upgrade-guide"
+            }
+          ]
+        },
+        {
+          "title": "Get Started",
+          "entries": [
+            {
+              "entry": "docs/get-started/installing.md"
+            },
+            {
+              "entry": "docs/get-started/basic-usage.md"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Developer Guide",
+      "entries": [
+        {
+          "entry": "docs/developer-guide/configuring-nebula.md"
+        },
+        {
+          "entry": "docs/developer-guide/editable-layers.md"
+        },
+        {
+          "entry": "docs/developer-guide/html-overlays.md"
+        }
+      ]
+    },
+    {
+      "title": "API Reference",
+      "entries": [
+        {
+          "entry": "docs/api-reference/layers/editable-geojson-layer.md"
+        },
+        {
+          "entry": "docs/api-reference/layers/selection-layer.md"
+        },
+        {
+          "entry": "docs/api-reference/mode-handlers/overview.md"
+        }
+      ]
+    },
+    {
+      "title": "API Reference (React)",
+      "entries": [
+        {
+          "entry": "docs/api-reference/nebula.md"
+        },
+        {
+          "entry": "docs/api-reference/overlays/html-overlay.md"
+        },
+        {
+          "entry": "docs/api-reference/overlays/html-cluster-overlay.md"
+        },
+        {
+          "entry": "docs/api-reference/overlays/html-tooltip-overlay.md"
+        },
+        {
+          "entry": "docs/api-reference/overlays/html-overlay-item.md"
+        },
+        {
+          "entry": "docs/api-reference/overlays/nebula-overlay.md"
+        }
+      ]
+    }
+  ]
+}

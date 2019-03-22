@@ -26,3 +26,40 @@ it('test HtmlOverlay map center', () => {
   const renderer = Renderer.create(Component);
   expect(renderer.toJSON()).toMatchSnapshot();
 });
+
+it('HtmlOverlay is able to handle a single null child', () => {
+  const children = [null];
+  const layer = new HtmlOverlay();
+  layer.props = {
+    children,
+    viewport: { project: coords => coords }
+  };
+  expect(layer.render()).toMatchSnapshot();
+});
+
+it('HtmlOverlay is able to handle a null child with other valid children', () => {
+  const children = [
+    <HtmlOverlayItem key={1} coordinates={[0, 0, 0]}>
+      Map Center Zero Elevation
+    </HtmlOverlayItem>,
+    <HtmlOverlayItem key={2} coordinates={[0, 0, 50000]}>
+      Map Center 50km Elevation
+    </HtmlOverlayItem>,
+    null
+  ];
+
+  const layer = new HtmlOverlay();
+  layer.props = {
+    children,
+    viewport: { project: coords => coords }
+  };
+  expect(layer.render()).toMatchSnapshot();
+});
+
+it('HtmlOverlay is able to handle no children', () => {
+  const layer = new HtmlOverlay();
+  layer.props = {
+    viewport: { project: coords => coords }
+  };
+  expect(layer.render()).toMatchSnapshot();
+});

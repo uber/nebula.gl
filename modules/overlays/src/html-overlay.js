@@ -57,12 +57,14 @@ export default class HtmlOverlay<Props> extends Component<
     const style = Object.assign(({ zIndex }: any), styles.mainContainer);
 
     const renderItems = [];
-    this.getItems().forEach(item => {
-      const [x, y] = this.getCoords(item.props.coordinates);
-      if (this.inView([x, y])) {
-        renderItems.push(cloneElement(item, { x, y }));
-      }
-    });
+    this.getItems()
+      .filter(Boolean)
+      .forEach(item => {
+        const [x, y] = this.getCoords(item.props.coordinates);
+        if (this.inView([x, y])) {
+          renderItems.push(cloneElement(item, { x, y }));
+        }
+      });
 
     return <div style={style}>{renderItems}</div>;
   }

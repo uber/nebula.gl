@@ -1,8 +1,8 @@
 // @flow
 
 import { point as turfPoint } from '@turf/helpers';
-import type { FeatureCollection } from '../../../geojson-types.js';
-import { SnapHandler } from '../../../lib/mode-handlers/snap-handler.js';
+import type { FeatureCollection } from '../../../src/geojson-types.js';
+import { SnapHandler } from '../../../src/mode-handlers/snap-handler.js';
 
 export function mockFeatureCollectionState(polygon: any) {
   const handler = new SnapHandler(polygon);

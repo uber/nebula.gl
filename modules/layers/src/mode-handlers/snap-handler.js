@@ -9,7 +9,7 @@ import { point as turfPoint } from '@turf/helpers';
 import { coordAll } from '@turf/meta';
 import turfTransformTranslate from '@turf/transform-translate';
 
-import type { Feature, FeatureCollection } from '../../geojson-types.js';
+import type { Feature, FeatureCollection } from '../geojson-types.js';
 import { SortedList, SortType } from '../utils';
 import { ModeHandler } from './mode-handler';
 

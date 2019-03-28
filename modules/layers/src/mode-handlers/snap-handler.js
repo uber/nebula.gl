@@ -6,24 +6,17 @@ import turfCenter from '@turf/center';
 import turfDistance from '@turf/distance';
 import turfEnvelope from '@turf/envelope';
 import { point as turfPoint } from '@turf/helpers';
-import { coordAll } from '@turf/meta';
 import turfTransformTranslate from '@turf/transform-translate';
 
-import type { Feature, FeatureCollection } from '../geojson-types.js';
+import type { FeatureCollection, Position } from '../geojson-types.js';
 import { SortedList, SortType } from '../utils';
-import { ModeHandler } from './mode-handler';
-
-type SnapDetails = {
-  snapDistance: number,
-  selectedSnapPoint: Feature,
-  nonSelectedSnapPoint: Feature,
-  index?: number
-};
+import type { EditHandle } from './mode-handler';
+import { ModeHandler, getEditHandlesForGeometry } from './mode-handler';
 
 export class SnapHandler extends ModeHandler {
-  _renderSnapEditHandles: boolean;
-  _selectedSnapPoint: Feature;
-  _nonSelectedSnapPoint: Feature;
+  _pickedHandle: ?EditHandle;
+  _potentialNonPickedHandle: ?EditHandle;
+  _potentialSnapDistance: number;
   _snapAssociations: number[][];
 
   constructor(featureCollection?: FeatureCollection) {
@@ -31,198 +24,205 @@ export class SnapHandler extends ModeHandler {
     this._snapAssociations = [];
   }
 
-  renderSnapHandles() {
-    this._renderSnapEditHandles = true;
+  setPickedHandle(handle: ?EditHandle) {
+    this._pickedHandle = handle;
   }
 
-  hideSnapHandles() {
-    this._renderSnapEditHandles = false;
+  clearCachedHandles() {
+    this._pickedHandle = null;
+    this._potentialNonPickedHandle = null;
   }
 
-  getSnapEditHandleFromPoint(pointFeature: any) {
-    const { geometry } = pointFeature || {};
-    if (geometry) {
-      return {
-        position: geometry.coordinates,
-        type: 'intermediate',
-        // Dummy values for positionIndexes and featureIndex as these properties are not used
-        positionIndexes: [-1],
-        featureIndex: -1
-      };
+  updatePickedHandlePosition(index: number, updatedGeometry: any) {
+    if (this._pickedHandle) {
+      const { positionIndexes, featureIndex } = this._pickedHandle;
+      if (index >= 0 && featureIndex !== index) return;
+
+      const { coordinates } = updatedGeometry;
+      (this._pickedHandle || {}).position = positionIndexes.reduce(
+        (a: any[], b: number) => a[b],
+        coordinates
+      );
     }
-    return null;
   }
 
-  shouldRenderSnapHandles() {
+  getFeatureFromHandle(handle: ?EditHandle): ?any {
+    if (!handle) return null;
+    const { featureIndex } = handle;
+    const { features } = this.featureCollection.getObject();
+    if (featureIndex >= features.length) {
+      console.warn(`featureCollection features out of range ${featureIndex}`); // eslint-disable-line no-console,no-undef
+      return null;
+    }
+    return features[featureIndex];
+  }
+
+  _getNonPickedIntermediateHandles(): EditHandle[] {
+    const handles = [];
+    const { features } = this.featureCollection.getObject();
+
+    for (let i = 0; i < features.length; i++) {
+      if (!this.getSelectedFeatureIndexes().includes(i) && i < features.length) {
+        const { geometry } = features[i];
+        handles.push(...getEditHandlesForGeometry(geometry, i, 'intermediate'));
+      } else if (i >= features.length) {
+        console.warn(`selectedFeatureIndexes out of range ${i}`); // eslint-disable-line no-console,no-undef
+      }
+    }
+    return handles;
+  }
+
+  // If no snap handle has been picked, only display the edit handles of the
+  // selected feature. If a snap handle has been picked, display said snap handle
+  // along with all snappable points on all non-selected features.
+  getEditHandles(picks?: Array<Object>, groundCoords?: Position): any[] {
     const { enablePolygonSnapping } = this.getModeConfig() || {};
-    return enablePolygonSnapping && this.isSinglePolygonSelected() && this._renderSnapEditHandles;
-  }
+    const handles = [];
+    if (!enablePolygonSnapping) return handles;
 
-  getEditHandles() {
-    if (this.shouldRenderSnapHandles()) {
-      return [
-        this.getSnapEditHandleFromPoint(this._selectedSnapPoint),
-        this.getSnapEditHandleFromPoint(this._nonSelectedSnapPoint)
-      ].filter(Boolean);
+    if (this._pickedHandle) {
+      handles.push(...this._getNonPickedIntermediateHandles(), this._pickedHandle);
+
+      const nonPickedFeature = this.getFeatureFromHandle(this._potentialNonPickedHandle);
+      if (nonPickedFeature) {
+        handles.push(this._potentialNonPickedHandle);
+      }
+      return handles;
     }
-    return [];
+
+    const { features } = this.featureCollection.getObject();
+    for (const index of this.getSelectedFeatureIndexes()) {
+      if (index < features.length) {
+        const { geometry } = features[index];
+        handles.push(...getEditHandlesForGeometry(geometry, index, 'snap'));
+      } else {
+        console.warn(`selectedFeatureIndexes out of range ${index}`); // eslint-disable-line no-console,no-undef
+      }
+    }
+
+    return handles;
   }
 
   // Get the indexes of polygons closest to the selected feature. The numberToTrack
   // optional parameter dictates how many polygons to track e.g. a numberToTrack = 3
   // will result in the 3 closest polygon indexes being returned by this method. These
   // polygons will be candidates for snapping.
-  getNearestPolygonIndexes(options: ?{ [key: string]: any }) {
+  _getNearestPolygonIndexes(options: ?{ numberOfPolygonsToTrack: number }): any[] {
     let arraySize = 1;
     if (options) {
-      arraySize = options.numberToTrack;
+      arraySize = options.numberOfPolygonsToTrack;
     }
-    const [selectedIndex] = this.getSelectedFeatureIndexes();
+    const selectedIndexes = this.getSelectedFeatureIndexes();
     const minDistanceArray = new SortedList({
       arraySize,
       getValueToCompareFn: val => val.distance,
       sortType: SortType.MIN
     });
 
-    const allFeatures = this.getImmutableFeatureCollection().getObject().features;
-    const selectedCenter = turfCenter(this.getSelectedFeature());
+    const { features } = this.featureCollection.getObject();
+    const selectedFeature = this.getFeatureFromHandle(this._pickedHandle);
 
-    for (let i = 0; i < allFeatures.length; i++) {
-      const currentFeature = allFeatures[i];
-      if (i !== selectedIndex && currentFeature.geometry.type === 'Polygon') {
-        const currentFeatureCenter = turfCenter(currentFeature);
-        const distance = turfDistance(currentFeatureCenter, selectedCenter);
-        minDistanceArray.push({ distance, index: i });
+    if (selectedFeature) {
+      const selectedCenter = turfCenter(selectedFeature);
+
+      for (let i = 0; i < features.length; i++) {
+        const currentFeature = features[i];
+        if (!selectedIndexes.includes(i)) {
+          const currentFeatureCenter = turfCenter(currentFeature);
+          const distance = turfDistance(currentFeatureCenter, selectedCenter);
+          minDistanceArray.push({ distance, index: i });
+        }
       }
     }
     return minDistanceArray.toArray().map(details => details.index);
   }
 
-  isSinglePolygonSelected() {
-    const selectedIndexes = this.getSelectedFeatureIndexes();
-    const selectedFeature = this.getSelectedFeature();
-    if (selectedFeature) {
-      return selectedIndexes.length === 1 && selectedFeature.geometry.type === 'Polygon';
-    }
-    return false;
-  }
-
   // Scale the snapping strength directly proportional to the selected polygon's size
-  getSnapStrengthModifier() {
-    const selectedFeature = this.getSelectedFeature();
-    if (selectedFeature) {
-      // Using @turf/envelope helps normalize the area of different polygon shapes/types
-      // (i.e. polygon with holes, ciruclar polygons, etc.)
-      const envelope = turfEnvelope(selectedFeature);
-      const area = turfArea(envelope.geometry);
-      return Math.pow(area, 0.45) / 2000;
+  getSnapStrengthModifier(): number {
+    if (this._pickedHandle) {
+      const selectedFeature = this.getFeatureFromHandle(this._pickedHandle);
+
+      if (selectedFeature) {
+        // Using @turf/envelope helps normalize the area of different polygon shapes/types
+        // (i.e. polygon with holes, ciruclar polygons, etc.)
+        const envelope = turfEnvelope(selectedFeature);
+        const area = turfArea(envelope.geometry);
+        return Math.pow(area, 0.45) / 2000;
+      }
     }
     return 1;
   }
 
-  hasSelectedBeenSnapped() {
-    const [selectedIndex] = this.getSelectedFeatureIndexes();
-    const snapPoints = this._snapAssociations[selectedIndex];
-    return snapPoints ? snapPoints.length : false;
+  _hasSelectedBeenSnapped(): boolean {
+    const selectedIndexes = this.getSelectedFeatureIndexes();
+    if (!selectedIndexes.length) return false;
+    return selectedIndexes
+      .map(index => this._snapAssociations[index])
+      .some(assoc => assoc && assoc.length);
   }
 
-  shouldPerformSnap() {
-    const { enablePolygonSnapping } = this.getModeConfig() || {};
-    return (
-      enablePolygonSnapping && this.isSinglePolygonSelected() && !this.hasSelectedBeenSnapped()
-    );
-  }
-
-  shouldPerformUnsnap() {
-    return this.isSinglePolygonSelected() && this.hasSelectedBeenSnapped();
-  }
-
-  shouldPerformStandardModeAction() {
-    return !this.isSinglePolygonSelected() || !this.hasSelectedBeenSnapped();
-  }
-
-  _getLocalMinimumDistanceSnap(selectedVertexes: any[], nonSelectedVertexes: any[]): ?SnapDetails {
-    let minSnapDistance = Number.MAX_VALUE;
-    let snapDetails;
-
-    for (const selectedVertex of selectedVertexes) {
-      for (const nonSelectedVertex of nonSelectedVertexes) {
-        const vertexDistance = turfDistance(selectedVertex, nonSelectedVertex);
-        if (vertexDistance < minSnapDistance) {
-          minSnapDistance = vertexDistance;
-
-          snapDetails = {
-            snapDistance: vertexDistance,
-            selectedSnapPoint: selectedVertex,
-            nonSelectedSnapPoint: nonSelectedVertex
-          };
-        }
-      }
+  _areAllSnapAssociatesSelected() {
+    const selectedIndexes = this.getSelectedFeatureIndexes();
+    if (!selectedIndexes.length) {
+      return true;
     }
-    return snapDetails;
+    return selectedIndexes
+      .map(index => this.getSnapAssociates(index))
+      .every(indexes => indexes.every(index => selectedIndexes.includes(index)));
   }
 
-  // Calculates the closest vertexes from both the selected polygon and
-  // the non-selected polygon candidates passed in through polygonIndexes
-  // method paramter.
-  getSnapDetailsFromCandidates(polygonIndexes: number[]) {
-    const selectedPolyon = this.getSelectedFeature();
-    const selectedVertexes = coordAll(selectedPolyon).map(turfPoint);
+  _isNonPickedAlreadySnappedToPicked() {
+    if (this._pickedHandle && this._potentialNonPickedHandle) {
+      const { featureIndex: nonPickedIndex } = this._potentialNonPickedHandle;
 
-    let minSnapDistance = Number.MAX_VALUE;
-    let snapDetails;
+      const { featureIndex: pickedIndex } = this._pickedHandle || {};
+      const snapAssociates = this.getSnapAssociates(pickedIndex);
+      return snapAssociates.includes(nonPickedIndex);
+    }
+    return false;
+  }
 
-    const { features } = this.getFeatureCollection();
+  shouldPerformSnap(): boolean {
+    const { enablePolygonSnapping } = this.getModeConfig() || {};
+    if (enablePolygonSnapping) {
+      this._cacheClosestNonPickedHandle({ numberOfPolygonsToTrack: 100 });
+      return !this._isNonPickedAlreadySnappedToPicked();
+    }
+    return false;
+  }
 
-    for (const index of polygonIndexes) {
-      const polygon = features[index];
-      const nonSelectedVertexes = coordAll(polygon).map(turfPoint);
+  shouldPerformUnsnap(): boolean {
+    return this._hasSelectedBeenSnapped() && !this._areAllSnapAssociatesSelected();
+  }
 
-      const localMinDistanceSnap = this._getLocalMinimumDistanceSnap(
-        selectedVertexes,
-        nonSelectedVertexes
+  shouldPerformStandardModeAction(): boolean {
+    return !this._hasSelectedBeenSnapped() || this._areAllSnapAssociatesSelected();
+  }
+
+  _cacheClosestNonPickedHandle(options?: { numberOfPolygonsToTrack: number }) {
+    if (!this._pickedHandle) return;
+    const nonPickedHandles = this._getNonPickedIntermediateHandles();
+
+    // Calculate the closest handle from non-selected features to the picked handle
+    let minDistance = Number.MAX_VALUE;
+    let nearestNonPickedHandle;
+    for (const handle of nonPickedHandles) {
+      const distance = turfDistance(
+        this._pickedHandle && this._pickedHandle.position,
+        handle.position
       );
 
-      const { snapDistance } = localMinDistanceSnap || {};
-      if (snapDistance < minSnapDistance) {
-        minSnapDistance = snapDistance;
-        snapDetails = { ...localMinDistanceSnap, index };
+      if (distance < minDistance) {
+        minDistance = distance;
+        nearestNonPickedHandle = handle;
       }
     }
 
-    const { selectedSnapPoint, nonSelectedSnapPoint } = snapDetails || {};
-    // Cache snap points for edit handle rendering
-    this._selectedSnapPoint = selectedSnapPoint;
-    this._nonSelectedSnapPoint = nonSelectedSnapPoint;
-    return snapDetails;
-  }
-
-  // Calculate the final post-snap position of the selected polygon
-  calculateSnapMove(snapDetails: Object, snapStrength: number) {
-    if (snapDetails) {
-      const { nonSelectedSnapPoint, selectedSnapPoint, snapDistance, index } = snapDetails;
-      const snapStrengthModifier = this.getSnapStrengthModifier();
-
-      if (snapDistance <= snapStrength * snapStrengthModifier) {
-        const [selectedIndex] = this.getSelectedFeatureIndexes();
-        const selectedFeature = this.getSelectedFeature();
-
-        const snapBearing = turfBearing(selectedSnapPoint, nonSelectedSnapPoint);
-        const movedPolygon = turfTransformTranslate(selectedFeature, snapDistance, snapBearing);
-        this.cacheSnapAssociates(index, selectedIndex);
-
-        // Post snap, both _selectedSnapPoint and _nonSelectedSnapPoint will equal
-        // to nonSelectedSnapPoint
-        this._selectedSnapPoint = nonSelectedSnapPoint;
-        this._nonSelectedSnapPoint = nonSelectedSnapPoint;
-
-        return {
-          movedPolygon,
-          selectedIndex
-        };
-      }
+    // Store the closest non-picked handle and the distance from the picked handle
+    if (nearestNonPickedHandle) {
+      this._potentialNonPickedHandle = nearestNonPickedHandle;
     }
-    return null;
+    this._potentialSnapDistance = minDistance;
   }
 
   // Cache the indexes of the polygons that have participated in a snap
@@ -240,26 +240,65 @@ export class SnapHandler extends ModeHandler {
     this._snapAssociations[partnerIndex].push(index);
   }
 
-  getSnapAssociates(index: number) {
+  getSnapAssociates(index: number): number[] {
     return this._snapAssociations[index] || [];
   }
 
   // Clear all snap associations from the specified index
-  clearSnapAssociates(index: number) {
+  clearSnapAssociates(index: number, associateIndex: number) {
     const snapPartnerIndexes = this._snapAssociations[index];
     if (!snapPartnerIndexes || !snapPartnerIndexes.length) return;
 
-    // Clear the specified index from all associated partners
-    for (const partnerIndex of snapPartnerIndexes) {
-      const associatesOfPartner = this._snapAssociations[partnerIndex];
-      if (associatesOfPartner) {
-        this._snapAssociations[partnerIndex] = associatesOfPartner.filter(i => i !== index);
+    const associatePartnerIndexes = this._snapAssociations[associateIndex];
+    if (!associatePartnerIndexes || !associatePartnerIndexes.length) return;
+
+    this._snapAssociations[index] = snapPartnerIndexes.filter(i => i !== associateIndex);
+    this._snapAssociations[associateIndex] = associatePartnerIndexes.filter(i => i !== index);
+  }
+
+  calculateSnapIfWithinThreshold(
+    snapStrength: number
+  ): ?({ movedFeature: any, selectedIndex: number }[]) {
+    if (this._pickedHandle) {
+      const modifiedSnapStrength = snapStrength * this.getSnapStrengthModifier();
+
+      if (this._potentialSnapDistance <= modifiedSnapStrength && this._potentialNonPickedHandle) {
+        const selectedFeatures = this.getSelectedFeaturesAsFeatureCollection();
+        const selectedIndexes = this.getSelectedFeatureIndexes();
+
+        const { position: pickedPosition } = this._pickedHandle || {};
+        const { position: nonPickedPosition, featureIndex: nonPickedFeatureIndex } =
+          this._potentialNonPickedHandle || {};
+
+        // Calculate the post-snap position of the selected feature(s)
+        const pickedHandlePoint = turfPoint(pickedPosition);
+        const potentialSnapPoint = turfPoint(nonPickedPosition);
+        const snapBearing = turfBearing(pickedHandlePoint, potentialSnapPoint);
+
+        const movedFeatures = turfTransformTranslate(
+          selectedFeatures,
+          this._potentialSnapDistance,
+          snapBearing
+        );
+
+        const postSnapPositions = [];
+
+        for (let i = 0; i < selectedIndexes.length; i++) {
+          const selectedIndex = selectedIndexes[i];
+          const movedFeature = movedFeatures.features[i];
+          postSnapPositions.push({
+            movedFeature,
+            selectedIndex
+          });
+        }
+
+        const { featureIndex: selectedIndex } = this._pickedHandle || {};
+        this.cacheSnapAssociates(selectedIndex, nonPickedFeatureIndex);
+
+        return postSnapPositions;
       }
     }
 
-    // Clear all associations from index
-    if (this._snapAssociations[index]) {
-      this._snapAssociations[index] = [];
-    }
+    return null;
   }
 }

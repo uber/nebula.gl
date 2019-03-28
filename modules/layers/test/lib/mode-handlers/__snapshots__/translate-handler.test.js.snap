@@ -1,0 +1,828 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`translate-handler specific functions calculateDistanceAndDirection() 1`] = `
+Object {
+  "direction": -9.885464830954206,
+  "distanceMoved": 9724.92501810167,
+}
+`;
+
+exports[`translate-handler specific functions getTranslateAction() 1`] = `
+Object {
+  "editContext": null,
+  "editType": "test-edit",
+  "featureIndexes": Array [
+    0,
+  ],
+  "updatedData": Object {
+    "features": Array [
+      Object {
+        "geometry": Object {
+          "coordinates": Array [
+            Array [
+              Array [
+                -127.11509550096605,
+                55.852345878852674,
+              ],
+              Array [
+                -127.06276731340756,
+                55.852345878852674,
+              ],
+              Array [
+                -127.08892433247462,
+                55.90153707629159,
+              ],
+              Array [
+                -127.14125252003316,
+                55.90153707629159,
+              ],
+              Array [
+                -127.11509550096605,
+                55.852345878852674,
+              ],
+            ],
+          ],
+          "type": "Polygon",
+        },
+        "properties": Object {},
+        "type": "Feature",
+      },
+      Object {
+        "geometry": Object {
+          "coordinates": Array [
+            Array [
+              Array [
+                -122.40814940182412,
+                37.97528325161274,
+              ],
+              Array [
+                -122.37737022011595,
+                37.97528325161274,
+              ],
+              Array [
+                -122.37737142575622,
+                37.952934704562644,
+              ],
+              Array [
+                -122.40815060746439,
+                37.952934704562644,
+              ],
+              Array [
+                -122.40814940182412,
+                37.97528325161274,
+              ],
+            ],
+          ],
+          "type": "Polygon",
+        },
+        "properties": Object {},
+        "type": "Feature",
+      },
+      Object {
+        "geometry": Object {
+          "coordinates": Array [
+            -122.28103267622373,
+            37.98843664327903,
+          ],
+          "type": "Point",
+        },
+        "properties": Object {},
+        "type": "Feature",
+      },
+      Object {
+        "geometry": Object {
+          "coordinates": Array [
+            Array [
+              Array [
+                -122.40908525092362,
+                37.85902221692065,
+              ],
+              Array [
+                -122.34432261530361,
+                37.85902221692065,
+              ],
+              Array [
+                -122.3442469760231,
+                37.8157115979288,
+              ],
+              Array [
+                -122.40900961164311,
+                37.8157115979288,
+              ],
+              Array [
+                -122.40908525092362,
+                37.85902221692065,
+              ],
+            ],
+          ],
+          "type": "Polygon",
+        },
+        "properties": Object {},
+        "type": "Feature",
+      },
+      Object {
+        "geometry": Object {
+          "coordinates": Array [
+            Array [
+              Array [
+                -122.40682264287454,
+                38.13330760982133,
+              ],
+              Array [
+                -122.34143228624993,
+                38.13330760982133,
+              ],
+              Array [
+                -122.34144710122638,
+                38.08906337516829,
+              ],
+              Array [
+                -122.40683745785105,
+                38.08906337516829,
+              ],
+              Array [
+                -122.40682264287454,
+                38.13330760982133,
+              ],
+            ],
+          ],
+          "type": "Polygon",
+        },
+        "properties": Object {},
+        "type": "Feature",
+      },
+    ],
+    "type": "FeatureCollection",
+  },
+}
+`;
+
+exports[`translate-handler specific functions performSnap() 1`] = `
+TranslateHandler {
+  "_clickSequence": Array [],
+  "_context": undefined,
+  "_geometryBeforeTranslate": undefined,
+  "_isTranslatable": undefined,
+  "_modeConfig": Object {
+    "enablePolygonSnapping": true,
+  },
+  "_pickedHandle": Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.40814192776702,
+      37.97531507849716,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "snap",
+  },
+  "_potentialNonPickedHandle": Object {
+    "featureIndex": 1,
+    "position": Array [
+      -122.40814940182412,
+      37.97528325161274,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "intermediate",
+  },
+  "_potentialSnapDistance": 7.728100362611004,
+  "_selectedFeatureIndexes": Array [
+    0,
+  ],
+  "_snapAssociations": Array [
+    Array [
+      1,
+    ],
+    Array [
+      0,
+    ],
+  ],
+  "_tentativeFeature": null,
+  "_unsnapMousePointStart": Array [
+    -122.49485401280788,
+    37.987923255302974,
+  ],
+  "_updatedData": ImmutableFeatureCollection {
+    "featureCollection": Object {
+      "features": Array [
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  -122.40814192776702,
+                  37.97531507849716,
+                ],
+                Array [
+                  -122.35581374020853,
+                  37.97531507849716,
+                ],
+                Array [
+                  -122.35587444851501,
+                  37.92612388105825,
+                ],
+                Array [
+                  -122.40820263607355,
+                  37.92612388105825,
+                ],
+                Array [
+                  -122.40814192776702,
+                  37.97531507849716,
+                ],
+              ],
+            ],
+            "type": "Polygon",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  -122.40814940182412,
+                  37.97528325161274,
+                ],
+                Array [
+                  -122.37737022011595,
+                  37.97528325161274,
+                ],
+                Array [
+                  -122.37737142575622,
+                  37.952934704562644,
+                ],
+                Array [
+                  -122.40815060746439,
+                  37.952934704562644,
+                ],
+                Array [
+                  -122.40814940182412,
+                  37.97528325161274,
+                ],
+              ],
+            ],
+            "type": "Polygon",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              -122.28103267622373,
+              37.98843664327903,
+            ],
+            "type": "Point",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  -122.40908525092362,
+                  37.85902221692065,
+                ],
+                Array [
+                  -122.34432261530361,
+                  37.85902221692065,
+                ],
+                Array [
+                  -122.3442469760231,
+                  37.8157115979288,
+                ],
+                Array [
+                  -122.40900961164311,
+                  37.8157115979288,
+                ],
+                Array [
+                  -122.40908525092362,
+                  37.85902221692065,
+                ],
+              ],
+            ],
+            "type": "Polygon",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  -122.40682264287454,
+                  38.13330760982133,
+                ],
+                Array [
+                  -122.34143228624993,
+                  38.13330760982133,
+                ],
+                Array [
+                  -122.34144710122638,
+                  38.08906337516829,
+                ],
+                Array [
+                  -122.40683745785105,
+                  38.08906337516829,
+                ],
+                Array [
+                  -122.40682264287454,
+                  38.13330760982133,
+                ],
+              ],
+            ],
+            "type": "Polygon",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+      ],
+      "type": "FeatureCollection",
+    },
+  },
+  "featureCollection": ImmutableFeatureCollection {
+    "featureCollection": Object {
+      "features": Array [
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  -122.49485401280788,
+                  37.987923255302974,
+                ],
+                Array [
+                  -122.44252582524939,
+                  37.987923255302974,
+                ],
+                Array [
+                  -122.44252847887157,
+                  37.93873205786406,
+                ],
+                Array [
+                  -122.49485666643005,
+                  37.93873205786406,
+                ],
+                Array [
+                  -122.49485401280788,
+                  37.987923255302974,
+                ],
+              ],
+            ],
+            "type": "Polygon",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  -122.40814940182412,
+                  37.97528325161274,
+                ],
+                Array [
+                  -122.37737022011595,
+                  37.97528325161274,
+                ],
+                Array [
+                  -122.37737142575622,
+                  37.952934704562644,
+                ],
+                Array [
+                  -122.40815060746439,
+                  37.952934704562644,
+                ],
+                Array [
+                  -122.40814940182412,
+                  37.97528325161274,
+                ],
+              ],
+            ],
+            "type": "Polygon",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              -122.28103267622373,
+              37.98843664327903,
+            ],
+            "type": "Point",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  -122.40908525092362,
+                  37.85902221692065,
+                ],
+                Array [
+                  -122.34432261530361,
+                  37.85902221692065,
+                ],
+                Array [
+                  -122.3442469760231,
+                  37.8157115979288,
+                ],
+                Array [
+                  -122.40900961164311,
+                  37.8157115979288,
+                ],
+                Array [
+                  -122.40908525092362,
+                  37.85902221692065,
+                ],
+              ],
+            ],
+            "type": "Polygon",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  -122.40682264287454,
+                  38.13330760982133,
+                ],
+                Array [
+                  -122.34143228624993,
+                  38.13330760982133,
+                ],
+                Array [
+                  -122.34144710122638,
+                  38.08906337516829,
+                ],
+                Array [
+                  -122.40683745785105,
+                  38.08906337516829,
+                ],
+                Array [
+                  -122.40682264287454,
+                  38.13330760982133,
+                ],
+              ],
+            ],
+            "type": "Polygon",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+      ],
+      "type": "FeatureCollection",
+    },
+  },
+}
+`;
+
+exports[`translate-handler specific functions performUnsnap() 1`] = `
+TranslateHandler {
+  "_clickSequence": Array [],
+  "_context": undefined,
+  "_geometryBeforeTranslate": undefined,
+  "_isTranslatable": undefined,
+  "_modeConfig": Object {
+    "enablePolygonSnapping": true,
+  },
+  "_pickedHandle": Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.40814192776702,
+      37.97531507849716,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "snap",
+  },
+  "_potentialNonPickedHandle": Object {
+    "featureIndex": 1,
+    "position": Array [
+      -122.37737022011595,
+      37.97528325161274,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "intermediate",
+  },
+  "_potentialSnapDistance": undefined,
+  "_selectedFeatureIndexes": Array [
+    0,
+  ],
+  "_snapAssociations": Array [
+    Array [],
+    Array [],
+  ],
+  "_tentativeFeature": null,
+  "_unsnapMousePointStart": Array [
+    1,
+    1,
+  ],
+  "_updatedData": ImmutableFeatureCollection {
+    "featureCollection": Object {
+      "features": Array [
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  -122.49485401280788,
+                  37.987923255302974,
+                ],
+                Array [
+                  -122.44252582524939,
+                  37.987923255302974,
+                ],
+                Array [
+                  -122.44252847887157,
+                  37.93873205786406,
+                ],
+                Array [
+                  -122.49485666643005,
+                  37.93873205786406,
+                ],
+                Array [
+                  -122.49485401280788,
+                  37.987923255302974,
+                ],
+              ],
+            ],
+            "type": "Polygon",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  -122.40814940182412,
+                  37.97528325161274,
+                ],
+                Array [
+                  -122.37737022011595,
+                  37.97528325161274,
+                ],
+                Array [
+                  -122.37737142575622,
+                  37.952934704562644,
+                ],
+                Array [
+                  -122.40815060746439,
+                  37.952934704562644,
+                ],
+                Array [
+                  -122.40814940182412,
+                  37.97528325161274,
+                ],
+              ],
+            ],
+            "type": "Polygon",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              -122.28103267622373,
+              37.98843664327903,
+            ],
+            "type": "Point",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  -122.40908525092362,
+                  37.85902221692065,
+                ],
+                Array [
+                  -122.34432261530361,
+                  37.85902221692065,
+                ],
+                Array [
+                  -122.3442469760231,
+                  37.8157115979288,
+                ],
+                Array [
+                  -122.40900961164311,
+                  37.8157115979288,
+                ],
+                Array [
+                  -122.40908525092362,
+                  37.85902221692065,
+                ],
+              ],
+            ],
+            "type": "Polygon",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  -122.40682264287454,
+                  38.13330760982133,
+                ],
+                Array [
+                  -122.34143228624993,
+                  38.13330760982133,
+                ],
+                Array [
+                  -122.34144710122638,
+                  38.08906337516829,
+                ],
+                Array [
+                  -122.40683745785105,
+                  38.08906337516829,
+                ],
+                Array [
+                  -122.40682264287454,
+                  38.13330760982133,
+                ],
+              ],
+            ],
+            "type": "Polygon",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+      ],
+      "type": "FeatureCollection",
+    },
+  },
+  "featureCollection": ImmutableFeatureCollection {
+    "featureCollection": Object {
+      "features": Array [
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  -122.49485401280788,
+                  37.987923255302974,
+                ],
+                Array [
+                  -122.44252582524939,
+                  37.987923255302974,
+                ],
+                Array [
+                  -122.44252847887157,
+                  37.93873205786406,
+                ],
+                Array [
+                  -122.49485666643005,
+                  37.93873205786406,
+                ],
+                Array [
+                  -122.49485401280788,
+                  37.987923255302974,
+                ],
+              ],
+            ],
+            "type": "Polygon",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  -122.40814940182412,
+                  37.97528325161274,
+                ],
+                Array [
+                  -122.37737022011595,
+                  37.97528325161274,
+                ],
+                Array [
+                  -122.37737142575622,
+                  37.952934704562644,
+                ],
+                Array [
+                  -122.40815060746439,
+                  37.952934704562644,
+                ],
+                Array [
+                  -122.40814940182412,
+                  37.97528325161274,
+                ],
+              ],
+            ],
+            "type": "Polygon",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              -122.28103267622373,
+              37.98843664327903,
+            ],
+            "type": "Point",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  -122.40908525092362,
+                  37.85902221692065,
+                ],
+                Array [
+                  -122.34432261530361,
+                  37.85902221692065,
+                ],
+                Array [
+                  -122.3442469760231,
+                  37.8157115979288,
+                ],
+                Array [
+                  -122.40900961164311,
+                  37.8157115979288,
+                ],
+                Array [
+                  -122.40908525092362,
+                  37.85902221692065,
+                ],
+              ],
+            ],
+            "type": "Polygon",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  -122.40682264287454,
+                  38.13330760982133,
+                ],
+                Array [
+                  -122.34143228624993,
+                  38.13330760982133,
+                ],
+                Array [
+                  -122.34144710122638,
+                  38.08906337516829,
+                ],
+                Array [
+                  -122.40683745785105,
+                  38.08906337516829,
+                ],
+                Array [
+                  -122.40682264287454,
+                  38.13330760982133,
+                ],
+              ],
+            ],
+            "type": "Polygon",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+      ],
+      "type": "FeatureCollection",
+    },
+  },
+}
+`;

@@ -1,6 +1,9 @@
 import {
+  toDeckColor,
   recursivelyTraverseNestedArrays,
-  generatePointsParallelToLinePoints
+  generatePointsParallelToLinePoints,
+  SortType,
+  SortedList
 } from '../../src/utils';
 
 const Point = {
@@ -43,6 +46,20 @@ const MultiPolygon = {
     ]
   }
 };
+
+describe('toDeckColor()', () => {
+  it('toDeckColor() - positive case', () => {
+    const deckColor = toDeckColor([100, 90, 255, 1]);
+    const expectedResult = [25500, 22950, 65025, 255];
+    expect(deckColor).toEqual(expectedResult);
+  });
+
+  it('toDeckColor() - invalid color', () => {
+    const deckColor = toDeckColor(123123);
+    const expectedDefaultDeckColor = [255, 0, 0, 255];
+    expect(deckColor).toEqual(expectedDefaultDeckColor);
+  });
+});
 
 describe('recursivelyTraverseNestedArrays()', () => {
   it('should not call function for point', () => {
@@ -115,5 +132,38 @@ describe('generatePointsParallelToLinePoints()', () => {
     const [p3, p4] = generatePointsParallelToLinePoints(p1, p2, [-124.5, 37.9]);
     expect(p3).toEqual([-123.14819346449626, 36.26988514860277]);
     expect(p4).toEqual([-123.09803547871964, 36.254027457172775]);
+  });
+});
+
+const distanceObjList = [100, 28, 3, 493, 75, 1, 921].map(num => ({ distance: num }));
+
+describe('SortedList', () => {
+  let sortedList;
+
+  beforeEach(() => {
+    sortedList = new SortedList({
+      arraySize: 3,
+      getValueToCompareFn: val => val.distance,
+      sortType: SortType.MIN
+    });
+  });
+
+  it('sort type min', () => {
+    const expectedResult = [{ distance: 1 }, { distance: 3 }, { distance: 28 }];
+    sortedList.fromArray(distanceObjList);
+    sortedList.push({ distance: 138759879 });
+    expect(sortedList._array).toEqual(expectedResult);
+    expect(sortedList.toArray()).toEqual(expectedResult);
+    expect(sortedList.size()).toEqual(3);
+  });
+
+  it('sort type max', () => {
+    sortedList._sortType = 'max';
+    const expectedResult = [{ distance: 138759879 }, { distance: 921 }, { distance: 493 }];
+    sortedList.fromArray(distanceObjList);
+    sortedList.push({ distance: 138759879 });
+    expect(sortedList._array).toEqual(expectedResult);
+    expect(sortedList.toArray()).toEqual(expectedResult);
+    expect(sortedList.size()).toEqual(3);
   });
 });

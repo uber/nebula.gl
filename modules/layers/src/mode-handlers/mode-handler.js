@@ -18,7 +18,7 @@ export type EditHandle = {
   position: Position,
   positionIndexes: number[],
   featureIndex: number,
-  type: 'existing' | 'intermediate'
+  type: 'existing' | 'intermediate' | 'snap'
 };
 
 export type EditAction = {
@@ -289,7 +289,11 @@ export function getIntermediatePosition(position1: Position, position2: Position
   return intermediatePosition;
 }
 
-export function getEditHandlesForGeometry(geometry: Geometry, featureIndex: number) {
+export function getEditHandlesForGeometry(
+  geometry: Geometry,
+  featureIndex: number,
+  editHandleType: 'existing' | 'intermediate' | 'snap' = 'existing'
+) {
   let handles: EditHandle[] = [];
 
   switch (geometry.type) {
@@ -300,7 +304,7 @@ export function getEditHandlesForGeometry(geometry: Geometry, featureIndex: numb
           position: geometry.coordinates,
           positionIndexes: [],
           featureIndex,
-          type: 'existing'
+          type: editHandleType
         }
       ];
       break;
@@ -308,7 +312,7 @@ export function getEditHandlesForGeometry(geometry: Geometry, featureIndex: numb
     case 'LineString':
       // positions are nested 1 level
       handles = handles.concat(
-        getEditHandlesForCoordinates(geometry.coordinates, [], featureIndex)
+        getEditHandlesForCoordinates(geometry.coordinates, [], featureIndex, editHandleType)
       );
       break;
     case 'Polygon':
@@ -316,7 +320,7 @@ export function getEditHandlesForGeometry(geometry: Geometry, featureIndex: numb
       // positions are nested 2 levels
       for (let a = 0; a < geometry.coordinates.length; a++) {
         handles = handles.concat(
-          getEditHandlesForCoordinates(geometry.coordinates[a], [a], featureIndex)
+          getEditHandlesForCoordinates(geometry.coordinates[a], [a], featureIndex, editHandleType)
         );
         if (geometry.type === 'Polygon') {
           // Don't repeat the first/last handle for Polygons
@@ -329,7 +333,12 @@ export function getEditHandlesForGeometry(geometry: Geometry, featureIndex: numb
       for (let a = 0; a < geometry.coordinates.length; a++) {
         for (let b = 0; b < geometry.coordinates[a].length; b++) {
           handles = handles.concat(
-            getEditHandlesForCoordinates(geometry.coordinates[a][b], [a, b], featureIndex)
+            getEditHandlesForCoordinates(
+              geometry.coordinates[a][b],
+              [a, b],
+              featureIndex,
+              editHandleType
+            )
           );
           // Don't repeat the first/last handle for Polygons
           handles = handles.slice(0, -1);
@@ -346,7 +355,8 @@ export function getEditHandlesForGeometry(geometry: Geometry, featureIndex: numb
 function getEditHandlesForCoordinates(
   coordinates: any[],
   positionIndexPrefix: number[],
-  featureIndex: number
+  featureIndex: number,
+  editHandleType: 'existing' | 'intermediate' | 'snap' = 'existing'
 ): EditHandle[] {
   const editHandles = [];
   for (let i = 0; i < coordinates.length; i++) {
@@ -355,7 +365,7 @@ function getEditHandlesForCoordinates(
       position,
       positionIndexes: [...positionIndexPrefix, i],
       featureIndex,
-      type: 'existing'
+      type: editHandleType
     });
   }
   return editHandles;

@@ -1818,7 +1818,7 @@
     "@turf/rhumb-destination" "^5.1.5"
     "@turf/transform-rotate" "^5.1.5"
 
-"@turf/envelope@>=4.0.0":
+"@turf/envelope@^5.1.5":
   version "5.1.5"
   resolved "https://registry.yarnpkg.com/@turf/envelope/-/envelope-5.1.5.tgz#5013309c53fdd43dfaf4b588a65c3fed7dbc108a"
   integrity sha1-UBMwnFP91D369LWIplw/7X28EIo=
@@ -1880,7 +1880,7 @@
     "@turf/invariant" "6.x"
     "@turf/meta" "6.x"
 
-"@turf/meta@6.x", "@turf/meta@>=4.0.0":
+"@turf/meta@6.x":
   version "6.0.2"
   resolved "https://registry.yarnpkg.com/@turf/meta/-/meta-6.0.2.tgz#eb92951126d24a613ac1b7b99d733fcc20fd30cf"
   integrity sha512-VA7HJkx7qF1l3+GNGkDVn2oXy4+QoLP6LktXAaZKjuT1JI0YESat7quUkbCMy4zP9lAUuvS4YMslLyTtr919FA==

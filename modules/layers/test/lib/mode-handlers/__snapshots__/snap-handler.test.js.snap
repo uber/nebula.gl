@@ -1,59 +1,1374 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`polygon snapping getEditHandles() 1`] = `
+exports[`polygon snapping _cacheClosestNonPickedHandle() - positive case 1`] = `
+Object {
+  "featureIndex": 3,
+  "position": Array [
+    -122.3442469760231,
+    37.8157115979288,
+  ],
+  "positionIndexes": Array [
+    0,
+    2,
+  ],
+  "type": "intermediate",
+}
+`;
+
+exports[`polygon snapping _cacheClosestNonPickedHandle() - positive case 2`] = `95.66361956289911`;
+
+exports[`polygon snapping _getNonPickedIntermediateHandles() - array out of bounds 1`] = `
 Array [
   Object {
-    "featureIndex": -1,
+    "featureIndex": 0,
     "position": Array [
-      1,
-      2,
+      -122.49485401280788,
+      37.987923255302974,
     ],
     "positionIndexes": Array [
-      -1,
+      0,
+      0,
     ],
     "type": "intermediate",
   },
   Object {
-    "featureIndex": -1,
+    "featureIndex": 0,
     "position": Array [
-      2,
-      3,
+      -122.44252582524939,
+      37.987923255302974,
     ],
     "positionIndexes": Array [
-      -1,
+      0,
+      1,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.44252847887157,
+      37.93873205786406,
+    ],
+    "positionIndexes": Array [
+      0,
+      2,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.49485666643005,
+      37.93873205786406,
+    ],
+    "positionIndexes": Array [
+      0,
+      3,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 1,
+    "position": Array [
+      -122.40814940182412,
+      37.97528325161274,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 1,
+    "position": Array [
+      -122.37737022011595,
+      37.97528325161274,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 1,
+    "position": Array [
+      -122.37737142575622,
+      37.952934704562644,
+    ],
+    "positionIndexes": Array [
+      0,
+      2,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 1,
+    "position": Array [
+      -122.40815060746439,
+      37.952934704562644,
+    ],
+    "positionIndexes": Array [
+      0,
+      3,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 2,
+    "position": Array [
+      -122.28103267622373,
+      37.98843664327903,
+    ],
+    "positionIndexes": Array [],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.40908525092362,
+      37.85902221692065,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.34432261530361,
+      37.85902221692065,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.3442469760231,
+      37.8157115979288,
+    ],
+    "positionIndexes": Array [
+      0,
+      2,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.40900961164311,
+      37.8157115979288,
+    ],
+    "positionIndexes": Array [
+      0,
+      3,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.40682264287454,
+      38.13330760982133,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.34143228624993,
+      38.13330760982133,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.34144710122638,
+      38.08906337516829,
+    ],
+    "positionIndexes": Array [
+      0,
+      2,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.40683745785105,
+      38.08906337516829,
+    ],
+    "positionIndexes": Array [
+      0,
+      3,
     ],
     "type": "intermediate",
   },
 ]
 `;
 
-exports[`polygon snapping getSnapDetailsFromCandidates() 1`] = `
-Object {
-  "index": 0,
-  "nonSelectedSnapPoint": Object {
-    "geometry": Object {
-      "coordinates": Array [
-        -122.44252582524939,
-        37.987923255302974,
-      ],
-      "type": "Point",
-    },
-    "properties": 1,
-    "type": "Feature",
+exports[`polygon snapping _getNonPickedIntermediateHandles() - positive case multiple selected 1`] = `
+Array [
+  Object {
+    "featureIndex": 2,
+    "position": Array [
+      -122.28103267622373,
+      37.98843664327903,
+    ],
+    "positionIndexes": Array [],
+    "type": "intermediate",
   },
-  "selectedSnapPoint": Object {
-    "geometry": Object {
-      "coordinates": Array [
-        -122.40814940182412,
-        37.97528325161274,
-      ],
-      "type": "Point",
-    },
-    "properties": Object {},
-    "type": "Feature",
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.40908525092362,
+      37.85902221692065,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "intermediate",
   },
-  "snapDistance": 3.324623681425176,
-}
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.34432261530361,
+      37.85902221692065,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.3442469760231,
+      37.8157115979288,
+    ],
+    "positionIndexes": Array [
+      0,
+      2,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.40900961164311,
+      37.8157115979288,
+    ],
+    "positionIndexes": Array [
+      0,
+      3,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.40682264287454,
+      38.13330760982133,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.34143228624993,
+      38.13330760982133,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.34144710122638,
+      38.08906337516829,
+    ],
+    "positionIndexes": Array [
+      0,
+      2,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.40683745785105,
+      38.08906337516829,
+    ],
+    "positionIndexes": Array [
+      0,
+      3,
+    ],
+    "type": "intermediate",
+  },
+]
+`;
+
+exports[`polygon snapping _getNonPickedIntermediateHandles() - positive case single selected 1`] = `
+Array [
+  Object {
+    "featureIndex": 1,
+    "position": Array [
+      -122.40814940182412,
+      37.97528325161274,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 1,
+    "position": Array [
+      -122.37737022011595,
+      37.97528325161274,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 1,
+    "position": Array [
+      -122.37737142575622,
+      37.952934704562644,
+    ],
+    "positionIndexes": Array [
+      0,
+      2,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 1,
+    "position": Array [
+      -122.40815060746439,
+      37.952934704562644,
+    ],
+    "positionIndexes": Array [
+      0,
+      3,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 2,
+    "position": Array [
+      -122.28103267622373,
+      37.98843664327903,
+    ],
+    "positionIndexes": Array [],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.40908525092362,
+      37.85902221692065,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.34432261530361,
+      37.85902221692065,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.3442469760231,
+      37.8157115979288,
+    ],
+    "positionIndexes": Array [
+      0,
+      2,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.40900961164311,
+      37.8157115979288,
+    ],
+    "positionIndexes": Array [
+      0,
+      3,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.40682264287454,
+      38.13330760982133,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.34143228624993,
+      38.13330760982133,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.34144710122638,
+      38.08906337516829,
+    ],
+    "positionIndexes": Array [
+      0,
+      2,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.40683745785105,
+      38.08906337516829,
+    ],
+    "positionIndexes": Array [
+      0,
+      3,
+    ],
+    "type": "intermediate",
+  },
+]
+`;
+
+exports[`polygon snapping calculateSnapIfWithinThreshold() - multiple selection 1`] = `
+Array [
+  Object {
+    "movedFeature": Object {
+      "geometry": Object {
+        "coordinates": Array [
+          Array [
+            Array [
+              -122.49518674012228,
+              37.988783493798735,
+            ],
+            Array [
+              -122.44285855256379,
+              37.988783493798735,
+            ],
+            Array [
+              -122.44286098336744,
+              37.93959229635983,
+            ],
+            Array [
+              -122.49518917092593,
+              37.93959229635983,
+            ],
+            Array [
+              -122.49518674012228,
+              37.988783493798735,
+            ],
+          ],
+        ],
+        "type": "Polygon",
+      },
+      "properties": Object {},
+      "type": "Feature",
+    },
+    "selectedIndex": 0,
+  },
+  Object {
+    "movedFeature": Object {
+      "geometry": Object {
+        "coordinates": Array [
+          -122.28136540586644,
+          37.9892968817748,
+        ],
+        "type": "Point",
+      },
+      "properties": Object {},
+      "type": "Feature",
+    },
+    "selectedIndex": 2,
+  },
+]
+`;
+
+exports[`polygon snapping calculateSnapIfWithinThreshold() - single selection 1`] = `
+Array [
+  Object {
+    "movedFeature": Object {
+      "geometry": Object {
+        "coordinates": Array [
+          Array [
+            Array [
+              -122.40848207183188,
+              37.976143490108505,
+            ],
+            Array [
+              -122.37770289012371,
+              37.976143490108505,
+            ],
+            Array [
+              -122.37770399452921,
+              37.953794943058405,
+            ],
+            Array [
+              -122.40848317623738,
+              37.953794943058405,
+            ],
+            Array [
+              -122.40848207183188,
+              37.976143490108505,
+            ],
+          ],
+        ],
+        "type": "Polygon",
+      },
+      "properties": Object {},
+      "type": "Feature",
+    },
+    "selectedIndex": 1,
+  },
+]
+`;
+
+exports[`polygon snapping getEditHandles() - _potentialNonPickedHandle is from a point feature 1`] = `
+Array [
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.49485401280788,
+      37.987923255302974,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.44252582524939,
+      37.987923255302974,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.44252847887157,
+      37.93873205786406,
+    ],
+    "positionIndexes": Array [
+      0,
+      2,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.49485666643005,
+      37.93873205786406,
+    ],
+    "positionIndexes": Array [
+      0,
+      3,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 2,
+    "position": Array [
+      -122.28103267622373,
+      37.98843664327903,
+    ],
+    "positionIndexes": Array [],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.40908525092362,
+      37.85902221692065,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.34432261530361,
+      37.85902221692065,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.3442469760231,
+      37.8157115979288,
+    ],
+    "positionIndexes": Array [
+      0,
+      2,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.40900961164311,
+      37.8157115979288,
+    ],
+    "positionIndexes": Array [
+      0,
+      3,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.40682264287454,
+      38.13330760982133,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.34143228624993,
+      38.13330760982133,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.34144710122638,
+      38.08906337516829,
+    ],
+    "positionIndexes": Array [
+      0,
+      2,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.40683745785105,
+      38.08906337516829,
+    ],
+    "positionIndexes": Array [
+      0,
+      3,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122,
+      37,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "snap",
+  },
+  Object {
+    "featureIndex": 2,
+    "position": Array [
+      -122.28103267622373,
+      37.98843664327903,
+    ],
+    "positionIndexes": Array [
+      0,
+    ],
+    "type": "snap",
+  },
+]
+`;
+
+exports[`polygon snapping getEditHandles() - no _pickedHandle 1`] = `
+Array [
+  Object {
+    "featureIndex": 1,
+    "position": Array [
+      -122.40814940182412,
+      37.97528325161274,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "snap",
+  },
+  Object {
+    "featureIndex": 1,
+    "position": Array [
+      -122.37737022011595,
+      37.97528325161274,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "snap",
+  },
+  Object {
+    "featureIndex": 1,
+    "position": Array [
+      -122.37737142575622,
+      37.952934704562644,
+    ],
+    "positionIndexes": Array [
+      0,
+      2,
+    ],
+    "type": "snap",
+  },
+  Object {
+    "featureIndex": 1,
+    "position": Array [
+      -122.40815060746439,
+      37.952934704562644,
+    ],
+    "positionIndexes": Array [
+      0,
+      3,
+    ],
+    "type": "snap",
+  },
+]
+`;
+
+exports[`polygon snapping getEditHandles() - no _potentialNonPickedHandle 1`] = `
+Array [
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.49485401280788,
+      37.987923255302974,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.44252582524939,
+      37.987923255302974,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.44252847887157,
+      37.93873205786406,
+    ],
+    "positionIndexes": Array [
+      0,
+      2,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.49485666643005,
+      37.93873205786406,
+    ],
+    "positionIndexes": Array [
+      0,
+      3,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 2,
+    "position": Array [
+      -122.28103267622373,
+      37.98843664327903,
+    ],
+    "positionIndexes": Array [],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.40908525092362,
+      37.85902221692065,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.34432261530361,
+      37.85902221692065,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.3442469760231,
+      37.8157115979288,
+    ],
+    "positionIndexes": Array [
+      0,
+      2,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.40900961164311,
+      37.8157115979288,
+    ],
+    "positionIndexes": Array [
+      0,
+      3,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.40682264287454,
+      38.13330760982133,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.34143228624993,
+      38.13330760982133,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.34144710122638,
+      38.08906337516829,
+    ],
+    "positionIndexes": Array [
+      0,
+      2,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.40683745785105,
+      38.08906337516829,
+    ],
+    "positionIndexes": Array [
+      0,
+      3,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122,
+      37,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "snap",
+  },
+]
+`;
+
+exports[`polygon snapping getEditHandles() 1`] = `
+Array [
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.49485401280788,
+      37.987923255302974,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.44252582524939,
+      37.987923255302974,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.44252847887157,
+      37.93873205786406,
+    ],
+    "positionIndexes": Array [
+      0,
+      2,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.49485666643005,
+      37.93873205786406,
+    ],
+    "positionIndexes": Array [
+      0,
+      3,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 2,
+    "position": Array [
+      -122.28103267622373,
+      37.98843664327903,
+    ],
+    "positionIndexes": Array [],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.40908525092362,
+      37.85902221692065,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.34432261530361,
+      37.85902221692065,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.3442469760231,
+      37.8157115979288,
+    ],
+    "positionIndexes": Array [
+      0,
+      2,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.40900961164311,
+      37.8157115979288,
+    ],
+    "positionIndexes": Array [
+      0,
+      3,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.40682264287454,
+      38.13330760982133,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.34143228624993,
+      38.13330760982133,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.34144710122638,
+      38.08906337516829,
+    ],
+    "positionIndexes": Array [
+      0,
+      2,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.40683745785105,
+      38.08906337516829,
+    ],
+    "positionIndexes": Array [
+      0,
+      3,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122,
+      37,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "snap",
+  },
+  Object {
+    "featureIndex": 1,
+    "position": Array [
+      -122.37737022011595,
+      37.97528325161274,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "intermediate",
+  },
+]
+`;
+
+exports[`polygon snapping getEditHandles() 2`] = `
+Array [
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122,
+      37,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "snap",
+  },
+]
+`;
+
+exports[`polygon snapping getEditHandles() 3`] = `
+Array [
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.49485401280788,
+      37.987923255302974,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.44252582524939,
+      37.987923255302974,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.44252847887157,
+      37.93873205786406,
+    ],
+    "positionIndexes": Array [
+      0,
+      2,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.49485666643005,
+      37.93873205786406,
+    ],
+    "positionIndexes": Array [
+      0,
+      3,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 2,
+    "position": Array [
+      -122.28103267622373,
+      37.98843664327903,
+    ],
+    "positionIndexes": Array [],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.40908525092362,
+      37.85902221692065,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.34432261530361,
+      37.85902221692065,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.3442469760231,
+      37.8157115979288,
+    ],
+    "positionIndexes": Array [
+      0,
+      2,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.40900961164311,
+      37.8157115979288,
+    ],
+    "positionIndexes": Array [
+      0,
+      3,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.40682264287454,
+      38.13330760982133,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.34143228624993,
+      38.13330760982133,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.34144710122638,
+      38.08906337516829,
+    ],
+    "positionIndexes": Array [
+      0,
+      2,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.40683745785105,
+      38.08906337516829,
+    ],
+    "positionIndexes": Array [
+      0,
+      3,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 1,
+    "position": Array [
+      -122.37737022011595,
+      37.97528325161274,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "intermediate",
+  },
+]
 `;
 
 exports[`polygon snapping getSnapStrengthModifier() 1`] = `1.069575674579367`;
+
+exports[`polygon snapping updatePickedHandlePosition() - positive case 1`] = `
+Object {
+  "featureIndex": 0,
+  "position": Array [
+    -122,
+    37,
+  ],
+  "positionIndexes": Array [
+    0,
+    0,
+  ],
+  "type": "snap",
+}
+`;

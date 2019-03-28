@@ -381,6 +381,7 @@ export default class Example extends Component<
         <ToolboxLabel>geoJSON</ToolboxLabel>
         <ToolboxControl>
           <textarea
+            id="geo-json-text"
             rows={5}
             style={{ width: '100%' }}
             value={JSON.stringify(this.state.testFeatures)}

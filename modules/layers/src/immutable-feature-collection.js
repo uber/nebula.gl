@@ -192,7 +192,7 @@ export class ImmutableFeatureCollection {
 }
 
 function getUpdatedPosition(updatedPosition: Position, previousPosition: Position): Position {
-  // This function checks if the updatedPosition is mission elevation
+  // This function checks if the updatedPosition is missing elevation
   // and copies if from previousPosition
   if (updatedPosition.length === 2 && previousPosition.length === 3) {
     const elevation = (previousPosition: any)[2];

@@ -191,6 +191,17 @@ export class ImmutableFeatureCollection {
   }
 }
 
+function getUpdatedPosition(updatedPosition: Position, previousPosition: Position): Position {
+  // This function checks if the updatedPosition is mission elevation
+  // and copies if from previousPosition
+  if (updatedPosition.length === 2 && previousPosition.length === 3) {
+    const elevation = (previousPosition: any)[2];
+    return [updatedPosition[0], updatedPosition[1], elevation];
+  }
+
+  return updatedPosition;
+}
+
 function immutablyReplacePosition(
   coordinates: any,
   positionIndexes: number[],
@@ -201,12 +212,12 @@ function immutablyReplacePosition(
     return coordinates;
   }
   if (positionIndexes.length === 0) {
-    return updatedPosition;
+    return getUpdatedPosition(updatedPosition, coordinates);
   }
   if (positionIndexes.length === 1) {
     const updated = [
       ...coordinates.slice(0, positionIndexes[0]),
-      updatedPosition,
+      getUpdatedPosition(updatedPosition, coordinates[positionIndexes[0]]),
       ...coordinates.slice(positionIndexes[0] + 1)
     ];
 
@@ -216,8 +227,8 @@ function immutablyReplacePosition(
     ) {
       // for polygons, the first point is repeated at the end of the array
       // so, update it on both ends of the array
-      updated[0] = updatedPosition;
-      updated[coordinates.length - 1] = updatedPosition;
+      updated[0] = getUpdatedPosition(updatedPosition, coordinates[0]);
+      updated[coordinates.length - 1] = getUpdatedPosition(updatedPosition, coordinates[0]);
     }
     return updated;
   }

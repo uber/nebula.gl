@@ -518,3 +518,41 @@ describe('addFeature()', () => {
     expect(actualFeatures).toEqual(expectedFeatures);
   });
 });
+
+describe('replacePosition() with elevation', () => {
+  it('replaces position in Point', () => {
+    const elevatedPointFeature = {
+      type: 'Feature',
+      properties: {},
+      geometry: { type: 'Point', coordinates: [1, 2, 1000] }
+    };
+    const features = new ImmutableFeatureCollection({
+      type: 'FeatureCollection',
+      features: [elevatedPointFeature]
+    });
+    const updatedFeatures = features.replacePosition(0, [], [10, 20]);
+
+    const actualCoordinates = updatedFeatures.getObject().features[0].geometry.coordinates;
+    const expectedCoordinates = [10, 20, 1000];
+
+    expect(actualCoordinates).toEqual(expectedCoordinates);
+  });
+
+  it('replaces first position in LineString', () => {
+    const elevatedLineStringFeature = {
+      type: 'Feature',
+      properties: {},
+      geometry: { type: 'LineString', coordinates: [[1, 2, 1000], [2, 3, 2000], [3, 4, 3000]] }
+    };
+    const features = new ImmutableFeatureCollection({
+      type: 'FeatureCollection',
+      features: [elevatedLineStringFeature]
+    });
+    const updatedFeatures = features.replacePosition(0, [0], [10, 20]);
+
+    const actualCoordinates = updatedFeatures.getObject().features[0].geometry.coordinates;
+    const expectedCoordinates = [[10, 20, 1000], [2, 3, 2000], [3, 4, 3000]];
+
+    expect(actualCoordinates).toEqual(expectedCoordinates);
+  });
+});

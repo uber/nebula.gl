@@ -106,6 +106,7 @@ const defaultProps = {
 
   editHandleType: 'point',
   editHandleParameters: {},
+  editHandleLayerProps: {},
 
   // point handles
   editHandlePointRadiusScale: 1,
@@ -307,47 +308,71 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
 
     const sharedProps = {
-      id: `${this.props.editHandleType}-edit-handles`,
+      id: `${this.props.editHandleType.layerName || this.props.editHandleType}-edit-handles`,
       data: this.state.editHandles,
-      fp64: this.props.fp64
+      fp64: this.props.fp64,
+
+      parameters: this.props.editHandleParameters,
+      ...this.props.editHandleLayerProps
     };
 
-    const layer =
-      this.props.editHandleType === 'icon'
-        ? new IconLayer(
+    let layer;
+
+    switch (this.props.editHandleType) {
+      case 'icon':
+        layer = new IconLayer(
+          this.getSubLayerProps({
+            ...sharedProps,
+            iconAtlas: this.props.editHandleIconAtlas,
+            iconMapping: this.props.editHandleIconMapping,
+            sizeScale: this.props.editHandleIconSizeScale,
+            getIcon: this.props.getEditHandleIcon,
+            getSize: this.props.getEditHandleIconSize,
+            getColor: this.props.getEditHandleIconColor,
+            getAngle: this.props.getEditHandleIconAngle,
+
+            getPosition: d => d.position
+          })
+        );
+        break;
+
+      case 'point':
+        layer = new ScatterplotLayer(
+          this.getSubLayerProps({
+            ...sharedProps,
+
+            // Proxy editing point props
+            radiusScale: this.props.editHandlePointRadiusScale,
+            outline: this.props.editHandlePointOutline,
+            strokeWidth: this.props.editHandlePointStrokeWidth,
+            radiusMinPixels: this.props.editHandlePointRadiusMinPixels,
+            radiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
+            getRadius: this.props.getEditHandlePointRadius,
+            getColor: this.props.getEditHandlePointColor
+          })
+        );
+        break;
+
+      default:
+        if (typeof this.props.editHandleType === 'function') {
+          const EditHandleType = this.props.editHandleType;
+          layer = new EditHandleType(
             this.getSubLayerProps({
               ...sharedProps,
-              iconAtlas: this.props.editHandleIconAtlas,
-              iconMapping: this.props.editHandleIconMapping,
-              sizeScale: this.props.editHandleIconSizeScale,
-              getIcon: this.props.getEditHandleIcon,
-              getSize: this.props.getEditHandleIconSize,
-              getColor: this.props.getEditHandleIconColor,
-              getAngle: this.props.getEditHandleIconAngle,
 
-              getPosition: d => d.position,
-
-              parameters: this.props.editHandleParameters
+              // Proxy editing point props
+              radiusScale: this.props.editHandlePointRadiusScale,
+              outline: this.props.editHandlePointOutline,
+              strokeWidth: this.props.editHandlePointStrokeWidth,
+              radiusMinPixels: this.props.editHandlePointRadiusMinPixels,
+              radiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
+              getRadius: this.props.getEditHandlePointRadius,
+              getColor: this.props.getEditHandlePointColor
             })
-          )
-        : this.props.editHandleType === 'point'
-          ? new ScatterplotLayer(
-              this.getSubLayerProps({
-                ...sharedProps,
-
-                // Proxy editing point props
-                radiusScale: this.props.editHandlePointRadiusScale,
-                outline: this.props.editHandlePointOutline,
-                strokeWidth: this.props.editHandlePointStrokeWidth,
-                radiusMinPixels: this.props.editHandlePointRadiusMinPixels,
-                radiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
-                getRadius: this.props.getEditHandlePointRadius,
-                getColor: this.props.getEditHandlePointColor,
-
-                parameters: this.props.editHandleParameters
-              })
-            )
-          : null;
+          );
+        }
+        break;
+    }
 
     return [layer];
   }

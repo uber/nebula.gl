@@ -22,6 +22,7 @@ export type { Color, Style } from './types';
 // Moved to @nebula.gl/layers
 export { EditableGeoJsonLayer } from '@nebula.gl/layers';
 export { SelectionLayer } from '@nebula.gl/layers';
+export { ElevatedEditHandleLayer } from '@nebula.gl/layers';
 export { PathOutlineLayer } from '@nebula.gl/layers';
 export { PathMarkerLayer } from '@nebula.gl/layers';
 export { ModeHandler } from '@nebula.gl/layers';

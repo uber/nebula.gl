@@ -49,7 +49,8 @@ export class SnappableHandler extends ModeHandler {
   _getEditHandleLayerId() {
     // TODO: This is hacky, find a better way!
     const { layers } = this._context.layerManager;
-    return layers.find(layer => layer.id.endsWith('-point-edit-handles')).id;
+    const layer = layers.find(l => l.id.endsWith('-edit-handles'));
+    return layer ? layer.id : '';
   }
 
   _getEditHandlePicks(event: PointerMoveEvent): HandlePicks {
@@ -186,12 +187,14 @@ export class SnappableHandler extends ModeHandler {
   }
 
   handlePointerMove(event: PointerMoveEvent): { editAction: ?EditAction, cancelMapPan: boolean } {
-    this._editHandlePicks = this._getEditHandlePicks(event);
     const { enableSnapping } = this._handler.getModeConfig() || {};
 
-    if (enableSnapping && this._editHandlePicks) {
-      this._performSnapIfRequired();
-      this._performUnsnapIfRequired();
+    if (enableSnapping) {
+      this._editHandlePicks = this._getEditHandlePicks(event);
+      if (this._editHandlePicks) {
+        this._performSnapIfRequired();
+        this._performUnsnapIfRequired();
+      }
     }
 
     const modeActionSummary = this._handler.handlePointerMove(this._getSnapAwareEvent(event));

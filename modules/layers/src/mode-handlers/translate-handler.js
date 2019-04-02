@@ -21,7 +21,7 @@ export class TranslateHandler extends ModeHandler {
   _pickedHandle: ?EditHandle;
   _isSnapped: boolean;
 
-  _getEditHandlePicks(event: any): HandlePicks {
+  _getEditHandlePicks(event: PointerMoveEvent): HandlePicks {
     const { screenCoords } = event;
     const { snapPixels } = this.getModeConfig() || {};
 

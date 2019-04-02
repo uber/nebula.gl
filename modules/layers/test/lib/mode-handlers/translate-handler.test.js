@@ -56,10 +56,13 @@ describe('translate-handler specific functions', () => {
 
   test('_getEditHandlePicks() - positive case', () => {
     handler.setModeConfig({ snapPixels: 5 });
-    const picks = handler._getEditHandlePicks({
-      screenCoords: [1, 1],
-      pointerDownPicks: [{ isEditingHandle: true, object: mockPickedHandle }]
-    });
+    const mouseMoveEvent = createPointerMoveEvent([100, 100], []);
+    mouseMoveEvent.screenCoords = [1, 1];
+    mouseMoveEvent.pointerDownPicks = [
+      { index: 0, isEditingHandle: true, object: mockPickedHandle }
+    ];
+
+    const picks = handler._getEditHandlePicks(mouseMoveEvent);
     expect(picks.pickedHandle).toBeDefined();
     if (picks.pickedHandle) {
       expect(picks.pickedHandle.type).toEqual('snap');
@@ -73,7 +76,10 @@ describe('translate-handler specific functions', () => {
 
   test('_getEditHandlePicks() - no pickedHandle', () => {
     handler.setModeConfig({ snapPixels: 5 });
-    const picks = handler._getEditHandlePicks({ screenCoords: [1, 1] });
+    const mouseMoveEvent = createPointerMoveEvent([100, 100], []);
+    mouseMoveEvent.screenCoords = [1, 1];
+
+    const picks = handler._getEditHandlePicks(mouseMoveEvent);
     expect(picks.pickedHandle).not.toBeDefined();
     expect(picks.potentialSnapHandle).toBeDefined();
     if (picks.potentialSnapHandle) {

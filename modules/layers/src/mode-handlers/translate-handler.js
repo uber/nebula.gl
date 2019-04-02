@@ -49,13 +49,16 @@ export class TranslateHandler extends ModeHandler {
   }
 
   _updatePickedHandlePosition(index: number, updatedGeometry: any) {
-    if (!this._pickedHandle) return;
-    const { positionIndexes, featureIndex } = this._pickedHandle;
-    if (index >= 0 && featureIndex !== index) return;
+    if (this._pickedHandle) {
+      const { positionIndexes, featureIndex } = this._pickedHandle;
+      if (index >= 0 && featureIndex !== index) return;
 
-    const { coordinates } = updatedGeometry;
-    const position = positionIndexes.reduce((a: any[], b: number) => a[b], coordinates);
-    this._pickedHandle = { ...this._pickedHandle, position };
+      const { coordinates } = updatedGeometry;
+      (this._pickedHandle || {}).position = positionIndexes.reduce(
+        (a: any[], b: number) => a[b],
+        coordinates
+      );
+    }
   }
 
   _getNonPickedIntermediateHandles(): EditHandle[] {

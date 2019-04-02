@@ -214,7 +214,11 @@ Array [
 exports[`translate-handler specific functions _getTranslateAction() - no _geometryBeforeTranslate 1`] = `
 TranslateHandler {
   "_clickSequence": Array [],
-  "_context": undefined,
+  "_context": Object {
+    "layerManager": Object {
+      "pickObject": [Function],
+    },
+  },
   "_geometryBeforeTranslate": undefined,
   "_isSnapped": undefined,
   "_isTranslatable": undefined,
@@ -514,7 +518,11 @@ TranslateHandler {
 exports[`translate-handler specific functions _getTranslateAction() - no pickedHandles 1`] = `
 TranslateHandler {
   "_clickSequence": Array [],
-  "_context": undefined,
+  "_context": Object {
+    "layerManager": Object {
+      "pickObject": [Function],
+    },
+  },
   "_geometryBeforeTranslate": Object {
     "features": Array [
       Object {
@@ -1002,7 +1010,11 @@ Object {
 exports[`translate-handler specific functions _getTranslateAction() - positive case 1`] = `
 TranslateHandler {
   "_clickSequence": Array [],
-  "_context": undefined,
+  "_context": Object {
+    "layerManager": Object {
+      "pickObject": [Function],
+    },
+  },
   "_geometryBeforeTranslate": Object {
     "features": Array [
       Object {
@@ -1058,24 +1070,24 @@ TranslateHandler {
             "coordinates": Array [
               Array [
                 Array [
-                  -122.49486414891447,
-                  37.98786482129586,
+                  -122.37736008575104,
+                  37.97534168562027,
                 ],
                 Array [
-                  -122.44253596135599,
-                  37.98786482129586,
+                  -122.32503189819255,
+                  37.97534168562027,
                 ],
                 Array [
-                  -122.44253860819038,
-                  37.93867362385696,
+                  -122.32511321531501,
+                  37.92615048818137,
                 ],
                 Array [
-                  -122.49486679574886,
-                  37.93867362385696,
+                  -122.3774414028735,
+                  37.92615048818137,
                 ],
                 Array [
-                  -122.49486414891447,
-                  37.98786482129586,
+                  -122.37736008575104,
+                  37.97534168562027,
                 ],
               ],
             ],
@@ -1351,24 +1363,24 @@ Object {
           "coordinates": Array [
             Array [
               Array [
-                -122.49486414891447,
-                37.98786482129586,
+                -122.37736008575104,
+                37.97534168562027,
               ],
               Array [
-                -122.44253596135599,
-                37.98786482129586,
+                -122.32503189819255,
+                37.97534168562027,
               ],
               Array [
-                -122.44253860819038,
-                37.93867362385696,
+                -122.32511321531501,
+                37.92615048818137,
               ],
               Array [
-                -122.49486679574886,
-                37.93867362385696,
+                -122.3774414028735,
+                37.92615048818137,
               ],
               Array [
-                -122.49486414891447,
-                37.98786482129586,
+                -122.37736008575104,
+                37.97534168562027,
               ],
             ],
           ],
@@ -1490,7 +1502,11 @@ Object {
 exports[`translate-handler specific functions _performSnapIfRequired() - positive case 1`] = `
 TranslateHandler {
   "_clickSequence": Array [],
-  "_context": undefined,
+  "_context": Object {
+    "layerManager": Object {
+      "pickObject": [Function],
+    },
+  },
   "_geometryBeforeTranslate": undefined,
   "_isSnapped": true,
   "_isTranslatable": undefined,
@@ -1801,7 +1817,11 @@ TranslateHandler {
 exports[`translate-handler specific functions _performTranslateIfRequired() - positive case 1`] = `
 TranslateHandler {
   "_clickSequence": Array [],
-  "_context": undefined,
+  "_context": Object {
+    "layerManager": Object {
+      "pickObject": [Function],
+    },
+  },
   "_geometryBeforeTranslate": Object {
     "features": Array [
       Object {

@@ -3,6 +3,7 @@ import { TranslateHandler } from '../../../src/mode-handlers/translate-handler';
 import type { FeatureCollection } from '../../../src/geojson-types.js';
 import {
   createFeatureCollection,
+  createPointerMoveEvent,
   featuresForSnappingTests,
   mockPickedHandle,
   mockNonPickedHandle
@@ -46,15 +47,15 @@ describe('translate-handler specific functions', () => {
 
   beforeEach(() => {
     handler = mockFeatureCollectionState(featuresForSnappingTests);
-  });
-
-  test('_getEditHandlePicks() - positive case', () => {
-    handler.setModeConfig({ snapPixels: 5 });
     handler._context = {
       layerManager: {
         pickObject: () => [{ object: mockNonPickedHandle }]
       }
     };
+  });
+
+  test('_getEditHandlePicks() - positive case', () => {
+    handler.setModeConfig({ snapPixels: 5 });
     const picks = handler._getEditHandlePicks({
       screenCoords: [1, 1],
       pointerDownPicks: [{ isEditingHandle: true, object: mockPickedHandle }]
@@ -72,11 +73,6 @@ describe('translate-handler specific functions', () => {
 
   test('_getEditHandlePicks() - no pickedHandle', () => {
     handler.setModeConfig({ snapPixels: 5 });
-    handler._context = {
-      layerManager: {
-        pickObject: () => [{ object: mockNonPickedHandle }]
-      }
-    };
     const picks = handler._getEditHandlePicks({ screenCoords: [1, 1] });
     expect(picks.pickedHandle).not.toBeDefined();
     expect(picks.potentialSnapHandle).toBeDefined();
@@ -275,6 +271,24 @@ describe('translate-handler specific functions', () => {
     handler._geometryBeforeTranslate = handler.getSelectedFeaturesAsFeatureCollection();
     handler._performTranslateIfRequired([1, 1], [2, 2]);
     expect(handler._updatedData).toEqual(initFeatures);
+  });
+
+  test(`handlePointerMove() - positive case`, () => {
+    handler._geometryBeforeTranslate = handler.getSelectedFeaturesAsFeatureCollection();
+    const moveEvent = createPointerMoveEvent([1, 1], [{ index: 0 }]);
+    moveEvent.isDragging = true;
+    moveEvent.pointerDownGroundCoords = [10, 10];
+    // $FlowFixMe
+    handler._getTranslateAction = jest.fn(() => ({ test: 'test' }));
+
+    const result = handler.handlePointerMove(moveEvent);
+    const expectedResult = {
+      editAction: { test: 'test' },
+      cancelMapPan: true
+    };
+
+    expect(handler._getTranslateAction.mock.calls.length).toEqual(1);
+    expect(result).toEqual(expectedResult);
   });
 
   test('getCursor() - _isTranslatable is true', () => {

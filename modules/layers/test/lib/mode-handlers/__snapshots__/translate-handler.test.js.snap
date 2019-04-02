@@ -1,13 +1,855 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`translate-handler specific functions calculateDistanceAndDirection() 1`] = `
+exports[`translate-handler specific functions _calculateDistanceAndDirection() 1`] = `
 Object {
   "direction": -9.885464830954206,
   "distanceMoved": 9724.92501810167,
 }
 `;
 
-exports[`translate-handler specific functions getTranslateAction() 1`] = `
+exports[`translate-handler specific functions _getEditHandlePicks() - no pickedHandle 1`] = `
+Object {
+  "potentialSnapHandle": Object {
+    "featureIndex": 1,
+    "position": Array [
+      -122.37737022011595,
+      37.97528325161274,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "intermediate",
+  },
+}
+`;
+
+exports[`translate-handler specific functions _getEditHandlePicks() - positive case 1`] = `
+Object {
+  "pickedHandle": Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.49485401280788,
+      37.987923255302974,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "snap",
+  },
+  "potentialSnapHandle": Object {
+    "featureIndex": 1,
+    "position": Array [
+      -122.37737022011595,
+      37.97528325161274,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "intermediate",
+  },
+}
+`;
+
+exports[`translate-handler specific functions _getNonPickedIntermediateHandles() 1`] = `
+Array [
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.49485401280788,
+      37.987923255302974,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.44252582524939,
+      37.987923255302974,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.44252847887157,
+      37.93873205786406,
+    ],
+    "positionIndexes": Array [
+      0,
+      2,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.49485666643005,
+      37.93873205786406,
+    ],
+    "positionIndexes": Array [
+      0,
+      3,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 2,
+    "position": Array [
+      -122.28103267622373,
+      37.98843664327903,
+    ],
+    "positionIndexes": Array [],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.40908525092362,
+      37.85902221692065,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.34432261530361,
+      37.85902221692065,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.3442469760231,
+      37.8157115979288,
+    ],
+    "positionIndexes": Array [
+      0,
+      2,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.40900961164311,
+      37.8157115979288,
+    ],
+    "positionIndexes": Array [
+      0,
+      3,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.40682264287454,
+      38.13330760982133,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.34143228624993,
+      38.13330760982133,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.34144710122638,
+      38.08906337516829,
+    ],
+    "positionIndexes": Array [
+      0,
+      2,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.40683745785105,
+      38.08906337516829,
+    ],
+    "positionIndexes": Array [
+      0,
+      3,
+    ],
+    "type": "intermediate",
+  },
+]
+`;
+
+exports[`translate-handler specific functions _getTranslateAction() - no _geometryBeforeTranslate 1`] = `
+TranslateHandler {
+  "_clickSequence": Array [],
+  "_context": undefined,
+  "_geometryBeforeTranslate": undefined,
+  "_isSnapped": undefined,
+  "_isTranslatable": undefined,
+  "_modeConfig": null,
+  "_pickedHandle": undefined,
+  "_selectedFeatureIndexes": Array [
+    0,
+  ],
+  "_tentativeFeature": null,
+  "_updatedData": ImmutableFeatureCollection {
+    "featureCollection": Object {
+      "features": Array [
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  -122.49485401280788,
+                  37.987923255302974,
+                ],
+                Array [
+                  -122.44252582524939,
+                  37.987923255302974,
+                ],
+                Array [
+                  -122.44252847887157,
+                  37.93873205786406,
+                ],
+                Array [
+                  -122.49485666643005,
+                  37.93873205786406,
+                ],
+                Array [
+                  -122.49485401280788,
+                  37.987923255302974,
+                ],
+              ],
+            ],
+            "type": "Polygon",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  -122.40814940182412,
+                  37.97528325161274,
+                ],
+                Array [
+                  -122.37737022011595,
+                  37.97528325161274,
+                ],
+                Array [
+                  -122.37737142575622,
+                  37.952934704562644,
+                ],
+                Array [
+                  -122.40815060746439,
+                  37.952934704562644,
+                ],
+                Array [
+                  -122.40814940182412,
+                  37.97528325161274,
+                ],
+              ],
+            ],
+            "type": "Polygon",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              -122.28103267622373,
+              37.98843664327903,
+            ],
+            "type": "Point",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  -122.40908525092362,
+                  37.85902221692065,
+                ],
+                Array [
+                  -122.34432261530361,
+                  37.85902221692065,
+                ],
+                Array [
+                  -122.3442469760231,
+                  37.8157115979288,
+                ],
+                Array [
+                  -122.40900961164311,
+                  37.8157115979288,
+                ],
+                Array [
+                  -122.40908525092362,
+                  37.85902221692065,
+                ],
+              ],
+            ],
+            "type": "Polygon",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  -122.40682264287454,
+                  38.13330760982133,
+                ],
+                Array [
+                  -122.34143228624993,
+                  38.13330760982133,
+                ],
+                Array [
+                  -122.34144710122638,
+                  38.08906337516829,
+                ],
+                Array [
+                  -122.40683745785105,
+                  38.08906337516829,
+                ],
+                Array [
+                  -122.40682264287454,
+                  38.13330760982133,
+                ],
+              ],
+            ],
+            "type": "Polygon",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+      ],
+      "type": "FeatureCollection",
+    },
+  },
+  "featureCollection": ImmutableFeatureCollection {
+    "featureCollection": Object {
+      "features": Array [
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  -122.49485401280788,
+                  37.987923255302974,
+                ],
+                Array [
+                  -122.44252582524939,
+                  37.987923255302974,
+                ],
+                Array [
+                  -122.44252847887157,
+                  37.93873205786406,
+                ],
+                Array [
+                  -122.49485666643005,
+                  37.93873205786406,
+                ],
+                Array [
+                  -122.49485401280788,
+                  37.987923255302974,
+                ],
+              ],
+            ],
+            "type": "Polygon",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  -122.40814940182412,
+                  37.97528325161274,
+                ],
+                Array [
+                  -122.37737022011595,
+                  37.97528325161274,
+                ],
+                Array [
+                  -122.37737142575622,
+                  37.952934704562644,
+                ],
+                Array [
+                  -122.40815060746439,
+                  37.952934704562644,
+                ],
+                Array [
+                  -122.40814940182412,
+                  37.97528325161274,
+                ],
+              ],
+            ],
+            "type": "Polygon",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              -122.28103267622373,
+              37.98843664327903,
+            ],
+            "type": "Point",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  -122.40908525092362,
+                  37.85902221692065,
+                ],
+                Array [
+                  -122.34432261530361,
+                  37.85902221692065,
+                ],
+                Array [
+                  -122.3442469760231,
+                  37.8157115979288,
+                ],
+                Array [
+                  -122.40900961164311,
+                  37.8157115979288,
+                ],
+                Array [
+                  -122.40908525092362,
+                  37.85902221692065,
+                ],
+              ],
+            ],
+            "type": "Polygon",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  -122.40682264287454,
+                  38.13330760982133,
+                ],
+                Array [
+                  -122.34143228624993,
+                  38.13330760982133,
+                ],
+                Array [
+                  -122.34144710122638,
+                  38.08906337516829,
+                ],
+                Array [
+                  -122.40683745785105,
+                  38.08906337516829,
+                ],
+                Array [
+                  -122.40682264287454,
+                  38.13330760982133,
+                ],
+              ],
+            ],
+            "type": "Polygon",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+      ],
+      "type": "FeatureCollection",
+    },
+  },
+}
+`;
+
+exports[`translate-handler specific functions _getTranslateAction() - no pickedHandles 1`] = `
+TranslateHandler {
+  "_clickSequence": Array [],
+  "_context": undefined,
+  "_geometryBeforeTranslate": Object {
+    "features": Array [
+      Object {
+        "geometry": Object {
+          "coordinates": Array [
+            Array [
+              Array [
+                -122.49485401280788,
+                37.987923255302974,
+              ],
+              Array [
+                -122.44252582524939,
+                37.987923255302974,
+              ],
+              Array [
+                -122.44252847887157,
+                37.93873205786406,
+              ],
+              Array [
+                -122.49485666643005,
+                37.93873205786406,
+              ],
+              Array [
+                -122.49485401280788,
+                37.987923255302974,
+              ],
+            ],
+          ],
+          "type": "Polygon",
+        },
+        "properties": Object {},
+        "type": "Feature",
+      },
+    ],
+    "type": "FeatureCollection",
+  },
+  "_isSnapped": undefined,
+  "_isTranslatable": undefined,
+  "_modeConfig": Object {
+    "enableSnapping": true,
+    "snapPixels": 5,
+  },
+  "_pickedHandle": undefined,
+  "_selectedFeatureIndexes": Array [
+    0,
+  ],
+  "_tentativeFeature": null,
+  "_updatedData": ImmutableFeatureCollection {
+    "featureCollection": Object {
+      "features": Array [
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  -127.11509550096605,
+                  55.852345878852674,
+                ],
+                Array [
+                  -127.06276731340756,
+                  55.852345878852674,
+                ],
+                Array [
+                  -127.08892433247462,
+                  55.90153707629159,
+                ],
+                Array [
+                  -127.14125252003316,
+                  55.90153707629159,
+                ],
+                Array [
+                  -127.11509550096605,
+                  55.852345878852674,
+                ],
+              ],
+            ],
+            "type": "Polygon",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  -122.40814940182412,
+                  37.97528325161274,
+                ],
+                Array [
+                  -122.37737022011595,
+                  37.97528325161274,
+                ],
+                Array [
+                  -122.37737142575622,
+                  37.952934704562644,
+                ],
+                Array [
+                  -122.40815060746439,
+                  37.952934704562644,
+                ],
+                Array [
+                  -122.40814940182412,
+                  37.97528325161274,
+                ],
+              ],
+            ],
+            "type": "Polygon",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              -122.28103267622373,
+              37.98843664327903,
+            ],
+            "type": "Point",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  -122.40908525092362,
+                  37.85902221692065,
+                ],
+                Array [
+                  -122.34432261530361,
+                  37.85902221692065,
+                ],
+                Array [
+                  -122.3442469760231,
+                  37.8157115979288,
+                ],
+                Array [
+                  -122.40900961164311,
+                  37.8157115979288,
+                ],
+                Array [
+                  -122.40908525092362,
+                  37.85902221692065,
+                ],
+              ],
+            ],
+            "type": "Polygon",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  -122.40682264287454,
+                  38.13330760982133,
+                ],
+                Array [
+                  -122.34143228624993,
+                  38.13330760982133,
+                ],
+                Array [
+                  -122.34144710122638,
+                  38.08906337516829,
+                ],
+                Array [
+                  -122.40683745785105,
+                  38.08906337516829,
+                ],
+                Array [
+                  -122.40682264287454,
+                  38.13330760982133,
+                ],
+              ],
+            ],
+            "type": "Polygon",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+      ],
+      "type": "FeatureCollection",
+    },
+  },
+  "featureCollection": ImmutableFeatureCollection {
+    "featureCollection": Object {
+      "features": Array [
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  -122.49485401280788,
+                  37.987923255302974,
+                ],
+                Array [
+                  -122.44252582524939,
+                  37.987923255302974,
+                ],
+                Array [
+                  -122.44252847887157,
+                  37.93873205786406,
+                ],
+                Array [
+                  -122.49485666643005,
+                  37.93873205786406,
+                ],
+                Array [
+                  -122.49485401280788,
+                  37.987923255302974,
+                ],
+              ],
+            ],
+            "type": "Polygon",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  -122.40814940182412,
+                  37.97528325161274,
+                ],
+                Array [
+                  -122.37737022011595,
+                  37.97528325161274,
+                ],
+                Array [
+                  -122.37737142575622,
+                  37.952934704562644,
+                ],
+                Array [
+                  -122.40815060746439,
+                  37.952934704562644,
+                ],
+                Array [
+                  -122.40814940182412,
+                  37.97528325161274,
+                ],
+              ],
+            ],
+            "type": "Polygon",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              -122.28103267622373,
+              37.98843664327903,
+            ],
+            "type": "Point",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  -122.40908525092362,
+                  37.85902221692065,
+                ],
+                Array [
+                  -122.34432261530361,
+                  37.85902221692065,
+                ],
+                Array [
+                  -122.3442469760231,
+                  37.8157115979288,
+                ],
+                Array [
+                  -122.40900961164311,
+                  37.8157115979288,
+                ],
+                Array [
+                  -122.40908525092362,
+                  37.85902221692065,
+                ],
+              ],
+            ],
+            "type": "Polygon",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  -122.40682264287454,
+                  38.13330760982133,
+                ],
+                Array [
+                  -122.34143228624993,
+                  38.13330760982133,
+                ],
+                Array [
+                  -122.34144710122638,
+                  38.08906337516829,
+                ],
+                Array [
+                  -122.40683745785105,
+                  38.08906337516829,
+                ],
+                Array [
+                  -122.40682264287454,
+                  38.13330760982133,
+                ],
+              ],
+            ],
+            "type": "Polygon",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+      ],
+      "type": "FeatureCollection",
+    },
+  },
+}
+`;
+
+exports[`translate-handler specific functions _getTranslateAction() - no pickedHandles 2`] = `
 Object {
   "editContext": null,
   "editType": "test-edit",
@@ -157,56 +999,57 @@ Object {
 }
 `;
 
-exports[`translate-handler specific functions performSnap() 1`] = `
+exports[`translate-handler specific functions _getTranslateAction() - positive case 1`] = `
 TranslateHandler {
   "_clickSequence": Array [],
   "_context": undefined,
-  "_geometryBeforeTranslate": undefined,
+  "_geometryBeforeTranslate": Object {
+    "features": Array [
+      Object {
+        "geometry": Object {
+          "coordinates": Array [
+            Array [
+              Array [
+                -122.49485401280788,
+                37.987923255302974,
+              ],
+              Array [
+                -122.44252582524939,
+                37.987923255302974,
+              ],
+              Array [
+                -122.44252847887157,
+                37.93873205786406,
+              ],
+              Array [
+                -122.49485666643005,
+                37.93873205786406,
+              ],
+              Array [
+                -122.49485401280788,
+                37.987923255302974,
+              ],
+            ],
+          ],
+          "type": "Polygon",
+        },
+        "properties": Object {},
+        "type": "Feature",
+      },
+    ],
+    "type": "FeatureCollection",
+  },
+  "_isSnapped": true,
   "_isTranslatable": undefined,
   "_modeConfig": Object {
-    "enablePolygonSnapping": true,
+    "enableSnapping": true,
+    "snapPixels": 5,
   },
-  "_pickedHandle": Object {
-    "featureIndex": 0,
-    "position": Array [
-      -122.40814192776702,
-      37.97531507849716,
-    ],
-    "positionIndexes": Array [
-      0,
-      0,
-    ],
-    "type": "snap",
-  },
-  "_potentialNonPickedHandle": Object {
-    "featureIndex": 1,
-    "position": Array [
-      -122.40814940182412,
-      37.97528325161274,
-    ],
-    "positionIndexes": Array [
-      0,
-      0,
-    ],
-    "type": "intermediate",
-  },
-  "_potentialSnapDistance": 7.728100362611004,
+  "_pickedHandle": undefined,
   "_selectedFeatureIndexes": Array [
     0,
   ],
-  "_snapAssociations": Array [
-    Array [
-      1,
-    ],
-    Array [
-      0,
-    ],
-  ],
   "_tentativeFeature": null,
-  "_unsnapMousePointStart": Array [
-    -122.49485401280788,
-    37.987923255302974,
-  ],
   "_updatedData": ImmutableFeatureCollection {
     "featureCollection": Object {
       "features": Array [
@@ -215,24 +1058,24 @@ TranslateHandler {
             "coordinates": Array [
               Array [
                 Array [
-                  -122.40814192776702,
-                  37.97531507849716,
+                  -122.49486414891447,
+                  37.98786482129586,
                 ],
                 Array [
-                  -122.35581374020853,
-                  37.97531507849716,
+                  -122.44253596135599,
+                  37.98786482129586,
                 ],
                 Array [
-                  -122.35587444851501,
-                  37.92612388105825,
+                  -122.44253860819038,
+                  37.93867362385696,
                 ],
                 Array [
-                  -122.40820263607355,
-                  37.92612388105825,
+                  -122.49486679574886,
+                  37.93867362385696,
                 ],
                 Array [
-                  -122.40814192776702,
-                  37.97531507849716,
+                  -122.49486414891447,
+                  37.98786482129586,
                 ],
               ],
             ],
@@ -494,20 +1337,169 @@ TranslateHandler {
 }
 `;
 
-exports[`translate-handler specific functions performUnsnap() 1`] = `
+exports[`translate-handler specific functions _getTranslateAction() - positive case 2`] = `
+Object {
+  "editContext": null,
+  "editType": "test-edit",
+  "featureIndexes": Array [
+    0,
+  ],
+  "updatedData": Object {
+    "features": Array [
+      Object {
+        "geometry": Object {
+          "coordinates": Array [
+            Array [
+              Array [
+                -122.49486414891447,
+                37.98786482129586,
+              ],
+              Array [
+                -122.44253596135599,
+                37.98786482129586,
+              ],
+              Array [
+                -122.44253860819038,
+                37.93867362385696,
+              ],
+              Array [
+                -122.49486679574886,
+                37.93867362385696,
+              ],
+              Array [
+                -122.49486414891447,
+                37.98786482129586,
+              ],
+            ],
+          ],
+          "type": "Polygon",
+        },
+        "properties": Object {},
+        "type": "Feature",
+      },
+      Object {
+        "geometry": Object {
+          "coordinates": Array [
+            Array [
+              Array [
+                -122.40814940182412,
+                37.97528325161274,
+              ],
+              Array [
+                -122.37737022011595,
+                37.97528325161274,
+              ],
+              Array [
+                -122.37737142575622,
+                37.952934704562644,
+              ],
+              Array [
+                -122.40815060746439,
+                37.952934704562644,
+              ],
+              Array [
+                -122.40814940182412,
+                37.97528325161274,
+              ],
+            ],
+          ],
+          "type": "Polygon",
+        },
+        "properties": Object {},
+        "type": "Feature",
+      },
+      Object {
+        "geometry": Object {
+          "coordinates": Array [
+            -122.28103267622373,
+            37.98843664327903,
+          ],
+          "type": "Point",
+        },
+        "properties": Object {},
+        "type": "Feature",
+      },
+      Object {
+        "geometry": Object {
+          "coordinates": Array [
+            Array [
+              Array [
+                -122.40908525092362,
+                37.85902221692065,
+              ],
+              Array [
+                -122.34432261530361,
+                37.85902221692065,
+              ],
+              Array [
+                -122.3442469760231,
+                37.8157115979288,
+              ],
+              Array [
+                -122.40900961164311,
+                37.8157115979288,
+              ],
+              Array [
+                -122.40908525092362,
+                37.85902221692065,
+              ],
+            ],
+          ],
+          "type": "Polygon",
+        },
+        "properties": Object {},
+        "type": "Feature",
+      },
+      Object {
+        "geometry": Object {
+          "coordinates": Array [
+            Array [
+              Array [
+                -122.40682264287454,
+                38.13330760982133,
+              ],
+              Array [
+                -122.34143228624993,
+                38.13330760982133,
+              ],
+              Array [
+                -122.34144710122638,
+                38.08906337516829,
+              ],
+              Array [
+                -122.40683745785105,
+                38.08906337516829,
+              ],
+              Array [
+                -122.40682264287454,
+                38.13330760982133,
+              ],
+            ],
+          ],
+          "type": "Polygon",
+        },
+        "properties": Object {},
+        "type": "Feature",
+      },
+    ],
+    "type": "FeatureCollection",
+  },
+}
+`;
+
+exports[`translate-handler specific functions _performSnapIfRequired() - positive case 1`] = `
 TranslateHandler {
   "_clickSequence": Array [],
   "_context": undefined,
   "_geometryBeforeTranslate": undefined,
+  "_isSnapped": true,
   "_isTranslatable": undefined,
-  "_modeConfig": Object {
-    "enablePolygonSnapping": true,
-  },
+  "_modeConfig": null,
   "_pickedHandle": Object {
     "featureIndex": 0,
     "position": Array [
-      -122.40814192776702,
-      37.97531507849716,
+      -122.37736008575104,
+      37.97534168562027,
     ],
     "positionIndexes": Array [
       0,
@@ -515,31 +1507,10 @@ TranslateHandler {
     ],
     "type": "snap",
   },
-  "_potentialNonPickedHandle": Object {
-    "featureIndex": 1,
-    "position": Array [
-      -122.37737022011595,
-      37.97528325161274,
-    ],
-    "positionIndexes": Array [
-      0,
-      1,
-    ],
-    "type": "intermediate",
-  },
-  "_potentialSnapDistance": undefined,
   "_selectedFeatureIndexes": Array [
     0,
   ],
-  "_snapAssociations": Array [
-    Array [],
-    Array [],
-  ],
   "_tentativeFeature": null,
-  "_unsnapMousePointStart": Array [
-    1,
-    1,
-  ],
   "_updatedData": ImmutableFeatureCollection {
     "featureCollection": Object {
       "features": Array [
@@ -548,24 +1519,24 @@ TranslateHandler {
             "coordinates": Array [
               Array [
                 Array [
-                  -122.49485401280788,
-                  37.987923255302974,
+                  -122.37736008575104,
+                  37.97534168562027,
                 ],
                 Array [
-                  -122.44252582524939,
-                  37.987923255302974,
+                  -122.32503189819255,
+                  37.97534168562027,
                 ],
                 Array [
-                  -122.44252847887157,
-                  37.93873205786406,
+                  -122.32511321531501,
+                  37.92615048818137,
                 ],
                 Array [
-                  -122.49485666643005,
-                  37.93873205786406,
+                  -122.3774414028735,
+                  37.92615048818137,
                 ],
                 Array [
-                  -122.49485401280788,
-                  37.987923255302974,
+                  -122.37736008575104,
+                  37.97534168562027,
                 ],
               ],
             ],
@@ -825,4 +1796,752 @@ TranslateHandler {
     },
   },
 }
+`;
+
+exports[`translate-handler specific functions _performTranslateIfRequired() - positive case 1`] = `
+TranslateHandler {
+  "_clickSequence": Array [],
+  "_context": undefined,
+  "_geometryBeforeTranslate": Object {
+    "features": Array [
+      Object {
+        "geometry": Object {
+          "coordinates": Array [
+            Array [
+              Array [
+                -122.49485401280788,
+                37.987923255302974,
+              ],
+              Array [
+                -122.44252582524939,
+                37.987923255302974,
+              ],
+              Array [
+                -122.44252847887157,
+                37.93873205786406,
+              ],
+              Array [
+                -122.49485666643005,
+                37.93873205786406,
+              ],
+              Array [
+                -122.49485401280788,
+                37.987923255302974,
+              ],
+            ],
+          ],
+          "type": "Polygon",
+        },
+        "properties": Object {},
+        "type": "Feature",
+      },
+    ],
+    "type": "FeatureCollection",
+  },
+  "_isSnapped": undefined,
+  "_isTranslatable": undefined,
+  "_modeConfig": null,
+  "_pickedHandle": undefined,
+  "_selectedFeatureIndexes": Array [
+    0,
+  ],
+  "_tentativeFeature": null,
+  "_updatedData": ImmutableFeatureCollection {
+    "featureCollection": Object {
+      "features": Array [
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  -121.21796449144563,
+                  38.98812621141101,
+                ],
+                Array [
+                  -121.16563630388714,
+                  38.98812621141101,
+                ],
+                Array [
+                  -121.16650960455183,
+                  38.93893501397209,
+                ],
+                Array [
+                  -121.21883779211032,
+                  38.93893501397209,
+                ],
+                Array [
+                  -121.21796449144563,
+                  38.98812621141101,
+                ],
+              ],
+            ],
+            "type": "Polygon",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  -122.40814940182412,
+                  37.97528325161274,
+                ],
+                Array [
+                  -122.37737022011595,
+                  37.97528325161274,
+                ],
+                Array [
+                  -122.37737142575622,
+                  37.952934704562644,
+                ],
+                Array [
+                  -122.40815060746439,
+                  37.952934704562644,
+                ],
+                Array [
+                  -122.40814940182412,
+                  37.97528325161274,
+                ],
+              ],
+            ],
+            "type": "Polygon",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              -122.28103267622373,
+              37.98843664327903,
+            ],
+            "type": "Point",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  -122.40908525092362,
+                  37.85902221692065,
+                ],
+                Array [
+                  -122.34432261530361,
+                  37.85902221692065,
+                ],
+                Array [
+                  -122.3442469760231,
+                  37.8157115979288,
+                ],
+                Array [
+                  -122.40900961164311,
+                  37.8157115979288,
+                ],
+                Array [
+                  -122.40908525092362,
+                  37.85902221692065,
+                ],
+              ],
+            ],
+            "type": "Polygon",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  -122.40682264287454,
+                  38.13330760982133,
+                ],
+                Array [
+                  -122.34143228624993,
+                  38.13330760982133,
+                ],
+                Array [
+                  -122.34144710122638,
+                  38.08906337516829,
+                ],
+                Array [
+                  -122.40683745785105,
+                  38.08906337516829,
+                ],
+                Array [
+                  -122.40682264287454,
+                  38.13330760982133,
+                ],
+              ],
+            ],
+            "type": "Polygon",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+      ],
+      "type": "FeatureCollection",
+    },
+  },
+  "featureCollection": ImmutableFeatureCollection {
+    "featureCollection": Object {
+      "features": Array [
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  -122.49485401280788,
+                  37.987923255302974,
+                ],
+                Array [
+                  -122.44252582524939,
+                  37.987923255302974,
+                ],
+                Array [
+                  -122.44252847887157,
+                  37.93873205786406,
+                ],
+                Array [
+                  -122.49485666643005,
+                  37.93873205786406,
+                ],
+                Array [
+                  -122.49485401280788,
+                  37.987923255302974,
+                ],
+              ],
+            ],
+            "type": "Polygon",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  -122.40814940182412,
+                  37.97528325161274,
+                ],
+                Array [
+                  -122.37737022011595,
+                  37.97528325161274,
+                ],
+                Array [
+                  -122.37737142575622,
+                  37.952934704562644,
+                ],
+                Array [
+                  -122.40815060746439,
+                  37.952934704562644,
+                ],
+                Array [
+                  -122.40814940182412,
+                  37.97528325161274,
+                ],
+              ],
+            ],
+            "type": "Polygon",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              -122.28103267622373,
+              37.98843664327903,
+            ],
+            "type": "Point",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  -122.40908525092362,
+                  37.85902221692065,
+                ],
+                Array [
+                  -122.34432261530361,
+                  37.85902221692065,
+                ],
+                Array [
+                  -122.3442469760231,
+                  37.8157115979288,
+                ],
+                Array [
+                  -122.40900961164311,
+                  37.8157115979288,
+                ],
+                Array [
+                  -122.40908525092362,
+                  37.85902221692065,
+                ],
+              ],
+            ],
+            "type": "Polygon",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  -122.40682264287454,
+                  38.13330760982133,
+                ],
+                Array [
+                  -122.34143228624993,
+                  38.13330760982133,
+                ],
+                Array [
+                  -122.34144710122638,
+                  38.08906337516829,
+                ],
+                Array [
+                  -122.40683745785105,
+                  38.08906337516829,
+                ],
+                Array [
+                  -122.40682264287454,
+                  38.13330760982133,
+                ],
+              ],
+            ],
+            "type": "Polygon",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+      ],
+      "type": "FeatureCollection",
+    },
+  },
+}
+`;
+
+exports[`translate-handler specific functions _updatePickedHandlePosition() - positive case 1`] = `
+Object {
+  "featureIndex": 0,
+  "position": Array [
+    -122,
+    37,
+  ],
+  "positionIndexes": Array [
+    0,
+    0,
+  ],
+  "type": "snap",
+}
+`;
+
+exports[`translate-handler specific functions getEditHandles() - no _pickedHandle 1`] = `
+Array [
+  Object {
+    "featureIndex": 1,
+    "position": Array [
+      -122.40814940182412,
+      37.97528325161274,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "snap",
+  },
+  Object {
+    "featureIndex": 1,
+    "position": Array [
+      -122.37737022011595,
+      37.97528325161274,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "snap",
+  },
+  Object {
+    "featureIndex": 1,
+    "position": Array [
+      -122.37737142575622,
+      37.952934704562644,
+    ],
+    "positionIndexes": Array [
+      0,
+      2,
+    ],
+    "type": "snap",
+  },
+  Object {
+    "featureIndex": 1,
+    "position": Array [
+      -122.40815060746439,
+      37.952934704562644,
+    ],
+    "positionIndexes": Array [
+      0,
+      3,
+    ],
+    "type": "snap",
+  },
+]
+`;
+
+exports[`translate-handler specific functions getEditHandles() 1`] = `
+Array [
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.49485401280788,
+      37.987923255302974,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.44252582524939,
+      37.987923255302974,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.44252847887157,
+      37.93873205786406,
+    ],
+    "positionIndexes": Array [
+      0,
+      2,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.49485666643005,
+      37.93873205786406,
+    ],
+    "positionIndexes": Array [
+      0,
+      3,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 2,
+    "position": Array [
+      -122.28103267622373,
+      37.98843664327903,
+    ],
+    "positionIndexes": Array [],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.40908525092362,
+      37.85902221692065,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.34432261530361,
+      37.85902221692065,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.3442469760231,
+      37.8157115979288,
+    ],
+    "positionIndexes": Array [
+      0,
+      2,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.40900961164311,
+      37.8157115979288,
+    ],
+    "positionIndexes": Array [
+      0,
+      3,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.40682264287454,
+      38.13330760982133,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.34143228624993,
+      38.13330760982133,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.34144710122638,
+      38.08906337516829,
+    ],
+    "positionIndexes": Array [
+      0,
+      2,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.40683745785105,
+      38.08906337516829,
+    ],
+    "positionIndexes": Array [
+      0,
+      3,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.49485401280788,
+      37.987923255302974,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "snap",
+  },
+]
+`;
+
+exports[`translate-handler specific functions getEditHandles() 2`] = `
+Array [
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.49485401280788,
+      37.987923255302974,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "snap",
+  },
+]
+`;
+
+exports[`translate-handler specific functions getEditHandles() 3`] = `
+Array [
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.49485401280788,
+      37.987923255302974,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.44252582524939,
+      37.987923255302974,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.44252847887157,
+      37.93873205786406,
+    ],
+    "positionIndexes": Array [
+      0,
+      2,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.49485666643005,
+      37.93873205786406,
+    ],
+    "positionIndexes": Array [
+      0,
+      3,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 2,
+    "position": Array [
+      -122.28103267622373,
+      37.98843664327903,
+    ],
+    "positionIndexes": Array [],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.40908525092362,
+      37.85902221692065,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.34432261530361,
+      37.85902221692065,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.3442469760231,
+      37.8157115979288,
+    ],
+    "positionIndexes": Array [
+      0,
+      2,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.40900961164311,
+      37.8157115979288,
+    ],
+    "positionIndexes": Array [
+      0,
+      3,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.40682264287454,
+      38.13330760982133,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.34143228624993,
+      38.13330760982133,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.34144710122638,
+      38.08906337516829,
+    ],
+    "positionIndexes": Array [
+      0,
+      2,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.40683745785105,
+      38.08906337516829,
+    ],
+    "positionIndexes": Array [
+      0,
+      3,
+    ],
+    "type": "intermediate",
+  },
+]
 `;

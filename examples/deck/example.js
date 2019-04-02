@@ -154,13 +154,6 @@ export default class Example extends Component<
     window.addEventListener('resize', this._resize);
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    if (this.state.mode === 'translate' && this.state.mode !== prevState.mode) {
-      /* eslint-disable-next-line react/no-did-update-set-state */
-      this.setState({ modeConfig: { enablePolygonSnapping: false, snapStrength: 0.2 } });
-    }
-  }
-
   componentWillUnmount() {
     window.removeEventListener('resize', this._resize);
   }
@@ -342,29 +335,22 @@ export default class Example extends Component<
   }
 
   _renderPolygonSnappingControls() {
-    const defaultSnapStrength = 0.2;
-    const snapStrengthValue =
-      (this.state.modeConfig && this.state.modeConfig.snapStrength) || defaultSnapStrength;
+    const snapPixels = (this.state.modeConfig && this.state.modeConfig.snapPixels) || 5;
     return (
       <div key="translate">
         <ToolboxRow>
-          <ToolboxLabel>Enable polygon snapping</ToolboxLabel>
+          <ToolboxLabel>Enable snapping</ToolboxLabel>
           <ToolboxControl>
             <input
               type="checkbox"
-              checked={Boolean(
-                this.state.modeConfig && this.state.modeConfig.enablePolygonSnapping
-              )}
+              checked={Boolean(this.state.modeConfig && this.state.modeConfig.enableSnapping)}
               onChange={event => {
                 const initModeConfig = this.state.modeConfig;
-                const { snapStrength } = initModeConfig;
                 const modeConfig = {
                   ...initModeConfig,
-                  enablePolygonSnapping: Boolean(event.target.checked)
+                  snapPixels,
+                  enableSnapping: Boolean(event.target.checked)
                 };
-                if (!snapStrength) {
-                  modeConfig.snapStrength = defaultSnapStrength;
-                }
                 this.setState({ modeConfig });
               }}
             />
@@ -372,23 +358,23 @@ export default class Example extends Component<
         </ToolboxRow>
 
         <ToolboxRow>
-          <ToolboxLabel>Snap strength</ToolboxLabel>
+          <ToolboxLabel>Snap pixels</ToolboxLabel>
           <ToolboxControl>
             <input
               type="range"
-              min="0.1"
-              max="1"
-              step="0.1"
-              value={snapStrengthValue}
+              min="1"
+              max="50"
+              step="1"
+              value={snapPixels}
               onChange={event => {
                 const initModeConfig = this.state.modeConfig;
-                const snapStrength = parseFloat(event.target.value);
+                const updatedSnapPixels = parseFloat(event.target.value);
                 this.setState({
-                  modeConfig: { ...initModeConfig, snapStrength }
+                  modeConfig: { ...initModeConfig, snapPixels: updatedSnapPixels }
                 });
               }}
             />
-            <div>{snapStrengthValue}</div>
+            <div>{snapPixels}</div>
           </ToolboxControl>
         </ToolboxRow>
       </div>

@@ -32,7 +32,7 @@ export class TranslateHandler extends ModeHandler {
       layerIds: ['geojson-point-edit-handles'],
       radius: snapPixels || DEFAULT_SNAP_PIXELS,
       viewports: [this._context.viewport],
-      depth: 3
+      depth: 2
     });
 
     const potentialSnapHandle = picks.find(

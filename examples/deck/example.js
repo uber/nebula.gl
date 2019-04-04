@@ -428,6 +428,17 @@ export default class Example extends Component<
         ))}
         {this._renderModeConfigControls()}
         <ToolboxDivider />
+        <ToolboxLabel>geoJSON</ToolboxLabel>
+        <ToolboxControl>
+          <textarea
+            id="geo-json-text"
+            rows={5}
+            style={{ width: '100%' }}
+            value={JSON.stringify(this.state.testFeatures)}
+            onChange={event => this.setState({ testFeatures: JSON.parse(event.target.value) })}
+          />
+        </ToolboxControl>
+        <ToolboxDivider />
         <ToolboxRow>
           <ToolboxLabel>Load sample data</ToolboxLabel>
           <ToolboxControl>

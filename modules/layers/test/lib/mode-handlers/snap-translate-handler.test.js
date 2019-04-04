@@ -1,5 +1,5 @@
 // @flow
-import { TranslateHandler } from '../../../src/mode-handlers/translate-handler';
+import { SnapTranslateHandler } from '../../../src/mode-handlers/snap-translate-handler';
 import type { FeatureCollection } from '../../../src/geojson-types.js';
 import {
   createFeatureCollection,
@@ -25,24 +25,29 @@ const mockUpdatedFeature = {
 };
 
 function mockFeatureCollectionState(features: any) {
-  const handler = new TranslateHandler(features);
+  const handler = new SnapTranslateHandler(features);
   handler.setSelectedFeatureIndexes([1]);
   return handler;
 }
 
-testModeHandlerHandlePointMove(modeName, TranslateHandler, featureCollection, '_isTranslatable');
+testModeHandlerHandlePointMove(
+  modeName,
+  SnapTranslateHandler,
+  featureCollection,
+  '_isTranslatable'
+);
 
 testHandleStartDragging(
   modeName,
-  TranslateHandler,
+  SnapTranslateHandler,
   featureCollection,
   '_isTranslatable',
   '_geometryBeforeTranslate'
 );
 
-testHandleStopDragging(modeName, TranslateHandler, featureCollection);
+testHandleStopDragging(modeName, SnapTranslateHandler, featureCollection);
 
-describe('translate-handler specific functions', () => {
+describe('snap-translate-handler specific functions', () => {
   let handler;
 
   beforeEach(() => {

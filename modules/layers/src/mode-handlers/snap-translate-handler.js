@@ -14,7 +14,7 @@ const DEFAULT_SNAP_PIXELS = 5;
 
 type HandlePicks = { pickedHandle?: EditHandle, potentialSnapHandle?: EditHandle };
 
-export class TranslateHandler extends ModeHandler {
+export class SnapTranslateHandler extends ModeHandler {
   _geometryBeforeTranslate: ?FeatureCollection;
   _isTranslatable: boolean;
   _updatedData: ImmutableFeatureCollection;
@@ -105,10 +105,7 @@ export class TranslateHandler extends ModeHandler {
     const distanceMoved = turfDistance(p1, p2);
     const direction = turfBearing(p1, p2);
 
-    return {
-      distanceMoved,
-      direction
-    };
+    return { distanceMoved, direction };
   }
 
   _shouldPerformSnap(pickedHandles: ?HandlePicks) {
@@ -246,8 +243,6 @@ export class TranslateHandler extends ModeHandler {
     }
 
     this._updatedData = this.getImmutableFeatureCollection();
-
-    const selectedIndexes = this.getSelectedFeatureIndexes();
     const { enableSnapping } = this.getModeConfig() || {};
 
     // Perform snap or unsnap if conditions are met
@@ -262,7 +257,7 @@ export class TranslateHandler extends ModeHandler {
     return {
       updatedData: this._updatedData.getObject(),
       editType,
-      featureIndexes: selectedIndexes,
+      featureIndexes: this.getSelectedFeatureIndexes(),
       editContext: null
     };
   }

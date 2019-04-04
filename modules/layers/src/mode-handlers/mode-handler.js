@@ -14,11 +14,13 @@ import type {
 } from '../event-types.js';
 import { ImmutableFeatureCollection } from '../immutable-feature-collection.js';
 
+export type EditHandleType = 'existing' | 'intermediate' | 'snap';
+
 export type EditHandle = {
   position: Position,
   positionIndexes: number[],
   featureIndex: number,
-  type: 'existing' | 'intermediate' | 'snap'
+  type: EditHandleType
 };
 
 export type EditAction = {
@@ -292,7 +294,7 @@ export function getIntermediatePosition(position1: Position, position2: Position
 export function getEditHandlesForGeometry(
   geometry: Geometry,
   featureIndex: number,
-  editHandleType: 'existing' | 'intermediate' | 'snap' = 'existing'
+  editHandleType: EditHandleType = 'existing'
 ) {
   let handles: EditHandle[] = [];
 
@@ -356,7 +358,7 @@ function getEditHandlesForCoordinates(
   coordinates: any[],
   positionIndexPrefix: number[],
   featureIndex: number,
-  editHandleType: 'existing' | 'intermediate' | 'snap' = 'existing'
+  editHandleType: EditHandleType = 'existing'
 ): EditHandle[] {
   const editHandles = [];
   for (let i = 0; i < coordinates.length; i++) {

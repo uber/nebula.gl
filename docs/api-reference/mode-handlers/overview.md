@@ -42,18 +42,18 @@ User can scale a feature about its centroid by clicking and dragging (inward or 
 
 User can rotate a feature about its centroid by clicking and dragging the selected geometry. This mode supports multiple selections.
 
-## [TranslateHandler](https://github.com/uber/nebula.gl/blob/master/modules/core/src/lib/mode-handlers/translate-handler.js)
+## [SnapTranslateHandler](https://github.com/uber/nebula.gl/blob/master/modules/core/src/lib/mode-handlers/snap-translate-handler.js)
 
 * Mode name: `translate`
 
-User can translate a feature by clicking selected feature and dragging anywhere on the screen. This mode supports multiple selections.
+The user can move a feature by selecting one or more features and dragging anywhere within the screen. Additionally, the user can initiate snapping by clicking and dragging the selected feature's vertex handles. If the vertex handle is close enough to another feature's vertex, the two features will snap together. This mode supports multiple selections.
 
 ## [DuplicateHandler](https://github.com/uber/nebula.gl/blob/master/modules/core/src/lib/mode-handlers/duplicate-handler.js)
 
 * Mode name: `duplicate`
 
 User can duplicate and translate a feature by clicking selected feature and dragging anywhere on the screen.
-This mode is extends TranslateHandler. This mode supports multiple selections.
+This mode is extends SnapTranslateHandler. This mode supports multiple selections.
 
 ## [DrawPointHandler](https://github.com/uber/nebula.gl/blob/master/modules/core/src/lib/mode-handlers/draw-point-handler.js)
 

@@ -1,13 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`translate-handler specific functions _calculateDistanceAndDirection() 1`] = `
+exports[`snap-translate-handler specific functions _calculateDistanceAndDirection() 1`] = `
 Object {
   "direction": -9.885464830954206,
   "distanceMoved": 9724.92501810167,
 }
 `;
 
-exports[`translate-handler specific functions _getEditHandlePicks() - no pickedHandle 1`] = `
+exports[`snap-translate-handler specific functions _getEditHandlePicks() - no pickedHandle 1`] = `
 Object {
   "potentialSnapHandle": Object {
     "featureIndex": 1,
@@ -24,7 +24,7 @@ Object {
 }
 `;
 
-exports[`translate-handler specific functions _getEditHandlePicks() - positive case 1`] = `
+exports[`snap-translate-handler specific functions _getEditHandlePicks() - positive case 1`] = `
 Object {
   "pickedHandle": Object {
     "featureIndex": 0,
@@ -53,7 +53,7 @@ Object {
 }
 `;
 
-exports[`translate-handler specific functions _getNonPickedIntermediateHandles() 1`] = `
+exports[`snap-translate-handler specific functions _getNonPickedIntermediateHandles() 1`] = `
 Array [
   Object {
     "featureIndex": 0,
@@ -211,8 +211,8 @@ Array [
 ]
 `;
 
-exports[`translate-handler specific functions _getTranslateAction() - no _geometryBeforeTranslate 1`] = `
-TranslateHandler {
+exports[`snap-translate-handler specific functions _getTranslateAction() - no _geometryBeforeTranslate 1`] = `
+SnapTranslateHandler {
   "_clickSequence": Array [],
   "_context": Object {
     "layerManager": Object {
@@ -515,8 +515,8 @@ TranslateHandler {
 }
 `;
 
-exports[`translate-handler specific functions _getTranslateAction() - no pickedHandles 1`] = `
-TranslateHandler {
+exports[`snap-translate-handler specific functions _getTranslateAction() - no pickedHandles 1`] = `
+SnapTranslateHandler {
   "_clickSequence": Array [],
   "_context": Object {
     "layerManager": Object {
@@ -857,7 +857,7 @@ TranslateHandler {
 }
 `;
 
-exports[`translate-handler specific functions _getTranslateAction() - no pickedHandles 2`] = `
+exports[`snap-translate-handler specific functions _getTranslateAction() - no pickedHandles 2`] = `
 Object {
   "editContext": null,
   "editType": "test-edit",
@@ -1007,8 +1007,8 @@ Object {
 }
 `;
 
-exports[`translate-handler specific functions _getTranslateAction() - positive case 1`] = `
-TranslateHandler {
+exports[`snap-translate-handler specific functions _getTranslateAction() - positive case 1`] = `
+SnapTranslateHandler {
   "_clickSequence": Array [],
   "_context": Object {
     "layerManager": Object {
@@ -1349,7 +1349,7 @@ TranslateHandler {
 }
 `;
 
-exports[`translate-handler specific functions _getTranslateAction() - positive case 2`] = `
+exports[`snap-translate-handler specific functions _getTranslateAction() - positive case 2`] = `
 Object {
   "editContext": null,
   "editType": "test-edit",
@@ -1499,8 +1499,8 @@ Object {
 }
 `;
 
-exports[`translate-handler specific functions _performSnapIfRequired() - positive case 1`] = `
-TranslateHandler {
+exports[`snap-translate-handler specific functions _performSnapIfRequired() - positive case 1`] = `
+SnapTranslateHandler {
   "_clickSequence": Array [],
   "_context": Object {
     "layerManager": Object {
@@ -1814,8 +1814,8 @@ TranslateHandler {
 }
 `;
 
-exports[`translate-handler specific functions _performTranslateIfRequired() - positive case 1`] = `
-TranslateHandler {
+exports[`snap-translate-handler specific functions _performTranslateIfRequired() - positive case 1`] = `
+SnapTranslateHandler {
   "_clickSequence": Array [],
   "_context": Object {
     "layerManager": Object {
@@ -2153,7 +2153,7 @@ TranslateHandler {
 }
 `;
 
-exports[`translate-handler specific functions _updatePickedHandlePosition() - positive case 1`] = `
+exports[`snap-translate-handler specific functions _updatePickedHandlePosition() - positive case 1`] = `
 Object {
   "featureIndex": 0,
   "position": Array [
@@ -2168,7 +2168,7 @@ Object {
 }
 `;
 
-exports[`translate-handler specific functions getEditHandles() - no _pickedHandle 1`] = `
+exports[`snap-translate-handler specific functions getEditHandles() - no _pickedHandle 1`] = `
 Array [
   Object {
     "featureIndex": 1,
@@ -2221,7 +2221,7 @@ Array [
 ]
 `;
 
-exports[`translate-handler specific functions getEditHandles() 1`] = `
+exports[`snap-translate-handler specific functions getEditHandles() 1`] = `
 Array [
   Object {
     "featureIndex": 0,
@@ -2391,7 +2391,7 @@ Array [
 ]
 `;
 
-exports[`translate-handler specific functions getEditHandles() 2`] = `
+exports[`snap-translate-handler specific functions getEditHandles() 2`] = `
 Array [
   Object {
     "featureIndex": 0,
@@ -2408,7 +2408,7 @@ Array [
 ]
 `;
 
-exports[`translate-handler specific functions getEditHandles() 3`] = `
+exports[`snap-translate-handler specific functions getEditHandles() 3`] = `
 Array [
   Object {
     "featureIndex": 0,

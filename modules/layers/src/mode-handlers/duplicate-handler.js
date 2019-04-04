@@ -2,9 +2,9 @@
 
 import type { StartDraggingEvent } from '../event-types.js';
 import type { EditAction } from './mode-handler.js';
-import { TranslateHandler } from './translate-handler';
+import { SnapTranslateHandler } from './snap-translate-handler';
 
-export class DuplicateHandler extends TranslateHandler {
+export class DuplicateHandler extends SnapTranslateHandler {
   handleStartDragging(event: StartDraggingEvent): ?EditAction {
     if (!this._isTranslatable) {
       return null;

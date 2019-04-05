@@ -6,6 +6,7 @@ import { ModeHandler } from '../mode-handlers/mode-handler.js';
 import { ViewHandler } from '../mode-handlers/view-handler.js';
 import { ModifyHandler } from '../mode-handlers/modify-handler.js';
 import { ElevationHandler } from '../mode-handlers/elevation-handler.js';
+import { SnappableHandler } from '../mode-handlers/snappable-handler.js';
 import { TranslateHandler } from '../mode-handlers/translate-handler.js';
 import { DuplicateHandler } from '../mode-handlers/duplicate-handler';
 import { RotateHandler } from '../mode-handlers/rotate-handler.js';
@@ -39,6 +40,34 @@ const DEFAULT_SELECTED_LINE_COLOR = [0x90, 0x90, 0x90, 0xff];
 const DEFAULT_SELECTED_FILL_COLOR = [0x90, 0x90, 0x90, 0x90];
 const DEFAULT_EDITING_EXISTING_POINT_COLOR = [0xc0, 0x0, 0x0, 0xff];
 const DEFAULT_EDITING_INTERMEDIATE_POINT_COLOR = [0x0, 0x0, 0x0, 0x80];
+const DEFAULT_EDITING_SNAP_POINT_COLOR = [0x7c, 0x00, 0xc0, 0xff];
+const DEFAULT_EDITING_EXISTING_POINT_RADIUS = 5;
+const DEFAULT_EDITING_INTERMEDIATE_POINT_RADIUS = 3;
+const DEFAULT_EDITING_SNAP_POINT_RADIUS = 7;
+
+function getEditHandleColor(handle) {
+  switch (handle.type) {
+    case 'existing':
+      return DEFAULT_EDITING_EXISTING_POINT_COLOR;
+    case 'snap':
+      return DEFAULT_EDITING_SNAP_POINT_COLOR;
+    case 'intermediate':
+    default:
+      return DEFAULT_EDITING_INTERMEDIATE_POINT_COLOR;
+  }
+}
+
+function getEditHandleRadius(handle) {
+  switch (handle.type) {
+    case 'existing':
+      return DEFAULT_EDITING_EXISTING_POINT_RADIUS;
+    case 'snap':
+      return DEFAULT_EDITING_SNAP_POINT_RADIUS;
+    case 'intermediate':
+    default:
+      return DEFAULT_EDITING_INTERMEDIATE_POINT_RADIUS;
+  }
+}
 
 const defaultProps = {
   mode: 'modify',
@@ -84,11 +113,8 @@ const defaultProps = {
   editHandlePointStrokeWidth: 1,
   editHandlePointRadiusMinPixels: 4,
   editHandlePointRadiusMaxPixels: 8,
-  getEditHandlePointColor: handle =>
-    handle.type === 'existing'
-      ? DEFAULT_EDITING_EXISTING_POINT_COLOR
-      : DEFAULT_EDITING_INTERMEDIATE_POINT_COLOR,
-  getEditHandlePointRadius: handle => (handle.type === 'existing' ? 5 : 3),
+  getEditHandlePointColor: getEditHandleColor,
+  getEditHandlePointRadius: getEditHandleRadius,
 
   // icon handles
   editHandleIconAtlas: null,
@@ -96,10 +122,7 @@ const defaultProps = {
   editHandleIconSizeScale: 1,
   getEditHandleIcon: handle => handle.type,
   getEditHandleIconSize: 10,
-  getEditHandleIconColor: handle =>
-    handle.type === 'existing'
-      ? DEFAULT_EDITING_EXISTING_POINT_COLOR
-      : DEFAULT_EDITING_INTERMEDIATE_POINT_COLOR,
+  getEditHandleIconColor: getEditHandleColor,
   getEditHandleIconAngle: 0,
 
   // Mode handlers
@@ -109,7 +132,7 @@ const defaultProps = {
     elevation: new ElevationHandler(),
     extrude: new ExtrudeHandler(),
     rotate: new RotateHandler(),
-    translate: new TranslateHandler(),
+    translate: new SnappableHandler(new TranslateHandler()),
     duplicate: new DuplicateHandler(),
     scale: new ScaleHandler(),
     drawPoint: new DrawPointHandler(),

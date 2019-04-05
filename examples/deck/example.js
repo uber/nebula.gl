@@ -122,6 +122,18 @@ const modeHandlers = Object.assign(
   EditableGeoJsonLayer.defaultProps.modeHandlers
 );
 
+function getEditHandleColor(handle: Object) {
+  switch (handle.type) {
+    case 'existing':
+      return [0xff, 0x80, 0x00, 0xff];
+    case 'snap':
+      return [0x7c, 0x00, 0xc0, 0xff];
+    case 'intermediate':
+    default:
+      return [0x0, 0x0, 0x0, 0x80];
+  }
+}
+
 export default class Example extends Component<
   {},
   {
@@ -334,6 +346,53 @@ export default class Example extends Component<
     );
   }
 
+  _renderSnappingControls() {
+    const snapPixels = (this.state.modeConfig && this.state.modeConfig.snapPixels) || 5;
+    return (
+      <div key="snap">
+        <ToolboxRow>
+          <ToolboxLabel>Enable snapping</ToolboxLabel>
+          <ToolboxControl>
+            <input
+              type="checkbox"
+              checked={Boolean(this.state.modeConfig && this.state.modeConfig.enableSnapping)}
+              onChange={event => {
+                const modeConfig = {
+                  ...this.state.modeConfig,
+                  snapPixels,
+                  enableSnapping: Boolean(event.target.checked)
+                };
+                this.setState({ modeConfig });
+              }}
+            />
+          </ToolboxControl>
+        </ToolboxRow>
+
+        <ToolboxRow>
+          <ToolboxLabel>Snap pixels</ToolboxLabel>
+          <ToolboxControl>
+            <input
+              type="range"
+              min="1"
+              max="50"
+              step="1"
+              value={snapPixels}
+              onChange={event => {
+                this.setState({
+                  modeConfig: {
+                    ...this.state.modeConfig,
+                    snapPixels: parseFloat(event.target.value)
+                  }
+                });
+              }}
+            />
+            <div>{snapPixels}</div>
+          </ToolboxControl>
+        </ToolboxRow>
+      </div>
+    );
+  }
+
   _renderModeConfigControls() {
     const controls = [];
 
@@ -348,6 +407,9 @@ export default class Example extends Component<
     }
     if (this.state.mode === 'split') {
       controls.push(this._renderSplitModeControls());
+    }
+    if (this.state.mode === 'translate') {
+      controls.push(this._renderSnappingControls());
     }
 
     return controls;
@@ -509,8 +571,7 @@ export default class Example extends Component<
       },
       getEditHandleIcon: d => d.type,
       getEditHandleIconSize: 40,
-      getEditHandleIconColor: handle =>
-        handle.type === 'existing' ? [0xff, 0x80, 0x00, 0xff] : [0x0, 0x0, 0x0, 0x80],
+      getEditHandleIconColor: getEditHandleColor,
 
       // Specify the same GeoJsonLayer props
       lineWidthMinPixels: 2,
@@ -526,8 +587,7 @@ export default class Example extends Component<
       },
 
       // Can customize editing points props
-      getEditHandlePointColor: handle =>
-        handle.type === 'existing' ? [0xff, 0x80, 0x00, 0xff] : [0x0, 0x0, 0x0, 0x80],
+      getEditHandlePointColor: getEditHandleColor,
       editHandlePointRadiusScale: 2,
 
       // customize tentative feature style

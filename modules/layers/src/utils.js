@@ -2,7 +2,6 @@
 
 import destination from '@turf/destination';
 import bearing from '@turf/bearing';
-import distance from '@turf/distance';
 import pointToLineDistance from '@turf/point-to-line-distance';
 import { point } from '@turf/helpers';
 import type { Position, LineString } from './geojson-types.js';
@@ -87,14 +86,4 @@ export function generatePointsParallelToLinePoints(
   const p4 = destination(p1, ddistance, orthogonalBearing);
 
   return [p3.geometry.coordinates, p4.geometry.coordinates];
-}
-
-export function calculateDistanceAndDirection(startDragPoint: Position, currentPoint: Position) {
-  const p1 = point(startDragPoint);
-  const p2 = point(currentPoint);
-
-  const distanceMoved = distance(p1, p2);
-  const direction = bearing(p1, p2);
-
-  return { distanceMoved, direction };
 }

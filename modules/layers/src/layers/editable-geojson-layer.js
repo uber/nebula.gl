@@ -6,7 +6,8 @@ import { ModeHandler } from '../mode-handlers/mode-handler.js';
 import { ViewHandler } from '../mode-handlers/view-handler.js';
 import { ModifyHandler } from '../mode-handlers/modify-handler.js';
 import { ElevationHandler } from '../mode-handlers/elevation-handler.js';
-import { SnapTranslateHandler } from '../mode-handlers/snap-translate-handler.js';
+import { Snappable } from '../mode-handlers/snappable.js';
+import { TranslateHandler } from '../mode-handlers/translate-handler.js';
 import { DuplicateHandler } from '../mode-handlers/duplicate-handler';
 import { RotateHandler } from '../mode-handlers/rotate-handler.js';
 import { ScaleHandler } from '../mode-handlers/scale-handler.js';
@@ -131,7 +132,7 @@ const defaultProps = {
     elevation: new ElevationHandler(),
     extrude: new ExtrudeHandler(),
     rotate: new RotateHandler(),
-    translate: new SnapTranslateHandler(),
+    translate: new Snappable(new TranslateHandler()),
     duplicate: new DuplicateHandler(),
     scale: new ScaleHandler(),
     drawPoint: new DrawPointHandler(),

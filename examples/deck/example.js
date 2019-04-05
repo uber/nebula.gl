@@ -122,6 +122,18 @@ const modeHandlers = Object.assign(
   EditableGeoJsonLayer.defaultProps.modeHandlers
 );
 
+function getEditHandleColor(handle: Object) {
+  switch (handle.type) {
+    case 'existing':
+      return [0xff, 0x80, 0x00, 0xff];
+    case 'snap':
+      return [0x7c, 0x00, 0xc0, 0xff];
+    case 'intermediate':
+    default:
+      return [0x0, 0x0, 0x0, 0x80];
+  }
+}
+
 export default class Example extends Component<
   {},
   {
@@ -491,18 +503,6 @@ export default class Example extends Component<
     );
   }
 
-  getEditHandleColor(handle) {
-    switch (handle.type) {
-      case 'existing':
-        return [0xff, 0x80, 0x00, 0xff];
-      case 'snap':
-        return [0x7c, 0x00, 0xc0, 0xff];
-      case 'intermediate':
-      default:
-        return [0x0, 0x0, 0x0, 0x80];
-    }
-  }
-
   render() {
     const { testFeatures, selectedFeatureIndexes, mode, modeConfig } = this.state;
 
@@ -571,7 +571,7 @@ export default class Example extends Component<
       },
       getEditHandleIcon: d => d.type,
       getEditHandleIconSize: 40,
-      getEditHandleIconColor: this.getEditHandleColor,
+      getEditHandleIconColor: getEditHandleColor,
 
       // Specify the same GeoJsonLayer props
       lineWidthMinPixels: 2,
@@ -587,7 +587,7 @@ export default class Example extends Component<
       },
 
       // Can customize editing points props
-      getEditHandlePointColor: this.getEditHandleColor,
+      getEditHandlePointColor: getEditHandleColor,
       editHandlePointRadiusScale: 2,
 
       // customize tentative feature style

@@ -12,6 +12,7 @@ type HandlePicks = { pickedHandle?: EditHandle, potentialSnapHandle?: EditHandle
 export class SnappableHandler extends ModeHandler {
   _handler: ModeHandler;
   _editHandlePicks: ?HandlePicks;
+  _startDragSnapHandlePosition: Position;
   _isSnapped: boolean;
 
   constructor(handler: ModeHandler) {
@@ -24,6 +25,7 @@ export class SnappableHandler extends ModeHandler {
   }
 
   setModeConfig(modeConfig: any): void {
+    this._modeConfig = modeConfig;
     this._handler.setModeConfig(modeConfig);
   }
 
@@ -32,28 +34,31 @@ export class SnappableHandler extends ModeHandler {
   }
 
   setDeckGlContext(context: Object) {
+    super.setDeckGlContext(context);
     this._handler.setDeckGlContext(context);
   }
 
   _getSnappedMouseEvent(event: Object, snapPoint: Position): PointerMoveEvent {
-    const snapPointScreenCoords = this._handler._context.viewport.project(snapPoint);
-    event.groundCoords = snapPoint;
-    event.screenCoords = snapPointScreenCoords;
-
-    return event;
+    return Object.assign({}, event, {
+      groundCoords: snapPoint,
+      screenCoords: this._context.viewport.project(snapPoint),
+      pointerDownGroundCoords: this._startDragSnapHandlePosition
+    });
   }
 
   _getEditHandlePicks(event: PointerMoveEvent): HandlePicks {
     const { screenCoords } = event;
-    const { snapPixels } = this._handler.getModeConfig() || {};
+    const { snapPixels = DEFAULT_SNAP_PIXELS } = this._modeConfig || {};
 
     const picks = this._handler._context.layerManager.pickObject({
       x: screenCoords[0],
       y: screenCoords[1],
       mode: 'query',
+      // TODO: fix this!
       layerIds: ['geojson-point-edit-handles'],
-      radius: snapPixels || DEFAULT_SNAP_PIXELS,
-      viewports: [this._handler._context.viewport],
+      //
+      radius: snapPixels,
+      viewports: [this._context.viewport],
       depth: 2
     });
 
@@ -110,7 +115,7 @@ export class SnappableHandler extends ModeHandler {
   // selected feature. If a snap handle has been picked, display said snap handle
   // along with all snappable points on all non-selected features.
   getEditHandles(picks?: Array<Object>, groundCoords?: Position): any[] {
-    const { enableSnapping } = this._handler.getModeConfig() || {};
+    const { enableSnapping } = this._modeConfig;
     const handles = this._handler.getEditHandles(picks, groundCoords);
 
     if (!enableSnapping) return handles;
@@ -166,6 +171,7 @@ export class SnappableHandler extends ModeHandler {
   }
 
   handleStartDragging(event: StartDraggingEvent): ?EditAction {
+    this._startDragSnapHandlePosition = (getPickedEditHandle(event.picks) || {}).position;
     return this._handler.handleStartDragging(event);
   }
 

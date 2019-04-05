@@ -334,10 +334,10 @@ export default class Example extends Component<
     );
   }
 
-  _renderPolygonSnappingControls() {
+  _renderSnappingControls() {
     const snapPixels = (this.state.modeConfig && this.state.modeConfig.snapPixels) || 5;
     return (
-      <div key="translate">
+      <div key="snap">
         <ToolboxRow>
           <ToolboxLabel>Enable snapping</ToolboxLabel>
           <ToolboxControl>
@@ -345,9 +345,8 @@ export default class Example extends Component<
               type="checkbox"
               checked={Boolean(this.state.modeConfig && this.state.modeConfig.enableSnapping)}
               onChange={event => {
-                const initModeConfig = this.state.modeConfig;
                 const modeConfig = {
-                  ...initModeConfig,
+                  ...this.state.modeConfig,
                   snapPixels,
                   enableSnapping: Boolean(event.target.checked)
                 };
@@ -367,10 +366,11 @@ export default class Example extends Component<
               step="1"
               value={snapPixels}
               onChange={event => {
-                const initModeConfig = this.state.modeConfig;
-                const updatedSnapPixels = parseFloat(event.target.value);
                 this.setState({
-                  modeConfig: { ...initModeConfig, snapPixels: updatedSnapPixels }
+                  modeConfig: {
+                    ...this.state.modeConfig,
+                    snapPixels: parseFloat(event.target.value)
+                  }
                 });
               }}
             />
@@ -397,7 +397,7 @@ export default class Example extends Component<
       controls.push(this._renderSplitModeControls());
     }
     if (this.state.mode === 'translate') {
-      controls.push(this._renderPolygonSnappingControls());
+      controls.push(this._renderSnappingControls());
     }
 
     return controls;

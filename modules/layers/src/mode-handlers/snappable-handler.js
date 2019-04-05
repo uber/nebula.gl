@@ -9,7 +9,7 @@ const DEFAULT_SNAP_PIXELS = 5;
 
 type HandlePicks = { pickedHandle?: EditHandle, potentialSnapHandle?: EditHandle };
 
-export class Snappable extends ModeHandler {
+export class SnappableHandler extends ModeHandler {
   _handler: ModeHandler;
   _editHandlePicks: ?HandlePicks;
   _isSnapped: boolean;

@@ -14,6 +14,7 @@ export { default as JunctionScatterplotLayer } from './layers/junction-scatterpl
 // Mode Handlers
 export { ModeHandler } from './mode-handlers/mode-handler.js';
 export { CompositeModeHandler } from './mode-handlers/composite-mode-handler.js';
+export { SnappableHandler } from './mode-handlers/snappable-handler.js';
 
 export { ModifyHandler } from './mode-handlers/modify-handler.js';
 export { DrawPointHandler } from './mode-handlers/draw-point-handler.js';

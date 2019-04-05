@@ -6,8 +6,7 @@ import {
   createPointerMoveEvent,
   getMockFeatureDetails,
   FeatureType,
-  mockedGeoJsonProperties,
-  mockNonPickedHandle
+  mockedGeoJsonProperties
 } from '../test-utils.js';
 
 export function mockHandleStartDragging(
@@ -63,20 +62,10 @@ export function testModeHandlerHandlePointMove(
   isActionEnabledName: string
 ) {
   describe('handlePointerMove()', () => {
-    let handler;
-
-    beforeEach(() => {
-      handler = new HandlerClass(featureCollection);
-      handler._context = {
-        layerManager: {
-          pickObject: () => [{ object: mockNonPickedHandle }]
-        }
-      };
-    });
-
     Object.values(FeatureType).forEach(featureType => {
       if (typeof featureType === 'string') {
         test(`${modeName} mode active when mouse is over selected ${featureType} feature`, () => {
+          const handler = new HandlerClass(featureCollection);
           const { clickCoords, index } = getMockFeatureDetails(featureType);
           handler.setSelectedFeatureIndexes([index]);
           mockHandlePointerMove(handler, {
@@ -89,6 +78,7 @@ export function testModeHandlerHandlePointMove(
     });
 
     test(`${modeName} mode active when mouse is over a multi-selected feature`, () => {
+      const handler = new HandlerClass(featureCollection);
       const { clickCoords, index } = getMockFeatureDetails(FeatureType.MULTI_LINE_STRING);
       const { index: secondIndex } = getMockFeatureDetails(FeatureType.POLYGON);
       handler.setSelectedFeatureIndexes([index, secondIndex]);
@@ -100,6 +90,7 @@ export function testModeHandlerHandlePointMove(
     });
 
     test(`${modeName} - no action when mouse is over non selected polygon`, () => {
+      const handler = new HandlerClass(featureCollection);
       const { clickCoords, index } = getMockFeatureDetails(FeatureType.POLYGON);
       handler.setSelectedFeatureIndexes([index + 1]);
       const { editAction, cancelMapPan } = mockHandlePointerMove(handler, {
@@ -112,6 +103,7 @@ export function testModeHandlerHandlePointMove(
     });
 
     test(`${modeName} - no action when mouse isn't over any feature`, () => {
+      const handler = new HandlerClass(featureCollection);
       const { clickCoords, index } = getMockFeatureDetails(FeatureType.POLYGON);
       handler.setSelectedFeatureIndexes([index]);
       const { editAction, cancelMapPan } = mockHandlePointerMove(handler, {
@@ -123,6 +115,7 @@ export function testModeHandlerHandlePointMove(
     });
 
     test(`${modeName} - no action when mouse is not over multi-selected selected feature`, () => {
+      const handler = new HandlerClass(featureCollection);
       const { clickCoords, index: nonSelectedIndex } = getMockFeatureDetails(
         FeatureType.MULTI_LINE_STRING
       );
@@ -148,13 +141,8 @@ export function testHandleStartDragging(
   getGeometryBeforeActionName: string
 ) {
   describe('handleStartDragging()', () => {
-    let handler;
-
-    beforeEach(() => {
-      handler = new HandlerClass(featureCollection);
-    });
-
     test(`${modeName} mode - initial geometry is assigned under valid conditions`, () => {
+      const handler = new HandlerClass(featureCollection);
       const { clickCoords, index } = getMockFeatureDetails(FeatureType.POINT);
       handler.setSelectedFeatureIndexes([index]);
       handler[isActionEnabledName] = true;
@@ -168,6 +156,7 @@ export function testHandleStartDragging(
     });
 
     test(`${modeName} mode - initial geometry is not assigned under invalid conditions`, () => {
+      const handler = new HandlerClass(featureCollection);
       const { clickCoords, index } = getMockFeatureDetails(FeatureType.POINT);
       handler.setSelectedFeatureIndexes([index]);
       handler[isActionEnabledName] = false;
@@ -188,19 +177,9 @@ export function testHandleStopDragging(
   featureCollection: FeatureCollection,
   featureFilter: (...args: Array<any>) => any = feature => feature
 ) {
-  let handler;
-
-  beforeEach(() => {
-    handler = new HandlerClass(featureCollection);
-    handler._context = {
-      layerManager: {
-        pickObject: () => [{ object: mockNonPickedHandle }]
-      }
-    };
-  });
-
   function testHandleStopDraggingForFeatureType(featureType: string) {
     test(`${modeName} mode action - single selected ${featureType} feature`, () => {
+      const handler = new HandlerClass(featureCollection);
       const { geoJson, clickCoords, index } = getMockFeatureDetails(featureType);
       handler.setSelectedFeatureIndexes([index]);
       const moveCoordinates = clickCoords.map(coord => coord + 0.5);
@@ -234,6 +213,7 @@ export function testHandleStopDragging(
       });
 
     test(`${modeName} mode action - geoJson properties are preserved after mode action`, () => {
+      const handler = new HandlerClass(featureCollection);
       const { clickCoords, index } = getMockFeatureDetails(FeatureType.POLYGON);
       handler.setSelectedFeatureIndexes([index]);
       const moveCoordinates = clickCoords.map(coord => coord + 0.5);
@@ -251,6 +231,7 @@ export function testHandleStopDragging(
     });
 
     test(`${modeName} mode action - multiple selected features (multipolygon and point)`, () => {
+      const handler = new HandlerClass(featureCollection);
       const multiPolygonDetails = getMockFeatureDetails(FeatureType.MULTI_POLYGON);
       const pointDetails = getMockFeatureDetails(FeatureType.POINT);
       handler.setSelectedFeatureIndexes([multiPolygonDetails.index, pointDetails.index]);

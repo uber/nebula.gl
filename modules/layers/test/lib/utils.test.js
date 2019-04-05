@@ -1,5 +1,4 @@
 import {
-  toDeckColor,
   recursivelyTraverseNestedArrays,
   generatePointsParallelToLinePoints
 } from '../../src/utils';
@@ -44,20 +43,6 @@ const MultiPolygon = {
     ]
   }
 };
-
-describe('toDeckColor()', () => {
-  it('toDeckColor() - positive case', () => {
-    const deckColor = toDeckColor([100, 90, 255, 1]);
-    const expectedResult = [25500, 22950, 65025, 255];
-    expect(deckColor).toEqual(expectedResult);
-  });
-
-  it('toDeckColor() - invalid color', () => {
-    const deckColor = toDeckColor(123123);
-    const expectedDefaultDeckColor = [255, 0, 0, 255];
-    expect(deckColor).toEqual(expectedDefaultDeckColor);
-  });
-});
 
 describe('recursivelyTraverseNestedArrays()', () => {
   it('should not call function for point', () => {

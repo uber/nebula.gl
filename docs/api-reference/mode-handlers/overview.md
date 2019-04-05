@@ -46,7 +46,8 @@ User can rotate a feature about its centroid by clicking and dragging the select
 
 * Mode name: `translate`
 
-The user can move a feature by selecting one or more features and dragging anywhere within the screen. Additionally, the user can initiate snapping by clicking and dragging the selected feature's vertex handles. If the vertex handle is close enough to another feature's vertex, the two features will snap together. This mode supports multiple selections.
+The user can move a feature by selecting one or more features and dragging anywhere within the screen.
+_Additionally, the user can initiate snapping by clicking and dragging the selected feature's vertex handles. If the vertex handle is close enough to another feature's vertex, the two features will snap together._
 
 ## [DuplicateHandler](https://github.com/uber/nebula.gl/blob/master/modules/layers/src/mode-handlers/duplicate-handler.js)
 

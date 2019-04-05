@@ -2,6 +2,14 @@
 /* eslint-env jest */
 
 import { ModeHandler } from '../../../src/mode-handlers/mode-handler.js';
+import {
+  createPointFeature,
+  createLineStringFeature,
+  createPolygonFeature,
+  createMultiPointFeature,
+  createMultiLineStringFeature,
+  createMultiPolygonFeature
+} from '../test-utils.js';
 
 let pointFeature;
 let lineStringFeature;
@@ -11,67 +19,19 @@ let multiLineStringFeature;
 let multiPolygonFeature;
 let featureCollection;
 
+export function mockFeatureCollectionState(polygon: any) {
+  const handler = new ModeHandler(polygon);
+  handler.setSelectedFeatureIndexes([1]);
+  return handler;
+}
+
 beforeEach(() => {
-  pointFeature = {
-    type: 'Feature',
-    properties: {},
-    geometry: { type: 'Point', coordinates: [1, 2] }
-  };
-
-  lineStringFeature = {
-    type: 'Feature',
-    properties: {},
-    geometry: { type: 'LineString', coordinates: [[1, 2], [2, 3], [3, 4]] }
-  };
-
-  polygonFeature = {
-    type: 'Feature',
-    properties: {},
-    geometry: {
-      type: 'Polygon',
-      coordinates: [
-        // exterior ring
-        [[-1, -1], [1, -1], [1, 1], [-1, 1], [-1, -1]],
-        // hole
-        [[-0.5, -0.5], [-0.5, 0.5], [0.5, 0.5], [0.5, -0.5], [-0.5, -0.5]]
-      ]
-    }
-  };
-
-  multiPointFeature = {
-    type: 'Feature',
-    properties: {},
-    geometry: { type: 'MultiPoint', coordinates: [[1, 2], [3, 4]] }
-  };
-
-  multiLineStringFeature = {
-    type: 'Feature',
-    properties: {},
-    geometry: {
-      type: 'MultiLineString',
-      coordinates: [[[1, 2], [2, 3], [3, 4]], [[5, 6], [6, 7], [7, 8]]]
-    }
-  };
-
-  multiPolygonFeature = {
-    type: 'Feature',
-    properties: {},
-    geometry: {
-      type: 'MultiPolygon',
-      coordinates: [
-        [
-          // exterior ring polygon 1
-          [[-1, -1], [1, -1], [1, 1], [-1, 1], [-1, -1]],
-          // hole  polygon 1
-          [[-0.5, -0.5], [-0.5, 0.5], [0.5, 0.5], [0.5, -0.5], [-0.5, -0.5]]
-        ],
-        [
-          // exterior ring polygon 2
-          [[2, -1], [4, -1], [4, 1], [2, 1], [2, -1]]
-        ]
-      ]
-    }
-  };
+  pointFeature = createPointFeature();
+  lineStringFeature = createLineStringFeature();
+  polygonFeature = createPolygonFeature();
+  multiPointFeature = createMultiPointFeature();
+  multiLineStringFeature = createMultiLineStringFeature();
+  multiPolygonFeature = createMultiPolygonFeature();
 
   featureCollection = {
     type: 'FeatureCollection',

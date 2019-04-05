@@ -5,7 +5,8 @@ import {
   FeatureType,
   createFeatureCollection,
   getMockFeatureDetails,
-  mockedGeoJsonProperties
+  mockedGeoJsonProperties,
+  mockNonPickedHandle
 } from '../test-utils.js';
 import {
   testModeHandlerHandlePointMove,
@@ -49,6 +50,17 @@ function testDuplicatingSingleFeature(featureType) {
 }
 
 describe('handleStartDragging()', () => {
+  let handler;
+
+  beforeEach(() => {
+    handler = new DuplicateHandler(featureCollection);
+    handler._context = {
+      layerManager: {
+        pickObject: () => [{ object: mockNonPickedHandle }]
+      }
+    };
+  });
+
   Object.values(FeatureType).forEach(featureType => {
     if (typeof featureType === 'string') {
       testDuplicatingSingleFeature(featureType);
@@ -56,7 +68,6 @@ describe('handleStartDragging()', () => {
   });
 
   test('duplicate multi-selected features (multipolygon and polygon)', () => {
-    const handler = new DuplicateHandler(featureCollection);
     const multiPolygonDetails = getMockFeatureDetails(FeatureType.MULTI_POLYGON);
     const polygonDetails = getMockFeatureDetails(FeatureType.POLYGON);
     const nonDupedFeatureTypes = Object.values(FeatureType).filter(
@@ -82,7 +93,6 @@ describe('handleStartDragging()', () => {
   });
 
   test('Single duplicated feature retains user supplied geoJson properties', () => {
-    const handler = new DuplicateHandler(featureCollection);
     const { index, clickCoords } = getMockFeatureDetails(FeatureType.POLYGON);
     handler.setSelectedFeatureIndexes([index]);
     handler._isTranslatable = true;
@@ -104,7 +114,6 @@ describe('handleStartDragging()', () => {
   });
 
   test('Multiple duplicated features retain user supplied geoJson properties (multipolygon and polygon)', () => {
-    const handler = new DuplicateHandler(featureCollection);
     const poly = getMockFeatureDetails(FeatureType.POLYGON);
     const multiPoly = getMockFeatureDetails(FeatureType.MULTI_POLYGON);
     handler.setSelectedFeatureIndexes([poly.index, multiPoly.index]);

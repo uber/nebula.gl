@@ -8,10 +8,12 @@ const INITIAL_STATE = {
 function getUniforms({ outlineEnabled, outlineRenderShadowmap, outlineShadowmap } = INITIAL_STATE) {
   const uniforms = {};
   if (outlineEnabled !== undefined) {
-    uniforms.outline_uEnabled = outlineEnabled; // ? 1.0 : 0.0;
+    // ? 1.0 : 0.0;
+    uniforms.outline_uEnabled = outlineEnabled;
   }
   if (outlineRenderShadowmap !== undefined) {
-    uniforms.outline_uRenderOutlines = outlineRenderShadowmap; // ? 1.0 : 0.0;
+    // ? 1.0 : 0.0;
+    uniforms.outline_uRenderOutlines = outlineRenderShadowmap;
   }
   if (outlineShadowmap !== undefined) {
     uniforms.outline_uShadowmap = outlineShadowmap;

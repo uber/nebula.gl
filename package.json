@@ -21,7 +21,7 @@
     "bootstrap": "lerna bootstrap",
     "build": "lerna exec npm run build",
     "pretty": "prettier --write \"{modules,examples,test}/**/*.js\" --loglevel warn",
-    "lint": "prettier-check \"{src,examples,test}/**/*.js\" && eslint src test examples #&& npm run lint-yarn",
+    "lint": "npm run lint-yarn && eslint modules/**/src examples",
     "lint-yarn": "!(grep -q unpm.u yarn.lock) && echo 'Lockfile valid.' || (echo 'Please rebuild yarn file using public npmrc' && false)",
     "flow": "flow",
     "prepublish": "npm run build",

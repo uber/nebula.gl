@@ -90,14 +90,14 @@ export class SnappableHandler extends ModeHandler {
         const updatedFeature = updatedData.features[selectedIndex];
 
         const { positionIndexes, featureIndex } = pickedHandle;
-        if (selectedIndex >= 0 && featureIndex !== selectedIndex) return;
-
-        const { coordinates } = updatedFeature.geometry;
-        // $FlowFixMe
-        (pickedHandle || {}).position = positionIndexes.reduce(
-          (a: any[], b: number) => a[b],
-          coordinates
-        );
+        if (selectedIndex >= 0 && featureIndex === selectedIndex) {
+          const { coordinates } = updatedFeature.geometry;
+          // $FlowFixMe
+          pickedHandle.position = positionIndexes.reduce(
+            (a: any[], b: number) => a[b],
+            coordinates
+          );
+        }
       }
     }
   }
@@ -119,7 +119,7 @@ export class SnappableHandler extends ModeHandler {
   // selected feature. If a snap handle has been picked, display said snap handle
   // along with all snappable points on all non-selected features.
   getEditHandles(picks?: Array<Object>, groundCoords?: Position): any[] {
-    const { enableSnapping } = this._modeConfig;
+    const { enableSnapping } = this._modeConfig || {};
     const handles = this._handler.getEditHandles(picks, groundCoords);
 
     if (!enableSnapping) return handles;
@@ -141,18 +141,12 @@ export class SnappableHandler extends ModeHandler {
     return handles.filter(Boolean);
   }
 
-  _shouldPerformSnap() {
-    if (!this._editHandlePicks) return false;
-    const { pickedHandle, potentialSnapHandle } = this._editHandlePicks || {};
-    return pickedHandle && potentialSnapHandle;
-  }
-
   _performSnapIfRequired() {
-    if (this._isSnapped || !this._editHandlePicks || !this._shouldPerformSnap()) return;
+    if (this._isSnapped) return;
     const { pickedHandle, potentialSnapHandle } = this._editHandlePicks || {};
-    if (!pickedHandle || !potentialSnapHandle) return;
-
-    this._isSnapped = true;
+    if (pickedHandle && potentialSnapHandle) {
+      this._isSnapped = true;
+    }
   }
 
   // Unsnapping only occurs after the user snaps two polygons but continues to drag the

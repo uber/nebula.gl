@@ -4,6 +4,17 @@ _All notable changes to this project will be documented in this file. This proje
 
 <!-- INSERT HERE -->
 
+## [0.11.1](https://github.com/uber/nebula.gl/compare/v0.11.0...v0.11.1) - 2019-04-06
+
+### Changes
+
+* Create ElevatedEditHandleLayer for better elevation editing (#195)
+* Add snapping to translate mode (#177)
+* Update immutable-feature-collection.js to copy elevation values when replacing coordinates (#194)
+* add textarea to examples/deck
+* Initial gatsby website structure (#186)
+* Fix HtmlOverlay to handle possible null children (#192)
+
 ## [0.11.0](https://github.com/uber/nebula.gl/compare/v0.10.5...v0.11.0) - 2019-03-21
 
 ### Changes

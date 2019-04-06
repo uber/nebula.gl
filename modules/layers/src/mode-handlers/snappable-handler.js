@@ -46,17 +46,21 @@ export class SnappableHandler extends ModeHandler {
     });
   }
 
+  _getEditHandleLayerId() {
+    // TODO: This is hacky, find a better way!
+    const { layers } = this._context.layerManager;
+    return layers.find(layer => layer.id.endsWith('-point-edit-handles')).id;
+  }
+
   _getEditHandlePicks(event: PointerMoveEvent): HandlePicks {
     const { screenCoords } = event;
     const { snapPixels = DEFAULT_SNAP_PIXELS } = this._modeConfig || {};
 
-    const picks = this._handler._context.layerManager.pickObject({
+    const picks = this._context.layerManager.pickObject({
       x: screenCoords[0],
       y: screenCoords[1],
       mode: 'query',
-      // TODO: fix this!
-      layerIds: ['geojson-point-edit-handles'],
-      //
+      layerIds: [this._getEditHandleLayerId()],
       radius: snapPixels,
       viewports: [this._context.viewport],
       depth: 2

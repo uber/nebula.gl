@@ -2,7 +2,7 @@
   "name": "nebula.gl",
   "description": "A suite of 3D-enabled data editing overlays, suitable for deck.gl",
   "license": "MIT",
-  "version": "0.11.0",
+  "version": "0.11.1",
   "author": "Georgios Karnas <georgios@uber.com>",
   "repository": {
     "type": "git",

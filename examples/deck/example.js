@@ -12,6 +12,7 @@ import {
   CompositeModeHandler,
   ModifyHandler,
   DrawLineStringHandler,
+  ElevatedEditHandleLayer,
   SELECTION_TYPE
 } from 'nebula.gl';
 
@@ -475,6 +476,21 @@ export default class Example extends Component<
         </ToolboxRow>
 
         <ToolboxRow>
+          <ToolboxLabel>Use ElevatedEditHandleLayer</ToolboxLabel>
+          <ToolboxControl>
+            <input
+              type="checkbox"
+              checked={this.state.editHandleType === 'elevated'}
+              onChange={() =>
+                this.setState({
+                  editHandleType: this.state.editHandleType === 'elevated' ? 'point' : 'elevated'
+                })
+              }
+            />
+          </ToolboxControl>
+        </ToolboxRow>
+
+        <ToolboxRow>
           <ToolboxLabel>Select Features</ToolboxLabel>
           <ToolboxControl>
             <input
@@ -551,7 +567,10 @@ export default class Example extends Component<
       },
 
       // test using icons for edit handles
-      editHandleType: this.state.editHandleType,
+      editHandleType:
+        this.state.editHandleType === 'elevated'
+          ? ElevatedEditHandleLayer
+          : this.state.editHandleType,
       editHandleIconAtlas: iconSheet,
       editHandleIconMapping: {
         intermediate: {

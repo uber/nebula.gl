@@ -52,7 +52,7 @@ export class ModifyHandler extends ModeHandler {
           [],
           (lineString, prefix) => {
             const lineStringFeature = toLineString(lineString);
-            const candidateIntermediatePoint = nearestPointOnLine(
+            const candidateIntermediatePoint = this.nearestPointOnLine(
               lineStringFeature,
               referencePoint
             );
@@ -85,6 +85,12 @@ export class ModifyHandler extends ModeHandler {
     }
 
     return handles;
+  }
+
+  // turf.js does not support elevation for nearestPointOnLine
+  nearestPointOnLine(line: any, inPoint: any): any {
+    // TODO: implement 3D nearestPointOnLine
+    return nearestPointOnLine(line, inPoint);
   }
 
   handleClick(event: ClickEvent): ?EditAction {

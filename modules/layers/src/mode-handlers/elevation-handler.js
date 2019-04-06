@@ -33,4 +33,12 @@ export class ElevationHandler extends ModifyHandler {
     const position = editHandle ? editHandle.position : event.groundCoords;
     return super.handleStopDragging(this.makeElevatedEvent(event, position));
   }
+
+  getCursor(params: { isDragging: boolean }): string {
+    let cursor = super.getCursor(params);
+    if (cursor === 'cell') {
+      cursor = 'ns-resize';
+    }
+    return cursor;
+  }
 }

@@ -26,13 +26,13 @@ function mockFeatureCollectionState(features: any) {
       project: coords => coords
     },
     layerManager: {
-      pickObject: () => [{ object: mockNonPickedHandle }]
+      pickObject: () => [{ object: mockNonPickedHandle }],
+      layers: [{ id: '-point-edit-handles' }]
     }
   };
 
   snappableHandler.setSelectedFeatureIndexes([1]);
-  snappableHandler._context = context;
-  translateHandler._context = context;
+  snappableHandler.setDeckGlContext(context);
 
   return { snappableHandler, translateHandler };
 }

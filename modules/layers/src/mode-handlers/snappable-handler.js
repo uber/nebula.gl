@@ -103,10 +103,10 @@ export class SnappableHandler extends ModeHandler {
     }
   }
 
-  // If this.pickFromOtherLayerIds is populated, this method will return the features from the
-  // specified layers. Additionally, if this.appendPicksFromOtherLayers is true, the features
-  // from other layers will be appended to the features in this._handler. Otherwise, this
-  // method will simply return the features from this._handler
+  // If pickFromOtherLayerIds is present in modeConfig, this method will return the features
+  // from the specified layers. Additionally, if appendPicksFromOtherLayers is set to true
+  // in modeConfig, the features from other layers will be appended to the features in
+  // this._handler. Otherwise, this method will simply return the features from this._handler.
   _getFeaturesFromRelevantLayer(): any[] {
     let features = [];
     const { pickFromOtherLayerIds, appendPicksFromOtherLayers } = this._modeConfig || {};

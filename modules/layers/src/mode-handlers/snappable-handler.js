@@ -14,10 +14,17 @@ export class SnappableHandler extends ModeHandler {
   _editHandlePicks: ?HandlePicks;
   _startDragSnapHandlePosition: Position;
   _isSnapped: boolean;
+  pickFromOtherLayerIds: ?(string[]);
+  appendPicksFromOtherLayers: ?boolean;
 
-  constructor(handler: ModeHandler) {
+  constructor(
+    handler: ModeHandler,
+    options: { pickFromOtherLayerIds?: string[], appendPicksFromOtherLayers?: boolean } = {}
+  ) {
     super();
     this._handler = handler;
+    this.pickFromOtherLayerIds = options.pickFromOtherLayerIds;
+    this.appendPicksFromOtherLayers = options.appendPicksFromOtherLayers;
   }
 
   setFeatureCollection(featureCollection: FeatureCollection): void {
@@ -103,12 +110,39 @@ export class SnappableHandler extends ModeHandler {
     }
   }
 
+  // If this.pickFromOtherLayerIds is populated, this method will return the features from the
+  // specified layers. Additionally, if this.appendPicksFromOtherLayers is true, the features
+  // from other layers will be appended to the features in this._handler. Otherwise, this
+  // method will simply return the features from this._handler
+  _getFeaturesFromRelevantLayer(): any[] {
+    let features = [];
+    if (this.pickFromOtherLayerIds) {
+      const otherLayersToPickFrom = this._context.layerManager.layers.filter(
+        layer => this.pickFromOtherLayerIds && this.pickFromOtherLayerIds.includes(layer.id)
+      );
+
+      features = otherLayersToPickFrom
+        .map(otherLayer => otherLayer.props.data)
+        .reduce((a, b) => [...a, ...b], []);
+
+      if (!this.appendPicksFromOtherLayers) {
+        return features;
+      }
+    }
+    return [...this._handler.featureCollection.getObject().features, ...features];
+  }
+
   _getNonPickedIntermediateHandles(): EditHandle[] {
     const handles = [];
-    const { features } = this._handler.featureCollection.getObject();
+    const features = this._getFeaturesFromRelevantLayer();
 
     for (let i = 0; i < features.length; i++) {
-      if (!this._handler.getSelectedFeatureIndexes().includes(i) && i < features.length) {
+      const isIndexSelected =
+        this.pickFromOtherLayerIds && !this.appendPicksFromOtherLayers
+          ? true
+          : !this._handler.getSelectedFeatureIndexes().includes(i) && i < features.length;
+
+      if (isIndexSelected) {
         const { geometry } = features[i];
         handles.push(...getEditHandlesForGeometry(geometry, i, 'intermediate'));
       }

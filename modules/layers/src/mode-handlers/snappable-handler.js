@@ -14,17 +14,10 @@ export class SnappableHandler extends ModeHandler {
   _editHandlePicks: ?HandlePicks;
   _startDragSnapHandlePosition: Position;
   _isSnapped: boolean;
-  pickFromOtherLayerIds: ?(string[]);
-  appendPicksFromOtherLayers: ?boolean;
 
-  constructor(
-    handler: ModeHandler,
-    options: { pickFromOtherLayerIds?: string[], appendPicksFromOtherLayers?: boolean } = {}
-  ) {
+  constructor(handler: ModeHandler) {
     super();
     this._handler = handler;
-    this.pickFromOtherLayerIds = options.pickFromOtherLayerIds;
-    this.appendPicksFromOtherLayers = options.appendPicksFromOtherLayers;
   }
 
   setFeatureCollection(featureCollection: FeatureCollection): void {
@@ -116,16 +109,18 @@ export class SnappableHandler extends ModeHandler {
   // method will simply return the features from this._handler
   _getFeaturesFromRelevantLayer(): any[] {
     let features = [];
-    if (this.pickFromOtherLayerIds) {
+    const { pickFromOtherLayerIds, appendPicksFromOtherLayers } = this._modeConfig || {};
+
+    if (pickFromOtherLayerIds) {
       const otherLayersToPickFrom = this._context.layerManager.layers.filter(
-        layer => this.pickFromOtherLayerIds && this.pickFromOtherLayerIds.includes(layer.id)
+        layer => pickFromOtherLayerIds && pickFromOtherLayerIds.includes(layer.id)
       );
 
       features = otherLayersToPickFrom
         .map(otherLayer => otherLayer.props.data)
         .reduce((a, b) => [...a, ...b], []);
 
-      if (!this.appendPicksFromOtherLayers) {
+      if (!appendPicksFromOtherLayers) {
         return features;
       }
     }
@@ -135,10 +130,11 @@ export class SnappableHandler extends ModeHandler {
   _getNonPickedIntermediateHandles(): EditHandle[] {
     const handles = [];
     const features = this._getFeaturesFromRelevantLayer();
+    const { pickFromOtherLayerIds, appendPicksFromOtherLayers } = this._modeConfig || {};
 
     for (let i = 0; i < features.length; i++) {
       const isIndexSelected =
-        this.pickFromOtherLayerIds && !this.appendPicksFromOtherLayers
+        pickFromOtherLayerIds && !appendPicksFromOtherLayers
           ? true
           : !this._handler.getSelectedFeatureIndexes().includes(i) && i < features.length;
 

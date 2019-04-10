@@ -238,21 +238,23 @@ describe('SnappableHandler - TranslateHandler tests', () => {
   });
 
   test('_getFeaturesFromRelevantLayer() - invalid pickFromOtherLayerIds specified', () => {
-    snappableHandler.pickFromOtherLayerIds = ['invalid-layer-id'];
+    snappableHandler.setModeConfig({ pickFromOtherLayerIds: ['invalid-layer-id'] });
     const features = snappableHandler._getFeaturesFromRelevantLayer();
     expect(features).toEqual([]);
   });
 
   test('_getFeaturesFromRelevantLayer() - valid pickFromOtherLayerIds specified', () => {
-    snappableHandler.pickFromOtherLayerIds = ['other-layer-test'];
+    snappableHandler.setModeConfig({ pickFromOtherLayerIds: ['other-layer-test'] });
     const features = snappableHandler._getFeaturesFromRelevantLayer();
     expect(features.length).toEqual(1);
     expect(features).toMatchSnapshot();
   });
 
   test('_getFeaturesFromRelevantLayer() - valid pickFromOtherLayerIds specified with appendPicksFromOtherLayers = true', () => {
-    snappableHandler.pickFromOtherLayerIds = ['other-layer-test'];
-    snappableHandler.appendPicksFromOtherLayers = true;
+    snappableHandler.setModeConfig({
+      pickFromOtherLayerIds: ['other-layer-test'],
+      appendPicksFromOtherLayers: true
+    });
     const features = snappableHandler._getFeaturesFromRelevantLayer();
     expect(features.length).toEqual(6);
     expect(features).toMatchSnapshot();
@@ -268,13 +270,13 @@ describe('SnappableHandler - TranslateHandler tests', () => {
   });
 
   test('_getNonPickedIntermediateHandles() - invalid pickFromOtherLayerIds specified', () => {
-    snappableHandler.pickFromOtherLayerIds = ['invalid-layer-id'];
+    snappableHandler.setModeConfig({ pickFromOtherLayerIds: ['invalid-layer-id'] });
     const intermediateHandles = snappableHandler._getNonPickedIntermediateHandles();
     expect(intermediateHandles).toEqual([]);
   });
 
   test('_getNonPickedIntermediateHandles() - valid pickFromOtherLayerIds specified', () => {
-    snappableHandler.pickFromOtherLayerIds = ['other-layer-test'];
+    snappableHandler.setModeConfig({ pickFromOtherLayerIds: ['other-layer-test'] });
     const intermediateHandles = snappableHandler._getNonPickedIntermediateHandles();
     const areAllHandleTypesIntermediate = intermediateHandles.every(
       ({ type }) => type === 'intermediate'
@@ -284,8 +286,10 @@ describe('SnappableHandler - TranslateHandler tests', () => {
   });
 
   test('_getNonPickedIntermediateHandles() - valid pickFromOtherLayerIds specified with appendPicksFromOtherLayers = true', () => {
-    snappableHandler.pickFromOtherLayerIds = ['other-layer-test'];
-    snappableHandler.appendPicksFromOtherLayers = true;
+    snappableHandler.setModeConfig({
+      pickFromOtherLayerIds: ['other-layer-test'],
+      appendPicksFromOtherLayers: true
+    });
     const intermediateHandles = snappableHandler._getNonPickedIntermediateHandles();
     const areAllHandleTypesIntermediate = intermediateHandles.every(
       ({ type }) => type === 'intermediate'

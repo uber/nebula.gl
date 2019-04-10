@@ -103,42 +103,42 @@ export class SnappableHandler extends ModeHandler {
     }
   }
 
-  // If pickFromOtherLayerIds is present in modeConfig, this method will return the features
-  // from the specified layers. Additionally, if appendPicksFromOtherLayers is set to true
-  // in modeConfig, the features from other layers will be appended to the features in
-  // this._handler. Otherwise, this method will simply return the features from this._handler.
-  _getFeaturesFromRelevantLayer(): any[] {
-    let features = [];
-    const { pickFromOtherLayerIds, appendPicksFromOtherLayers } = this._modeConfig || {};
+  // If layerIdsToSnapTo is present in modeConfig and is populated, this
+  // method will return the features from the specified layers along with the features
+  // that live in the current layer. Otherwise, this method will simply return the
+  // features from the current layer
+  _getFeaturesFromRelevantLayers(): Object[] {
+    const features = [...this._handler.featureCollection.getObject().features];
+    const { layerIdsToSnapTo } = this._modeConfig || {};
 
-    if (pickFromOtherLayerIds) {
-      const otherLayersToPickFrom = this._context.layerManager.layers.filter(
-        layer => pickFromOtherLayerIds && pickFromOtherLayerIds.includes(layer.id)
-      );
+    if (layerIdsToSnapTo && layerIdsToSnapTo.length) {
+      const otherLayersToSnapTo = this._context.layerManager.layers.filter(layer => {
+        const shouldPickFromLayer = layerIdsToSnapTo && layerIdsToSnapTo.includes(layer.id);
 
-      features = otherLayersToPickFrom
+        // Filter out the current layer since the current layer's features are
+        // already populated in the features array.
+        return shouldPickFromLayer && layer.id !== this._layerId;
+      });
+
+      const featuresFromAdditionalLayers = otherLayersToSnapTo
         .map(otherLayer => otherLayer.props.data)
         .reduce((a, b) => [...a, ...b], []);
 
-      if (!appendPicksFromOtherLayers) {
-        return features;
-      }
+      features.push(...featuresFromAdditionalLayers);
     }
-    return [...this._handler.featureCollection.getObject().features, ...features];
+    return features;
   }
 
   _getNonPickedIntermediateHandles(): EditHandle[] {
     const handles = [];
-    const features = this._getFeaturesFromRelevantLayer();
-    const { pickFromOtherLayerIds, appendPicksFromOtherLayers } = this._modeConfig || {};
+    const features = this._getFeaturesFromRelevantLayers();
 
     for (let i = 0; i < features.length; i++) {
-      const isIndexSelected =
-        pickFromOtherLayerIds && !appendPicksFromOtherLayers
-          ? true
-          : !this._handler.getSelectedFeatureIndexes().includes(i) && i < features.length;
+      // Filter out the currently selected feature(s)
+      const isCurrentIndexFeatureNotSelected =
+        i < features.length && !this._handler.getSelectedFeatureIndexes().includes(i);
 
-      if (isIndexSelected) {
+      if (isCurrentIndexFeatureNotSelected) {
         const { geometry } = features[i];
         handles.push(...getEditHandlesForGeometry(geometry, i, 'intermediate'));
       }

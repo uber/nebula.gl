@@ -262,6 +262,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       modeHandler.setModeConfig(props.modeConfig);
       modeHandler.setSelectedFeatureIndexes(props.selectedFeatureIndexes);
       modeHandler.setDeckGlContext(this.context);
+      modeHandler.setLayerId(props.id);
       this.updateTentativeFeature();
       this.updateEditHandles();
     }

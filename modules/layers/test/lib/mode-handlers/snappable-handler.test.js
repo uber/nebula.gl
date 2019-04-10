@@ -231,36 +231,27 @@ describe('SnappableHandler - TranslateHandler tests', () => {
     expect(pickedHandle).toEqual(initialPickedHandle);
   });
 
-  test('_getFeaturesFromRelevantLayer() - pickFromOtherLayerIds not specified', () => {
-    const features = snappableHandler._getFeaturesFromRelevantLayer();
+  test('_getFeaturesFromRelevantLayers() - layerIdsToSnapTo not specified', () => {
+    const features = snappableHandler._getFeaturesFromRelevantLayers();
     expect(features.length).toEqual(5);
     expect(features).toMatchSnapshot();
   });
 
-  test('_getFeaturesFromRelevantLayer() - invalid pickFromOtherLayerIds specified', () => {
-    snappableHandler.setModeConfig({ pickFromOtherLayerIds: ['invalid-layer-id'] });
-    const features = snappableHandler._getFeaturesFromRelevantLayer();
-    expect(features).toEqual([]);
-  });
-
-  test('_getFeaturesFromRelevantLayer() - valid pickFromOtherLayerIds specified', () => {
-    snappableHandler.setModeConfig({ pickFromOtherLayerIds: ['other-layer-test'] });
-    const features = snappableHandler._getFeaturesFromRelevantLayer();
-    expect(features.length).toEqual(1);
+  test('_getFeaturesFromRelevantLayers() - invalid layerIdsToSnapTo specified', () => {
+    snappableHandler.setModeConfig({ layerIdsToSnapTo: ['invalid-layer-id'] });
+    const features = snappableHandler._getFeaturesFromRelevantLayers();
+    expect(features.length).toEqual(5);
     expect(features).toMatchSnapshot();
   });
 
-  test('_getFeaturesFromRelevantLayer() - valid pickFromOtherLayerIds specified with appendPicksFromOtherLayers = true', () => {
-    snappableHandler.setModeConfig({
-      pickFromOtherLayerIds: ['other-layer-test'],
-      appendPicksFromOtherLayers: true
-    });
-    const features = snappableHandler._getFeaturesFromRelevantLayer();
+  test('_getFeaturesFromRelevantLayers() - valid layerIdsToSnapTo specified', () => {
+    snappableHandler.setModeConfig({ layerIdsToSnapTo: ['other-layer-test'] });
+    const features = snappableHandler._getFeaturesFromRelevantLayers();
     expect(features.length).toEqual(6);
     expect(features).toMatchSnapshot();
   });
 
-  test('_getNonPickedIntermediateHandles() - pickFromOtherLayerIds not specified', () => {
+  test('_getNonPickedIntermediateHandles() - layerIdsToSnapTo not specified', () => {
     const intermediateHandles = snappableHandler._getNonPickedIntermediateHandles();
     const areAllHandleTypesIntermediate = intermediateHandles.every(
       ({ type }) => type === 'intermediate'
@@ -269,27 +260,15 @@ describe('SnappableHandler - TranslateHandler tests', () => {
     expect(intermediateHandles).toMatchSnapshot();
   });
 
-  test('_getNonPickedIntermediateHandles() - invalid pickFromOtherLayerIds specified', () => {
-    snappableHandler.setModeConfig({ pickFromOtherLayerIds: ['invalid-layer-id'] });
+  test('_getNonPickedIntermediateHandles() - invalid layerIdsToSnapTo specified', () => {
+    snappableHandler.setModeConfig({ layerIdsToSnapTo: ['invalid-layer-id'] });
     const intermediateHandles = snappableHandler._getNonPickedIntermediateHandles();
-    expect(intermediateHandles).toEqual([]);
-  });
-
-  test('_getNonPickedIntermediateHandles() - valid pickFromOtherLayerIds specified', () => {
-    snappableHandler.setModeConfig({ pickFromOtherLayerIds: ['other-layer-test'] });
-    const intermediateHandles = snappableHandler._getNonPickedIntermediateHandles();
-    const areAllHandleTypesIntermediate = intermediateHandles.every(
-      ({ type }) => type === 'intermediate'
-    );
-    expect(areAllHandleTypesIntermediate).toBeTruthy();
+    expect(intermediateHandles.length > 0).toBeTruthy();
     expect(intermediateHandles).toMatchSnapshot();
   });
 
-  test('_getNonPickedIntermediateHandles() - valid pickFromOtherLayerIds specified with appendPicksFromOtherLayers = true', () => {
-    snappableHandler.setModeConfig({
-      pickFromOtherLayerIds: ['other-layer-test'],
-      appendPicksFromOtherLayers: true
-    });
+  test('_getNonPickedIntermediateHandles() - valid layerIdsToSnapTo specified', () => {
+    snappableHandler.setModeConfig({ layerIdsToSnapTo: ['other-layer-test'] });
     const intermediateHandles = snappableHandler._getNonPickedIntermediateHandles();
     const areAllHandleTypesIntermediate = intermediateHandles.every(
       ({ type }) => type === 'intermediate'

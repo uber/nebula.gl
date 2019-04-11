@@ -1,5 +1,34 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`SnappableHandler - TranslateHandler tests _getEditHandlePicks() - no _modeConfig 1`] = `
+Object {
+  "pickedHandle": Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.49485401280788,
+      37.987923255302974,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "snap",
+  },
+  "potentialSnapHandle": Object {
+    "featureIndex": 1,
+    "position": Array [
+      -122.37737022011595,
+      37.97528325161274,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "intermediate",
+  },
+}
+`;
+
 exports[`SnappableHandler - TranslateHandler tests _getEditHandlePicks() - no pickedHandle 1`] = `
 Object {
   "potentialSnapHandle": Object {
@@ -46,7 +75,480 @@ Object {
 }
 `;
 
-exports[`SnappableHandler - TranslateHandler tests _getNonPickedIntermediateHandles() 1`] = `
+exports[`SnappableHandler - TranslateHandler tests _getFeaturesFromRelevantLayers() - invalid layerIdsToSnapTo specified 1`] = `
+Array [
+  Object {
+    "geometry": Object {
+      "coordinates": Array [
+        Array [
+          Array [
+            -122.49485401280788,
+            37.987923255302974,
+          ],
+          Array [
+            -122.44252582524939,
+            37.987923255302974,
+          ],
+          Array [
+            -122.44252847887157,
+            37.93873205786406,
+          ],
+          Array [
+            -122.49485666643005,
+            37.93873205786406,
+          ],
+          Array [
+            -122.49485401280788,
+            37.987923255302974,
+          ],
+        ],
+      ],
+      "type": "Polygon",
+    },
+    "properties": Object {},
+    "type": "Feature",
+  },
+  Object {
+    "geometry": Object {
+      "coordinates": Array [
+        Array [
+          Array [
+            -122.40814940182412,
+            37.97528325161274,
+          ],
+          Array [
+            -122.37737022011595,
+            37.97528325161274,
+          ],
+          Array [
+            -122.37737142575622,
+            37.952934704562644,
+          ],
+          Array [
+            -122.40815060746439,
+            37.952934704562644,
+          ],
+          Array [
+            -122.40814940182412,
+            37.97528325161274,
+          ],
+        ],
+      ],
+      "type": "Polygon",
+    },
+    "properties": Object {},
+    "type": "Feature",
+  },
+  Object {
+    "geometry": Object {
+      "coordinates": Array [
+        -122.28103267622373,
+        37.98843664327903,
+      ],
+      "type": "Point",
+    },
+    "properties": Object {},
+    "type": "Feature",
+  },
+  Object {
+    "geometry": Object {
+      "coordinates": Array [
+        Array [
+          Array [
+            -122.40908525092362,
+            37.85902221692065,
+          ],
+          Array [
+            -122.34432261530361,
+            37.85902221692065,
+          ],
+          Array [
+            -122.3442469760231,
+            37.8157115979288,
+          ],
+          Array [
+            -122.40900961164311,
+            37.8157115979288,
+          ],
+          Array [
+            -122.40908525092362,
+            37.85902221692065,
+          ],
+        ],
+      ],
+      "type": "Polygon",
+    },
+    "properties": Object {},
+    "type": "Feature",
+  },
+  Object {
+    "geometry": Object {
+      "coordinates": Array [
+        Array [
+          Array [
+            -122.40682264287454,
+            38.13330760982133,
+          ],
+          Array [
+            -122.34143228624993,
+            38.13330760982133,
+          ],
+          Array [
+            -122.34144710122638,
+            38.08906337516829,
+          ],
+          Array [
+            -122.40683745785105,
+            38.08906337516829,
+          ],
+          Array [
+            -122.40682264287454,
+            38.13330760982133,
+          ],
+        ],
+      ],
+      "type": "Polygon",
+    },
+    "properties": Object {},
+    "type": "Feature",
+  },
+]
+`;
+
+exports[`SnappableHandler - TranslateHandler tests _getFeaturesFromRelevantLayers() - layerIdsToSnapTo not specified 1`] = `
+Array [
+  Object {
+    "geometry": Object {
+      "coordinates": Array [
+        Array [
+          Array [
+            -122.49485401280788,
+            37.987923255302974,
+          ],
+          Array [
+            -122.44252582524939,
+            37.987923255302974,
+          ],
+          Array [
+            -122.44252847887157,
+            37.93873205786406,
+          ],
+          Array [
+            -122.49485666643005,
+            37.93873205786406,
+          ],
+          Array [
+            -122.49485401280788,
+            37.987923255302974,
+          ],
+        ],
+      ],
+      "type": "Polygon",
+    },
+    "properties": Object {},
+    "type": "Feature",
+  },
+  Object {
+    "geometry": Object {
+      "coordinates": Array [
+        Array [
+          Array [
+            -122.40814940182412,
+            37.97528325161274,
+          ],
+          Array [
+            -122.37737022011595,
+            37.97528325161274,
+          ],
+          Array [
+            -122.37737142575622,
+            37.952934704562644,
+          ],
+          Array [
+            -122.40815060746439,
+            37.952934704562644,
+          ],
+          Array [
+            -122.40814940182412,
+            37.97528325161274,
+          ],
+        ],
+      ],
+      "type": "Polygon",
+    },
+    "properties": Object {},
+    "type": "Feature",
+  },
+  Object {
+    "geometry": Object {
+      "coordinates": Array [
+        -122.28103267622373,
+        37.98843664327903,
+      ],
+      "type": "Point",
+    },
+    "properties": Object {},
+    "type": "Feature",
+  },
+  Object {
+    "geometry": Object {
+      "coordinates": Array [
+        Array [
+          Array [
+            -122.40908525092362,
+            37.85902221692065,
+          ],
+          Array [
+            -122.34432261530361,
+            37.85902221692065,
+          ],
+          Array [
+            -122.3442469760231,
+            37.8157115979288,
+          ],
+          Array [
+            -122.40900961164311,
+            37.8157115979288,
+          ],
+          Array [
+            -122.40908525092362,
+            37.85902221692065,
+          ],
+        ],
+      ],
+      "type": "Polygon",
+    },
+    "properties": Object {},
+    "type": "Feature",
+  },
+  Object {
+    "geometry": Object {
+      "coordinates": Array [
+        Array [
+          Array [
+            -122.40682264287454,
+            38.13330760982133,
+          ],
+          Array [
+            -122.34143228624993,
+            38.13330760982133,
+          ],
+          Array [
+            -122.34144710122638,
+            38.08906337516829,
+          ],
+          Array [
+            -122.40683745785105,
+            38.08906337516829,
+          ],
+          Array [
+            -122.40682264287454,
+            38.13330760982133,
+          ],
+        ],
+      ],
+      "type": "Polygon",
+    },
+    "properties": Object {},
+    "type": "Feature",
+  },
+]
+`;
+
+exports[`SnappableHandler - TranslateHandler tests _getFeaturesFromRelevantLayers() - valid layerIdsToSnapTo specified 1`] = `
+Array [
+  Object {
+    "geometry": Object {
+      "coordinates": Array [
+        Array [
+          Array [
+            -122.49485401280788,
+            37.987923255302974,
+          ],
+          Array [
+            -122.44252582524939,
+            37.987923255302974,
+          ],
+          Array [
+            -122.44252847887157,
+            37.93873205786406,
+          ],
+          Array [
+            -122.49485666643005,
+            37.93873205786406,
+          ],
+          Array [
+            -122.49485401280788,
+            37.987923255302974,
+          ],
+        ],
+      ],
+      "type": "Polygon",
+    },
+    "properties": Object {},
+    "type": "Feature",
+  },
+  Object {
+    "geometry": Object {
+      "coordinates": Array [
+        Array [
+          Array [
+            -122.40814940182412,
+            37.97528325161274,
+          ],
+          Array [
+            -122.37737022011595,
+            37.97528325161274,
+          ],
+          Array [
+            -122.37737142575622,
+            37.952934704562644,
+          ],
+          Array [
+            -122.40815060746439,
+            37.952934704562644,
+          ],
+          Array [
+            -122.40814940182412,
+            37.97528325161274,
+          ],
+        ],
+      ],
+      "type": "Polygon",
+    },
+    "properties": Object {},
+    "type": "Feature",
+  },
+  Object {
+    "geometry": Object {
+      "coordinates": Array [
+        -122.28103267622373,
+        37.98843664327903,
+      ],
+      "type": "Point",
+    },
+    "properties": Object {},
+    "type": "Feature",
+  },
+  Object {
+    "geometry": Object {
+      "coordinates": Array [
+        Array [
+          Array [
+            -122.40908525092362,
+            37.85902221692065,
+          ],
+          Array [
+            -122.34432261530361,
+            37.85902221692065,
+          ],
+          Array [
+            -122.3442469760231,
+            37.8157115979288,
+          ],
+          Array [
+            -122.40900961164311,
+            37.8157115979288,
+          ],
+          Array [
+            -122.40908525092362,
+            37.85902221692065,
+          ],
+        ],
+      ],
+      "type": "Polygon",
+    },
+    "properties": Object {},
+    "type": "Feature",
+  },
+  Object {
+    "geometry": Object {
+      "coordinates": Array [
+        Array [
+          Array [
+            -122.40682264287454,
+            38.13330760982133,
+          ],
+          Array [
+            -122.34143228624993,
+            38.13330760982133,
+          ],
+          Array [
+            -122.34144710122638,
+            38.08906337516829,
+          ],
+          Array [
+            -122.40683745785105,
+            38.08906337516829,
+          ],
+          Array [
+            -122.40682264287454,
+            38.13330760982133,
+          ],
+        ],
+      ],
+      "type": "Polygon",
+    },
+    "properties": Object {},
+    "type": "Feature",
+  },
+  Object {
+    "geometry": Object {
+      "coordinates": Array [
+        Array [
+          Array [
+            -1,
+            -1,
+          ],
+          Array [
+            1,
+            -1,
+          ],
+          Array [
+            1,
+            1,
+          ],
+          Array [
+            -1,
+            1,
+          ],
+          Array [
+            -1,
+            -1,
+          ],
+        ],
+        Array [
+          Array [
+            -0.5,
+            -0.5,
+          ],
+          Array [
+            -0.5,
+            0.5,
+          ],
+          Array [
+            0.5,
+            0.5,
+          ],
+          Array [
+            0.5,
+            -0.5,
+          ],
+          Array [
+            -0.5,
+            -0.5,
+          ],
+        ],
+      ],
+      "type": "Polygon",
+    },
+    "properties": Object {},
+    "type": "Feature",
+  },
+]
+`;
+
+exports[`SnappableHandler - TranslateHandler tests _getNonPickedIntermediateHandles() - invalid layerIdsToSnapTo specified 1`] = `
 Array [
   Object {
     "featureIndex": 0,
@@ -197,6 +699,418 @@ Array [
     ],
     "positionIndexes": Array [
       0,
+      3,
+    ],
+    "type": "intermediate",
+  },
+]
+`;
+
+exports[`SnappableHandler - TranslateHandler tests _getNonPickedIntermediateHandles() - layerIdsToSnapTo not specified 1`] = `
+Array [
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.49485401280788,
+      37.987923255302974,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.44252582524939,
+      37.987923255302974,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.44252847887157,
+      37.93873205786406,
+    ],
+    "positionIndexes": Array [
+      0,
+      2,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.49485666643005,
+      37.93873205786406,
+    ],
+    "positionIndexes": Array [
+      0,
+      3,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 2,
+    "position": Array [
+      -122.28103267622373,
+      37.98843664327903,
+    ],
+    "positionIndexes": Array [],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.40908525092362,
+      37.85902221692065,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.34432261530361,
+      37.85902221692065,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.3442469760231,
+      37.8157115979288,
+    ],
+    "positionIndexes": Array [
+      0,
+      2,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.40900961164311,
+      37.8157115979288,
+    ],
+    "positionIndexes": Array [
+      0,
+      3,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.40682264287454,
+      38.13330760982133,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.34143228624993,
+      38.13330760982133,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.34144710122638,
+      38.08906337516829,
+    ],
+    "positionIndexes": Array [
+      0,
+      2,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.40683745785105,
+      38.08906337516829,
+    ],
+    "positionIndexes": Array [
+      0,
+      3,
+    ],
+    "type": "intermediate",
+  },
+]
+`;
+
+exports[`SnappableHandler - TranslateHandler tests _getNonPickedIntermediateHandles() - valid layerIdsToSnapTo specified 1`] = `
+Array [
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.49485401280788,
+      37.987923255302974,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.44252582524939,
+      37.987923255302974,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.44252847887157,
+      37.93873205786406,
+    ],
+    "positionIndexes": Array [
+      0,
+      2,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 0,
+    "position": Array [
+      -122.49485666643005,
+      37.93873205786406,
+    ],
+    "positionIndexes": Array [
+      0,
+      3,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 2,
+    "position": Array [
+      -122.28103267622373,
+      37.98843664327903,
+    ],
+    "positionIndexes": Array [],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.40908525092362,
+      37.85902221692065,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.34432261530361,
+      37.85902221692065,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.3442469760231,
+      37.8157115979288,
+    ],
+    "positionIndexes": Array [
+      0,
+      2,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 3,
+    "position": Array [
+      -122.40900961164311,
+      37.8157115979288,
+    ],
+    "positionIndexes": Array [
+      0,
+      3,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.40682264287454,
+      38.13330760982133,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.34143228624993,
+      38.13330760982133,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.34144710122638,
+      38.08906337516829,
+    ],
+    "positionIndexes": Array [
+      0,
+      2,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 4,
+    "position": Array [
+      -122.40683745785105,
+      38.08906337516829,
+    ],
+    "positionIndexes": Array [
+      0,
+      3,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 5,
+    "position": Array [
+      -1,
+      -1,
+    ],
+    "positionIndexes": Array [
+      0,
+      0,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 5,
+    "position": Array [
+      1,
+      -1,
+    ],
+    "positionIndexes": Array [
+      0,
+      1,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 5,
+    "position": Array [
+      1,
+      1,
+    ],
+    "positionIndexes": Array [
+      0,
+      2,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 5,
+    "position": Array [
+      -1,
+      1,
+    ],
+    "positionIndexes": Array [
+      0,
+      3,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 5,
+    "position": Array [
+      -0.5,
+      -0.5,
+    ],
+    "positionIndexes": Array [
+      1,
+      0,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 5,
+    "position": Array [
+      -0.5,
+      0.5,
+    ],
+    "positionIndexes": Array [
+      1,
+      1,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 5,
+    "position": Array [
+      0.5,
+      0.5,
+    ],
+    "positionIndexes": Array [
+      1,
+      2,
+    ],
+    "type": "intermediate",
+  },
+  Object {
+    "featureIndex": 5,
+    "position": Array [
+      0.5,
+      -0.5,
+    ],
+    "positionIndexes": Array [
+      1,
       3,
     ],
     "type": "intermediate",
@@ -841,6 +1755,244 @@ Array [
 `;
 
 exports[`SnappableHandler - TranslateHandler tests handlePointerMove() - positive case 1`] = `
+Array [
+  Object {
+    "editContext": null,
+    "editType": "translating",
+    "featureIndexes": Array [
+      0,
+    ],
+    "featureindexes": Array [
+      2,
+    ],
+    "updatedData": Object {
+      "features": Array [
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              1,
+              2,
+            ],
+            "type": "Point",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                1,
+                2,
+              ],
+              Array [
+                2,
+                3,
+              ],
+              Array [
+                3,
+                4,
+              ],
+            ],
+            "type": "LineString",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  -1,
+                  -1,
+                ],
+                Array [
+                  1,
+                  -1,
+                ],
+                Array [
+                  1,
+                  1,
+                ],
+                Array [
+                  -1,
+                  1,
+                ],
+                Array [
+                  -1,
+                  -1,
+                ],
+              ],
+              Array [
+                Array [
+                  -0.5,
+                  -0.5,
+                ],
+                Array [
+                  -0.5,
+                  0.5,
+                ],
+                Array [
+                  0.5,
+                  0.5,
+                ],
+                Array [
+                  0.5,
+                  -0.5,
+                ],
+                Array [
+                  -0.5,
+                  -0.5,
+                ],
+              ],
+            ],
+            "type": "Polygon",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                1,
+                2,
+              ],
+              Array [
+                3,
+                4,
+              ],
+            ],
+            "type": "MultiPoint",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  1,
+                  2,
+                ],
+                Array [
+                  2,
+                  3,
+                ],
+                Array [
+                  3,
+                  4,
+                ],
+              ],
+              Array [
+                Array [
+                  5,
+                  6,
+                ],
+                Array [
+                  6,
+                  7,
+                ],
+                Array [
+                  7,
+                  8,
+                ],
+              ],
+            ],
+            "type": "MultiLineString",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+        Object {
+          "geometry": Object {
+            "coordinates": Array [
+              Array [
+                Array [
+                  Array [
+                    -1,
+                    -1,
+                  ],
+                  Array [
+                    1,
+                    -1,
+                  ],
+                  Array [
+                    1,
+                    1,
+                  ],
+                  Array [
+                    -1,
+                    1,
+                  ],
+                  Array [
+                    -1,
+                    -1,
+                  ],
+                ],
+                Array [
+                  Array [
+                    -0.5,
+                    -0.5,
+                  ],
+                  Array [
+                    -0.5,
+                    0.5,
+                  ],
+                  Array [
+                    0.5,
+                    0.5,
+                  ],
+                  Array [
+                    0.5,
+                    -0.5,
+                  ],
+                  Array [
+                    -0.5,
+                    -0.5,
+                  ],
+                ],
+              ],
+              Array [
+                Array [
+                  Array [
+                    2,
+                    -1,
+                  ],
+                  Array [
+                    4,
+                    -1,
+                  ],
+                  Array [
+                    4,
+                    1,
+                  ],
+                  Array [
+                    2,
+                    1,
+                  ],
+                  Array [
+                    2,
+                    -1,
+                  ],
+                ],
+              ],
+            ],
+            "type": "MultiPolygon",
+          },
+          "properties": Object {},
+          "type": "Feature",
+        },
+      ],
+      "type": "FeatureCollection",
+    },
+  },
+]
+`;
+
+exports[`SnappableHandler - TranslateHandler tests handlePointerMove() - this._getEditHandlePicks does not return anything 1`] = `
 Array [
   Object {
     "editContext": null,

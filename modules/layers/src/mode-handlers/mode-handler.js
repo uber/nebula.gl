@@ -38,6 +38,7 @@ export class ModeHandler {
   _selectedFeatureIndexes: number[] = [];
   _clickSequence: Position[] = [];
   _context: Object;
+  _layerId: string;
 
   constructor(featureCollection?: FeatureCollection) {
     if (featureCollection) {
@@ -111,6 +112,10 @@ export class ModeHandler {
 
   setDeckGlContext(context: Object) {
     this._context = context;
+  }
+
+  setLayerId(layerId: string) {
+    this._layerId = layerId;
   }
 
   getClickSequence(): Position[] {

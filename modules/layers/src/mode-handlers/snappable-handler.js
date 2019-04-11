@@ -103,12 +103,42 @@ export class SnappableHandler extends ModeHandler {
     }
   }
 
+  // If layerIdsToSnapTo is present in modeConfig and is populated, this
+  // method will return the features from the specified layers along with the features
+  // that live in the current layer. Otherwise, this method will simply return the
+  // features from the current layer
+  _getFeaturesFromRelevantLayers(): Object[] {
+    const features = [...this._handler.featureCollection.getObject().features];
+    const { layerIdsToSnapTo } = this._modeConfig || {};
+
+    if (layerIdsToSnapTo && layerIdsToSnapTo.length) {
+      const otherLayersToSnapTo = this._context.layerManager.layers.filter(layer => {
+        const shouldPickFromLayer = layerIdsToSnapTo && layerIdsToSnapTo.includes(layer.id);
+
+        // Filter out the current layer since the current layer's features are
+        // already populated in the features array.
+        return shouldPickFromLayer && layer.id !== this._layerId;
+      });
+
+      const featuresFromAdditionalLayers = otherLayersToSnapTo
+        .map(otherLayer => otherLayer.props.data)
+        .reduce((a, b) => [...a, ...b], []);
+
+      features.push(...featuresFromAdditionalLayers);
+    }
+    return features;
+  }
+
   _getNonPickedIntermediateHandles(): EditHandle[] {
     const handles = [];
-    const { features } = this._handler.featureCollection.getObject();
+    const features = this._getFeaturesFromRelevantLayers();
 
     for (let i = 0; i < features.length; i++) {
-      if (!this._handler.getSelectedFeatureIndexes().includes(i) && i < features.length) {
+      // Filter out the currently selected feature(s)
+      const isCurrentIndexFeatureNotSelected =
+        i < features.length && !this._handler.getSelectedFeatureIndexes().includes(i);
+
+      if (isCurrentIndexFeatureNotSelected) {
         const { geometry } = features[i];
         handles.push(...getEditHandlesForGeometry(geometry, i, 'intermediate'));
       }

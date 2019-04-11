@@ -8,7 +8,8 @@ import {
   createPointerMoveEvent,
   featuresForSnappingTests,
   mockPickedHandle,
-  mockNonPickedHandle
+  mockNonPickedHandle,
+  createPolygonFeature
 } from '../test-utils.js';
 
 const mockTranslateEditAction = updatedData => ({
@@ -21,13 +22,19 @@ const mockTranslateEditAction = updatedData => ({
 function mockFeatureCollectionState(features: any) {
   const translateHandler = new TranslateHandler(features);
   const snappableHandler = new SnappableHandler(translateHandler);
+  const otherLayerToPickFrom = {
+    id: 'other-layer-test',
+    props: {
+      data: [createPolygonFeature()]
+    }
+  };
   const context = {
     viewport: {
       project: coords => coords
     },
     layerManager: {
       pickObject: () => [{ object: mockNonPickedHandle }],
-      layers: [{ id: '-point-edit-handles' }]
+      layers: [{ id: '-point-edit-handles' }, otherLayerToPickFrom]
     }
   };
 
@@ -110,6 +117,18 @@ describe('SnappableHandler - TranslateHandler tests', () => {
     expect(snappedMouseEvent).toEqual(expectedSnappedMouseEvent);
   });
 
+  test('_getEditHandleLayerId() - positive case', () => {
+    expect(snappableHandler._getEditHandleLayerId()).toEqual('-point-edit-handles');
+  });
+
+  test('_getEditHandleLayerId() - no matching layer', () => {
+    const originalLayers = snappableHandler._context.layerManager.layers;
+    const filteredOutLayers = originalLayers.filter(layer => !layer.id.endsWith('-edit-handles'));
+    snappableHandler._context.layerManager.layers = filteredOutLayers;
+
+    expect(snappableHandler._getEditHandleLayerId()).toEqual('');
+  });
+
   test('_getEditHandlePicks() - positive case', () => {
     snappableHandler.setModeConfig({ snapPixels: 5 });
     const mouseMoveEvent = createPointerMoveEvent([100, 100], []);
@@ -137,6 +156,25 @@ describe('SnappableHandler - TranslateHandler tests', () => {
 
     const picks = snappableHandler._getEditHandlePicks(mouseMoveEvent);
     expect(picks.pickedHandle).not.toBeDefined();
+    expect(picks.potentialSnapHandle).toBeDefined();
+    if (picks.potentialSnapHandle) {
+      expect(picks.potentialSnapHandle.type).toEqual('intermediate');
+    }
+    expect(picks).toMatchSnapshot();
+  });
+
+  test('_getEditHandlePicks() - no _modeConfig', () => {
+    const mouseMoveEvent = createPointerMoveEvent([100, 100], []);
+    mouseMoveEvent.screenCoords = [1, 1];
+    mouseMoveEvent.pointerDownPicks = [
+      { index: 0, isEditingHandle: true, object: mockPickedHandle }
+    ];
+
+    const picks = snappableHandler._getEditHandlePicks(mouseMoveEvent);
+    expect(picks.pickedHandle).toBeDefined();
+    if (picks.pickedHandle) {
+      expect(picks.pickedHandle.type).toEqual('snap');
+    }
     expect(picks.potentialSnapHandle).toBeDefined();
     if (picks.potentialSnapHandle) {
       expect(picks.potentialSnapHandle.type).toEqual('intermediate');
@@ -193,7 +231,44 @@ describe('SnappableHandler - TranslateHandler tests', () => {
     expect(pickedHandle).toEqual(initialPickedHandle);
   });
 
-  test('_getNonPickedIntermediateHandles()', () => {
+  test('_getFeaturesFromRelevantLayers() - layerIdsToSnapTo not specified', () => {
+    const features = snappableHandler._getFeaturesFromRelevantLayers();
+    expect(features.length).toEqual(5);
+    expect(features).toMatchSnapshot();
+  });
+
+  test('_getFeaturesFromRelevantLayers() - invalid layerIdsToSnapTo specified', () => {
+    snappableHandler.setModeConfig({ layerIdsToSnapTo: ['invalid-layer-id'] });
+    const features = snappableHandler._getFeaturesFromRelevantLayers();
+    expect(features.length).toEqual(5);
+    expect(features).toMatchSnapshot();
+  });
+
+  test('_getFeaturesFromRelevantLayers() - valid layerIdsToSnapTo specified', () => {
+    snappableHandler.setModeConfig({ layerIdsToSnapTo: ['other-layer-test'] });
+    const features = snappableHandler._getFeaturesFromRelevantLayers();
+    expect(features.length).toEqual(6);
+    expect(features).toMatchSnapshot();
+  });
+
+  test('_getNonPickedIntermediateHandles() - layerIdsToSnapTo not specified', () => {
+    const intermediateHandles = snappableHandler._getNonPickedIntermediateHandles();
+    const areAllHandleTypesIntermediate = intermediateHandles.every(
+      ({ type }) => type === 'intermediate'
+    );
+    expect(areAllHandleTypesIntermediate).toBeTruthy();
+    expect(intermediateHandles).toMatchSnapshot();
+  });
+
+  test('_getNonPickedIntermediateHandles() - invalid layerIdsToSnapTo specified', () => {
+    snappableHandler.setModeConfig({ layerIdsToSnapTo: ['invalid-layer-id'] });
+    const intermediateHandles = snappableHandler._getNonPickedIntermediateHandles();
+    expect(intermediateHandles.length > 0).toBeTruthy();
+    expect(intermediateHandles).toMatchSnapshot();
+  });
+
+  test('_getNonPickedIntermediateHandles() - valid layerIdsToSnapTo specified', () => {
+    snappableHandler.setModeConfig({ layerIdsToSnapTo: ['other-layer-test'] });
     const intermediateHandles = snappableHandler._getNonPickedIntermediateHandles();
     const areAllHandleTypesIntermediate = intermediateHandles.every(
       ({ type }) => type === 'intermediate'
@@ -429,6 +504,37 @@ describe('SnappableHandler - TranslateHandler tests', () => {
 
     expect(snappableHandler._performSnapIfRequired).toBeCalled();
     expect(snappableHandler._performUnsnapIfRequired).toBeCalled();
+    expect(snappableHandler._updatePickedHandlePosition).toBeCalled();
+    expect(snappableHandler._updatePickedHandlePosition.mock.calls[0]).toMatchSnapshot();
+  });
+
+  test('handlePointerMove() - this._getEditHandlePicks does not return anything', () => {
+    snappableHandler.setModeConfig({ enableSnapping: true });
+    snappableHandler._editHandlePicks = {
+      pickedHandle: mockPickedHandle,
+      potentialSnapHandle: mockNonPickedHandle
+    };
+    // $FlowFixMe
+    snappableHandler._performSnapIfRequired = jest.fn();
+    // $FlowFixMe
+    snappableHandler._performUnsnapIfRequired = jest.fn();
+    // $FlowFixMe
+    snappableHandler._updatePickedHandlePosition = jest.fn();
+    const mockedEditActionSummary = {
+      editAction: Object.assign({}, mockTranslateEditAction(createFeatureCollection()), {
+        featureindexes: [2]
+      })
+    };
+    // $FlowFixMe
+    snappableHandler._getEditHandlePicks = jest.fn(v => null);
+    // $FlowFixMe
+    translateHandler.handlePointerMove = jest.fn(v => mockedEditActionSummary);
+    const event = createPointerMoveEvent([20, 20]);
+    const eventSummary = snappableHandler.handlePointerMove(event);
+    expect(eventSummary).toBeDefined();
+
+    expect(snappableHandler._performSnapIfRequired).not.toBeCalled();
+    expect(snappableHandler._performUnsnapIfRequired).not.toBeCalled();
     expect(snappableHandler._updatePickedHandlePosition).toBeCalled();
     expect(snappableHandler._updatePickedHandlePosition.mock.calls[0]).toMatchSnapshot();
   });

@@ -4,6 +4,13 @@ _All notable changes to this project will be documented in this file. This proje
 
 <!-- INSERT HERE -->
 
+## [0.11.2](https://github.com/uber/nebula.gl/compare/v0.11.1...v0.11.2) - 2019-04-11
+
+### Changes
+
+* fix version bug
+* Add support to SnappableHandler to pick from other layers (#199)
+
 ## [0.11.1](https://github.com/uber/nebula.gl/compare/v0.11.0...v0.11.1) - 2019-04-06
 
 ### Changes

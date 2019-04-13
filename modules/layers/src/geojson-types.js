@@ -64,6 +64,12 @@ export type FeatureOf<T: Geometry> = {
   bbox?: BoundingBoxArray
 };
 
+export type FeatureWithProps<T: Geometry, P> = {
+  type: 'Feature',
+  geometry: T,
+  properties: P
+};
+
 export type Feature =
   | FeatureOf<Point>
   | FeatureOf<LineString>

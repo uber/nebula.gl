@@ -3,7 +3,7 @@
 import nearestPointOnLine from '@turf/nearest-point-on-line';
 import { point, lineString as toLineString } from '@turf/helpers';
 import { recursivelyTraverseNestedArrays } from '../utils.js';
-import type { Position } from '../geojson-types.js';
+import type { Position, FeatureOf, FeatureWithProps, Point, LineString } from '../geojson-types.js';
 import type {
   ClickEvent,
   PointerMoveEvent,
@@ -12,6 +12,8 @@ import type {
 } from '../event-types.js';
 import type { EditAction, EditHandle } from './mode-handler.js';
 import { ModeHandler, getPickedEditHandle, getEditHandlesForGeometry } from './mode-handler.js';
+
+type NearestPointType = FeatureWithProps<Point, { dist: number, index: number }>;
 
 export class ModifyHandler extends ModeHandler {
   _lastPointerMovePicks: *;
@@ -43,7 +45,7 @@ export class ModifyHandler extends ModeHandler {
         !featureAsPick.object.geometry.type.includes('Point') &&
         this._selectedFeatureIndexes.includes(featureAsPick.index)
       ) {
-        let intermediatePoint = null;
+        let intermediatePoint: ?NearestPointType = null;
         let positionIndexPrefix = [];
         const referencePoint = point(groundCoords);
         // process all lines of the (single) feature
@@ -88,8 +90,12 @@ export class ModifyHandler extends ModeHandler {
   }
 
   // turf.js does not support elevation for nearestPointOnLine
-  nearestPointOnLine(line: any, inPoint: any): any {
-    // TODO: implement 3D nearestPointOnLine
+  nearestPointOnLine(line: FeatureOf<LineString>, inPoint: FeatureOf<Point>): NearestPointType {
+    const { coordinates } = line.geometry;
+    if (coordinates.some(coord => coord.length > 2)) {
+      // This line has elevation, we need to use alternative algorithm
+    }
+
     return nearestPointOnLine(line, inPoint);
   }
 

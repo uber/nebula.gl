@@ -4,6 +4,7 @@ import window from 'global/window';
 import React, { Component } from 'react';
 import DeckGL, { MapView, MapController, COORDINATE_SYSTEM } from 'deck.gl';
 import { StaticMap } from 'react-map-gl';
+import GL from '@luma.gl/constants';
 import circle from '@turf/circle';
 
 import {
@@ -599,7 +600,7 @@ export default class Example extends Component<
 
       // Accessors receive an isSelected argument
       getFillColor: (feature, isSelected) => {
-        return isSelected ? [0x20, 0x40, 0x90, 0xc0] : [0x20, 0x20, 0x20, 0x30];
+        return isSelected ? [0x20, 0x40, 0x90, 0x80] : [0x20, 0x20, 0x20, 0x30];
       },
       getLineColor: (feature, isSelected) => {
         return isSelected ? [0x00, 0x20, 0x90, 0xff] : [0x20, 0x20, 0x20, 0xff];
@@ -611,7 +612,14 @@ export default class Example extends Component<
 
       // customize tentative feature style
       getTentativeLineDashArray: () => [7, 4],
-      getTentativeLineColor: () => [0x8f, 0x8f, 0x8f, 0xff]
+      getTentativeLineColor: () => [0x8f, 0x8f, 0x8f, 0xff],
+
+      parameters: {
+        depthTest: false,
+        blend: true,
+        blendEquation: GL.FUNC_ADD,
+        blendFunc: [GL.ONE, GL.ONE]
+      }
     });
 
     const layers = [editableGeoJsonLayer];

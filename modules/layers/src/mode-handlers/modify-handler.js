@@ -5,6 +5,12 @@ import { point, lineString as toLineString } from '@turf/helpers';
 import type { Position } from '@nebula.gl/edit-modes';
 import { recursivelyTraverseNestedArrays } from '../utils.js';
 import type { Position, FeatureOf, FeatureWithProps, Point, LineString } from '../geojson-types.js';
+import {
+  recursivelyTraverseNestedArrays,
+  nearestPointOnProjectedLine,
+  type NearestPointType
+} from '../utils.js';
+import type { Position, FeatureOf, Point, LineString } from '../geojson-types.js';
 import type {
   ClickEvent,
   PointerMoveEvent,
@@ -13,8 +19,6 @@ import type {
 } from '../event-types.js';
 import type { EditAction, EditHandle } from './mode-handler.js';
 import { ModeHandler, getPickedEditHandle, getEditHandlesForGeometry } from './mode-handler.js';
-
-type NearestPointType = FeatureWithProps<Point, { dist: number, index: number }>;
 
 export class ModifyHandler extends ModeHandler {
   _lastPointerMovePicks: *;
@@ -95,6 +99,7 @@ export class ModifyHandler extends ModeHandler {
     const { coordinates } = line.geometry;
     if (coordinates.some(coord => coord.length > 2)) {
       // This line has elevation, we need to use alternative algorithm
+      return nearestPointOnProjectedLine(line, inPoint, this._context.viewport);
     }
 
     return nearestPointOnLine(line, inPoint);

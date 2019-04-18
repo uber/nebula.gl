@@ -133,8 +133,6 @@ export default class SelectionLayer extends CompositeLayer {
       if (this.props[p] !== undefined) inheritedProps[p] = this.props[p];
     });
 
-    console.log(inheritedProps); // eslint-disable-line no-console
-
     const layers = [
       new EditableGeoJsonLayer(
         this.getSubLayerProps({

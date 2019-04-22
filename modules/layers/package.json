@@ -2,7 +2,7 @@
   "name": "@nebula.gl/layers",
   "description": "A suite of 3D-enabled data editing layers, suitable for deck.gl",
   "license": "MIT",
-  "version": "0.11.2",
+  "version": "0.12.0",
   "author": "Georgios Karnas <georgios@uber.com>",
   "repository": {
     "type": "git",
@@ -73,9 +73,9 @@
     "viewport-mercator-project": ">=5.0.0"
   },
   "peerDependencies": {
-    "@luma.gl/constants": "^7.0.0",
-    "@luma.gl/core": "^7.0.0",
     "@deck.gl/core": "^7.0.0",
-    "@deck.gl/layers": "^7.0.0"
+    "@deck.gl/layers": "^7.0.0",
+    "@luma.gl/constants": "^7.0.0",
+    "@luma.gl/core": "^7.0.0"
   }
 }

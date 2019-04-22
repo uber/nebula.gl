@@ -1,7 +1,7 @@
 // @flow
 /* eslint-env browser */
 
-import { CompositeLayer } from 'deck.gl';
+import { CompositeLayer } from '@deck.gl/core';
 import type {
   ClickEvent,
   StartDraggingEvent,
@@ -125,13 +125,12 @@ export default class EditableLayer extends CompositeLayer {
     const screenCoords = this.getScreenCoords(event);
     const groundCoords = this.getGroundCoords(screenCoords);
 
-    const picks = this.context.layerManager.pickObject({
+    const picks = this.context.deck.pickMultipleObjects({
       x: screenCoords[0],
       y: screenCoords[1],
-      mode: 'query',
       layerIds: [this.props.id],
       radius: 10,
-      viewports: [this.context.viewport]
+      depth: 2
     });
 
     this.setState({
@@ -184,13 +183,11 @@ export default class EditableLayer extends CompositeLayer {
       }
     }
 
-    const picks = this.context.layerManager.pickObject({
+    const picks = this.context.deck.pickMultipleObjects({
       x: screenCoords[0],
       y: screenCoords[1],
-      mode: 'query',
       layerIds: [this.props.id],
       radius: 10,
-      viewports: [this.context.viewport],
       depth: 2
     });
 

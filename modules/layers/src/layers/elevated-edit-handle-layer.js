@@ -1,7 +1,8 @@
 // @flow
 /* eslint-env browser */
 
-import { CompositeLayer, ScatterplotLayer, LineLayer } from 'deck.gl';
+import { CompositeLayer } from '@deck.gl/core';
+import { ScatterplotLayer, LineLayer } from '@deck.gl/layers';
 
 const defaultProps = {};
 

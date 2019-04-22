@@ -39,11 +39,8 @@ function makeLocalDevConfig(EXAMPLE_DIR = LIB_DIR) {
         '@nebula.gl/overlays/dist': OVERLAYS_SRC_DIR,
         '@nebula.gl/overlays': OVERLAYS_SRC_DIR,
 
-        'deck.gl': resolve(LIB_DIR, './node_modules/deck.gl'),
-        '@deck.gl/experimental-layers': resolve(
-          LIB_DIR,
-          './node_modules/@deck.gl/experimental-layers'
-        ),
+        '@deck.gl/core': resolve(LIB_DIR, './node_modules/@deck.gl/core'),
+        '@deck.gl/layers': resolve(LIB_DIR, './node_modules/@deck.gl/layers'),
 
         // Use luma.gl specified by root package.json
         'luma.gl': resolve(LIB_DIR, './node_modules/luma.gl'),

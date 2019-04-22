@@ -4,6 +4,15 @@ _All notable changes to this project will be documented in this file. This proje
 
 <!-- INSERT HERE -->
 
+## [0.12.0](https://github.com/uber/nebula.gl/compare/v0.11.2...v0.12.0) - 2019-04-22
+
+### Changes
+
+* v0.12.0
+* Upgrade to deck 7.0 (#183)
+* fix: remove extraneous console.log (#201)
+
+
 ## [0.11.2](https://github.com/uber/nebula.gl/compare/v0.11.1...v0.11.2) - 2019-04-11
 
 ### Changes

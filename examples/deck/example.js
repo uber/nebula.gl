@@ -612,10 +612,12 @@ export default class Example extends Component<
       getTentativeLineColor: () => [0x8f, 0x8f, 0x8f, 0xff],
 
       parameters: {
-        depthTest: false,
+        depthTest: true,
+        depthMask: false,
+
         blend: true,
         blendEquation: GL.FUNC_ADD,
-        blendFunc: [GL.ONE, GL.ONE]
+        blendFunc: [GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA]
       }
     });
 

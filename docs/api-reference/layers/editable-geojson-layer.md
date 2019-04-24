@@ -186,6 +186,7 @@ The following properties from [GeoJsonLayer](https://uber.github.io/deck.gl/#/do
 * `lineWidthScale`
 * `lineWidthMinPixels`
 * `lineWidthMaxPixels`
+* `lineWidthUnits`
 * `lineJointRounded`
 * `lineMiterLimit`
 * `pointRadiusScale`

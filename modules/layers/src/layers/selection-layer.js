@@ -33,6 +33,7 @@ const PASS_THROUGH_PROPS = [
   'lineWidthScale',
   'lineWidthMinPixels',
   'lineWidthMaxPixels',
+  'lineWidthUnits',
   'lineJointRounded',
   'lineMiterLimit',
   'pointRadiusScale',

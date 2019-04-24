@@ -521,6 +521,12 @@ export default class Example extends Component<
     );
   }
 
+  renderStaticMap(viewport: Object) {
+    return <StaticMap {...viewport} />;
+  }
+
+  customizeLayers(layers: Object[]) {}
+
   render() {
     const { testFeatures, selectedFeatureIndexes, mode, modeConfig } = this.state;
 
@@ -641,6 +647,8 @@ export default class Example extends Component<
       );
     }
 
+    this.customizeLayers(layers);
+
     return (
       <div style={styles.mapContainer}>
         <link href="https://api.mapbox.com/mapbox-gl-js/v0.44.0/mapbox-gl.css" rel="stylesheet" />
@@ -660,7 +668,7 @@ export default class Example extends Component<
           onClick={this._onLayerClick}
           onViewStateChange={({ viewState }) => this.setState({ viewport: viewState })}
         >
-          <StaticMap {...viewport} />
+          {this.renderStaticMap(viewport)}
         </DeckGL>
         {this._renderToolBox()}
       </div>

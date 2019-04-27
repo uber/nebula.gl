@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import { render } from 'react-dom';
 import MapGL from 'react-map-gl';
-import { SVGEditing, SVGEditingModes } from 'nebula.gl';
+import { SVGEditing, SVGEditingModes } from '@nebula.gl/svg';
 
 const MODES = [
   { name: 'Read Only', value: SVGEditingModes.READ_ONLY },

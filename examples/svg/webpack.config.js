@@ -5,10 +5,10 @@
 const resolve = require('path').resolve;
 const webpack = require('webpack');
 
-export const BABEL_CONFIG = {
-  presets: ['@babel/env', '@babel/react'],
-  plugins: ['@babel/proposal-class-properties']
-};
+// const BABEL_CONFIG = {
+//   presets: ['@babel/env', '@babel/react'],
+//   plugins: ['@babel/proposal-class-properties']
+// };
 
 const config = {
   mode: 'development',

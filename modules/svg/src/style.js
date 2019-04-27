@@ -32,7 +32,7 @@ export const DEFAULT_FEATURE_STYLES = {
   }
 };
 
-export function getStyle(stylesheet, feature, {selected, hovered}) {
+export function getStyle(stylesheet, feature, { selected, hovered }) {
   if (!feature) {
     return null;
   }
@@ -40,7 +40,7 @@ export function getStyle(stylesheet, feature, {selected, hovered}) {
   const type = feature.renderType;
 
   if (typeof stylesheet === 'function') {
-    return stylesheet(feature.toFeature(), {hovered, selected});
+    return stylesheet(feature.toFeature(), { hovered, selected });
   }
 
   const featureStyle = {

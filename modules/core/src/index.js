@@ -37,6 +37,3 @@ export { DrawCircleFromCenterHandler } from '@nebula.gl/layers';
 export { DrawCircleByBoundingBoxHandler } from '@nebula.gl/layers';
 export { DrawEllipseByBoundingBoxHandler } from '@nebula.gl/layers';
 export { DrawEllipseUsingThreePointsHandler } from '@nebula.gl/layers';
-
-// @nebular/svg
-export {SVGEditing, MODES as SVGEditingModes} from '@nebula.gl/svg';

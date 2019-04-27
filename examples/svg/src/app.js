@@ -1,20 +1,19 @@
 /* global window */
-import React, {Component} from 'react';
-import {render} from 'react-dom';
+import React, { Component } from 'react';
+import { render } from 'react-dom';
 import MapGL from 'react-map-gl';
-import {SVGEditing, SVGEditingModes} from 'nebula.gl';
+import { SVGEditing, SVGEditingModes } from 'nebula.gl';
 
 const MODES = [
-  {name: 'Read Only', value: SVGEditingModes.READ_ONLY},
-  {name: 'Select Feature', value: SVGEditingModes.SELECT_FEATURE},
-  {name: 'Edit Vertex', value: SVGEditingModes.EDIT_VERTEX},
-  {name: 'Draw Point', value: SVGEditingModes.DRAW_POINT},
-  {name: 'Draw Path', value: SVGEditingModes.DRAW_PATH},
-  {name: 'Draw Polygon', value: SVGEditingModes.DRAW_POLYGON}
+  { name: 'Read Only', value: SVGEditingModes.READ_ONLY },
+  { name: 'Select Feature', value: SVGEditingModes.SELECT_FEATURE },
+  { name: 'Edit Vertex', value: SVGEditingModes.EDIT_VERTEX },
+  { name: 'Draw Point', value: SVGEditingModes.DRAW_POINT },
+  { name: 'Draw Path', value: SVGEditingModes.DRAW_PATH },
+  { name: 'Draw Polygon', value: SVGEditingModes.DRAW_POLYGON }
 ];
 
 export default class App extends Component {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -40,23 +39,23 @@ export default class App extends Component {
     window.removeEventListener('keydown', this._onKeydown);
   }
 
-  _onKeydown = (evt) => {
+  _onKeydown = evt => {
     if (evt.keyCode === 27) {
       // esc key
-      this.setState({selectedId: null});
+      this.setState({ selectedId: null });
     }
   };
 
-  _updateViewport = (viewport) => {
-    this.setState({viewport});
+  _updateViewport = viewport => {
+    this.setState({ viewport });
   };
 
-  _onSelect = (selectedId) => {
-    this.setState({selectedId});
+  _onSelect = selectedId => {
+    this.setState({ selectedId });
   };
 
   _onDelete = () => {
-    const {selectedId} = this.state;
+    const { selectedId } = this.state;
     if (selectedId === null || selectedId === undefined) {
       return;
     }
@@ -64,11 +63,11 @@ export default class App extends Component {
     if (selectedIndex >= 0) {
       const newFeatures = [...this.state.features];
       newFeatures.splice(selectedIndex, 1);
-      this.setState({features: newFeatures, selectedId: null});
+      this.setState({ features: newFeatures, selectedId: null });
     }
   };
 
-  _onUpdate = (features) => {
+  _onUpdate = features => {
     this.setState({
       features
     });
@@ -76,16 +75,22 @@ export default class App extends Component {
 
   _renderControlPanel = () => {
     return (
-      <div style={{position: 'absolute', top: 0, right: 0, maxWidth: '320px'}}>
+      <div style={{ position: 'absolute', top: 0, right: 0, maxWidth: '320px' }}>
         <select defaultValue={this.state.mode} onChange={this._switchMode}>
-          {MODES.map((mode, i) => <option key={i} value={mode.value}>{mode.name}</option>)}
+          {MODES.map((mode, i) => (
+            <option key={i} value={mode.value}>
+              {mode.name}
+            </option>
+          ))}
         </select>
-        <button style={{marginLeft: 6}} onClick={this._onDelete}>delete</button>
+        <button style={{ marginLeft: 6 }} onClick={this._onDelete}>
+          delete
+        </button>
       </div>
     );
   };
 
-  _switchMode = (evt) => {
+  _switchMode = evt => {
     const mode = evt.target.value;
     this.setState({
       mode,
@@ -94,15 +99,16 @@ export default class App extends Component {
   };
 
   render() {
-    const {viewport, mode, selectedId, features} = this.state;
+    const { viewport, mode, selectedId, features } = this.state;
     return (
       <MapGL
         {...viewport}
-        ref={_ => this._mapRef = _}
+        ref={_ => (this._mapRef = _)}
         width="100%"
         height="100%"
         mapStyle="mapbox://styles/mapbox/dark-v9"
-        onViewportChange={this._updateViewport}>
+        onViewportChange={this._updateViewport}
+      >
         <SVGEditing
           viewport={viewport}
           eventManager={this._mapRef && this._mapRef._eventManager}
@@ -121,5 +127,5 @@ export default class App extends Component {
 }
 
 export function renderToDom(container) {
-  render(<App/>, container);
+  render(<App />, container);
 }

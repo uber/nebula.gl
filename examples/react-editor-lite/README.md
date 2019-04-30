@@ -4,7 +4,7 @@
 
 ## Example: react-editor-lite
 
-Demonstrates how to draw with `@nebula.gl/react-editor` 
+Demonstrates how to draw with `@nebula.gl/react-editor-lite` 
 
 ```
     npm install

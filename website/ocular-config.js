@@ -78,18 +78,18 @@ module.exports = {
     {
       text: 'High Performance Editing',
       desc: 'Can be used with deck.gl for performant rendering of 100K+ segment datasets',
-      img: 'icons/icon-high-precision.svg'
+      img: 'images/icon-high-precision.svg'
     },
     {
       text: 'Full GeoJson Support',
       desc:
         'Supports corner cases like converting between Polygon and MultiPolygon features as points are added',
-      img: 'icons/icon-high-precision.svg'
+      img: 'images/icon-high-precision.svg'
     },
     {
       text: '3D Editing',
       desc: 'Edit Volumes and Elevations.',
-      img: 'icons/icon-high-precision.svg'
+      img: 'images/icon-high-precision.svg'
     }
   ],
 

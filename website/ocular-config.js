@@ -57,7 +57,7 @@ module.exports = {
   PROJECT_NAME: 'nebula.gl',
   PROJECT_ORG: 'uber',
   PROJECT_URL: 'https://nebula.gl',
-  PROJECT_DESC: 'A suite of 3D-enabled data editing layers for deck.gl',
+  PROJECT_DESC: 'High-Performance, 3D-enabled GeoJSON editing deck.gl and React',
   PATH_PREFIX: '/',
 
   FOOTER_LOGO: '',
@@ -76,19 +76,19 @@ module.exports = {
 
   HOME_BULLETS: [
     {
-      text: 'Advanced GPU Usage',
-      desc: 'Simplifies advanced GPU techniques, e.g. Instanced Rendering and Transform Feedback',
-      img: 'icons/icon-react.svg'
+      text: 'High Performance Editing',
+      desc: 'Can be used with deck.gl for performant rendering of 100K+ segment datasets',
+      img: 'icons/icon-high-precision.svg'
     },
     {
-      text: 'Shader Programming Power',
+      text: 'Full GeoJson Support',
       desc:
-        'Modularized shader code, classes for controlling GPU inputs and outputs, and support for debugging and profiling of GLSL shaders.',
-      img: 'icons/icon-layers.svg'
+        'Supports corner cases like converting between Polygon and MultiPolygon features as points are added',
+      img: 'icons/icon-high-precision.svg'
     },
     {
-      text: 'Performance Focus',
-      desc: 'Enables visualization and GPU processing of very large data sets.',
+      text: '3D Editing',
+      desc: 'Edit Volumes and Elevations.',
       img: 'icons/icon-high-precision.svg'
     }
   ],

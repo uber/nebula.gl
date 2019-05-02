@@ -100,7 +100,7 @@ module.exports = {
   EXAMPLES: [
     // {
     //   title: 'Nebula-Deck',
-    //   componentUrl: resolve(__dirname, './examples/deck/example.js'),
+    //   componentUrl: resolve(__dirname, '../examples/deck/example.js'),
     //   path: 'examples/deck'
     // }
     // {

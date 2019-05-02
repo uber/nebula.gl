@@ -35,7 +35,9 @@ export const styles = {
 };
 
 export const ToolboxRow = props => <div style={styles.toolboxRow}>{props.children}</div>;
-export const ToolboxRowWrapping = props => <div style={styles.toolboxRowWrapping}>{props.children}</div>;
+export const ToolboxRowWrapping = props => (
+  <div style={styles.toolboxRowWrapping}>{props.children}</div>
+);
 export const ToolboxLabel = props => <div style={styles.toolboxLabel}>{props.children}</div>;
 export const ToolboxControl = props => <div style={styles.toolboxItem}>{props.children}</div>;
 export const ToolboxDivider = props => <div style={styles.toolboxDivider} />;

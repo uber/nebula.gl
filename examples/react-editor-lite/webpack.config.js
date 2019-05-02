@@ -50,11 +50,9 @@ const config = {
   },
 
   // Optional: Enables reading mapbox token from environment variable
-  plugins: [
-    new webpack.EnvironmentPlugin(['MapboxAccessToken'])
-  ]
+  plugins: [new webpack.EnvironmentPlugin(['MapboxAccessToken'])]
 };
 
 // Enables bundling against src in this repo rather than the installed version
-module.exports = env => env && env.local ?
-  require('../webpack.config.local')(config)(env) : config;
+module.exports = env =>
+  env && env.local ? require('../webpack.config.local')(config)(env) : config;

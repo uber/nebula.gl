@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { MjolnirEvent } from 'mjolnir.js';
+// import { MjolnirEvent } from 'mjolnir.js';
 import WebMercatorViewport from 'viewport-mercator-project';
 
 import Feature from './feature';
@@ -131,10 +131,7 @@ export default class Editor extends PureComponent {
   };
 
   _onClickFeature = (evt, feature) => {
-    if (
-      this.props.mode === MODES.SELECT_FEATURE ||
-      this.props.mode === MODES.EDIT_VERTEX
-    ) {
+    if (this.props.mode === MODES.SELECT_FEATURE || this.props.mode === MODES.EDIT_VERTEX) {
       this.props.onSelect(feature.id);
       evt.stopImmediatePropagation();
     }
@@ -183,17 +180,15 @@ export default class Editor extends PureComponent {
   _onEvent = (handler, evt, ...args) => {
     const { mode } = this.props;
     evt.stopImmediatePropagation();
-    if (
-      mode === MODES.READ_ONLY ||
-      (mode === MODES.SELECT_FEATURE && handler !== this._onClickFeature)
-    ) {
+    if (mode === MODES.READ_ONLY) {
       return;
     }
 
     handler(evt, ...args);
   };
 
-  _onMouseUp = (evt: MjolnirEvent) => {
+  // eslint-disable-next-line no-inline-comments
+  _onMouseUp = (evt /* MjolnirEvent */) => {
     this.setState({
       isDragging: false,
       didDrag: false
@@ -207,7 +202,8 @@ export default class Editor extends PureComponent {
     }
   };
 
-  _onMouseDown = (evt: MjolnirEvent) => {
+  // eslint-disable-next-line no-inline-comments
+  _onMouseDown = (evt /* MjolnirEvent */) => {
     const elem = evt.target;
     const elemClass = elem.className && elem.className.baseVal && elem.className.baseVal;
     if (elemClass && elemClass.startsWith('vertex')) {
@@ -239,7 +235,8 @@ export default class Editor extends PureComponent {
     this._update(this.state.features);
   };
 
-  _onMouseMove = (evt: MjolnirEvent) => {
+  // eslint-disable-next-line no-inline-comments
+  _onMouseMove = (evt /* MjolnirEvent */) => {
     const { x, y } = this._getEventPosition(evt);
     const { startDragPos, isDragging, didDrag } = this.state;
     if (isDragging && !didDrag) {
@@ -266,7 +263,8 @@ export default class Editor extends PureComponent {
     }
   };
 
-  _onMouseOver = (evt: MjolnirEvent) => {
+  // eslint-disable-next-line no-inline-comments
+  _onMouseOver = (evt /* MjolnirEvent */) => {
     const elem = evt.target;
     if (elem.className && elem.className.baseVal && elem.className.baseVal.startsWith('feature')) {
       const feature = this.state.features[elem.id];
@@ -274,19 +272,26 @@ export default class Editor extends PureComponent {
     }
   };
 
-  _onMouseOut = (evt: MjolnirEvent) => {
+  // eslint-disable-next-line no-inline-comments
+  _onMouseOut = (evt /* MjolnirEvent */) => {
     const elem = evt.target;
     if (elem.className && elem.className.baseVal && elem.className.baseVal.startsWith('feature')) {
       this._onHoverFeature(null);
     }
   };
 
-  _onClick = (evt: MjolnirEvent) => {
+  // eslint-disable-next-line no-inline-comments
+  _onClick = (evt /* MjolnirEvent */) => {
     const { mode } = this.props;
     const elem = evt.target;
 
     const isDrawing = DRAWING_MODES.indexOf(mode) !== -1;
-    if (!isDrawing && elem.className && elem.className.baseVal && elem.className.baseVal.startsWith('feature')) {
+    if (
+      !isDrawing &&
+      elem.className &&
+      elem.className.baseVal &&
+      elem.className.baseVal.startsWith('feature')
+    ) {
       this._onClickFeature(evt, this.state.features[elem.id]);
       return;
     }
@@ -302,57 +307,58 @@ export default class Editor extends PureComponent {
     const { x, y } = this._getEventPosition(evt);
 
     switch (mode) {
-    case MODES.EDIT_VERTEX:
-      if (selectedFeature) {
-        this.props.onSelect(null);
-      }
-      break;
+      case MODES.EDIT_VERTEX:
+        if (selectedFeature) {
+          this.props.onSelect(null);
+        }
+        break;
 
-    case MODES.DRAW_POINT:
-      this._addFeature(mode, { x, y });
-      break;
-
-    case MODES.DRAW_PATH:
-    case MODES.DRAW_POLYGON:
-      if (selectedFeature && selectedFeature.isClosed) {
-        // clicked outside
-        this.props.onSelect(null);
-
-      } else if (selectedFeature) {
-        this._addPoint(x, y, selectedFeature);
-
-      } else {
+      case MODES.DRAW_POINT:
         this._addFeature(mode, { x, y });
-      }
-      break;
+        break;
 
-    case MODES.DRAW_RECTANGLE:
-      if (selectedFeature && selectedFeature.isClosed) {
-        // clicked outside
-        this.props.onSelect(null);
-      } else if (selectedFeature) {
-        this._closePath();
-      } else {
-        this._addFeature(mode, { x, y });
-      }
+      case MODES.DRAW_PATH:
+      case MODES.DRAW_POLYGON:
+        if (selectedFeature && selectedFeature.isClosed) {
+          // clicked outside
+          this.props.onSelect(null);
+        } else if (selectedFeature) {
+          this._addPoint(x, y, selectedFeature);
+        } else {
+          this._addFeature(mode, { x, y });
+        }
+        break;
 
-      break;
+      case MODES.DRAW_RECTANGLE:
+        if (selectedFeature && selectedFeature.isClosed) {
+          // clicked outside
+          this.props.onSelect(null);
+        } else if (selectedFeature) {
+          this._closePath();
+        } else {
+          this._addFeature(mode, { x, y });
+        }
 
-    default:
+        break;
+
+      default:
     }
   };
 
   /* HELPERS */
-  _project = (pt) => {
+  _project = pt => {
     return this._viewport.project(pt);
   };
 
-  _unproject = (pt) => {
+  _unproject = pt => {
     return this._viewport.unproject(pt);
   };
 
-  _getEventPosition(evt: MjolnirEvent) {
-    const { offsetCenter: { x, y } } = evt;
+  // eslint-disable-next-line no-inline-comments
+  _getEventPosition(evt /* MjolnirEvent */) {
+    const {
+      offsetCenter: { x, y }
+    } = evt;
     return { x, y };
   }
 
@@ -363,16 +369,18 @@ export default class Editor extends PureComponent {
 
     const projected = points.map(p => this._project(p));
     switch (type) {
-    case 'Point':
-      return projected;
-    case 'LineString':
-    case 'Polygon':
-      const pathString = projected.map(p => {
-        return `${p[0]},${p[1]}`;
-      }).join('L');
-      return `M ${pathString} ${isClosed ? 'z' : ''}`;
-    default:
-      return null;
+      case 'Point':
+        return projected;
+      case 'LineString':
+      case 'Polygon':
+        const pathString = projected
+          .map(p => {
+            return `${p[0]},${p[1]}`;
+          })
+          .join('L');
+        return `M ${pathString} ${isClosed ? 'z' : ''}`;
+      default:
+        return null;
     }
   }
 
@@ -381,7 +389,7 @@ export default class Editor extends PureComponent {
     return features && features.find(f => f.id === selectedId);
   };
 
-  _getStyle = (feature) => {
+  _getStyle = feature => {
     const { style } = this.props;
     const { selectedId, hoveredId } = this.state;
     const selected = feature.id === selectedId;
@@ -425,24 +433,20 @@ export default class Editor extends PureComponent {
     const style = this._getStyle(feature);
 
     return (
-      <g style={(mode === MODES.READ_ONLY || mode === MODES.SELECT_FEATURE) ? STATIC_STYLE : null}>
-        {points.length > 1 && <path style={style} d={this._getProjectedData(feature)}/>}
-        <g>{
-          points.map((p, i) => {
+      <g style={mode === MODES.READ_ONLY || mode === MODES.SELECT_FEATURE ? STATIC_STYLE : null}>
+        {points.length > 1 && <path style={style} d={this._getProjectedData(feature)} />}
+        <g>
+          {points.map((p, i) => {
             let operation = OPERATIONS.SET;
             if (isClosed) {
-              return (
-                this._renderVertex(p, i, operation, style)
-              );
+              return this._renderVertex(p, i, operation, style);
             }
 
             if (mode === MODES.DRAW_POLYGON && i === 0 && points.length > 2) {
               operation = OPERATIONS.INTERSECT;
             }
 
-            return (
-              this._renderVertex(p, i, operation, style)
-            );
+            return this._renderVertex(p, i, operation, style);
           })}
         </g>
       </g>
@@ -461,68 +465,68 @@ export default class Editor extends PureComponent {
     const points = this._getProjectedData(feature);
 
     switch (type) {
-    case 'Point':
-      return (
-        <g key={index} transform={`translate(${points[0][0]}, ${points[0][1]})`}>
-          <circle
-            className="feature point"
-            key={index}
-            id={index}
-            style={others}
-            cx={0}
-            cy={0}
-            r={radius}
-          />
-          <circle
-            className="feature point hidden"
-            key={`${index} hidden`}
-            id={index}
-            style={others}
-            cx={0}
-            cy={0}
-            r={radius}
-          />
-        </g>
-      );
+      case 'Point':
+        return (
+          <g key={index} transform={`translate(${points[0][0]}, ${points[0][1]})`}>
+            <circle
+              className="feature point"
+              key={index}
+              id={index}
+              style={others}
+              cx={0}
+              cy={0}
+              r={radius}
+            />
+            <circle
+              className="feature point hidden"
+              key={`${index} hidden`}
+              id={index}
+              style={others}
+              cx={0}
+              cy={0}
+              r={radius}
+            />
+          </g>
+        );
 
       // second <path> is to make path easily interacted with
-    case 'LineString':
-      return (
-        <g className="feature line-string" key={index}>
+      case 'LineString':
+        return (
+          <g className="feature line-string" key={index}>
+            <path
+              className="feature line-string"
+              key={index}
+              id={index}
+              style={style}
+              d={this._getProjectedData(feature)}
+            />
+            <path
+              className="feature line-string hidden"
+              key={`${index}-hidden`}
+              id={index}
+              style={{
+                ...style,
+                strokeWidth: 10,
+                opacity: 0
+              }}
+              d={this._getProjectedData(feature)}
+            />
+          </g>
+        );
+
+      case 'Polygon':
+        return (
           <path
-            className="feature line-string"
+            className="feature polygon"
             key={index}
             id={index}
             style={style}
             d={this._getProjectedData(feature)}
           />
-          <path
-            className="feature line-string hidden"
-            key={`${index}-hidden`}
-            id={index}
-            style={{
-              ...style,
-              strokeWidth: 10,
-              opacity: 0
-            }}
-            d={this._getProjectedData(feature)}
-          />
-        </g>
-      );
+        );
 
-    case 'Polygon':
-      return (
-        <path
-          className="feature polygon"
-          key={index}
-          id={index}
-          style={style}
-          d={this._getProjectedData(feature)}
-        />
-      );
-
-    default:
-      return null;
+      default:
+        return null;
     }
   };
 
@@ -545,7 +549,10 @@ export default class Editor extends PureComponent {
   }
 
   render() {
-    const { mode, viewport: { width, height } } = this.props;
+    const {
+      mode,
+      viewport: { width, height }
+    } = this.props;
 
     if (width <= 0 || height <= 0) {
       return null;
@@ -560,7 +567,7 @@ export default class Editor extends PureComponent {
           width,
           height
         }}
-        ref={_ => this._containerRef = _}
+        ref={_ => (this._containerRef = _)}
       >
         {this._renderCanvas()}
       </div>

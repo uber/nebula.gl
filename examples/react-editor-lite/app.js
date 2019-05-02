@@ -1,8 +1,8 @@
 /* global window */
-import React, {Component} from 'react';
-import {render} from 'react-dom';
+import React, { Component } from 'react';
+import { render } from 'react-dom';
 import MapGL from 'react-map-gl';
-import {Editor, EditorModes} from '@nebula.gl/react-editor-lite';
+import { Editor, EditorModes } from '@nebula.gl/react-editor-lite';
 import {
   ToolboxRow,
   ToolboxRowWrapping,
@@ -13,17 +13,16 @@ import {
 } from './toolbox';
 
 const MODES = [
-  {name: 'Read Only', value: EditorModes.READ_ONLY},
-  {name: 'Select Feature', value: EditorModes.SELECT_FEATURE},
-  {name: 'Edit Vertex', value: EditorModes.EDIT_VERTEX},
-  {name: 'Draw Point', value: EditorModes.DRAW_POINT},
-  {name: 'Draw Path', value: EditorModes.DRAW_PATH},
-  {name: 'Draw Polygon', value: EditorModes.DRAW_POLYGON},
-  {name: 'Draw Rectangle', value: EditorModes.DRAW_RECTANGLE}
+  { name: 'Read Only', value: EditorModes.READ_ONLY },
+  { name: 'Select Feature', value: EditorModes.SELECT_FEATURE },
+  { name: 'Edit Vertex', value: EditorModes.EDIT_VERTEX },
+  { name: 'Draw Point', value: EditorModes.DRAW_POINT },
+  { name: 'Draw Path', value: EditorModes.DRAW_PATH },
+  { name: 'Draw Polygon', value: EditorModes.DRAW_POLYGON },
+  { name: 'Draw Rectangle', value: EditorModes.DRAW_RECTANGLE }
 ];
 
 export default class App extends Component {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -49,23 +48,23 @@ export default class App extends Component {
     window.removeEventListener('keydown', this._onKeydown);
   }
 
-  _onKeydown = (evt) => {
+  _onKeydown = evt => {
     if (evt.keyCode === 27) {
       // esc key
-      this.setState({selectedId: null});
+      this.setState({ selectedId: null });
     }
   };
 
-  _updateViewport = (viewport) => {
-    this.setState({viewport});
+  _updateViewport = viewport => {
+    this.setState({ viewport });
   };
 
-  _onSelect = (selectedId) => {
-    this.setState({selectedId});
+  _onSelect = selectedId => {
+    this.setState({ selectedId });
   };
 
   _onDelete = () => {
-    const {selectedId} = this.state;
+    const { selectedId } = this.state;
     if (selectedId === null || selectedId === undefined) {
       return;
     }
@@ -73,11 +72,11 @@ export default class App extends Component {
     if (selectedIndex >= 0) {
       const newFeatures = [...this.state.features];
       newFeatures.splice(selectedIndex, 1);
-      this.setState({features: newFeatures, selectedId: null});
+      this.setState({ features: newFeatures, selectedId: null });
     }
   };
 
-  _onUpdate = (features) => {
+  _onUpdate = features => {
     this.setState({
       features
     });
@@ -85,13 +84,13 @@ export default class App extends Component {
 
   _renderToolbox = () => {
     const drawModes = MODES.filter(mode => mode.value.startsWith('DRAW'));
-    const otherModes =  MODES.filter(mode => !mode.value.startsWith('DRAW'));
+    const otherModes = MODES.filter(mode => !mode.value.startsWith('DRAW'));
     return (
       <div style={ToolboxStyles.toolbox}>
         <ToolboxRowWrapping>
-          <ToolboxLabel style={{paddingLeft: '2px'}}>Modes</ToolboxLabel>
-          <ToolboxRow>{
-            otherModes.map(mode => (
+          <ToolboxLabel style={{ paddingLeft: '2px' }}>Modes</ToolboxLabel>
+          <ToolboxRow>
+            {otherModes.map(mode => (
               <ToolboxButton
                 id={mode.value}
                 key={mode.value}
@@ -104,8 +103,8 @@ export default class App extends Component {
               </ToolboxButton>
             ))}
           </ToolboxRow>
-          <ToolboxRow>{
-            drawModes.map(mode => (
+          <ToolboxRow>
+            {drawModes.map(mode => (
               <ToolboxButton
                 id={mode.value}
                 key={mode.value}
@@ -129,7 +128,7 @@ export default class App extends Component {
     );
   };
 
-  _switchMode = (evt) => {
+  _switchMode = evt => {
     const mode = evt.target.id;
     this.setState({
       mode,
@@ -138,15 +137,16 @@ export default class App extends Component {
   };
 
   render() {
-    const {viewport, mode, selectedId, features} = this.state;
+    const { viewport, mode, selectedId, features } = this.state;
     return (
       <MapGL
         {...viewport}
-        ref={_ => this._mapRef = _}
+        ref={_ => (this._mapRef = _)}
         width="100%"
         height="100%"
         mapStyle="mapbox://styles/mapbox/light-v9"
-        onViewportChange={this._updateViewport}>
+        onViewportChange={this._updateViewport}
+      >
         <Editor
           viewport={viewport}
           eventManager={this._mapRef && this._mapRef._eventManager}
@@ -165,5 +165,5 @@ export default class App extends Component {
 }
 
 export function renderToDom(container) {
-  render(<App/>, container);
+  render(<App />, container);
 }

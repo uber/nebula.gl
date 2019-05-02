@@ -1,2 +1,2 @@
-export {default as Editor} from './editor';
-export {MODES as EditorModes} from './constants';
+export { default as Editor } from './editor';
+export { MODES as EditorModes } from './constants';

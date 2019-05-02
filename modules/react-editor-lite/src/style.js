@@ -22,7 +22,7 @@ export const DEFAULT_FEATURE_STYLES = {
   }
 };
 
-export function getStyle(stylesheet, feature, {selected, hovered}) {
+export function getStyle(stylesheet, feature, { selected, hovered }) {
   if (!feature) {
     return null;
   }
@@ -30,11 +30,11 @@ export function getStyle(stylesheet, feature, {selected, hovered}) {
   const type = feature.renderType;
 
   if (typeof stylesheet === 'function') {
-    return stylesheet(feature.toFeature(), {hovered, selected});
+    return stylesheet(feature.toFeature(), { hovered, selected });
   }
 
-  let baseStyle = {...stylesheet['*']};
-  let typeStyle = {...stylesheet[type]};
+  let baseStyle = { ...stylesheet['*'] };
+  let typeStyle = { ...stylesheet[type] };
 
   if (selected) {
     baseStyle = {
@@ -56,5 +56,5 @@ export function getStyle(stylesheet, feature, {selected, hovered}) {
     };
   }
 
-  return {...baseStyle, ...typeStyle};
+  return { ...baseStyle, ...typeStyle };
 }

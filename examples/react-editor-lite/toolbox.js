@@ -37,16 +37,20 @@ export const styles = {
 };
 
 function styledComponent(props, component, id) {
-  const {style, children, ...others} = props;
+  const { style, children, ...others } = props;
   switch (component) {
-  case 'button':
-    return (
-      <button {...others} style={{...style, ...styles[id]}}>{children}</button>
-    );
-  default:
-    return (
-      <div {...others} style={{...styles[id], ...style}} {...others}>{children}</div>
-    );
+    case 'button':
+      return (
+        <button {...others} style={{ ...style, ...styles[id] }}>
+          {children}
+        </button>
+      );
+    default:
+      return (
+        <div {...others} style={{ ...styles[id], ...style }} {...others}>
+          {children}
+        </div>
+      );
   }
 }
 

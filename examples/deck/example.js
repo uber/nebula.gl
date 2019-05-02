@@ -18,12 +18,16 @@ import {
   SELECTION_TYPE
 } from 'nebula.gl';
 
+import sampleGeoJson from '../data/sample-geojson.json';
+
+import iconSheet from '../data/edit-handles.png';
+
 import {
-  ToolboxRow,
-  ToolboxRowWrapping,
-  ToolboxLabel,
   ToolboxControl,
   ToolboxDivider,
+  ToolboxLabel,
+  ToolboxRow,
+  ToolboxRowWrapping,
   styles as ToolboxStyles
 } from './toolbox';
 
@@ -37,10 +41,6 @@ const styles = {
     margin: 10
   }
 };
-
-import sampleGeoJson from '../data/sample-geojson.json';
-
-import iconSheet from '../data/edit-handles.png';
 
 const initialViewport = {
   bearing: 0,

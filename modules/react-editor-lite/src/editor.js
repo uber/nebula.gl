@@ -149,7 +149,7 @@ export default class Editor extends PureComponent {
 
   /* EVENTS */
   _setupEvents() {
-    const ref = this._containerRef.current;
+    const ref = this._containerRef;
     this._eventManager = this.props.eventManager;
     if (!ref || !this._eventManager) {
       return;
@@ -560,7 +560,7 @@ export default class Editor extends PureComponent {
           width,
           height
         }}
-        ref={this._containerRef}
+        ref={_ => this._containerRef = _}
       >
         {this._renderCanvas()}
       </div>

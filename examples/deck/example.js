@@ -22,45 +22,16 @@ import sampleGeoJson from '../data/sample-geojson.json';
 
 import iconSheet from '../data/edit-handles.png';
 
-const initialViewport = {
-  bearing: 0,
-  height: 0,
-  latitude: 37.76,
-  longitude: -122.44,
-  pitch: 0,
-  width: 0,
-  zoom: 11
-};
+import {
+  ToolboxControl,
+  ToolboxDivider,
+  ToolboxLabel,
+  ToolboxRow,
+  ToolboxRowWrapping,
+  styles as ToolboxStyles
+} from './toolbox';
 
 const styles = {
-  toolbox: {
-    position: 'absolute',
-    top: 12,
-    left: 12,
-    background: 'white',
-    padding: 10,
-    borderRadius: 4,
-    border: '1px solid gray',
-    width: 350,
-    fontFamily: 'Arial, Helvetica, sans-serif',
-    fontSize: '13px'
-  },
-  toolboxRow: {
-    display: 'flex',
-    marginBottom: '5px'
-  },
-  toolboxRowWrapping: {
-    display: 'flex',
-    marginBottom: '5px',
-    flexWrap: 'wrap'
-  },
-  toolboxDivider: {
-    marginBottom: '5px',
-    borderBottom: '1px solid gray'
-  },
-  toolboxItem: {
-    flexBasis: '50%'
-  },
   mapContainer: {
     alignItems: 'stretch',
     display: 'flex',
@@ -71,11 +42,15 @@ const styles = {
   }
 };
 
-const ToolboxRow = props => <div style={styles.toolboxRow}>{props.children}</div>;
-const ToolboxRowWrapping = props => <div style={styles.toolboxRowWrapping}>{props.children}</div>;
-const ToolboxLabel = props => <div style={styles.toolboxItem}>{props.children}</div>;
-const ToolboxControl = props => <div style={styles.toolboxItem}>{props.children}</div>;
-const ToolboxDivider = props => <div style={styles.toolboxDivider} />;
+const initialViewport = {
+  bearing: 0,
+  height: 0,
+  latitude: 37.76,
+  longitude: -122.44,
+  pitch: 0,
+  width: 0,
+  zoom: 11
+};
 
 const ALL_MODES = [
   { category: 'View', modes: ['view'] },
@@ -420,7 +395,7 @@ export default class Example extends Component<
 
   _renderToolBox() {
     return (
-      <div style={styles.toolbox}>
+      <div style={ToolboxStyles.toolbox}>
         {ALL_MODES.map(category => (
           <ToolboxRowWrapping key={category.category}>
             <div style={{ paddingRight: '4px' }}>{category.category} Modes</div>

@@ -1,7 +1,7 @@
 // @flow
 import window from 'global/window';
 import React, { Component } from 'react';
-import DeckGL from 'deck.gl';
+import DeckGL from '@deck.gl/react';
 import { StaticMap } from 'react-map-gl';
 
 import { HtmlOverlay, HtmlClusterOverlay, HtmlOverlayItem } from '@nebula.gl/overlays';

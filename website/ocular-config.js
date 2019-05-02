@@ -21,9 +21,11 @@ const ALIASES = {
 
   '@deck.gl/core': resolve(LIB_DIR, './node_modules/@deck.gl/core'),
   '@deck.gl/layers': resolve(LIB_DIR, './node_modules/@deck.gl/layers'),
+  '@deck.gl/react': resolve(LIB_DIR, './node_modules/@deck.gl/react'),
 
   // Use luma.gl specified by root package.json
-  'luma.gl': resolve(LIB_DIR, './node_modules/luma.gl'),
+  '@luma.gl/core': resolve(LIB_DIR, './node_modules/@luma.gl/core'),
+  '@luma.gl/webgl': resolve(LIB_DIR, './node_modules/@luma.gl/webgl'),
   // Important: ensure shared dependencies come from the main node_modules dir
   // Versions will be controlled by the deck.gl top level package.json
   'math.gl': resolve(LIB_DIR, './node_modules/math.gl'),
@@ -98,31 +100,16 @@ module.exports = {
   ADDITIONAL_LINKS: [],
 
   EXAMPLES: [
-    // {
-    //   title: 'Nebula-Deck',
-    //   componentUrl: resolve(__dirname, '../examples/deck/example.js'),
-    //   path: 'examples/deck'
-    // }
-    // {
-    //   title: 'ClusteringOverlayExample',
-    //   path: 'examples/core/cubemap/',
-    //   image: 'images/example-cubemap.jpg'
-    // },
-    // {
-    //   title: 'EditPointsExample',
-    //   path: 'examples/core/mandelbrot/',
-    //   image: 'images/example-mandelbrot.jpg'
-    // },
-    // {
-    //   title: 'EditPolygonsExample',
-    //   path: 'examples/core/quasicrystals/',
-    //   image: 'images/example-fragment.jpg'
-    // },
-    // {
-    //   title: 'WorldHeritageExample',
-    //   path: 'examples/core/persistence/',
-    //   image: 'images/example-persistence.jpg'
-    // }
+    {
+      title: 'EditableGeoJsonLayer',
+      componentUrl: resolve(__dirname, '../examples/deck/example.js'),
+      path: 'examples/editablegeojsonlayer'
+    },
+    {
+      title: 'Overlays',
+      componentUrl: resolve(__dirname, '../examples/overlays/example.js'),
+      path: 'examples/overlays'
+    }
   ],
 
   // Avoids duplicate conflicting inputs when importing from examples folders

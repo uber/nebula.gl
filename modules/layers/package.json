@@ -69,7 +69,9 @@
     "@turf/union": ">=4.0.0",
     "cubic-hermite-spline": "^1.0.1",
     "geojson-types": "^2.0.1",
+    "geojson2h3": "^1.0.1",
     "global": ">=4.3.0",
+    "memoize-one": "^5.0.4",
     "viewport-mercator-project": ">=5.0.0"
   },
   "peerDependencies": {

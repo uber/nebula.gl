@@ -599,7 +599,6 @@ export default class Example extends Component<
       // Specify the same GeoJsonLayer props
       lineWidthMinPixels: 2,
       pointRadiusMinPixels: 5,
-      getLineDashArray: () => [0, 0],
 
       // Accessors receive an isSelected argument
       getFillColor: (feature, isSelected) => {

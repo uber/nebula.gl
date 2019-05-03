@@ -5278,6 +5278,13 @@ geojson-types@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/geojson-types/-/geojson-types-2.0.1.tgz#91040649b7ad39b2904643bd9ad51e5e86d524e3"
 
+geojson2h3@^1.0.1:
+  version "1.0.1"
+  resolved "https://unpm.uberinternal.com/geojson2h3/-/geojson2h3-1.0.1.tgz#eefc6069366a69f9c77276d351ddc6a646527fe0"
+  integrity sha512-WFCn5JdYm/dofQSErn+1A0L2OFUSbEx6PQiazapgykaBpcOTH8QTjHJB+BpMoTxnZKR0NV+Ab3eIcqcfw+dXHg==
+  dependencies:
+    h3-js "^3.1.1"
+
 get-caller-file@^1.0.1:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/get-caller-file/-/get-caller-file-1.0.3.tgz#f978fa4c90d1dfe7ff2d6beda2a515e713bdcf4a"
@@ -5561,6 +5568,11 @@ growly@^1.3.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/growly/-/growly-1.3.0.tgz#f10748cbe76af964b7c96c93c6bcc28af120c081"
   integrity sha1-8QdIy+dq+WS3yWyTxrzCivEgwIE=
+
+h3-js@^3.1.1:
+  version "3.4.3"
+  resolved "https://unpm.uberinternal.com/h3-js/-/h3-js-3.4.3.tgz#7a9fe281fbd962c56954aab3955032ae08ceb241"
+  integrity sha512-rr+kkErW7DqDlFN1KikjjDEurQxaPb0dJHpcijSzr+/WDjMYK7F9/Qr412HNSG5BkbG8XXK9CbPHVjDI85GYUA==
 
 hammerjs@^2.0.8:
   version "2.0.8"
@@ -7602,6 +7614,11 @@ mem@^4.0.0:
     map-age-cleaner "^0.1.1"
     mimic-fn "^2.0.0"
     p-is-promise "^2.0.0"
+
+memoize-one@^5.0.4:
+  version "5.0.4"
+  resolved "https://unpm.uberinternal.com/memoize-one/-/memoize-one-5.0.4.tgz#005928aced5c43d890a4dfab18ca908b0ec92cbc"
+  integrity sha512-P0z5IeAH6qHHGkJIXWw0xC2HNEgkx/9uWWBQw64FJj3/ol14VYdfVGWWr0fXfjhhv3TKVIqUq65os6O4GUNksA==
 
 memory-fs@^0.4.0, memory-fs@~0.4.1:
   version "0.4.1"

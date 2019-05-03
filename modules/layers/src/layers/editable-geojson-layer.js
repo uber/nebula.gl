@@ -2,6 +2,8 @@
 /* eslint-env browser */
 
 import { GeoJsonLayer, ScatterplotLayer, IconLayer } from '@deck.gl/layers';
+import memoize from 'memoize-one';
+import geojson2h3 from 'geojson2h3';
 import { ModeHandler } from '../mode-handlers/mode-handler.js';
 import { ViewHandler } from '../mode-handlers/view-handler.js';
 import { ModifyHandler } from '../mode-handlers/modify-handler.js';
@@ -24,7 +26,7 @@ import { DrawEllipseByBoundingBoxHandler } from '../mode-handlers/draw-ellipse-b
 import { DrawEllipseUsingThreePointsHandler } from '../mode-handlers/draw-ellipse-using-three-points-handler.js';
 
 import type { EditAction } from '../mode-handlers/mode-handler.js';
-import type { Position } from '../geojson-types.js';
+import type { Feature, FeatureCollection, Position } from '../geojson-types.js';
 import type {
   ClickEvent,
   StartDraggingEvent,
@@ -166,17 +168,44 @@ type Props = {
 //   selectedFeatures: Feature[]
 // };
 
+const getHexApproximation = memoize(
+  (featureData: FeatureCollection | Feature, keepOriginal: boolean) => {
+    const result = {
+      type: 'FeatureCollection',
+      features: []
+    };
+    const featuresArray =
+      featureData.type === 'FeatureCollection' ? featureData.features : [featureData];
+    for (const feature of featuresArray) {
+      const polygonal =
+        feature.geometry.type === 'Polygon' || feature.geometry.type === 'MultiPolygon';
+      if (polygonal) {
+        const hexFeature = geojson2h3.h3SetToFeature(geojson2h3.featureToH3Set(feature, 9));
+        hexFeature.properties = hexFeature.properties || {};
+        hexFeature.properties.hex = true;
+        result.features.push(hexFeature);
+      }
+      if (keepOriginal || !polygonal) {
+        result.features.push(feature);
+      }
+    }
+    return result;
+  }
+);
+
 export default class EditableGeoJsonLayer extends EditableLayer {
   // state: State;
   // props: Props;
   // setState: ($Shape<State>) => void;
 
   renderLayers() {
+    const featuresWithHexApproximations = getHexApproximation(this.props.data, false);
+
     const subLayerProps = this.getSubLayerProps({
       id: 'geojson',
 
       // Proxy most GeoJsonLayer props as-is
-      data: this.props.data,
+      data: featuresWithHexApproximations,
       fp64: this.props.fp64,
       filled: this.props.filled,
       stroked: this.props.stroked,
@@ -385,10 +414,12 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       return [];
     }
 
+    const featuresWithHexApproximations = getHexApproximation(this.state.tentativeFeature, true);
+
     const layer = new GeoJsonLayer(
       this.getSubLayerProps({
         id: 'tentative',
-        data: this.state.tentativeFeature,
+        data: featuresWithHexApproximations,
         fp64: this.props.fp64,
         pickable: false,
         stroked: true,

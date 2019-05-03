@@ -24,7 +24,7 @@ export type ModeState<TData, TGuides> = {
   modeConfig: any,
   selectedIndexes: number[],
   guides: ?TGuides,
-  onEdit: (data: TData, editContext: any) => void
+  onEdit: (data: TData, editContext: any) => void,
   onUpdateGuides: (guides: ?TGuides) => void,
 };
 

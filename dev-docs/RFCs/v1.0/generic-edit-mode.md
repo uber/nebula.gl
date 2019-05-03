@@ -66,15 +66,15 @@ export class EditMode<TData, TGuides> {
     return this.state && this.state.guides;
   }
 
-  onDataChanged() {}
-  onModeConfigChanged() {}
-  onSelectedIndexesChanged() {}
-  onGuidesChanged() {}
+  onDataChanged(): void {}
+  onModeConfigChanged(): void {}
+  onSelectedIndexesChanged(): void {}
+  onGuidesChanged(): void {}
 
-  handleClick(event: ClickEvent): ?EditAction {}
-  handlePointerMove(event: PointerMoveEvent): { editAction: ?EditAction, cancelMapPan: boolean } {}
-  handleStartDragging(event: StartDraggingEvent): ?EditAction {}
-  handleStopDragging(event: StopDraggingEvent): ?EditAction {}
+  handleClick(event: ClickEvent): void {}
+  handlePointerMove(event: PointerMoveEvent): { cancelMapPan: boolean } {}
+  handleStartDragging(event: StartDraggingEvent): void {}
+  handleStopDragging(event: StopDraggingEvent): void {}
 }
 ```
 

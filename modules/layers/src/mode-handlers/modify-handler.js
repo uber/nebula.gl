@@ -20,7 +20,7 @@ export class ModifyHandler extends ModeHandler {
     let handles = [];
     const { features } = this.featureCollection.getObject();
 
-    for (const index of this._selectedFeatureIndexes) {
+    for (const index of this.getSelectedFeatureIndexes()) {
       if (index < features.length) {
         const { geometry } = features[index];
         handles.push(...getEditHandlesForGeometry(geometry, index));
@@ -41,7 +41,7 @@ export class ModifyHandler extends ModeHandler {
       if (
         featureAsPick &&
         !featureAsPick.object.geometry.type.includes('Point') &&
-        this._selectedFeatureIndexes.includes(featureAsPick.index)
+        this.getSelectedFeatureIndexes().includes(featureAsPick.index)
       ) {
         let intermediatePoint = null;
         let positionIndexPrefix = [];

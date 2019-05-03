@@ -12,7 +12,7 @@ import {
   testModeHandlerHandlePointMove,
   mockHandlePointerMove,
   mockHandleStartDragging
-} from './mode-handler-utils';
+} from './mode-handler-utils.js';
 
 const modeName = 'duplicate';
 const featureCollection: FeatureCollection = createFeatureCollection({

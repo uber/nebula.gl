@@ -15,13 +15,14 @@ export class Draw90DegreePolygonHandler extends ModeHandler {
   getEditHandles(picks?: Array<Object>, groundCoords?: Position): EditHandle[] {
     let handles = super.getEditHandles(picks, groundCoords);
 
-    if (this._tentativeFeature) {
-      handles = handles.concat(getEditHandlesForGeometry(this._tentativeFeature.geometry, -1));
+    const tentativeFeature = this.getTentativeFeature();
+    if (tentativeFeature) {
+      handles = handles.concat(getEditHandlesForGeometry(tentativeFeature.geometry, -1));
       // Slice off the handles that are are next to the pointer
-      if (this._tentativeFeature && this._tentativeFeature.geometry.type === 'LineString') {
+      if (tentativeFeature && tentativeFeature.geometry.type === 'LineString') {
         // Remove the last existing handle
         handles = handles.slice(0, -1);
-      } else if (this._tentativeFeature && this._tentativeFeature.geometry.type === 'Polygon') {
+      } else if (tentativeFeature && tentativeFeature.geometry.type === 'Polygon') {
         // Remove the last existing handle
         handles = handles.slice(0, -1);
       }

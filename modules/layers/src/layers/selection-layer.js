@@ -58,8 +58,7 @@ export default class SelectionLayer extends CompositeLayer {
     const [x1, y1] = this.context.viewport.project(coordinates[0][0]);
     const [x2, y2] = this.context.viewport.project(coordinates[0][2]);
 
-    const pickingInfos = this.context.layerManager.pickObjects({
-      viewports: [this.context.viewport],
+    const pickingInfos = this.context.deck.pickObjects({
       x: Math.min(x1, x2),
       y: Math.min(y1, y2),
       width: Math.abs(x2 - x1),
@@ -106,8 +105,7 @@ export default class SelectionLayer extends CompositeLayer {
 
     // HACK, find a better way
     setTimeout(() => {
-      const pickingInfos = this.context.layerManager.pickObjects({
-        viewports: [this.context.viewport],
+      const pickingInfos = this.context.deck.pickObjects({
         x,
         y,
         width: maxX - x,

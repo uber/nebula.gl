@@ -69,12 +69,14 @@ The `mode` property dictates which `ModeHandler` from the `modeHandlers` prop wi
 
 * Default: `null`
 
-An arbitraty object used to further configure the current `ModeHandler`.
+An arbitrary object used to further configure the current `ModeHandler`.
 
 Snapping-related `modeConfig` properties:
-* `enableSnapping` (Boolean, Optional) - Enables snapping for mode handlers that support snapping such as translate mode.
+
+* `enableSnapping` (Boolean, Optional) - Enables snapping for modes that support snapping such as translate mode.
 * `snapPixels` (Number, Optional) - The pixel distance threshold between two features at which snapping occurs.
 * `layerIdsToSnapTo` (String[], Optional) - If there are features in other layers that you would want to interact with features of this `EditableGeoJsonLayer` with regards to feature snapping, you will need to specify the ids of those other layers in this `modeConfig` property.
+
 #### `modeHandlers` (Object, optional)
 
 * Default: see [mode handlers overview](../mode-handlers/overview.md)
@@ -95,11 +97,11 @@ For example, you can use this to provide your own custom `ModeHandler`:
 }
 ```
 
-#### `selectedFeaturesIndexes` (Array, optional)
+#### `selectedFeatureIndexes` (Array, optional)
 
 * Default: `[]`
 
-The `selectedFeatueIndexes` property distinguishes which features to treat as selected.
+The `selectedFeatureIndexes` property distinguishes which features to treat as selected.
 
 * Features are identified by their index in the collection.
 

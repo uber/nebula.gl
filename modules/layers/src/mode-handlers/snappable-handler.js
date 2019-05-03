@@ -56,17 +56,13 @@ export class SnappableHandler extends ModeHandler {
   _getEditHandlePicks(event: PointerMoveEvent): HandlePicks {
     const { screenCoords } = event;
     const { snapPixels = DEFAULT_SNAP_PIXELS } = this._modeConfig || {};
-
-    const picks = this._context.layerManager.pickObject({
+    const picks = this._context.layerManager.context.deck.pickMultipleObjects({
       x: screenCoords[0],
       y: screenCoords[1],
-      mode: 'query',
       layerIds: [this._getEditHandleLayerId()],
       radius: snapPixels,
-      viewports: [this._context.viewport],
       depth: 2
     });
-
     const potentialSnapHandle = picks.find(
       pick => pick.object && pick.object.type === 'intermediate'
     );

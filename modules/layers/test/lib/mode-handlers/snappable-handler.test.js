@@ -33,7 +33,11 @@ function mockFeatureCollectionState(features: any) {
       project: coords => coords
     },
     layerManager: {
-      pickObject: () => [{ object: mockNonPickedHandle }],
+      context: {
+        deck: {
+          pickMultipleObjects: () => [{ object: mockNonPickedHandle }]
+        }
+      },
       layers: [{ id: '-point-edit-handles' }, otherLayerToPickFrom]
     }
   };

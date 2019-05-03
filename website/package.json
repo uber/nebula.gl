@@ -35,7 +35,7 @@
     "gatsby-plugin-flow": "^1.0.5",
     "gatsby-plugin-styletron": "^3.0.5",
     "gh-pages": "^2.0.1",
-    "ocular-gatsby": "1.0.0-alpha.23",
+    "ocular-gatsby": "1.0.0-alpha.25",
     "sharp": "0.22"
   }
 }

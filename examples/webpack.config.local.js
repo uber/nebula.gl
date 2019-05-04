@@ -13,7 +13,7 @@ const LIB_DIR = resolve(__dirname, '..');
 const CORE_SRC_DIR = resolve(LIB_DIR, './modules/core/src');
 const LAYERS_SRC_DIR = resolve(LIB_DIR, './modules/layers/src');
 const OVERLAYS_SRC_DIR = resolve(LIB_DIR, './modules/overlays/src');
-const REACT_EDITOR_LITE_SRC_DIR = resolve(LIB_DIR, './modules/react-editor-lite/src');
+const REACT_EDITOR_LITE_SRC_DIR = resolve(LIB_DIR, './modules/react-map-gl-draw/src');
 
 // const babelConfig = require('../babel.config');
 
@@ -40,8 +40,8 @@ function makeLocalDevConfig(EXAMPLE_DIR = LIB_DIR) {
         '@nebula.gl/overlays/dist': OVERLAYS_SRC_DIR,
         '@nebula.gl/overlays': OVERLAYS_SRC_DIR,
 
-        '@nebula.gl/react-editor-lite/dist': REACT_EDITOR_LITE_SRC_DIR,
-        '@nebula.gl/react-editor-lite': REACT_EDITOR_LITE_SRC_DIR,
+        'react-map-gl-draw/dist': REACT_EDITOR_LITE_SRC_DIR,
+        'react-map-gl-draw': REACT_EDITOR_LITE_SRC_DIR,
 
         '@deck.gl/core': resolve(LIB_DIR, './node_modules/@deck.gl/core'),
         '@deck.gl/layers': resolve(LIB_DIR, './node_modules/@deck.gl/layers'),

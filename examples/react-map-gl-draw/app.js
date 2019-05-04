@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import { render } from 'react-dom';
 import MapGL from 'react-map-gl';
-import { Editor, EditorModes } from '@nebula.gl/react-editor-lite';
+import { Editor, EditorModes } from 'react-map-gl-draw';
 import {
   ToolboxRow,
   ToolboxRowWrapping,

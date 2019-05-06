@@ -3,7 +3,7 @@
 import type { FeatureCollection, Position } from '../geojson-types.js';
 import type { PointerMoveEvent, StartDraggingEvent, StopDraggingEvent } from '../event-types.js';
 import type { EditHandle, EditAction } from './mode-handler.js';
-import { ModeHandler, getPickedEditHandle, getEditHandlesForGeometry } from './mode-handler';
+import { ModeHandler, getPickedEditHandle, getEditHandlesForGeometry } from './mode-handler.js';
 
 const DEFAULT_SNAP_PIXELS = 5;
 

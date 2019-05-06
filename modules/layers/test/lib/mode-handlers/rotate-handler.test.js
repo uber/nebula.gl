@@ -7,7 +7,7 @@ import {
   testModeHandlerHandlePointMove,
   testHandleStartDragging,
   testHandleStopDragging
-} from './mode-handler-utils';
+} from './mode-handler-utils.js';
 
 const modeName = 'rotate';
 const featureCollection: FeatureCollection = createFeatureCollection({

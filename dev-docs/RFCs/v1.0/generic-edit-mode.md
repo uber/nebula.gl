@@ -4,9 +4,9 @@
 
 ## Summary
 
-Create a generic `EditMode` class in `@nebula/core` that is independent of deck.gl, react-map-gl, and GeoJSON. This generic class can then be integrated into `EditableGeoJsonLayer` as well as the [upcoming DrawControl feature of react-map-gl](https://github.com/uber/react-map-gl/issues/734)
+Create a generic `EditMode` class in `@nebula/core` that is independent of deck.gl, react-map-gl, and GeoJSON. This generic class can then be integrated into `EditableGeoJsonLayer` as well as the [upcoming DrawControl feature for react-map-gl](https://github.com/uber/react-map-gl/issues/734)
 
-We will also refactor all the existing `ModeHandler` implementations of nebula to extend this class so that they can be used seamlessly between nebula.gl and react-map-gl.
+We will also refactor all the existing `ModeHandler` implementations of nebula to extend this class so that they can be used seamlessly between `nebula.gl` and `react-map-gl-draw`.
 
 ## Motivation
 
@@ -174,8 +174,27 @@ An implementation of a mode is intended to override the `handle...` functions in
 
 TODO
 
-## Integration with nebula's `ModeHandler`
+## Integration with nebula
+
+### Module layout
+
+We will need a `@nebula.gl/core` module separate from `nebula.gl` module. The reason is because this new `@nebula/core` should have no deck.gl dependency.
+
+* `nebula.gl`
+  * depends on `@nebula.gl/core`, `@nebula.gl/layers`, and all the other `@nebula/...` modules.
+  * doesn't have anything in it, just basically imports from the others and re-exports them
+* `@nebula.gl/core`
+  * no (large) dependencies, ideally no dependencies
+  * contains `EditMode` class
+  * contains other general purpose types and classes (e.g. event types like `ClickEvent`)
+* `@nebula.gl/layers`
+  * depends on `@nebula.gl/core` and `deck.gl`
+  * contains `EditableGeoJsonLayer`, a deck.gl `CompositeLayer`
+* `@nebula.gl/geojson-modes`
+  * depends on `@nebula.gl/core` and [turf.js](http://turfjs.org/)
+  * contains all the modes for editing GeoJSON
+  * this module can then be reused by `react-map-gl-draw`
 
 ### Breaking changes
 
-TODO
+There will be breaking changes to refactor nebula's `ModeHandler` interface to adhere to `EditMode`'s interface. Specifics will be listed in the changelog.

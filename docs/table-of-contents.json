@@ -2,38 +2,35 @@
   "id": "table-of-contents",
   "chapters": [
     {
-      "title": "Introduction",
-      "chapters": [
+      "title": "Overview",
+      "entries": [
         {
-          "title": "Overview",
-          "entries": [
-            {
-              "entry": "docs/overview"
-            },
-            {
-              "entry": "docs/whats-new"
-            },
-            {
-              "entry": "docs/roadmap"
-            },
-            {
-              "entry": "docs/FAQ"
-            },
-            {
-              "entry": "docs/upgrade-guide"
-            }
-          ]
+          "entry": "docs/overview"
         },
         {
-          "title": "Get Started",
-          "entries": [
-            {
-              "entry": "docs/get-started/installing.md"
-            },
-            {
-              "entry": "docs/get-started/basic-usage.md"
-            }
-          ]
+          "entry": "docs/roadmap"
+        },
+        {
+          "entry": "docs/faq"
+        }
+      ]
+    },
+    {
+      "title": "Get Started",
+      "entries": [
+        {
+          "entry": "docs/get-started/installing.md"
+        },
+        {
+          "entry": "docs/get-started/basic-usage.md"
+        }
+      ]
+    },
+    {
+      "title": "Interactive Examples",
+      "entries": [
+        {
+          "entry": "docs/interactive-examples/world-heritage"
         }
       ]
     },

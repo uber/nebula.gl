@@ -104,11 +104,6 @@ module.exports = {
       title: 'EditableGeoJsonLayer',
       componentUrl: resolve(__dirname, '../examples/deck/example.js'),
       path: 'examples/editablegeojsonlayer'
-    },
-    {
-      title: 'Overlays',
-      componentUrl: resolve(__dirname, '../examples/overlays/example.js'),
-      path: 'examples/overlays'
     }
   ],
 

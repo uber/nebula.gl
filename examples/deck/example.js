@@ -13,6 +13,7 @@ import {
   SelectionLayer,
   CompositeModeHandler,
   ModifyHandler,
+  ElevationHandler,
   DrawLineStringHandler,
   ElevatedEditHandleLayer,
   SELECTION_TYPE
@@ -531,6 +532,14 @@ export default class Example extends Component<
       height: window.innerHeight,
       width: window.innerWidth
     };
+
+    if (mode === 'elevation') {
+      modeConfig.calculateElevationChange = ({ pointerDownScreenCoords, screenCoords }) =>
+        ElevationHandler.calculateElevationChangeWithViewport(viewport, {
+          pointerDownScreenCoords,
+          screenCoords
+        });
+    }
 
     const editableGeoJsonLayer = new EditableGeoJsonLayer({
       id: 'geojson',

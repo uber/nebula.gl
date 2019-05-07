@@ -440,14 +440,14 @@ export default class Example extends Component<
           </React.Fragment>
         )}
         {!this.state.showGeoJson && (
-          <>
+          <React.Fragment>
             <ToolboxLabel>
               GeoJSON{' '}
               <button onClick={() => this.setState({ showGeoJson: !this.state.showGeoJson })}>
                 show &#9660;
               </button>
             </ToolboxLabel>
-          </>
+          </React.Fragment>
         )}
         <ToolboxDivider />
         <ToolboxRow>

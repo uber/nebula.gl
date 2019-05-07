@@ -4,7 +4,10 @@ node_js:
   - 8.15.0
 install:
   - yarn && yarn bootstrap
+before_script:
+  - "curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | sudo bash"
 script:
   - yarn test-ci
+  - fossa
 after_success:
   - cat coverage/lcov.info | coveralls

@@ -4,6 +4,17 @@ _All notable changes to this project will be documented in this file. This proje
 
 <!-- INSERT HERE -->
 
+## [0.12.1](https://github.com/uber/nebula.gl/compare/v0.12.0...v0.12.1) - 2019-05-07
+
+### Changes
+
+* Use functions to get to private properties (#218)
+* rename react-editor-lite to react-map-gl-draw (#215)
+* Fixed SelectionLayer: pickObjects to be called from deck (#214)
+* Fixed snapping: Changed _context.layerManager.pickObject (#213)
+* Port react-map-gl draw control to @nebula.gl/react-editor-lite (#204)
+* Pass through lineWidthUnits to GeoJSONLayer (#203)
+
 ## [0.12.0](https://github.com/uber/nebula.gl/compare/v0.11.2...v0.12.0) - 2019-04-22
 
 ### Changes

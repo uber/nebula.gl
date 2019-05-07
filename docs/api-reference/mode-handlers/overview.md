@@ -169,28 +169,35 @@ User can split a polygon by drawing a new `LineString` feature on top of the pol
 
 * If the clicked position is inside the polygon, it will not split the polygon
 
-## [ElevationHandler](https://github.com/uber/nebula.gl/blob/master/modules/layers/src/mode-handlers/)
+## [ElevationHandler](https://github.com/uber/nebula.gl/blob/master/modules/layers/src/mode-handlers/elevation-handler.js)
 
 * Mode name: `elevation`
 
-User can move a point up and down. `min` and `max` can be configured in `modeConfig`.
+User can move a point up and down.
 
 ### ModeConfig
 
 The following options can be provided in the `modeConfig` object:
 
-* `gap` (optional):  `x <number>`
-  * If gap: `x` means the spacing between the polygon would be `x`.
-  * Gap value should be greater than 0.
-  * Default gap is `0.1`
+* `minElevation` (Number, optional)
+  * The minimum elevation to allow
+  * Default: `0`
 
-* `unit` (optional):  `centimeters|feet|inches|meters|kilometers|miles|yards`
-  * If unit: `x` means the unit used for the spacing would be of `x` unit.
-  * Default unit is `centimeters`
+* `maxElevation` (Number, optional)
+  * The maximum elevation to allow
+  * Default: `20000`
 
-* `lock90Degree` (Boolean, optional)
-  * Default: `false`
-  * If true, all angles will be guaranteed to be 90 degrees.
+* `calculateElevationChange` (Function, optional)
+  * A function to use to calculate the elevation change in response to mouse movement
+  * Default: `10 * <vertical movement in pixels>`
+  * Configure to use movement based on viewport:
+
+```javascript
+if (mode === 'elevation') {
+  modeConfig.calculateElevationChange = (opts) =>
+    ElevationHandler.calculateElevationChangeWithViewport(viewport, opts);
+}
+```
 
 ## Boolean Operations
 

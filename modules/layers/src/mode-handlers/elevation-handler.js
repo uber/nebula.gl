@@ -21,17 +21,23 @@ export class ElevationHandler extends ModifyHandler {
       return event;
     }
 
-    const { min = 0, max = 20000, calculateElevationChange = defaultCalculateElevationChange } =
+    const {
+      minElevation = 0,
+      maxElevation = 20000,
+      calculateElevationChange = defaultCalculateElevationChange
+    } =
       this._modeConfig || {};
 
     // $FlowFixMe - really, I know it has something at index 2
     let elevation = position.length === 3 ? position[2] : 0;
+
+    // calculateElevationChange is configurable becase (at this time) modes are not aware of the viewport
     elevation += calculateElevationChange({
       pointerDownScreenCoords: event.pointerDownScreenCoords,
       screenCoords: event.screenCoords
     });
-    elevation = Math.min(elevation, max);
-    elevation = Math.max(elevation, min);
+    elevation = Math.min(elevation, maxElevation);
+    elevation = Math.max(elevation, minElevation);
 
     return Object.assign({}, event, {
       groundCoords: [position[0], position[1], elevation]

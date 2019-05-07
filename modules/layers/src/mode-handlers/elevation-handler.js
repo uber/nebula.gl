@@ -78,6 +78,6 @@ export class ElevationHandler extends ModifyHandler {
     const metersPerPixel =
       (156543.03392 * Math.cos((viewport.latitude * Math.PI) / 180)) / Math.pow(2, viewport.zoom);
 
-    return metersPerPixel * (pointerDownScreenCoords[1] - screenCoords[1]);
+    return (metersPerPixel * (pointerDownScreenCoords[1] - screenCoords[1])) / 2;
   }
 }

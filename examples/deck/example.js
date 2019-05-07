@@ -122,7 +122,8 @@ export default class Example extends Component<
     pointsRemovable: boolean,
     selectedFeatureIndexes: number[],
     editHandleType: string,
-    selectionTool: ?string
+    selectionTool: ?string,
+    showGeoJson: boolean
   }
 > {
   constructor() {
@@ -136,7 +137,8 @@ export default class Example extends Component<
       pointsRemovable: true,
       selectedFeatureIndexes: [],
       editHandleType: 'point',
-      selectionTool: null
+      selectionTool: null,
+      showGeoJson: false
     };
   }
 
@@ -418,16 +420,35 @@ export default class Example extends Component<
         ))}
         {this._renderModeConfigControls()}
         <ToolboxDivider />
-        <ToolboxLabel>geoJSON</ToolboxLabel>
-        <ToolboxControl>
-          <textarea
-            id="geo-json-text"
-            rows={5}
-            style={{ width: '100%' }}
-            value={JSON.stringify(this.state.testFeatures)}
-            onChange={event => this.setState({ testFeatures: JSON.parse(event.target.value) })}
-          />
-        </ToolboxControl>
+        {this.state.showGeoJson && (
+          <React.Fragment>
+            <ToolboxLabel>
+              GeoJSON{' '}
+              <button onClick={() => this.setState({ showGeoJson: !this.state.showGeoJson })}>
+                hide &#9650;
+              </button>
+            </ToolboxLabel>
+            <ToolboxControl>
+              <textarea
+                id="geo-json-text"
+                rows={5}
+                style={{ width: '100%' }}
+                value={JSON.stringify(this.state.testFeatures)}
+                onChange={event => this.setState({ testFeatures: JSON.parse(event.target.value) })}
+              />
+            </ToolboxControl>
+          </React.Fragment>
+        )}
+        {!this.state.showGeoJson && (
+          <>
+            <ToolboxLabel>
+              GeoJSON{' '}
+              <button onClick={() => this.setState({ showGeoJson: !this.state.showGeoJson })}>
+                show &#9660;
+              </button>
+            </ToolboxLabel>
+          </>
+        )}
         <ToolboxDivider />
         <ToolboxRow>
           <ToolboxLabel>Load sample data</ToolboxLabel>

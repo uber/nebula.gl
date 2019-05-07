@@ -37,3 +37,4 @@ export { DrawCircleFromCenterHandler } from '@nebula.gl/layers';
 export { DrawCircleByBoundingBoxHandler } from '@nebula.gl/layers';
 export { DrawEllipseByBoundingBoxHandler } from '@nebula.gl/layers';
 export { DrawEllipseUsingThreePointsHandler } from '@nebula.gl/layers';
+export { ElevationHandler } from '@nebula.gl/layers';

@@ -35,6 +35,7 @@ export {
 export {
   DrawEllipseUsingThreePointsHandler
 } from './mode-handlers/draw-ellipse-using-three-points-handler.js';
+export { ElevationHandler } from './mode-handlers/elevation-handler.js';
 
 // Utils
 export { toDeckColor } from './utils.js';

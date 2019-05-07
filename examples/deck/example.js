@@ -534,11 +534,8 @@ export default class Example extends Component<
     };
 
     if (mode === 'elevation') {
-      modeConfig.calculateElevationChange = ({ pointerDownScreenCoords, screenCoords }) =>
-        ElevationHandler.calculateElevationChangeWithViewport(viewport, {
-          pointerDownScreenCoords,
-          screenCoords
-        });
+      modeConfig.calculateElevationChange = opts =>
+        ElevationHandler.calculateElevationChangeWithViewport(viewport, opts);
     }
 
     const editableGeoJsonLayer = new EditableGeoJsonLayer({

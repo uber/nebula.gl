@@ -421,7 +421,7 @@ export default class Example extends Component<
         {this._renderModeConfigControls()}
         <ToolboxDivider />
         {this.state.showGeoJson && (
-          <>
+          <React.Fragment>
             <ToolboxLabel>
               GeoJSON{' '}
               <button onClick={() => this.setState({ showGeoJson: !this.state.showGeoJson })}>
@@ -437,7 +437,7 @@ export default class Example extends Component<
                 onChange={event => this.setState({ testFeatures: JSON.parse(event.target.value) })}
               />
             </ToolboxControl>
-          </>
+          </React.Fragment>
         )}
         {!this.state.showGeoJson && (
           <>

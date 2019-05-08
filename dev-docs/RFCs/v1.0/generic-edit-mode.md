@@ -18,67 +18,9 @@ There are two limitations with nebula's `ModeHandler` interface.
 
 ## API
 
+The `EditMode` interface serves as the core abstraction to editing using nebula.gl. It uses a reactive style approach using callbacks to notify of changes to state and reacting to state changes via exposing an `updateState` function.
+
 ```javascript
-// Represents an edit action, i.e. a suggestion to update the data based on user interaction events
-export type EditAction<TData> = {
-  updatedData: TData,
-  editType: string,
-  affectedIndexes: number[],
-  editContext: any
-};
-
-// Represents an object "picked" from the screen. This usually reflects an object under the cursor
-export type Pick = {
-  object: any,
-  index: number,
-  isGuide: boolean
-};
-
-// Represents a click event
-export type ClickEvent = {
-  picks: Pick[],
-  screenCoords: Position,
-  mapCoords: Position,
-  sourceEvent: any
-};
-
-// Represents a double-click event
-export type DoubleClickEvent = {
-  mapCoords: Position,
-  sourceEvent: any
-};
-
-// Represents an event that occurs when the pointer goes down and the cursor starts moving
-export type StartDraggingEvent = {
-  picks: Pick[],
-  screenCoords: Position,
-  mapCoords: Position,
-  pointerDownScreenCoords: Position,
-  pointerDownMapCoords: Position,
-  sourceEvent: any
-};
-
-// Represents an event that occurs after the pointer goes down, moves some, then the pointer goes back up
-export type StopDraggingEvent = {
-  picks: Pick[],
-  screenCoords: Position,
-  mapCoords: Position,
-  pointerDownScreenCoords: Position,
-  pointerDownMapCoords: Position,
-  sourceEvent: any
-};
-
-// Represents an event that occurs every time the pointer moves
-export type PointerMoveEvent = {
-  screenCoords: Position,
-  mapCoords: Position,
-  picks: Pick[],
-  isDragging: boolean,
-  pointerDownPicks: ?(Pick[]),
-  pointerDownScreenCoords: ?Position,
-  pointerDownMapCoords: ?Position,
-  sourceEvent: any
-};
 
 export type ModeState<TData, TGuides> = {
   // The data being edited, this can be an array or an object
@@ -106,67 +48,25 @@ export type ModeState<TData, TGuides> = {
   onUpdateCursor: (cursor: string) => void
 };
 
-export class EditMode<TData, TGuides> {
-  state: ModeState<TData, TGuides>;
+export interface EditMode<TData, TGuides> {
+  // Called every time something in `state` changes
+  updateState(state: ModeState<TData, TGuides>): void;
 
-  getState(): ModeState<TData, TGuides> {
-    return this.state;
-  }
+  // Called when the pointer went down and up without dragging regardless of whether something was picked
+  handleClick(event: ClickEvent): void;
 
-  updateState(state: ModeState<TData, TGuides>) {
-    const changedEvents: (() => void)[] = [];
-    if (this.state && this.state.data !== state.data) {
-      changedEvents.push(this.onDataChanged);
-    }
-    if (this.state && this.state.modeConfig !== state.modeConfig) {
-      changedEvents.push(this.onModeConfigChanged);
-    }
-    if (this.state && this.state.selectedIndexes !== state.selectedIndexes) {
-      changedEvents.push(this.onSelectedIndexesChanged);
-    }
-    if (this.state && this.state.guides !== state.guides) {
-      changedEvents.push(this.onGuidesChanged);
-    }
-    this.state = state;
+  // Called when the pointer moved, regardless of whether the pointer is down, up, and whether something was picked
+  handlePointerMove(event: PointerMoveEvent): void;
 
-    changedEvents.forEach(fn => fn.bind(this)());
-  }
+  // Called when the pointer went down on something rendered by this layer and the pointer started to move
+  handleStartDragging(event: StartDraggingEvent): void;
 
-  // Overridable user interaction handlers
-  handleClick(event: ClickEvent): void {}
-  handlePointerMove(event: PointerMoveEvent): void {}
-  handleStartDragging(event: StartDraggingEvent): void {}
-  handleStopDragging(event: StopDraggingEvent): void {}
-
-  // Convenience functions to handle state changes
-  onDataChanged(): void {}
-  onModeConfigChanged(): void {}
-  onSelectedIndexesChanged(): void {}
-  onGuidesChanged(): void {}
-
-  // Convenience functions to access state
-  getModeConfig(): any {
-    return this.state.modeConfig;
-  }
-  getSelectedIndexes(): number[] {
-    return this.state.selectedIndexes;
-  }
-  getGuides(): ?TGuides {
-    return this.state && this.state.guides;
-  }
-  onEdit(editAction: EditAction<TData>): void {
-    this.state.onEdit(editAction);
-  }
-  onUpdateGuides(guides: ?TGuides): void {
-    this.state.onUpdateGuides(guides);
-  }
-  onUpdateCursor(cursor: string): void {
-    this.state.onUpdateCursor(cursor);
-  }
+  // Called when the pointer went down on something rendered by this layer, the pointer moved, and now the pointer is up
+  handleStopDragging(event: StopDraggingEvent): void;
 }
 ```
 
-A user of this class will need to call `updateState` anytime the data within `ModeState` change. This is similar to how React calls `render` and how deck.gl calls each layer's `updateState` function.
+A user of this interface will need to call `updateState` anytime the data within `ModeState` change. This is similar to how React calls `render` and how deck.gl calls `Layer.updateState` function.
 
 An implementation of a mode is intended to override the `handle...` functions in order to handle user input. The mode can then call the callbacks provided in `ModeState` (e.g. `onEdit`).
 
@@ -192,7 +92,7 @@ We will need a `@nebula.gl/core` module separate from `nebula.gl` module. The re
   * contains `EditableGeoJsonLayer`, a deck.gl `CompositeLayer`
 * `@nebula.gl/geojson-modes`
   * depends on `@nebula.gl/core` and [turf.js](http://turfjs.org/)
-  * contains all the modes for editing GeoJSON
+  * contains all the modes for editing GeoJSON (e.g. `DrawPolygonMode`)
   * this module can then be reused by `react-map-gl-draw`
 
 ### Breaking changes

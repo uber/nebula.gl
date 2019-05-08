@@ -1,4 +1,5 @@
 // @flow
+/* eslint-env browser */
 
 import window from 'global/window';
 import React, { Component } from 'react';
@@ -10,6 +11,7 @@ import circle from '@turf/circle';
 
 import {
   EditableGeoJsonLayer,
+  EditableGeoJsonLayer_EDIT_MODE_POC as EditableGeoJsonLayerEditModePoc,
   SelectionLayer,
   CompositeModeHandler,
   ModifyHandler,
@@ -31,6 +33,12 @@ import {
   ToolboxRowWrapping,
   styles as ToolboxStyles
 } from './toolbox';
+
+// TODO: once we refactor EditableGeoJsonLayer to use new EditMode interface, this can go away
+let EditableGeoJsonLayerImpl = EditableGeoJsonLayer;
+if (window.location.search && window.location.search.indexOf('useEditModePoc') !== -1) {
+  EditableGeoJsonLayerImpl = EditableGeoJsonLayerEditModePoc;
+}
 
 const styles = {
   mapContainer: {
@@ -98,7 +106,7 @@ const modeHandlers = Object.assign(
       new ModifyHandler()
     ])
   },
-  EditableGeoJsonLayer.defaultProps.modeHandlers
+  EditableGeoJsonLayerImpl.defaultProps.modeHandlers
 );
 
 function getEditHandleColor(handle: Object) {
@@ -548,7 +556,7 @@ export default class Example extends Component<
       };
     }
 
-    const editableGeoJsonLayer = new EditableGeoJsonLayer({
+    const editableGeoJsonLayer = new EditableGeoJsonLayerImpl({
       id: 'geojson',
       data: testFeatures,
       selectedFeatureIndexes,
@@ -565,7 +573,7 @@ export default class Example extends Component<
         ) {
           // Don't log edits that happen as the pointer moves since they're really chatty
           // eslint-disable-next-line
-          console.log('onEdit', editType, featureIndexes, editContext);
+          console.log('onEdit', editType, editContext);
         }
         if (editType === 'removePosition' && !this.state.pointsRemovable) {
           // This is a simple example of custom handling of edits
@@ -573,6 +581,8 @@ export default class Example extends Component<
           return;
         }
         if (editType === 'addFeature' && mode !== 'duplicate') {
+          // TODO: once we refactor EditableGeoJsonLayer to use new EditMode interface, this check can go away
+          featureIndexes = featureIndexes || editContext.featureIndexes;
           // Add the new feature to the selection
           updatedSelectedFeatureIndexes = [...this.state.selectedFeatureIndexes, ...featureIndexes];
         }

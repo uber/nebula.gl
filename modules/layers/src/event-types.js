@@ -1,6 +1,8 @@
 // @flow
 import type { Position } from './geojson-types.js';
 
+// TODO: delete this once all code is refactored to use event types in core module
+
 export type DeckGLPick = {
   index: number,
   object: any,

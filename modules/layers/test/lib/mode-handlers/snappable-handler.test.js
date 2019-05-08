@@ -61,16 +61,6 @@ describe('SnappableHandler - TranslateHandler tests', () => {
     expect(translateHandler.getFeatureCollection()).toEqual(differentFeatureCollection);
   });
 
-  test('setModeConfig()', () => {
-    const initalModeConfig = { enableSnapping: true, snapPixels: 10 };
-    const finalModeConfig = { snapPixels: 1 };
-    translateHandler.setModeConfig(initalModeConfig);
-    expect(translateHandler.getModeConfig()).toEqual(initalModeConfig);
-
-    snappableHandler.setModeConfig(finalModeConfig);
-    expect(translateHandler.getModeConfig()).toEqual(finalModeConfig);
-  });
-
   test('setSelectedFeatureIndexes()', () => {
     expect(translateHandler.getSelectedFeatureIndexes()).toEqual([1]);
     const udpatedSelectedIndexes = [1, 2, 3];
@@ -113,31 +103,11 @@ describe('SnappableHandler - TranslateHandler tests', () => {
   });
 
   test('_getEditHandlePicks() - no pickedHandle', () => {
-    snappableHandler.setModeConfig({ snapPixels: 5 });
     const mouseMoveEvent = createPointerMoveEvent([100, 100], []);
     mouseMoveEvent.screenCoords = [1, 1];
 
     const picks = snappableHandler._getEditHandlePicks(mouseMoveEvent);
     expect(picks.pickedHandle).not.toBeDefined();
-    expect(picks.potentialSnapHandle).toBeDefined();
-    if (picks.potentialSnapHandle) {
-      expect(picks.potentialSnapHandle.type).toEqual('intermediate');
-    }
-    expect(picks).toMatchSnapshot();
-  });
-
-  test('_getEditHandlePicks() - no _modeConfig', () => {
-    const mouseMoveEvent = createPointerMoveEvent([100, 100], []);
-    mouseMoveEvent.screenCoords = [1, 1];
-    mouseMoveEvent.pointerDownPicks = [
-      { index: 0, isEditingHandle: true, object: mockPickedHandle }
-    ];
-
-    const picks = snappableHandler._getEditHandlePicks(mouseMoveEvent);
-    expect(picks.pickedHandle).toBeDefined();
-    if (picks.pickedHandle) {
-      expect(picks.pickedHandle.type).toEqual('snap');
-    }
     expect(picks.potentialSnapHandle).toBeDefined();
     if (picks.potentialSnapHandle) {
       expect(picks.potentialSnapHandle.type).toEqual('intermediate');

@@ -335,7 +335,6 @@ export default class Example extends Component<
   }
 
   _renderSnappingControls() {
-    const snapPixels = (this.state.modeConfig && this.state.modeConfig.snapPixels) || 5;
     return (
       <div key="snap">
         <ToolboxRow>
@@ -347,34 +346,11 @@ export default class Example extends Component<
               onChange={event => {
                 const modeConfig = {
                   ...this.state.modeConfig,
-                  snapPixels,
                   enableSnapping: Boolean(event.target.checked)
                 };
                 this.setState({ modeConfig });
               }}
             />
-          </ToolboxControl>
-        </ToolboxRow>
-
-        <ToolboxRow>
-          <ToolboxLabel>Snap pixels</ToolboxLabel>
-          <ToolboxControl>
-            <input
-              type="range"
-              min="1"
-              max="50"
-              step="1"
-              value={snapPixels}
-              onChange={event => {
-                this.setState({
-                  modeConfig: {
-                    ...this.state.modeConfig,
-                    snapPixels: parseFloat(event.target.value)
-                  }
-                });
-              }}
-            />
-            <div>{snapPixels}</div>
           </ToolboxControl>
         </ToolboxRow>
       </div>

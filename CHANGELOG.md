@@ -12,6 +12,11 @@ _All notable changes to this project will be documented in this file. This proje
   * Specify `modeConfig.additionalSnapTargets`, which is a list of Features, instead of `modeConfig.layerIdsToSnapTo`.
   * Specify `EditableGeoJsonLayer.pickingRadius` rather than `modeConfig.snapPixels`.
 
+### Added
+
+* For snapping functionality, can now specify `modeConfig.additionalSnapTargets` to support snapping to an array GeoJSON features whether or not they are rendered
+* Can override `pickingRadius` and `pickingDepth`
+
 ## [0.12.1](https://github.com/uber/nebula.gl/compare/v0.12.0...v0.12.1) - 2019-05-07
 
 ### Changes
@@ -30,7 +35,6 @@ _All notable changes to this project will be documented in this file. This proje
 * v0.12.0
 * Upgrade to deck 7.0 (#183)
 * fix: remove extraneous console.log (#201)
-
 
 ## [0.11.2](https://github.com/uber/nebula.gl/compare/v0.11.1...v0.11.2) - 2019-04-11
 

@@ -77,6 +77,7 @@ const defaultProps = {
 
   pickable: true,
   pickingRadius: 10,
+  pickingDepth: 5,
   fp64: false,
   filled: true,
   stroked: true,

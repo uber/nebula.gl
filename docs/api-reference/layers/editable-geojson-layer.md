@@ -184,6 +184,12 @@ Defaulted to `true` for interactivity.
 
 Number of pixels around the mouse cursor used for picking. This value determines, for example, what feature is considered to be clicked and what is close enough to be snapped to.
 
+#### `pickingDepth` (Number, optional)
+
+* Default: `5`
+
+Number of layers of overlapping features that will be picked. Useful in cases where features overlap.
+
 ### GeoJsonLayer Options
 
 The following properties from [GeoJsonLayer](https://uber.github.io/deck.gl/#/documentation/deckgl-api-reference/layers/geojson-layer) are supported and function the same:

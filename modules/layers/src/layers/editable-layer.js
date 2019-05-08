@@ -129,8 +129,8 @@ export default class EditableLayer extends CompositeLayer {
       x: screenCoords[0],
       y: screenCoords[1],
       layerIds: [this.props.id],
-      radius: this.props.pickingRadius || 10,
-      depth: 2
+      radius: this.props.pickingRadius,
+      depth: this.props.pickingDepth
     });
 
     this.setState({
@@ -187,8 +187,8 @@ export default class EditableLayer extends CompositeLayer {
       x: screenCoords[0],
       y: screenCoords[1],
       layerIds: [this.props.id],
-      radius: this.props.pickingRadius || 10,
-      depth: 2
+      radius: this.props.pickingRadius,
+      depth: this.props.pickingDepth
     });
 
     this.onPointerMove({

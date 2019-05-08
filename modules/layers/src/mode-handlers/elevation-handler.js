@@ -5,17 +5,39 @@ import type { EditAction } from './mode-handler.js';
 import { getPickedEditHandle } from './mode-handler.js';
 import { ModifyHandler } from './modify-handler.js';
 
+function defaultCalculateElevationChange({
+  pointerDownScreenCoords,
+  screenCoords
+}: {
+  pointerDownScreenCoords: Position,
+  screenCoords: Position
+}) {
+  return 10 * (pointerDownScreenCoords[1] - screenCoords[1]);
+}
+
 export class ElevationHandler extends ModifyHandler {
   makeElevatedEvent(event: PointerMoveEvent | StopDraggingEvent, position: Position): Object {
-    const { min = 0, max = 20000 } = this._modeConfig || {};
+    if (!event.pointerDownScreenCoords) {
+      return event;
+    }
 
-    const [, yBot] = this._context.viewport.project([position[0], position[1], 0]);
-    const [, yTop] = this._context.viewport.project([position[0], position[1], 1000]);
-    const [, y] = event.screenCoords;
+    const {
+      minElevation = 0,
+      maxElevation = 20000,
+      calculateElevationChange = defaultCalculateElevationChange
+    } =
+      this._modeConfig || {};
 
-    let elevation = ((yBot - y) * 1000.0) / (yBot - yTop);
-    elevation = Math.min(elevation, max);
-    elevation = Math.max(elevation, min);
+    // $FlowFixMe - really, I know it has something at index 2
+    let elevation = position.length === 3 ? position[2] : 0;
+
+    // calculateElevationChange is configurable becase (at this time) modes are not aware of the viewport
+    elevation += calculateElevationChange({
+      pointerDownScreenCoords: event.pointerDownScreenCoords,
+      screenCoords: event.screenCoords
+    });
+    elevation = Math.min(elevation, maxElevation);
+    elevation = Math.max(elevation, minElevation);
 
     return Object.assign({}, event, {
       groundCoords: [position[0], position[1], elevation]
@@ -40,5 +62,22 @@ export class ElevationHandler extends ModifyHandler {
       cursor = 'ns-resize';
     }
     return cursor;
+  }
+
+  static calculateElevationChangeWithViewport(
+    viewport: any,
+    {
+      pointerDownScreenCoords,
+      screenCoords
+    }: {
+      pointerDownScreenCoords: Position,
+      screenCoords: Position
+    }
+  ): number {
+    // Source: https://gis.stackexchange.com/a/127949/111804
+    const metersPerPixel =
+      (156543.03392 * Math.cos((viewport.latitude * Math.PI) / 180)) / Math.pow(2, viewport.zoom);
+
+    return (metersPerPixel * (pointerDownScreenCoords[1] - screenCoords[1])) / 2;
   }
 }

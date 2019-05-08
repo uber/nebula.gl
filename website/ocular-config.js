@@ -4,14 +4,14 @@ const DOCS = require('../docs/table-of-contents.json');
 const DEPENDENCIES = require('./package.json').dependencies;
 
 const LIB_DIR = resolve(__dirname, '..');
-const CORE_SRC_DIR = resolve(LIB_DIR, './modules/core/src');
+const MAIN_SRC_DIR = resolve(LIB_DIR, './modules/main/src');
 const LAYERS_SRC_DIR = resolve(LIB_DIR, './modules/layers/src');
 const OVERLAYS_SRC_DIR = resolve(LIB_DIR, './modules/overlays/src');
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 const ALIASES = {
-  'nebula.gl/dist': CORE_SRC_DIR,
-  'nebula.gl': CORE_SRC_DIR,
+  'nebula.gl/dist': MAIN_SRC_DIR,
+  'nebula.gl': MAIN_SRC_DIR,
 
   '@nebula.gl/layers/dist': LAYERS_SRC_DIR,
   '@nebula.gl/layers': LAYERS_SRC_DIR,

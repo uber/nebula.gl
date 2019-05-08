@@ -200,6 +200,13 @@ export default class Example extends Component<
         },
         selectedFeatureIndexes: []
       });
+    } else if (type === 'blank') {
+      this.setState({
+        testFeatures: {
+          type: 'FeatureCollection',
+          features: []
+    }
+      });
     }
   };
 
@@ -456,6 +463,7 @@ export default class Example extends Component<
           <ToolboxControl>
             <button onClick={() => this._loadSample('mixed')}>Mixed</button>
             <button onClick={() => this._loadSample('complex')}>Complex</button>
+            <button onClick={() => this._loadSample('blank')}>Blank</button>
           </ToolboxControl>
         </ToolboxRow>
 

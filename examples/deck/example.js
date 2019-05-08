@@ -205,7 +205,7 @@ export default class Example extends Component<
         testFeatures: {
           type: 'FeatureCollection',
           features: []
-    }
+        }
       });
     }
   };
@@ -533,7 +533,8 @@ export default class Example extends Component<
   customizeLayers(layers: Object[]) {}
 
   render() {
-    const { testFeatures, selectedFeatureIndexes, mode, modeConfig } = this.state;
+    const { testFeatures, selectedFeatureIndexes, mode } = this.state;
+    let { modeConfig } = this.state;
 
     const viewport = {
       ...this.state.viewport,
@@ -542,8 +543,33 @@ export default class Example extends Component<
     };
 
     if (mode === 'elevation') {
-      modeConfig.calculateElevationChange = opts =>
-        ElevationHandler.calculateElevationChangeWithViewport(viewport, opts);
+      modeConfig = {
+        calculateElevationChange: opts =>
+          ElevationHandler.calculateElevationChangeWithViewport(viewport, opts)
+      };
+    } else if (mode === 'translate' && modeConfig && modeConfig.enableSnapping) {
+      // Snapping can be accomplished to features that aren't rendered in the same layer
+      modeConfig = {
+        ...modeConfig,
+        additionalSnapTargets: [
+          {
+            type: 'Feature',
+            properties: {},
+            geometry: {
+              type: 'Polygon',
+              coordinates: [
+                [
+                  [-122.52235, 37.734008],
+                  [-122.52217, 37.712706],
+                  [-122.49436, 37.711979],
+                  [-122.49725, 37.734306],
+                  [-122.52235, 37.734008]
+                ]
+              ]
+            }
+          }
+        ]
+      };
     }
 
     const editableGeoJsonLayer = new EditableGeoJsonLayer({

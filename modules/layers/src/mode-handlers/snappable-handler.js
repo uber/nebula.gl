@@ -1,11 +1,9 @@
 // @flow
 
-import type { FeatureCollection, Position } from '../geojson-types.js';
+import type { Feature, FeatureCollection, Position } from '../geojson-types.js';
 import type { PointerMoveEvent, StartDraggingEvent, StopDraggingEvent } from '../event-types.js';
 import type { EditHandle, EditAction } from './mode-handler.js';
 import { ModeHandler, getPickedEditHandle, getEditHandlesForGeometry } from './mode-handler.js';
-
-const DEFAULT_SNAP_PIXELS = 5;
 
 type HandlePicks = { pickedHandle?: EditHandle, potentialSnapHandle?: EditHandle };
 
@@ -33,36 +31,16 @@ export class SnappableHandler extends ModeHandler {
     this._handler.setSelectedFeatureIndexes(indexes);
   }
 
-  setDeckGlContext(context: Object) {
-    super.setDeckGlContext(context);
-    this._handler.setDeckGlContext(context);
-  }
-
   _getSnappedMouseEvent(event: Object, snapPoint: Position): PointerMoveEvent {
     return Object.assign({}, event, {
       groundCoords: snapPoint,
-      screenCoords: this._context.viewport.project(snapPoint),
       pointerDownGroundCoords: this._startDragSnapHandlePosition
     });
   }
 
-  _getEditHandleLayerId() {
-    // TODO: This is hacky, find a better way!
-    const { layers } = this._context.layerManager;
-    const layer = layers.find(l => l.id.endsWith('-edit-handles'));
-    return layer ? layer.id : '';
-  }
-
   _getEditHandlePicks(event: PointerMoveEvent): HandlePicks {
-    const { screenCoords } = event;
-    const { snapPixels = DEFAULT_SNAP_PIXELS } = this._modeConfig || {};
-    const picks = this._context.layerManager.context.deck.pickMultipleObjects({
-      x: screenCoords[0],
-      y: screenCoords[1],
-      layerIds: [this._getEditHandleLayerId()],
-      radius: snapPixels,
-      depth: 2
-    });
+    const { picks } = event;
+
     const potentialSnapHandle = picks.find(
       pick => pick.object && pick.object.type === 'intermediate'
     );
@@ -99,35 +77,24 @@ export class SnappableHandler extends ModeHandler {
     }
   }
 
-  // If layerIdsToSnapTo is present in modeConfig and is populated, this
-  // method will return the features from the specified layers along with the features
+  // If additionalSnapTargets is present in modeConfig and is populated, this
+  // method will return those features along with the features
   // that live in the current layer. Otherwise, this method will simply return the
   // features from the current layer
-  _getFeaturesFromRelevantLayers(): Object[] {
-    const features = [...this._handler.featureCollection.getObject().features];
-    const { layerIdsToSnapTo } = this._modeConfig || {};
+  _getSnapTargets(): Feature[] {
+    let { additionalSnapTargets } = this.getModeConfig() || {};
+    additionalSnapTargets = additionalSnapTargets || [];
 
-    if (layerIdsToSnapTo && layerIdsToSnapTo.length) {
-      const otherLayersToSnapTo = this._context.layerManager.layers.filter(layer => {
-        const shouldPickFromLayer = layerIdsToSnapTo && layerIdsToSnapTo.includes(layer.id);
-
-        // Filter out the current layer since the current layer's features are
-        // already populated in the features array.
-        return shouldPickFromLayer && layer.id !== this._layerId;
-      });
-
-      const featuresFromAdditionalLayers = otherLayersToSnapTo
-        .map(otherLayer => otherLayer.props.data)
-        .reduce((a, b) => [...a, ...b], []);
-
-      features.push(...featuresFromAdditionalLayers);
-    }
+    const features = [
+      ...this._handler.featureCollection.getObject().features,
+      ...additionalSnapTargets
+    ];
     return features;
   }
 
   _getNonPickedIntermediateHandles(): EditHandle[] {
     const handles = [];
-    const features = this._getFeaturesFromRelevantLayers();
+    const features = this._getSnapTargets();
 
     for (let i = 0; i < features.length; i++) {
       // Filter out the currently selected feature(s)

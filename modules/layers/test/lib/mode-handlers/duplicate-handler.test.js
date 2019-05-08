@@ -5,8 +5,7 @@ import {
   FeatureType,
   createFeatureCollection,
   getMockFeatureDetails,
-  mockedGeoJsonProperties,
-  mockNonPickedHandle
+  mockedGeoJsonProperties
 } from '../test-utils.js';
 import {
   testModeHandlerHandlePointMove,
@@ -54,11 +53,6 @@ describe('handleStartDragging()', () => {
 
   beforeEach(() => {
     handler = new DuplicateHandler(featureCollection);
-    handler._context = {
-      layerManager: {
-        pickObject: () => [{ object: mockNonPickedHandle }]
-      }
-    };
   });
 
   Object.values(FeatureType).forEach(featureType => {

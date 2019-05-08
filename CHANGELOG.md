@@ -4,6 +4,14 @@ _All notable changes to this project will be documented in this file. This proje
 
 <!-- INSERT HERE -->
 
+## TODO: version
+
+### Breaking changes
+
+* For `translate` mode:
+  * Specify `modeConfig.additionalSnapTargets`, which is a list of Features, instead of `modeConfig.layerIdsToSnapTo`.
+  * Specify `EditableGeoJsonLayer.pickingRadius` rather than `modeConfig.snapPixels`.
+
 ## [0.12.1](https://github.com/uber/nebula.gl/compare/v0.12.0...v0.12.1) - 2019-05-07
 
 ### Changes

@@ -22,28 +22,8 @@ const mockTranslateEditAction = updatedData => ({
 function mockFeatureCollectionState(features: any) {
   const translateHandler = new TranslateHandler(features);
   const snappableHandler = new SnappableHandler(translateHandler);
-  const otherLayerToPickFrom = {
-    id: 'other-layer-test',
-    props: {
-      data: [createPolygonFeature()]
-    }
-  };
-  const context = {
-    viewport: {
-      project: coords => coords
-    },
-    layerManager: {
-      context: {
-        deck: {
-          pickMultipleObjects: () => [{ object: mockNonPickedHandle }]
-        }
-      },
-      layers: [{ id: '-point-edit-handles' }, otherLayerToPickFrom]
-    }
-  };
 
   snappableHandler.setSelectedFeatureIndexes([1]);
-  snappableHandler.setDeckGlContext(context);
 
   return { snappableHandler, translateHandler };
 }
@@ -98,15 +78,6 @@ describe('SnappableHandler - TranslateHandler tests', () => {
     expect(translateHandler.getSelectedFeatureIndexes()).toEqual(udpatedSelectedIndexes);
   });
 
-  test('setDeckGlContext()', () => {
-    const intialContext = { ...translateHandler._context };
-    expect(translateHandler._context).toEqual(intialContext);
-    const finalContext = { testContextValue: 123123 };
-    snappableHandler.setDeckGlContext(finalContext);
-    expect(translateHandler._context).toEqual(finalContext);
-    expect(snappableHandler._context).toEqual(finalContext);
-  });
-
   test('_getSnappedMouseEvent()', () => {
     const initialMoveEvent = createPointerMoveEvent([1, 1]);
     const snapPos = [123, 123];
@@ -119,18 +90,6 @@ describe('SnappableHandler - TranslateHandler tests', () => {
     });
     const snappedMouseEvent = snappableHandler._getSnappedMouseEvent(initialMoveEvent, snapPos);
     expect(snappedMouseEvent).toEqual(expectedSnappedMouseEvent);
-  });
-
-  test('_getEditHandleLayerId() - positive case', () => {
-    expect(snappableHandler._getEditHandleLayerId()).toEqual('-point-edit-handles');
-  });
-
-  test('_getEditHandleLayerId() - no matching layer', () => {
-    const originalLayers = snappableHandler._context.layerManager.layers;
-    const filteredOutLayers = originalLayers.filter(layer => !layer.id.endsWith('-edit-handles'));
-    snappableHandler._context.layerManager.layers = filteredOutLayers;
-
-    expect(snappableHandler._getEditHandleLayerId()).toEqual('');
   });
 
   test('_getEditHandlePicks() - positive case', () => {
@@ -235,27 +194,27 @@ describe('SnappableHandler - TranslateHandler tests', () => {
     expect(pickedHandle).toEqual(initialPickedHandle);
   });
 
-  test('_getFeaturesFromRelevantLayers() - layerIdsToSnapTo not specified', () => {
-    const features = snappableHandler._getFeaturesFromRelevantLayers();
+  test('_getSnapTargets() - additionalSnapTargets not specified', () => {
+    const features = snappableHandler._getSnapTargets();
     expect(features.length).toEqual(5);
     expect(features).toMatchSnapshot();
   });
 
-  test('_getFeaturesFromRelevantLayers() - invalid layerIdsToSnapTo specified', () => {
-    snappableHandler.setModeConfig({ layerIdsToSnapTo: ['invalid-layer-id'] });
-    const features = snappableHandler._getFeaturesFromRelevantLayers();
+  test('_getSnapTargets() - invalid additionalSnapTargets specified', () => {
+    snappableHandler.setModeConfig({ additionalSnapTargets: ['hamster'] });
+    const features = snappableHandler._getSnapTargets();
     expect(features.length).toEqual(5);
     expect(features).toMatchSnapshot();
   });
 
-  test('_getFeaturesFromRelevantLayers() - valid layerIdsToSnapTo specified', () => {
-    snappableHandler.setModeConfig({ layerIdsToSnapTo: ['other-layer-test'] });
-    const features = snappableHandler._getFeaturesFromRelevantLayers();
+  test('_getSnapTargets() - valid additionalSnapTargets specified', () => {
+    snappableHandler.setModeConfig({ additionalSnapTargets: [createPolygonFeature()] });
+    const features = snappableHandler._getSnapTargets();
     expect(features.length).toEqual(6);
     expect(features).toMatchSnapshot();
   });
 
-  test('_getNonPickedIntermediateHandles() - layerIdsToSnapTo not specified', () => {
+  test('_getNonPickedIntermediateHandles() - additionalSnapTargets not specified', () => {
     const intermediateHandles = snappableHandler._getNonPickedIntermediateHandles();
     const areAllHandleTypesIntermediate = intermediateHandles.every(
       ({ type }) => type === 'intermediate'
@@ -264,15 +223,15 @@ describe('SnappableHandler - TranslateHandler tests', () => {
     expect(intermediateHandles).toMatchSnapshot();
   });
 
-  test('_getNonPickedIntermediateHandles() - invalid layerIdsToSnapTo specified', () => {
-    snappableHandler.setModeConfig({ layerIdsToSnapTo: ['invalid-layer-id'] });
+  test('_getNonPickedIntermediateHandles() - invalid additionalSnapTargets specified', () => {
+    snappableHandler.setModeConfig({ additionalSnapTargets: ['invalid-layer-id'] });
     const intermediateHandles = snappableHandler._getNonPickedIntermediateHandles();
     expect(intermediateHandles.length > 0).toBeTruthy();
     expect(intermediateHandles).toMatchSnapshot();
   });
 
-  test('_getNonPickedIntermediateHandles() - valid layerIdsToSnapTo specified', () => {
-    snappableHandler.setModeConfig({ layerIdsToSnapTo: ['other-layer-test'] });
+  test('_getNonPickedIntermediateHandles() - valid additionalSnapTargets specified', () => {
+    snappableHandler.setModeConfig({ additionalSnapTargets: [createPolygonFeature()] });
     const intermediateHandles = snappableHandler._getNonPickedIntermediateHandles();
     const areAllHandleTypesIntermediate = intermediateHandles.every(
       ({ type }) => type === 'intermediate'

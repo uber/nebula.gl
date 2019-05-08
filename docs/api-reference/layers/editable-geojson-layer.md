@@ -73,9 +73,8 @@ An arbitrary object used to further configure the current `ModeHandler`.
 
 Snapping-related `modeConfig` properties:
 
-* `enableSnapping` (Boolean, Optional) - Enables snapping for modes that support snapping such as translate mode.
-* `snapPixels` (Number, Optional) - The pixel distance threshold between two features at which snapping occurs.
-* `layerIdsToSnapTo` (String[], Optional) - If there are features in other layers that you would want to interact with features of this `EditableGeoJsonLayer` with regards to feature snapping, you will need to specify the ids of those other layers in this `modeConfig` property.
+* `enableSnapping` (Boolean, optional) - Enables snapping for modes that support snapping such as translate mode.
+* `additionalSnapTargets` (Object[], optional) - An array of GeoJSON Features that can be snapped to. This property only needs to be specified if you want to snap to features in other deck.gl layers. All features in this `EditableGeoJsonLayer` will be snap targets.
 
 #### `modeHandlers` (Object, optional)
 
@@ -178,6 +177,12 @@ Consider the user removed the third position from a `Polygon`'s first ring, and 
 * Default: `true`
 
 Defaulted to `true` for interactivity.
+
+#### `pickingRadius` (Number, optional)
+
+* Default: `10`
+
+Number of pixels around the mouse cursor used for picking. This value determines, for example, what feature is considered to be clicked and what is close enough to be snapped to.
 
 ### GeoJsonLayer Options
 

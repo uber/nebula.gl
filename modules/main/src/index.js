@@ -21,8 +21,6 @@ export type { Color, Style } from './types';
 
 // Moved to @nebula.gl/layers
 export { EditableGeoJsonLayer } from '@nebula.gl/layers';
-// eslint-disable-next-line camelcase
-export { EditableGeoJsonLayer_EDIT_MODE_POC } from '@nebula.gl/layers';
 export { SelectionLayer } from '@nebula.gl/layers';
 export { ElevatedEditHandleLayer } from '@nebula.gl/layers';
 export { PathOutlineLayer } from '@nebula.gl/layers';

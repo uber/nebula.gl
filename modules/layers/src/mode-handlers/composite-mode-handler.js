@@ -44,10 +44,6 @@ export class CompositeModeHandler extends ModeHandler {
     this.handlers.forEach(handler => handler.setSelectedFeatureIndexes(indexes));
   }
 
-  setDeckGlContext(context: Object) {
-    this.handlers.forEach(handler => handler.setDeckGlContext(context));
-  }
-
   handleClick(event: ClickEvent): ?EditAction {
     return this._coalesce(handler => handler.handleClick(event));
   }

@@ -29,9 +29,7 @@ export const styles = {
   toolboxItem: {
     flexBasis: '50%'
   },
-  toolboxLabel: {
-    textTransform: 'uppercase'
-  }
+  toolboxLabel: {}
 };
 
 export const ToolboxRow = props => <div style={styles.toolboxRow}>{props.children}</div>;

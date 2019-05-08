@@ -6,8 +6,7 @@ import {
   createPointerMoveEvent,
   getMockFeatureDetails,
   FeatureType,
-  mockedGeoJsonProperties,
-  mockNonPickedHandle
+  mockedGeoJsonProperties
 } from '../test-utils.js';
 
 export function mockHandleStartDragging(
@@ -67,11 +66,6 @@ export function testModeHandlerHandlePointMove(
 
     beforeEach(() => {
       handler = new HandlerClass(featureCollection);
-      handler._context = {
-        layerManager: {
-          pickObject: () => [{ object: mockNonPickedHandle }]
-        }
-      };
     });
 
     Object.values(FeatureType).forEach(featureType => {
@@ -192,11 +186,6 @@ export function testHandleStopDragging(
 
   beforeEach(() => {
     handler = new HandlerClass(featureCollection);
-    handler._context = {
-      layerManager: {
-        pickObject: () => [{ object: mockNonPickedHandle }]
-      }
-    };
   });
 
   function testHandleStopDraggingForFeatureType(featureType: string) {

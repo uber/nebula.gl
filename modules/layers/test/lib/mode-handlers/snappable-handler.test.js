@@ -22,28 +22,8 @@ const mockTranslateEditAction = updatedData => ({
 function mockFeatureCollectionState(features: any) {
   const translateHandler = new TranslateHandler(features);
   const snappableHandler = new SnappableHandler(translateHandler);
-  const otherLayerToPickFrom = {
-    id: 'other-layer-test',
-    props: {
-      data: [createPolygonFeature()]
-    }
-  };
-  const context = {
-    viewport: {
-      project: coords => coords
-    },
-    layerManager: {
-      context: {
-        deck: {
-          pickMultipleObjects: () => [{ object: mockNonPickedHandle }]
-        }
-      },
-      layers: [{ id: '-point-edit-handles' }, otherLayerToPickFrom]
-    }
-  };
 
   snappableHandler.setSelectedFeatureIndexes([1]);
-  snappableHandler.setDeckGlContext(context);
 
   return { snappableHandler, translateHandler };
 }
@@ -81,30 +61,11 @@ describe('SnappableHandler - TranslateHandler tests', () => {
     expect(translateHandler.getFeatureCollection()).toEqual(differentFeatureCollection);
   });
 
-  test('setModeConfig()', () => {
-    const initalModeConfig = { enableSnapping: true, snapPixels: 10 };
-    const finalModeConfig = { snapPixels: 1 };
-    translateHandler.setModeConfig(initalModeConfig);
-    expect(translateHandler.getModeConfig()).toEqual(initalModeConfig);
-
-    snappableHandler.setModeConfig(finalModeConfig);
-    expect(translateHandler.getModeConfig()).toEqual(finalModeConfig);
-  });
-
   test('setSelectedFeatureIndexes()', () => {
     expect(translateHandler.getSelectedFeatureIndexes()).toEqual([1]);
     const udpatedSelectedIndexes = [1, 2, 3];
     snappableHandler.setSelectedFeatureIndexes(udpatedSelectedIndexes);
     expect(translateHandler.getSelectedFeatureIndexes()).toEqual(udpatedSelectedIndexes);
-  });
-
-  test('setDeckGlContext()', () => {
-    const intialContext = { ...translateHandler._context };
-    expect(translateHandler._context).toEqual(intialContext);
-    const finalContext = { testContextValue: 123123 };
-    snappableHandler.setDeckGlContext(finalContext);
-    expect(translateHandler._context).toEqual(finalContext);
-    expect(snappableHandler._context).toEqual(finalContext);
   });
 
   test('_getSnappedMouseEvent()', () => {
@@ -114,28 +75,21 @@ describe('SnappableHandler - TranslateHandler tests', () => {
     snappableHandler._startDragSnapHandlePosition = startDragSnapHandlePosition;
     const expectedSnappedMouseEvent = Object.assign({}, initialMoveEvent, {
       groundCoords: snapPos,
-      screenCoords: snapPos,
       pointerDownGroundCoords: startDragSnapHandlePosition
     });
     const snappedMouseEvent = snappableHandler._getSnappedMouseEvent(initialMoveEvent, snapPos);
     expect(snappedMouseEvent).toEqual(expectedSnappedMouseEvent);
   });
 
-  test('_getEditHandleLayerId() - positive case', () => {
-    expect(snappableHandler._getEditHandleLayerId()).toEqual('-point-edit-handles');
-  });
-
-  test('_getEditHandleLayerId() - no matching layer', () => {
-    const originalLayers = snappableHandler._context.layerManager.layers;
-    const filteredOutLayers = originalLayers.filter(layer => !layer.id.endsWith('-edit-handles'));
-    snappableHandler._context.layerManager.layers = filteredOutLayers;
-
-    expect(snappableHandler._getEditHandleLayerId()).toEqual('');
-  });
-
   test('_getEditHandlePicks() - positive case', () => {
-    snappableHandler.setModeConfig({ snapPixels: 5 });
-    const mouseMoveEvent = createPointerMoveEvent([100, 100], []);
+    const mouseMoveEvent = createPointerMoveEvent(
+      [100, 100],
+      [
+        {
+          object: mockNonPickedHandle
+        }
+      ]
+    );
     mouseMoveEvent.screenCoords = [1, 1];
     mouseMoveEvent.pointerDownPicks = [
       { index: 0, isEditingHandle: true, object: mockPickedHandle }
@@ -154,35 +108,12 @@ describe('SnappableHandler - TranslateHandler tests', () => {
   });
 
   test('_getEditHandlePicks() - no pickedHandle', () => {
-    snappableHandler.setModeConfig({ snapPixels: 5 });
     const mouseMoveEvent = createPointerMoveEvent([100, 100], []);
     mouseMoveEvent.screenCoords = [1, 1];
 
     const picks = snappableHandler._getEditHandlePicks(mouseMoveEvent);
     expect(picks.pickedHandle).not.toBeDefined();
-    expect(picks.potentialSnapHandle).toBeDefined();
-    if (picks.potentialSnapHandle) {
-      expect(picks.potentialSnapHandle.type).toEqual('intermediate');
-    }
-    expect(picks).toMatchSnapshot();
-  });
-
-  test('_getEditHandlePicks() - no _modeConfig', () => {
-    const mouseMoveEvent = createPointerMoveEvent([100, 100], []);
-    mouseMoveEvent.screenCoords = [1, 1];
-    mouseMoveEvent.pointerDownPicks = [
-      { index: 0, isEditingHandle: true, object: mockPickedHandle }
-    ];
-
-    const picks = snappableHandler._getEditHandlePicks(mouseMoveEvent);
-    expect(picks.pickedHandle).toBeDefined();
-    if (picks.pickedHandle) {
-      expect(picks.pickedHandle.type).toEqual('snap');
-    }
-    expect(picks.potentialSnapHandle).toBeDefined();
-    if (picks.potentialSnapHandle) {
-      expect(picks.potentialSnapHandle.type).toEqual('intermediate');
-    }
+    expect(picks.potentialSnapHandle).not.toBeDefined();
     expect(picks).toMatchSnapshot();
   });
 
@@ -235,27 +166,20 @@ describe('SnappableHandler - TranslateHandler tests', () => {
     expect(pickedHandle).toEqual(initialPickedHandle);
   });
 
-  test('_getFeaturesFromRelevantLayers() - layerIdsToSnapTo not specified', () => {
-    const features = snappableHandler._getFeaturesFromRelevantLayers();
+  test('_getSnapTargets() - additionalSnapTargets not specified', () => {
+    const features = snappableHandler._getSnapTargets();
     expect(features.length).toEqual(5);
     expect(features).toMatchSnapshot();
   });
 
-  test('_getFeaturesFromRelevantLayers() - invalid layerIdsToSnapTo specified', () => {
-    snappableHandler.setModeConfig({ layerIdsToSnapTo: ['invalid-layer-id'] });
-    const features = snappableHandler._getFeaturesFromRelevantLayers();
-    expect(features.length).toEqual(5);
-    expect(features).toMatchSnapshot();
-  });
-
-  test('_getFeaturesFromRelevantLayers() - valid layerIdsToSnapTo specified', () => {
-    snappableHandler.setModeConfig({ layerIdsToSnapTo: ['other-layer-test'] });
-    const features = snappableHandler._getFeaturesFromRelevantLayers();
+  test('_getSnapTargets() - valid additionalSnapTargets specified', () => {
+    snappableHandler.setModeConfig({ additionalSnapTargets: [createPolygonFeature()] });
+    const features = snappableHandler._getSnapTargets();
     expect(features.length).toEqual(6);
     expect(features).toMatchSnapshot();
   });
 
-  test('_getNonPickedIntermediateHandles() - layerIdsToSnapTo not specified', () => {
+  test('_getNonPickedIntermediateHandles() - additionalSnapTargets not specified', () => {
     const intermediateHandles = snappableHandler._getNonPickedIntermediateHandles();
     const areAllHandleTypesIntermediate = intermediateHandles.every(
       ({ type }) => type === 'intermediate'
@@ -264,15 +188,8 @@ describe('SnappableHandler - TranslateHandler tests', () => {
     expect(intermediateHandles).toMatchSnapshot();
   });
 
-  test('_getNonPickedIntermediateHandles() - invalid layerIdsToSnapTo specified', () => {
-    snappableHandler.setModeConfig({ layerIdsToSnapTo: ['invalid-layer-id'] });
-    const intermediateHandles = snappableHandler._getNonPickedIntermediateHandles();
-    expect(intermediateHandles.length > 0).toBeTruthy();
-    expect(intermediateHandles).toMatchSnapshot();
-  });
-
-  test('_getNonPickedIntermediateHandles() - valid layerIdsToSnapTo specified', () => {
-    snappableHandler.setModeConfig({ layerIdsToSnapTo: ['other-layer-test'] });
+  test('_getNonPickedIntermediateHandles() - valid additionalSnapTargets specified', () => {
+    snappableHandler.setModeConfig({ additionalSnapTargets: [createPolygonFeature()] });
     const intermediateHandles = snappableHandler._getNonPickedIntermediateHandles();
     const areAllHandleTypesIntermediate = intermediateHandles.every(
       ({ type }) => type === 'intermediate'
@@ -412,7 +329,6 @@ describe('SnappableHandler - TranslateHandler tests', () => {
     const originalEvent = createPointerMoveEvent([1, 1]);
     const expectedSnappedEvent = {
       ...originalEvent,
-      screenCoords: screenGroundCoords,
       groundCoords: screenGroundCoords,
       pointerDownGroundCoords: pointerDownPos
     };

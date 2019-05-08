@@ -13,11 +13,6 @@ describe('SnappableHandler - handler tests', () => {
 
   beforeEach(() => {
     handler = new ElevationHandler(createFeatureCollection());
-    handler.setDeckGlContext({
-      viewport: {
-        project: coords => coords
-      }
-    });
   });
 
   test('setFeatureCollection()', () => {

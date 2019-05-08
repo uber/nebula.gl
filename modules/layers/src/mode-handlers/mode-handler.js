@@ -6,7 +6,14 @@ import turfUnion from '@turf/union';
 import turfDifference from '@turf/difference';
 import turfIntersect from '@turf/intersect';
 
-import type { FeatureCollection, Feature, Polygon, Geometry, Position } from '../geojson-types.js';
+import { ImmutableFeatureCollection } from '@nebula.gl/geojson-modes';
+import type {
+  FeatureCollection,
+  Feature,
+  Polygon,
+  Geometry,
+  Position
+} from '@nebula.gl/geojson-modes';
 import type {
   ClickEvent,
   PointerMoveEvent,
@@ -14,7 +21,6 @@ import type {
   StopDraggingEvent,
   DeckGLPick
 } from '../event-types.js';
-import { ImmutableFeatureCollection } from '../immutable-feature-collection.js';
 
 export type EditHandleType = 'existing' | 'intermediate' | 'snap';
 

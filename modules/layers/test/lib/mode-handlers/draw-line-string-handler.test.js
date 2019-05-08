@@ -1,7 +1,7 @@
 // @flow
 /* eslint-env jest */
 
-import type { Feature, FeatureCollection } from '../../../src/geojson-types.js';
+import type { Feature, FeatureCollection } from '@nebula.gl/geojson-modes';
 import { DrawLineStringHandler } from '../../../src/mode-handlers/draw-line-string-handler.js';
 import {
   createFeatureCollection,

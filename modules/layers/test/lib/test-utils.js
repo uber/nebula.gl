@@ -1,7 +1,7 @@
 // @flow
 /* eslint-env jest */
 
-import type { Position, FeatureCollection } from '../../src/geojson-types.js';
+import type { Position, FeatureCollection } from '@nebula.gl/geojson-modes';
 import type { ClickEvent, PointerMoveEvent, StopDraggingEvent } from '../../src/event-types.js';
 
 export const FeatureType = {

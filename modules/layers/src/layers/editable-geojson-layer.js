@@ -2,6 +2,7 @@
 /* eslint-env browser */
 
 import { GeoJsonLayer, ScatterplotLayer, IconLayer } from '@deck.gl/layers';
+import { type Position } from '@nebula.gl/geojson-modes';
 import { ModeHandler } from '../mode-handlers/mode-handler.js';
 import { ViewHandler } from '../mode-handlers/view-handler.js';
 import { ModifyHandler } from '../mode-handlers/modify-handler.js';
@@ -24,7 +25,6 @@ import { DrawEllipseByBoundingBoxHandler } from '../mode-handlers/draw-ellipse-b
 import { DrawEllipseUsingThreePointsHandler } from '../mode-handlers/draw-ellipse-using-three-points-handler.js';
 
 import type { EditAction } from '../mode-handlers/mode-handler.js';
-import type { Position } from '../geojson-types.js';
 import type {
   ClickEvent,
   StartDraggingEvent,

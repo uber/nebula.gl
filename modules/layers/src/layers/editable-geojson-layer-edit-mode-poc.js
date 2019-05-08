@@ -10,10 +10,8 @@ import type {
   PointerMoveEvent
 } from '@nebula.gl/core';
 
-import { ViewMode } from '../to-move-to-geojson-modes/view-mode.js';
-import { DrawPolygonMode } from '../to-move-to-geojson-modes/draw-polygon-mode.js';
-import type { GeoJsonEditMode } from '../to-move-to-geojson-modes/geojson-edit-mode.js';
-import type { FeatureCollection } from '../geojson-types.js';
+import { ViewMode, DrawPolygonMode } from '@nebula.gl/geojson-modes';
+import type { GeoJsonEditMode, FeatureCollection } from '@nebula.gl/geojson-modes';
 import EditableLayer from './editable-layer-edit-mode-poc.js';
 
 const DEFAULT_LINE_COLOR = [0x0, 0x0, 0x0, 0xff];

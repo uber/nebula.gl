@@ -9,7 +9,7 @@ import type {
   MultiPolygon,
   Position,
   PolygonCoordinates
-} from './geojson-types.js';
+} from '@nebula.gl/geojson-modes';
 
 export class ImmutableFeatureCollection {
   featureCollection: FeatureCollection;

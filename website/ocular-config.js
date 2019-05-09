@@ -6,6 +6,7 @@ const DEPENDENCIES = require('./package.json').dependencies;
 const LIB_DIR = resolve(__dirname, '..');
 const MAIN_SRC_DIR = resolve(LIB_DIR, './modules/main/src');
 const CORE_SRC_DIR = resolve(LIB_DIR, './modules/core/src');
+const GEOJSON_MODES_SRC_DIR = resolve(LIB_DIR, './modules/geojson-modes/src');
 const LAYERS_SRC_DIR = resolve(LIB_DIR, './modules/layers/src');
 const OVERLAYS_SRC_DIR = resolve(LIB_DIR, './modules/overlays/src');
 
@@ -16,6 +17,9 @@ const ALIASES = {
 
   '@nebula.gl/core/dist': CORE_SRC_DIR,
   '@nebula.gl/core': CORE_SRC_DIR,
+
+  '@nebula.gl/geojson-modes/dist': GEOJSON_MODES_SRC_DIR,
+  '@nebula.gl/geojson-modes': GEOJSON_MODES_SRC_DIR,
 
   '@nebula.gl/layers/dist': LAYERS_SRC_DIR,
   '@nebula.gl/layers': LAYERS_SRC_DIR,

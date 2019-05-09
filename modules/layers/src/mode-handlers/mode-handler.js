@@ -6,14 +6,14 @@ import turfUnion from '@turf/union';
 import turfDifference from '@turf/difference';
 import turfIntersect from '@turf/intersect';
 
-import { ImmutableFeatureCollection } from '@nebula.gl/geojson-modes';
+import { ImmutableFeatureCollection } from '@nebula.gl/edit-modes';
 import type {
   FeatureCollection,
   Feature,
   Polygon,
   Geometry,
   Position
-} from '@nebula.gl/geojson-modes';
+} from '@nebula.gl/edit-modes';
 import type {
   ClickEvent,
   PointerMoveEvent,

@@ -20,6 +20,5 @@ yarn-error.log
 
 # copied as part of a build step
 modules/main/README.md
-modules/core/README.md
-modules/geojson-modes/README.md
+modules/edit-modes/README.md
 modules/layers/README.md

@@ -2,16 +2,17 @@
 /* eslint-env browser */
 
 import { GeoJsonLayer, ScatterplotLayer, IconLayer } from '@deck.gl/layers';
+
+import { ViewMode, DrawPolygonMode } from '@nebula.gl/edit-modes';
 import type {
   EditAction,
   ClickEvent,
   StartDraggingEvent,
   StopDraggingEvent,
-  PointerMoveEvent
-} from '@nebula.gl/core';
-
-import { ViewMode, DrawPolygonMode } from '@nebula.gl/geojson-modes';
-import type { GeoJsonEditMode, FeatureCollection } from '@nebula.gl/geojson-modes';
+  PointerMoveEvent,
+  GeoJsonEditMode,
+  FeatureCollection
+} from '@nebula.gl/edit-modes';
 import EditableLayer from './editable-layer-edit-mode-poc.js';
 
 const DEFAULT_LINE_COLOR = [0x0, 0x0, 0x0, 0xff];

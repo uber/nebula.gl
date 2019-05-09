@@ -1,8 +1,7 @@
 // @flow
 
-import type { ClickEvent, PointerMoveEvent } from '@nebula.gl/core';
-
-import type { Polygon, Position } from '../types.js';
+import type { ClickEvent, PointerMoveEvent } from '../types.js';
+import type { Polygon, Position } from '../geojson-types.js';
 import type { GeoJsonEditAction, EditHandle } from './geojson-edit-mode.js';
 import {
   BaseGeoJsonEditMode,

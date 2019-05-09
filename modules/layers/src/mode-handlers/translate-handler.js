@@ -4,7 +4,7 @@ import turfBearing from '@turf/bearing';
 import turfDistance from '@turf/distance';
 import turfTransformTranslate from '@turf/transform-translate';
 import { point } from '@turf/helpers';
-import type { FeatureCollection, Position } from '@nebula.gl/geojson-modes';
+import type { FeatureCollection, Position } from '@nebula.gl/edit-modes';
 import type { PointerMoveEvent, StartDraggingEvent, StopDraggingEvent } from '../event-types.js';
 import type { EditAction } from './mode-handler.js';
 import { ModeHandler } from './mode-handler.js';

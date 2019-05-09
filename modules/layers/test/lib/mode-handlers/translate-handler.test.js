@@ -1,6 +1,6 @@
 // @flow
 
-import type { FeatureCollection } from '@nebula.gl/geojson-modes';
+import type { FeatureCollection } from '@nebula.gl/edit-modes';
 import { TranslateHandler } from '../../../src/mode-handlers/translate-handler';
 import { createFeatureCollection } from '../test-utils.js';
 

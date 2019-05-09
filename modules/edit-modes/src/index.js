@@ -1,8 +1,17 @@
 // @flow
 
-export { GeoJsonEditMode } from './lib/geojson-edit-mode.js';
-export { DrawPolygonMode } from './lib/draw-polygon-mode.js';
-export { ImmutableFeatureCollection } from './lib/immutable-feature-collection.js';
+export { EditMode, BaseEditMode } from './edit-mode.js';
+export type { ModeState } from './edit-mode.js';
+
+export type {
+  ScreenCoordinates,
+  EditAction,
+  Pick,
+  ClickEvent,
+  PointerMoveEvent,
+  StartDraggingEvent,
+  StopDraggingEvent
+} from './types.js';
 
 export type {
   Position,
@@ -26,4 +35,4 @@ export type {
   Feature,
   FeatureCollection,
   AnyGeoJson
-} from './types.js';
+} from './geojson-types.js';

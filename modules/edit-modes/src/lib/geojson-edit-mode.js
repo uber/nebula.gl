@@ -12,9 +12,9 @@ import type {
   StopDraggingEvent,
   Pick,
   ModeState
-} from '@nebula.gl/core';
-import { EditMode, BaseEditMode } from '@nebula.gl/core';
-import type { FeatureCollection, Feature, Polygon, Geometry, Position } from '../types.js';
+} from '@nebula.gl/edit-modes';
+import { EditMode, BaseEditMode } from '@nebula.gl/edit-modes';
+import type { FeatureCollection, Feature, Polygon, Geometry, Position } from '../geojson-types.js';
 import { ImmutableFeatureCollection } from './immutable-feature-collection.js';
 
 export type EditHandleType = 'existing' | 'intermediate' | 'snap';

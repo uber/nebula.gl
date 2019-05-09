@@ -1,6 +1,6 @@
 // @flow
 
-import type { Position } from '@nebula.gl/geojson-modes';
+import type { Position } from '@nebula.gl/edit-modes';
 import type { PointerMoveEvent, StopDraggingEvent } from '../event-types.js';
 import type { EditAction } from './mode-handler.js';
 import { getPickedEditHandle } from './mode-handler.js';

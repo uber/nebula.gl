@@ -1,7 +1,8 @@
 // @flow
 
+import type { Position } from './geojson-types.js';
+
 export type ScreenCoordinates = [number, number];
-export type MapCoordinates = [number, number] | [number, number, number];
 
 // Represents an edit action, i.e. a suggestion to update the data based on user interaction events
 export type EditAction<TData> = {
@@ -21,13 +22,13 @@ export type Pick = {
 export type ClickEvent = {
   picks: Pick[],
   screenCoords: ScreenCoordinates,
-  mapCoords: MapCoordinates,
+  mapCoords: Position,
   sourceEvent: any
 };
 
 // Represents a double-click event
 export type DoubleClickEvent = {
-  mapCoords: MapCoordinates,
+  mapCoords: Position,
   sourceEvent: any
 };
 
@@ -35,9 +36,9 @@ export type DoubleClickEvent = {
 export type StartDraggingEvent = {
   picks: Pick[],
   screenCoords: ScreenCoordinates,
-  mapCoords: MapCoordinates,
+  mapCoords: Position,
   pointerDownScreenCoords: ScreenCoordinates,
-  pointerDownMapCoords: MapCoordinates,
+  pointerDownMapCoords: Position,
   sourceEvent: any
 };
 
@@ -45,20 +46,20 @@ export type StartDraggingEvent = {
 export type StopDraggingEvent = {
   picks: Pick[],
   screenCoords: ScreenCoordinates,
-  mapCoords: MapCoordinates,
+  mapCoords: Position,
   pointerDownScreenCoords: ScreenCoordinates,
-  pointerDownMapCoords: MapCoordinates,
+  pointerDownMapCoords: Position,
   sourceEvent: any
 };
 
 // Represents an event that occurs every time the pointer moves
 export type PointerMoveEvent = {
   screenCoords: ScreenCoordinates,
-  mapCoords: MapCoordinates,
+  mapCoords: Position,
   picks: Pick[],
   isDragging: boolean,
   pointerDownPicks: ?(Pick[]),
   pointerDownScreenCoords: ?ScreenCoordinates,
-  pointerDownMapCoords: ?MapCoordinates,
+  pointerDownMapCoords: ?Position,
   sourceEvent: any
 };

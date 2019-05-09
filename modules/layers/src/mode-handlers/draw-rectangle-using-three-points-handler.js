@@ -1,6 +1,6 @@
 // @flow
 
-import type { LineString } from '@nebula.gl/geojson-modes';
+import type { LineString } from '@nebula.gl/edit-modes';
 import { generatePointsParallelToLinePoints } from '../utils';
 import type { PointerMoveEvent } from '../event-types.js';
 import type { EditAction } from './mode-handler.js';

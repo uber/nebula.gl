@@ -8,7 +8,7 @@ import type {
   StopDraggingEvent,
   PointerMoveEvent,
   DoubleClickEvent
-} from '@nebula.gl/core';
+} from '@nebula.gl/edit-modes';
 
 // Minimum number of pixels the pointer must move from the original pointer down to be considered dragging
 const MINIMUM_POINTER_MOVE_THRESHOLD_PIXELS = 7;

@@ -1,6 +1,6 @@
 // @flow
 
-import type { FeatureCollection } from '@nebula.gl/geojson-modes';
+import type { FeatureCollection } from '@nebula.gl/edit-modes';
 import { DuplicateHandler } from '../../../src/mode-handlers/duplicate-handler';
 import {
   FeatureType,

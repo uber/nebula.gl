@@ -1,64 +1,83 @@
 // @flow
 
-export type ScreenCoordinates = [number, number];
-export type MapCoordinates = [number, number] | [number, number, number];
+// Geometry types
 
-// Represents an edit action, i.e. a suggestion to update the data based on user interaction events
-export type EditAction<TData> = {
-  updatedData: TData,
-  editType: string,
-  editContext: any
+export type Position = [number, number] | [number, number, number];
+export type PointCoordinates = Position;
+export type LineStringCoordinates = Position[];
+export type PolygonCoordinates = Position[][];
+export type MultiPointCoordinates = Position[];
+export type MultiLineStringCoordinates = Position[][];
+export type MultiPolygonCoordinates = Position[][][];
+
+export type AnyCoordinates =
+  | PointCoordinates
+  | LineStringCoordinates
+  | PolygonCoordinates
+  | MultiPointCoordinates
+  | MultiLineStringCoordinates
+  | MultiPolygonCoordinates;
+
+export type Point = {
+  type: 'Point',
+  coordinates: PointCoordinates
 };
 
-// Represents an object "picked" from the screen. This usually reflects an object under the cursor
-export type Pick = {
-  object: any,
-  index: number,
-  isGuide: boolean
+export type LineString = {
+  type: 'LineString',
+  coordinates: LineStringCoordinates
 };
 
-// Represents a click event
-export type ClickEvent = {
-  picks: Pick[],
-  screenCoords: ScreenCoordinates,
-  mapCoords: MapCoordinates,
-  sourceEvent: any
+export type Polygon = {
+  type: 'Polygon',
+  coordinates: PolygonCoordinates
 };
 
-// Represents a double-click event
-export type DoubleClickEvent = {
-  mapCoords: MapCoordinates,
-  sourceEvent: any
+export type MultiPoint = {
+  type: 'MultiPoint',
+  coordinates: MultiPointCoordinates
 };
 
-// Represents an event that occurs when the pointer goes down and the cursor starts moving
-export type StartDraggingEvent = {
-  picks: Pick[],
-  screenCoords: ScreenCoordinates,
-  mapCoords: MapCoordinates,
-  pointerDownScreenCoords: ScreenCoordinates,
-  pointerDownMapCoords: MapCoordinates,
-  sourceEvent: any
+export type MultiLineString = {
+  type: 'MultiLineString',
+  coordinates: MultiLineStringCoordinates
 };
 
-// Represents an event that occurs after the pointer goes down, moves some, then the pointer goes back up
-export type StopDraggingEvent = {
-  picks: Pick[],
-  screenCoords: ScreenCoordinates,
-  mapCoords: MapCoordinates,
-  pointerDownScreenCoords: ScreenCoordinates,
-  pointerDownMapCoords: MapCoordinates,
-  sourceEvent: any
+export type MultiPolygon = {
+  type: 'MultiPolygon',
+  coordinates: MultiPolygonCoordinates
 };
 
-// Represents an event that occurs every time the pointer moves
-export type PointerMoveEvent = {
-  screenCoords: ScreenCoordinates,
-  mapCoords: MapCoordinates,
-  picks: Pick[],
-  isDragging: boolean,
-  pointerDownPicks: ?(Pick[]),
-  pointerDownScreenCoords: ?ScreenCoordinates,
-  pointerDownMapCoords: ?MapCoordinates,
-  sourceEvent: any
+export type Geometry = Point | LineString | Polygon | MultiPoint | MultiLineString | MultiPolygon;
+
+export type Polygonal = Polygon | MultiPolygon;
+
+// Feature types
+
+export type BoundingBoxArray = [number, number, number, number];
+
+export type FeatureOf<T: Geometry> = {
+  type: 'Feature',
+  geometry: T,
+  properties?: {},
+  id?: string | number,
+  bbox?: BoundingBoxArray
 };
+
+export type Feature =
+  | FeatureOf<Point>
+  | FeatureOf<LineString>
+  | FeatureOf<Polygon>
+  | FeatureOf<MultiPoint>
+  | FeatureOf<MultiLineString>
+  | FeatureOf<MultiPolygon>;
+
+export type FeatureCollection = {
+  type: 'FeatureCollection',
+  features: Feature[],
+  properties?: {},
+  id?: string | number,
+  bbox?: BoundingBoxArray
+};
+
+export type AnyGeoJson = Feature | FeatureCollection;

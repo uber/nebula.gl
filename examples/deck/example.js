@@ -36,7 +36,11 @@ import {
 
 // TODO: once we refactor EditableGeoJsonLayer to use new EditMode interface, this can go away
 let EditableGeoJsonLayerImpl = EditableGeoJsonLayer;
-if (window.location.search && window.location.search.indexOf('useEditModePoc') !== -1) {
+if (
+  window.location &&
+  window.location.search &&
+  window.location.search.indexOf('useEditModePoc') !== -1
+) {
   EditableGeoJsonLayerImpl = EditableGeoJsonLayerEditModePoc;
 }
 

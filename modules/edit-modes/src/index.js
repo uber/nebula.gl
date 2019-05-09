@@ -1,6 +1,8 @@
 // @flow
 
 export { EditMode, BaseEditMode } from './lib/edit-mode.js';
+export { ViewMode } from './lib/view-mode.js';
+export { DrawPolygonMode } from './lib/draw-polygon-mode.js';
 export { ImmutableFeatureCollection } from './lib/immutable-feature-collection.js';
 
 export type { ModeState } from './lib/edit-mode.js';

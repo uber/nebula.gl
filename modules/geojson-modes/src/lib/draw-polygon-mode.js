@@ -2,7 +2,7 @@
 
 import type { ClickEvent, PointerMoveEvent } from '@nebula.gl/core';
 
-import type { Polygon, Position } from '@nebula.gl/geojson-modes';
+import type { Polygon, Position } from '../types.js';
 import type { GeoJsonEditAction, EditHandle } from './geojson-edit-mode.js';
 import {
   BaseGeoJsonEditMode,

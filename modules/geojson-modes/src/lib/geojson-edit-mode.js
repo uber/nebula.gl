@@ -14,13 +14,7 @@ import type {
   ModeState
 } from '@nebula.gl/core';
 import { EditMode, BaseEditMode } from '@nebula.gl/core';
-import type {
-  FeatureCollection,
-  Feature,
-  Polygon,
-  Geometry,
-  Position
-} from '@nebula.gl/geojson-modes';
+import type { FeatureCollection, Feature, Polygon, Geometry, Position } from '../types.js';
 import { ImmutableFeatureCollection } from './immutable-feature-collection.js';
 
 export type EditHandleType = 'existing' | 'intermediate' | 'snap';

@@ -1,7 +1,9 @@
 // @flow
 
-export { EditMode, BaseEditMode } from './edit-mode.js';
-export type { ModeState } from './edit-mode.js';
+export { EditMode, BaseEditMode } from './lib/edit-mode.js';
+export { ImmutableFeatureCollection } from './lib/immutable-feature-collection.js';
+
+export type { ModeState } from './lib/edit-mode.js';
 
 export type {
   ScreenCoordinates,

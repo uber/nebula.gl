@@ -6,7 +6,7 @@ import type {
   PointerMoveEvent,
   StartDraggingEvent,
   StopDraggingEvent
-} from './types.js';
+} from '../types.js';
 
 export type ModeState<TData, TGuides> = {
   // The data being edited, this can be an array or an object

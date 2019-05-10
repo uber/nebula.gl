@@ -1,26 +1,22 @@
 // @flow
 
-// TODO: delete this once all mode handlers derive from GeoJsonEditMode
-
 import turfUnion from '@turf/union';
 import turfDifference from '@turf/difference';
 import turfIntersect from '@turf/intersect';
 
-import { ImmutableFeatureCollection } from '@nebula.gl/edit-modes';
 import type {
-  FeatureCollection,
-  Feature,
-  Polygon,
-  Geometry,
-  Position
-} from '@nebula.gl/edit-modes';
-import type {
+  EditAction,
   ClickEvent,
   PointerMoveEvent,
   StartDraggingEvent,
   StopDraggingEvent,
-  DeckGLPick
-} from '../event-types.js';
+  Pick
+} from '../types.js';
+import type { FeatureCollection, Feature, Polygon, Geometry, Position } from '../geojson-types.js';
+import type { ModeState } from './edit-mode.js';
+import { EditMode, BaseEditMode } from './edit-mode.js';
+
+import { ImmutableFeatureCollection } from './immutable-feature-collection.js';
 
 export type EditHandleType = 'existing' | 'intermediate' | 'snap';
 
@@ -31,22 +27,21 @@ export type EditHandle = {
   type: EditHandleType
 };
 
-export type EditAction = {
-  updatedData: FeatureCollection,
-  editType: string,
-  featureIndexes: number[],
-  editContext: any
-};
+export type GeoJsonEditAction = EditAction<FeatureCollection>;
+export type ModeHandlerGuides = { tentativeFeature: ?Feature, editHandles: EditHandle[] };
 
-export class ModeHandler {
+const DEFAULT_EDIT_HANDLES: EditHandle[] = [];
+
+// Main interface for `EditMode`s that edit GeoJSON
+export type GeoJsonEditMode = EditMode<FeatureCollection, ModeHandlerGuides>;
+
+export class BaseGeoJsonEditMode extends BaseEditMode<FeatureCollection, ModeHandlerGuides> {
   // TODO: add underscore
   featureCollection: ImmutableFeatureCollection;
-  _tentativeFeature: ?Feature;
-  _modeConfig: any = null;
-  _selectedFeatureIndexes: number[] = [];
   _clickSequence: Position[] = [];
 
   constructor(featureCollection?: FeatureCollection) {
+    super();
     if (featureCollection) {
       this.setFeatureCollection(featureCollection);
     }
@@ -61,8 +56,8 @@ export class ModeHandler {
   }
 
   getSelectedFeature(): ?Feature {
-    if (this._selectedFeatureIndexes.length === 1) {
-      return this.featureCollection.getObject().features[this._selectedFeatureIndexes[0]];
+    if (this.getSelectedIndexes().length === 1) {
+      return this.featureCollection.getObject().features[this.getSelectedIndexes()[0]];
     }
     return null;
   }
@@ -86,34 +81,51 @@ export class ModeHandler {
     };
   }
 
+  onDataChanged(): void {
+    this.setFeatureCollection(this.getData());
+    this._refreshEditHandles();
+  }
+
   setFeatureCollection(featureCollection: FeatureCollection): void {
     this.featureCollection = new ImmutableFeatureCollection(featureCollection);
   }
 
-  getModeConfig(): any {
-    return this._modeConfig;
-  }
-
+  // TODO: delete me
   setModeConfig(modeConfig: any): void {
-    if (this._modeConfig === modeConfig) {
-      return;
-    }
-
-    this._modeConfig = modeConfig;
-    this._setTentativeFeature(null);
+    console.warn('TODO: call to obsolete setModeConfig'); // eslint-disable-line
   }
 
+  // TODO: delete me
   getSelectedFeatureIndexes(): number[] {
-    return this._selectedFeatureIndexes;
+    return this.getSelectedIndexes();
   }
 
+  // TODO: delete me
   setSelectedFeatureIndexes(indexes: number[]): void {
-    if (this._selectedFeatureIndexes === indexes) {
-      return;
+    console.warn('TODO: call to obsolete setSelectedFeatureIndexes'); // eslint-disable-line
+  }
+
+  onSelectedIndexesChanged(): void {
+    this._setTentativeFeature(null);
+  }
+
+  onGuidesChanged(prevState: ModeState<FeatureCollection, ModeHandlerGuides>): void {
+    const guides = this.getGuides();
+
+    if (!guides) {
+      // Reset the click sequence
+      this._clickSequence = [];
     }
 
-    this._selectedFeatureIndexes = indexes;
-    this._setTentativeFeature(null);
+    if (
+      prevState &&
+      prevState.guides &&
+      guides &&
+      prevState.guides.tentativeFeature !== guides.tentativeFeature
+    ) {
+      // re-calculate edit handles
+      this._refreshEditHandles();
+    }
   }
 
   getClickSequence(): Position[] {
@@ -125,15 +137,37 @@ export class ModeHandler {
   }
 
   getTentativeFeature(): ?Feature {
-    return this._tentativeFeature;
+    const { tentativeFeature } = this.getGuides() || {};
+    return tentativeFeature;
   }
 
-  // TODO: remove the underscore
+  getEditHandles(): EditHandle[] {
+    const { editHandles } = this.getGuides() || { editHandles: DEFAULT_EDIT_HANDLES };
+    return editHandles;
+  }
+
+  // TODO: delete me once mode handlers do getEditHandles lazily
   _setTentativeFeature(tentativeFeature: ?Feature): void {
-    this._tentativeFeature = tentativeFeature;
-    if (!tentativeFeature) {
-      // Reset the click sequence
-      this._clickSequence = [];
+    this.getState().onUpdateGuides({
+      tentativeFeature,
+      editHandles: this.getEditHandles()
+    });
+  }
+
+  // TODO: delete me once mode handlers do getEditHandles lazily
+  _refreshEditHandles(picks?: Array<Object>, mapCoords?: Position): void {
+    this.getState().onUpdateGuides({
+      tentativeFeature: this.getTentativeFeature(),
+      editHandles: this.getEditHandlesAdapter(picks, mapCoords)
+    });
+  }
+
+  _refreshCursor(): void {
+    const currentCursor = this.getCursor();
+    const updatedCursor = this.getCursorAdapter({ isDragging: false });
+
+    if (currentCursor !== updatedCursor) {
+      this.onUpdateCursor(updatedCursor);
     }
   }
 
@@ -142,22 +176,26 @@ export class ModeHandler {
    *
    * @param featureIndex The index of the feature to get edit handles
    */
-  getEditHandles(picks?: Array<Object>, groundCoords?: Position): EditHandle[] {
-    return [];
+  getEditHandlesAdapter(
+    picks?: Array<Object>,
+    mapCoords?: Position,
+    tentativeFeature?: ?Feature
+  ): EditHandle[] {
+    return DEFAULT_EDIT_HANDLES;
   }
 
-  getCursor({ isDragging }: { isDragging: boolean }): string {
+  getCursorAdapter({ isDragging }: { isDragging: boolean }): string {
     return 'cell';
   }
 
-  isSelectionPicked(picks: DeckGLPick[]): boolean {
+  isSelectionPicked(picks: Pick[]): boolean {
     if (!picks.length) return false;
     const pickedIndexes = picks.map(({ index }) => index);
     const selectedFeatureIndexes = this.getSelectedFeatureIndexes();
     return selectedFeatureIndexes.some(index => pickedIndexes.includes(index));
   }
 
-  getAddFeatureAction(geometry: Geometry): EditAction {
+  getAddFeatureAction(geometry: Geometry): GeoJsonEditAction {
     // Unsure why flow can't deal with Geometry type, but there I fixed it
     const geometryAsAny: any = geometry;
 
@@ -172,12 +210,13 @@ export class ModeHandler {
     return {
       updatedData,
       editType: 'addFeature',
-      featureIndexes: [updatedData.features.length - 1],
-      editContext: null
+      editContext: {
+        featureIndexes: [updatedData.features.length - 1]
+      }
     };
   }
 
-  getAddManyFeaturesAction(featureCollection: FeatureCollection): EditAction {
+  getAddManyFeaturesAction(featureCollection: FeatureCollection): GeoJsonEditAction {
     const features = featureCollection.features;
     let updatedData = this.getImmutableFeatureCollection();
     const initialIndex = updatedData.getObject().features.length;
@@ -196,12 +235,13 @@ export class ModeHandler {
     return {
       updatedData: updatedData.getObject(),
       editType: 'addFeature',
-      featureIndexes: updatedIndexes,
-      editContext: null
+      editContext: {
+        featureIndexes: updatedIndexes
+      }
     };
   }
 
-  getAddFeatureOrBooleanPolygonAction(geometry: Polygon): ?EditAction {
+  getAddFeatureOrBooleanPolygonAction(geometry: Polygon): ?GeoJsonEditAction {
     const selectedFeature = this.getSelectedFeature();
     const modeConfig = this.getModeConfig();
     if (modeConfig && modeConfig.booleanOperation) {
@@ -247,11 +287,12 @@ export class ModeHandler {
         .replaceGeometry(featureIndex, updatedGeometry.geometry)
         .getObject();
 
-      const editAction: EditAction = {
+      const editAction: GeoJsonEditAction = {
         updatedData,
         editType: 'unionGeometry',
-        featureIndexes: [featureIndex],
-        editContext: null
+        editContext: {
+          featureIndexes: [featureIndex]
+        }
       };
 
       return editAction;
@@ -259,27 +300,73 @@ export class ModeHandler {
     return this.getAddFeatureAction(geometry);
   }
 
-  handleClick(event: ClickEvent): ?EditAction {
-    this._clickSequence.push(event.groundCoords);
+  handleClick(event: ClickEvent): void {
+    const editAction = this.handleClickAdapter(event);
+
+    this._refreshEditHandles(event.picks, event.mapCoords);
+    if (editAction) {
+      this.onEdit(editAction);
+    }
+  }
+
+  handlePointerMove(event: PointerMoveEvent): void {
+    const { editAction, cancelMapPan } = this.handlePointerMoveAdapter(event);
+
+    if (cancelMapPan) {
+      // TODO: is there a less hacky way to prevent map panning?
+      // Stop propagation to prevent map panning while dragging an edit handle
+      event.sourceEvent.stopPropagation();
+    }
+
+    this._refreshCursor();
+    this._refreshEditHandles(event.picks, event.mapCoords);
+    if (editAction) {
+      this.onEdit(editAction);
+    }
+  }
+
+  handleStartDragging(event: StartDraggingEvent): void {
+    const editAction = this.handleStartDraggingAdapter(event);
+
+    this._refreshEditHandles(event.picks, event.mapCoords);
+    if (editAction) {
+      this.onEdit(editAction);
+    }
+  }
+
+  handleStopDragging(event: StopDraggingEvent): void {
+    const editAction = this.handleStopDraggingAdapter(event);
+
+    this._refreshEditHandles(event.picks, event.mapCoords);
+    if (editAction) {
+      this.onEdit(editAction);
+    }
+  }
+
+  // TODO: delete these adapters once all ModeHandler implementations don't use them
+  handleClickAdapter(event: ClickEvent): ?GeoJsonEditAction {
+    this._clickSequence.push(event.mapCoords);
 
     return null;
   }
 
-  handlePointerMove(event: PointerMoveEvent): { editAction: ?EditAction, cancelMapPan: boolean } {
+  handlePointerMoveAdapter(
+    event: PointerMoveEvent
+  ): { editAction: ?GeoJsonEditAction, cancelMapPan: boolean } {
     return { editAction: null, cancelMapPan: false };
   }
 
-  handleStartDragging(event: StartDraggingEvent): ?EditAction {
+  handleStartDraggingAdapter(event: StartDraggingEvent): ?GeoJsonEditAction {
     return null;
   }
 
-  handleStopDragging(event: StopDraggingEvent): ?EditAction {
+  handleStopDraggingAdapter(event: StopDraggingEvent): ?GeoJsonEditAction {
     return null;
   }
 }
 
 export function getPickedEditHandle(picks: ?(any[])): ?EditHandle {
-  const info = picks && picks.find(pick => pick.isEditingHandle);
+  const info = picks && picks.find(pick => pick.isGuide);
   if (info) {
     return info.object;
   }

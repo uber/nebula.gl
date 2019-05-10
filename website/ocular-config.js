@@ -5,6 +5,7 @@ const DEPENDENCIES = require('./package.json').dependencies;
 
 const LIB_DIR = resolve(__dirname, '..');
 const MAIN_SRC_DIR = resolve(LIB_DIR, './modules/main/src');
+const EDIT_MODES_SRC_DIR = resolve(LIB_DIR, './modules/edit-modes/src');
 const LAYERS_SRC_DIR = resolve(LIB_DIR, './modules/layers/src');
 const OVERLAYS_SRC_DIR = resolve(LIB_DIR, './modules/overlays/src');
 
@@ -12,6 +13,9 @@ const OVERLAYS_SRC_DIR = resolve(LIB_DIR, './modules/overlays/src');
 const ALIASES = {
   'nebula.gl/dist': MAIN_SRC_DIR,
   'nebula.gl': MAIN_SRC_DIR,
+
+  '@nebula.gl/edit-modes/dist': EDIT_MODES_SRC_DIR,
+  '@nebula.gl/edit-modes': EDIT_MODES_SRC_DIR,
 
   '@nebula.gl/layers/dist': LAYERS_SRC_DIR,
   '@nebula.gl/layers': LAYERS_SRC_DIR,

@@ -1,21 +1,26 @@
 // @flow
 
-import type { Polygon, Position } from '@nebula.gl/edit-modes';
-import type { ClickEvent, PointerMoveEvent } from '../event-types.js';
-import type { EditAction, EditHandle } from './mode-handler.js';
-import { ModeHandler, getPickedEditHandle, getEditHandlesForGeometry } from './mode-handler.js';
+import type { ClickEvent, PointerMoveEvent } from '../types.js';
+import type { Polygon, Position } from '../geojson-types.js';
+import type { GeoJsonEditAction, EditHandle } from './geojson-edit-mode.js';
+import {
+  BaseGeoJsonEditMode,
+  getPickedEditHandle,
+  getEditHandlesForGeometry
+} from './geojson-edit-mode.js';
 
-export class DrawPolygonHandler extends ModeHandler {
-  getEditHandles(picks?: Array<Object>, groundCoords?: Position): EditHandle[] {
-    let handles = super.getEditHandles(picks, groundCoords);
+export class DrawPolygonMode extends BaseGeoJsonEditMode {
+  getEditHandlesAdapter(picks?: Array<Object>, mapCoords?: Position): EditHandle[] {
+    let handles = super.getEditHandlesAdapter(picks, mapCoords);
 
-    if (this._tentativeFeature) {
-      handles = handles.concat(getEditHandlesForGeometry(this._tentativeFeature.geometry, -1));
+    const tentativeFeature = this.getTentativeFeature();
+    if (tentativeFeature) {
+      handles = handles.concat(getEditHandlesForGeometry(tentativeFeature.geometry, -1));
       // Slice off the handles that are are next to the pointer
-      if (this._tentativeFeature && this._tentativeFeature.geometry.type === 'LineString') {
+      if (tentativeFeature && tentativeFeature.geometry.type === 'LineString') {
         // Remove the last existing handle
         handles = handles.slice(0, -1);
-      } else if (this._tentativeFeature && this._tentativeFeature.geometry.type === 'Polygon') {
+      } else if (tentativeFeature && tentativeFeature.geometry.type === 'Polygon') {
         // Remove the last existing handle
         handles = handles.slice(0, -1);
       }
@@ -24,13 +29,13 @@ export class DrawPolygonHandler extends ModeHandler {
     return handles;
   }
 
-  handleClick(event: ClickEvent): ?EditAction {
-    super.handleClick(event);
+  handleClickAdapter(event: ClickEvent): ?GeoJsonEditAction {
+    super.handleClickAdapter(event);
 
     const { picks } = event;
     const tentativeFeature = this.getTentativeFeature();
 
-    let editAction: ?EditAction = null;
+    let editAction: ?GeoJsonEditAction = null;
     const clickedEditHandle = getPickedEditHandle(picks);
 
     if (clickedEditHandle) {
@@ -66,22 +71,23 @@ export class DrawPolygonHandler extends ModeHandler {
     // Trigger pointer move right away in order for it to update edit handles (to support double-click)
     const fakePointerMoveEvent = {
       screenCoords: [-1, -1],
-      groundCoords: event.groundCoords,
+      mapCoords: event.mapCoords,
       picks: [],
       isDragging: false,
       pointerDownPicks: null,
       pointerDownScreenCoords: null,
-      pointerDownGroundCoords: null,
+      pointerDownMapCoords: null,
       sourceEvent: null
     };
-    this.handlePointerMove(fakePointerMoveEvent);
+
+    this.handlePointerMoveAdapter(fakePointerMoveEvent);
 
     return editAction;
   }
 
-  handlePointerMove({
-    groundCoords
-  }: PointerMoveEvent): { editAction: ?EditAction, cancelMapPan: boolean } {
+  handlePointerMoveAdapter({
+    mapCoords
+  }: PointerMoveEvent): { editAction: ?GeoJsonEditAction, cancelMapPan: boolean } {
     const clickSequence = this.getClickSequence();
     const result = { editAction: null, cancelMapPan: false };
 
@@ -96,7 +102,7 @@ export class DrawPolygonHandler extends ModeHandler {
         type: 'Feature',
         geometry: {
           type: 'LineString',
-          coordinates: [...clickSequence, groundCoords]
+          coordinates: [...clickSequence, mapCoords]
         }
       });
     } else {
@@ -105,7 +111,7 @@ export class DrawPolygonHandler extends ModeHandler {
         type: 'Feature',
         geometry: {
           type: 'Polygon',
-          coordinates: [[...clickSequence, groundCoords, clickSequence[0]]]
+          coordinates: [[...clickSequence, mapCoords, clickSequence[0]]]
         }
       });
     }

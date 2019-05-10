@@ -1,6 +1,7 @@
 // @flow
+
+import type { FeatureCollection } from '@nebula.gl/edit-modes';
 import { RotateHandler } from '../../../src/mode-handlers/rotate-handler';
-import type { FeatureCollection } from '../../../src/geojson-types.js';
 import { FeatureType, createFeatureCollection } from '../test-utils.js';
 
 import {

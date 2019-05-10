@@ -1,6 +1,6 @@
 // @flow
-import type { FeatureCollection } from '../../../src/geojson-types.js';
 
+import type { FeatureCollection } from '@nebula.gl/edit-modes';
 import {
   createPointerDragEvent,
   createPointerMoveEvent,

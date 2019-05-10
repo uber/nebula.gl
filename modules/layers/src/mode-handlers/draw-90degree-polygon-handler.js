@@ -5,9 +5,9 @@ import bearing from '@turf/bearing';
 import lineIntersect from '@turf/line-intersect';
 import turfDistance from '@turf/distance';
 import { point, lineString } from '@turf/helpers';
+import type { Polygon, Position } from '@nebula.gl/edit-modes';
 import { generatePointsParallelToLinePoints } from '../utils';
 import type { ClickEvent, PointerMoveEvent } from '../event-types.js';
-import type { Polygon, Position } from '../geojson-types.js';
 import type { EditAction, EditHandle } from './mode-handler.js';
 import { ModeHandler, getPickedEditHandle, getEditHandlesForGeometry } from './mode-handler.js';
 

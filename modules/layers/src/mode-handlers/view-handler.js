@@ -1,6 +1,6 @@
 // @flow
 
-import type { Position } from '../geojson-types.js';
+import type { Position } from '@nebula.gl/edit-modes';
 import type { EditHandle } from './mode-handler.js';
 import { ModeHandler } from './mode-handler.js';
 

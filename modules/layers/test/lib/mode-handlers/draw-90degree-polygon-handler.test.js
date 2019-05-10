@@ -1,7 +1,7 @@
 // @flow
 /* eslint-env jest */
 
-import type { FeatureCollection } from '../../../src/geojson-types.js';
+import type { FeatureCollection } from '@nebula.gl/edit-modes';
 import { Draw90DegreePolygonHandler } from '../../../src/mode-handlers/draw-90degree-polygon-handler';
 
 import {

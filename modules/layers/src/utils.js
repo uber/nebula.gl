@@ -4,7 +4,7 @@ import destination from '@turf/destination';
 import bearing from '@turf/bearing';
 import pointToLineDistance from '@turf/point-to-line-distance';
 import { point } from '@turf/helpers';
-import type { Position, LineString } from './geojson-types.js';
+import type { Position, LineString } from '@nebula.gl/edit-modes';
 
 export function toDeckColor(
   color?: ?[number, number, number, number],

@@ -2,8 +2,8 @@
 
 import nearestPointOnLine from '@turf/nearest-point-on-line';
 import { point, lineString as toLineString } from '@turf/helpers';
+import type { Position } from '@nebula.gl/edit-modes';
 import { recursivelyTraverseNestedArrays } from '../utils.js';
-import type { Position } from '../geojson-types.js';
 import type {
   ClickEvent,
   PointerMoveEvent,

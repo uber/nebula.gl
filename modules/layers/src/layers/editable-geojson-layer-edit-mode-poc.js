@@ -2,37 +2,18 @@
 /* eslint-env browser */
 
 import { GeoJsonLayer, ScatterplotLayer, IconLayer } from '@deck.gl/layers';
-import { type Position } from '@nebula.gl/edit-modes';
-import { ModeHandler } from '../mode-handlers/mode-handler.js';
-import { ViewHandler } from '../mode-handlers/view-handler.js';
-import { ModifyHandler } from '../mode-handlers/modify-handler.js';
-import { ElevationHandler } from '../mode-handlers/elevation-handler.js';
-import { SnappableHandler } from '../mode-handlers/snappable-handler.js';
-import { TranslateHandler } from '../mode-handlers/translate-handler.js';
-import { DuplicateHandler } from '../mode-handlers/duplicate-handler';
-import { RotateHandler } from '../mode-handlers/rotate-handler.js';
-import { ScaleHandler } from '../mode-handlers/scale-handler.js';
-import { DrawPointHandler } from '../mode-handlers/draw-point-handler.js';
-import { DrawLineStringHandler } from '../mode-handlers/draw-line-string-handler.js';
-import { DrawPolygonHandler } from '../mode-handlers/draw-polygon-handler.js';
-import { Draw90DegreePolygonHandler } from '../mode-handlers/draw-90degree-polygon-handler.js';
-import { DrawRectangleHandler } from '../mode-handlers/draw-rectangle-handler.js';
-import { SplitPolygonHandler } from '../mode-handlers/split-polygon-handler.js';
-import { DrawRectangleUsingThreePointsHandler } from '../mode-handlers/draw-rectangle-using-three-points-handler.js';
-import { DrawCircleFromCenterHandler } from '../mode-handlers/draw-circle-from-center-handler.js';
-import { DrawCircleByBoundingBoxHandler } from '../mode-handlers/draw-circle-by-bounding-box-handler.js';
-import { DrawEllipseByBoundingBoxHandler } from '../mode-handlers/draw-ellipse-by-bounding-box-handler.js';
-import { DrawEllipseUsingThreePointsHandler } from '../mode-handlers/draw-ellipse-using-three-points-handler.js';
 
-import type { EditAction } from '../mode-handlers/mode-handler.js';
+import { ViewMode, DrawPolygonMode } from '@nebula.gl/edit-modes';
 import type {
+  EditAction,
   ClickEvent,
   StartDraggingEvent,
   StopDraggingEvent,
-  PointerMoveEvent
-} from '../event-types.js';
-import { ExtrudeHandler } from '../mode-handlers/extrude-handler.js';
-import EditableLayer from './editable-layer.js';
+  PointerMoveEvent,
+  GeoJsonEditMode,
+  FeatureCollection
+} from '@nebula.gl/edit-modes';
+import EditableLayer from './editable-layer-edit-mode-poc.js';
 
 const DEFAULT_LINE_COLOR = [0x0, 0x0, 0x0, 0xff];
 const DEFAULT_FILL_COLOR = [0x0, 0x0, 0x0, 0x90];
@@ -77,7 +58,6 @@ const defaultProps = {
 
   pickable: true,
   pickingRadius: 10,
-  pickingDepth: 5,
   fp64: false,
   filled: true,
   stroked: true,
@@ -131,32 +111,15 @@ const defaultProps = {
 
   // Mode handlers
   modeHandlers: {
-    view: new ViewHandler(),
-    modify: new ModifyHandler(),
-    elevation: new ElevationHandler(),
-    extrude: new ExtrudeHandler(),
-    rotate: new RotateHandler(),
-    translate: new SnappableHandler(new TranslateHandler()),
-    duplicate: new DuplicateHandler(),
-    scale: new ScaleHandler(),
-    drawPoint: new DrawPointHandler(),
-    drawLineString: new DrawLineStringHandler(),
-    drawPolygon: new DrawPolygonHandler(),
-    draw90DegreePolygon: new Draw90DegreePolygonHandler(),
-    split: new SplitPolygonHandler(),
-    drawRectangle: new DrawRectangleHandler(),
-    drawRectangleUsing3Points: new DrawRectangleUsingThreePointsHandler(),
-    drawCircleFromCenter: new DrawCircleFromCenterHandler(),
-    drawCircleByBoundingBox: new DrawCircleByBoundingBoxHandler(),
-    drawEllipseByBoundingBox: new DrawEllipseByBoundingBoxHandler(),
-    drawEllipseUsing3Points: new DrawEllipseUsingThreePointsHandler()
+    view: new ViewMode(),
+    drawPolygon: new DrawPolygonMode()
   }
 };
 
 type Props = {
   mode: string,
-  modeHandlers: { [mode: string]: ModeHandler },
-  onEdit: EditAction => void,
+  modeHandlers: { [mode: string]: GeoJsonEditMode },
+  onEdit: (EditAction<FeatureCollection>) => void,
   // TODO: type the rest
   [string]: any
 };
@@ -168,7 +131,8 @@ type Props = {
 //   selectedFeatures: Feature[]
 // };
 
-export default class EditableGeoJsonLayer extends EditableLayer {
+// eslint-disable-next-line camelcase
+export default class EditableGeoJsonLayer_EDIT_MODE_POC extends EditableLayer {
   // state: State;
   // props: Props;
   // setState: ($Shape<State>) => void;
@@ -219,18 +183,40 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     super.initializeState();
 
     this.setState({
+      cursor: 'grab',
       selectedFeatures: [],
       editHandles: []
     });
   }
 
+  setState(partialState: any) {
+    super.setState(partialState);
+    this.updateModeState(this.props);
+  }
+
   // TODO: figure out how to properly update state from an outside event handler
-  shouldUpdateState({ props, oldProps, context, oldContext, changeFlags }: Object) {
-    if (changeFlags.stateChanged) {
-      return true;
-    }
+  shouldUpdateState() {
     return true;
   }
+
+  // shouldUpdateState(opts: Object) {
+  //   let shouldUpdateState = super.shouldUpdateState(opts);
+
+  //   if (opts.changeFlags.stateChanged) {
+  //     shouldUpdateState = true;
+
+  //     // const needsRedraw = this.getNeedsRedraw && this.getNeedsRedraw()
+  //     // console.log(
+  //     //   'calling modeHandler.updateState',
+  //     //   this.getNeedsRedraw(),
+  //     //   this.internalState.needsRedraw,
+  //     //   JSON.stringify(changeFlags)
+  //     // );
+
+  //     this.updateModeState(this.props);
+  //   }
+  //   return shouldUpdateState;
+  // }
 
   updateState({
     props,
@@ -243,7 +229,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }) {
     super.updateState({ props, changeFlags });
 
-    let modeHandler: ModeHandler = this.state.modeHandler;
+    let modeHandler: GeoJsonEditMode = this.state.modeHandler;
     if (changeFlags.propsOrDataChanged) {
       if (props.modeHandlers !== oldProps.modeHandlers || props.mode !== oldProps.mode) {
         modeHandler = props.modeHandlers[props.mode];
@@ -251,22 +237,13 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         if (!modeHandler) {
           console.warn(`No handler configured for mode ${props.mode}`); // eslint-disable-line no-console,no-undef
           // Use default mode handler
-          modeHandler = new ModeHandler();
+          modeHandler = new ViewMode();
         }
 
         if (modeHandler !== this.state.modeHandler) {
           this.setState({ modeHandler });
         }
-
-        modeHandler.setFeatureCollection(props.data);
-      } else if (changeFlags.dataChanged) {
-        modeHandler.setFeatureCollection(props.data);
       }
-
-      modeHandler.setModeConfig(props.modeConfig);
-      modeHandler.setSelectedFeatureIndexes(props.selectedFeatureIndexes);
-      this.updateTentativeFeature();
-      this.updateEditHandles();
     }
 
     let selectedFeatures = [];
@@ -276,6 +253,42 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
 
     this.setState({ selectedFeatures });
+  }
+
+  updateModeState(props: Props) {
+    const modeHandler = props.modeHandlers[props.mode];
+
+    modeHandler.updateState({
+      modeConfig: props.modeConfig,
+      data: props.data,
+      selectedIndexes: props.selectedFeatureIndexes,
+      guides: this.state && {
+        tentativeFeature: this.state.tentativeFeature,
+        editHandles: this.state.editHandles
+      },
+      cursor: this.state.cursor,
+      onEdit: (editAction: EditAction<FeatureCollection>) => {
+        props.onEdit(editAction);
+      },
+      onUpdateGuides: guides => {
+        if (guides) {
+          this.setState({
+            tentativeFeature: guides.tentativeFeature,
+            editHandles: guides.editHandles
+          });
+        } else {
+          this.setState({
+            tentativeFeature: null,
+            editHandles: null
+          });
+        }
+        this.setLayerNeedsUpdate();
+        this.setNeedsRedraw();
+      },
+      onUpdateCursor: cursor => {
+        this.setState({ cursor });
+      }
+    });
   }
 
   selectionAwareAccessor(accessor: any) {
@@ -299,7 +312,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   getPickingInfo({ info, sourceLayer }: Object) {
     if (sourceLayer.id.endsWith('-edit-handles')) {
       // If user is picking an editing handle, add additional data to the info
-      info.isEditingHandle = true;
+      info.isGuide = true;
     }
 
     return info;
@@ -420,74 +433,32 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     return [layer];
   }
 
-  updateTentativeFeature() {
-    const tentativeFeature = this.state.modeHandler.getTentativeFeature();
-    if (tentativeFeature !== this.state.tentativeFeature) {
-      this.setState({ tentativeFeature });
-      this.setLayerNeedsUpdate();
-    }
-  }
-
-  updateEditHandles(picks?: Array<Object>, groundCoords?: Position) {
-    const editHandles = this.state.modeHandler.getEditHandles(picks, groundCoords);
-    if (editHandles !== this.state.editHandles) {
-      this.setState({ editHandles });
-      this.setLayerNeedsUpdate();
-    }
-  }
-
   onLayerClick(event: ClickEvent) {
-    const editAction = this.state.modeHandler.handleClick(event);
-    this.updateTentativeFeature();
-    this.updateEditHandles();
-
-    if (editAction) {
-      this.props.onEdit(editAction);
-    }
+    this.getActiveModeHandler().handleClick(event);
   }
 
   onStartDragging(event: StartDraggingEvent) {
-    const editAction = this.state.modeHandler.handleStartDragging(event);
-    this.updateTentativeFeature();
-    this.updateEditHandles();
-
-    if (editAction) {
-      this.props.onEdit(editAction);
-    }
+    this.getActiveModeHandler().handleStartDragging(event);
   }
 
   onStopDragging(event: StopDraggingEvent) {
-    const editAction = this.state.modeHandler.handleStopDragging(event);
-    this.updateTentativeFeature();
-    this.updateEditHandles();
-
-    if (editAction) {
-      this.props.onEdit(editAction);
-    }
+    this.getActiveModeHandler().handleStopDragging(event);
   }
 
   onPointerMove(event: PointerMoveEvent) {
-    const { groundCoords, picks, sourceEvent } = event;
-
-    const { editAction, cancelMapPan } = this.state.modeHandler.handlePointerMove(event);
-    this.updateTentativeFeature();
-    this.updateEditHandles(picks, groundCoords);
-
-    if (cancelMapPan) {
-      // TODO: find a less hacky way to prevent map panning
-      // Stop propagation to prevent map panning while dragging an edit handle
-      sourceEvent.stopPropagation();
-    }
-
-    if (editAction) {
-      this.props.onEdit(editAction);
-    }
+    this.getActiveModeHandler().handlePointerMove(event);
   }
 
   getCursor({ isDragging }: { isDragging: boolean }) {
-    return this.state.modeHandler.getCursor({ isDragging });
+    return this.state.cursor;
+  }
+
+  getActiveModeHandler(): GeoJsonEditMode {
+    return this.state.modeHandler;
   }
 }
 
-EditableGeoJsonLayer.layerName = 'EditableGeoJsonLayer';
-EditableGeoJsonLayer.defaultProps = defaultProps;
+// eslint-disable-next-line camelcase
+EditableGeoJsonLayer_EDIT_MODE_POC.layerName = 'EditableGeoJsonLayer_EDIT_MODE_POC';
+// eslint-disable-next-line camelcase
+EditableGeoJsonLayer_EDIT_MODE_POC.defaultProps = defaultProps;

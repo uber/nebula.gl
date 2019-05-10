@@ -3,7 +3,7 @@
 import turfCentroid from '@turf/centroid';
 import turfBearing from '@turf/bearing';
 import turfTransformRotate from '@turf/transform-rotate';
-import type { FeatureCollection, Position } from '../geojson-types.js';
+import type { FeatureCollection, Position } from '@nebula.gl/edit-modes';
 import type { PointerMoveEvent, StartDraggingEvent, StopDraggingEvent } from '../event-types.js';
 import type { EditAction } from './mode-handler.js';
 import { ModeHandler } from './mode-handler.js';

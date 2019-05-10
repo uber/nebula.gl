@@ -2,7 +2,7 @@
 /* eslint-env jest */
 
 import turfArea from '@turf/area';
-import type { Feature, FeatureCollection } from '../../../src/geojson-types.js';
+import type { Feature, FeatureCollection } from '@nebula.gl/edit-modes';
 import { DrawRectangleHandler } from '../../../src/mode-handlers/draw-rectangle-handler.js';
 import {
   createFeatureCollection,

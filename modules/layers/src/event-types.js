@@ -1,5 +1,7 @@
 // @flow
-import type { Position } from './geojson-types.js';
+import type { Position } from '@nebula.gl/edit-modes';
+
+// TODO: delete this once all code is refactored to use event types in edit-modes module
 
 export type DeckGLPick = {
   index: number,

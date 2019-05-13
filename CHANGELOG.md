@@ -4,7 +4,7 @@ _All notable changes to this project will be documented in this file. This proje
 
 <!-- INSERT HERE -->
 
-## TODO: version
+## [0.13.0](https://github.com/uber/nebula.gl/compare/v0.12.1...v0.13.0) - 2019-05-13
 
 ### Breaking changes
 
@@ -16,6 +16,13 @@ _All notable changes to this project will be documented in this file. This proje
 
 * For snapping functionality, can now specify `modeConfig.additionalSnapTargets` to support snapping to an array GeoJSON features whether or not they are rendered
 * Can override `pickingRadius` and `pickingDepth`
+
+### Changes
+
+* Create `@nebula.gl/edit-modes` module (#225)
+* Decouple snapping functionality from deck.gl (#224)
+* Remove dependency on deck.gl from ElevationHandler (#223)
+* Ability to toggle GeoJSON text in example (#220)
 
 ## [0.12.1](https://github.com/uber/nebula.gl/compare/v0.12.0...v0.12.1) - 2019-05-07
 

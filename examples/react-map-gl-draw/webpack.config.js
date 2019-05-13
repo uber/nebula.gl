@@ -12,6 +12,10 @@ const config = {
     app: resolve('./app.js')
   },
 
+  devServer: {
+    contentBase: [resolve(__dirname), resolve(__dirname, './static')]
+  },
+
   devtool: 'source-map',
 
   output: {
@@ -45,6 +49,10 @@ const config = {
         test: /\.mjs$/,
         include: /node_modules/,
         type: 'javascript/auto'
+      },
+      {
+        test: /\.(eot|svg|ttf|woff|woff2|gif|jpe?g|png)$/,
+        loader: 'url-loader'
       }
     ]
   },

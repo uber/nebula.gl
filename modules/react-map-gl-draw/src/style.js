@@ -4,20 +4,21 @@ import type { RenderState } from './types';
 
 export const DEFAULT_FEATURE_STYLES = {
   '*': {
-    fill: '#202030',
-    stroke: '#202020',
+    stroke: '#333333',
     fillOpacity: 0.2,
     strokeWidth: 2,
     radius: 6
   },
   selected: {
     strokeDasharray: '2,1',
-    fill: '#204090',
-    stroke: '#002090',
+    fill: '#ffff00',
+    stroke: '#7ac943',
     fillOpacity: 0.5,
     radius: 10
   },
   hovered: {
+    stroke: '#7ac943',
+    fill: '#ffff00',
     strokeWidth: 4,
     fillOpacity: 0.4
   },

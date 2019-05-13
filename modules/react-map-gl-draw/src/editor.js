@@ -138,8 +138,8 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
     if (selectedFeature) {
       selectedFeature.closePath();
       this._update(this.state.features);
-      this.setState({ selectedId: null });
-      this.props.onSelect(null);
+      // this.setState({ selectedId: null });
+      // this.props.onSelect(null);
     }
   };
 

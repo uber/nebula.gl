@@ -68,7 +68,7 @@ export default class App extends Component {
     if (selectedId === null || selectedId === undefined) {
       return;
     }
-    const selectedIndex = this.state.features.findIndex(f => f.properties.id === selectedId);
+    const selectedIndex = this.state.features.findIndex(f => f.id === selectedId);
     if (selectedIndex >= 0) {
       const newFeatures = [...this.state.features];
       newFeatures.splice(selectedIndex, 1);

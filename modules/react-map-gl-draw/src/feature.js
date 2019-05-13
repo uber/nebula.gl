@@ -1,6 +1,15 @@
 // @flow
 import type { Id, Geometry, Position, Feature as GeoJson } from './types';
 
+type FeatureProps = {
+  id: Id,
+  type: string,
+  renderType?: ?string,
+  points?: ?any,
+  isClosed?: ?boolean,
+  otherProps?: ?any
+};
+
 export default class Feature {
   static fromFeature(feature: GeoJson) {
     const {
@@ -43,7 +52,7 @@ export default class Feature {
     }
   }
 
-  constructor(props: any) {
+  constructor(props: FeatureProps) {
     this.id = props.id;
     this.type = props.type;
     this.renderType = props.renderType;

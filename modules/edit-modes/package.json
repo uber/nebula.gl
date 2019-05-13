@@ -2,7 +2,7 @@
   "name": "@nebula.gl/edit-modes",
   "description": "GeoJSON editing modes for nebula.gl",
   "license": "MIT",
-  "version": "0.12.1",
+  "version": "0.13.0",
   "author": "Georgios Karnas <georgios@uber.com>",
   "repository": {
     "type": "git",
@@ -43,7 +43,5 @@
     "bench": "node test/bench/node.js",
     "bench-browser": "webpack-dev-server --env.bench --progress --hot --open",
     "test-rendering": "(cd test/rendering-test && webpack-dev-server --config webpack.config.test-rendering.js --progress --hot --open)"
-  },
-  "dependencies": {
   }
 }

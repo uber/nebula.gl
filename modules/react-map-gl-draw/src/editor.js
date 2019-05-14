@@ -3,7 +3,7 @@ import React, { PureComponent } from 'react';
 import EventManager, { MjolnirEvent } from 'mjolnir.js';
 import type { Position, Feature as GeoJson } from '@nebula.gl/edit-modes';
 import uuid from 'uuid';
-import WebMercatorViewport from 'viewport-mercator-project';
+import WebMercatorViewport, { pixelsToWorld, worldToPixels } from 'viewport-mercator-project';
 
 import Feature from './feature';
 import type { Id, ScreenCoordinates } from './types';
@@ -133,13 +133,17 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
     }
   };
 
+  _clearSelect = () => {
+    this.setState({ selectedId: null });
+    this.props.onSelect(null);
+  };
+
   _closePath = () => {
-    const selectedFeature: ?Feature = this._getSelectedFeature();
+    const selectedFeature = this._getSelectedFeature();
     if (selectedFeature) {
       selectedFeature.closePath();
       this._update(this.state.features);
-      // this.setState({ selectedId: null });
-      // this.props.onSelect(null);
+      this._clearSelect();
     }
   };
 
@@ -159,6 +163,7 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
       for (let i = 0; i < 3; i++) {
         this._addPoint(point.x, point.y, feature, false);
       }
+      feature.closePath();
     }
   };
 
@@ -239,40 +244,47 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
   };
 
   _onMouseDown = (evt: MjolnirEvent) => {
+    const { x, y } = this._getEventPosition(evt);
     const elem = evt.target;
-    const elemClass = elem.className && elem.className.baseVal && elem.className.baseVal;
-    if (elemClass && elemClass.startsWith('vertex')) {
+
+    if (this._isVertex(elem)) {
       const [index] = elem.id.split('.');
-      const { x, y } = this._getEventPosition(evt);
       this.setState({
         draggingVertex: Number(index),
+        startDragPos: { x, y },
+        isDragging: true
+      });
+    } else if (this._isFeature(elem)) {
+      this.setState({
         startDragPos: { x, y },
         isDragging: true
       });
     }
   };
 
-  _updateFeature = (feature: any, vertex: number, lngLat: Position) => {
+  _updateFeature = (feature: any, vertexIndex: number, lngLat: Position) => {
     if (feature.renderType === 'Rectangle') {
       /*
-      *       p0.x, p0.y   -----  mouse.x, p0.y
-      *           |                     |
-      *           |                     |
-      *       p0.x, mouse.y ----- mouse.x, mouse.y
+      *       p0.x, p0.y   ----------  diagonal.x, p0.y
+      *           |                             |
+      *           |                             |
+      *       p0.x, diagonal.y ----- diagonal.x, diagonal.y
       */
-      const diagonal = (vertex + 2) % 4;
+      const diagonal = (vertexIndex + 2) % 4;
       const p0 = feature.points[diagonal];
       feature.replacePoint((diagonal + 1) % 4, [lngLat[0], p0[1]]);
       feature.replacePoint((diagonal + 3) % 4, [p0[0], lngLat[1]]);
     }
 
-    feature.replacePoint(vertex, [lngLat[0], lngLat[1]]);
+    feature.replacePoint(vertexIndex, [lngLat[0], lngLat[1]]);
     this._update(this.state.features);
   };
 
   _onMouseMove = (evt: MjolnirEvent) => {
+    const { startDragPos, isDragging, didDrag, viewport } = this.state;
     const { x, y } = this._getEventPosition(evt);
-    const { startDragPos, isDragging, didDrag } = this.state;
+    const lngLat = this._unproject([x, y]);
+
     if (isDragging && !didDrag && startDragPos) {
       const dx = x - startDragPos.x;
       const dy = y - startDragPos.y;
@@ -282,25 +294,37 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
     }
 
     const selectedFeature = this._getSelectedFeature();
-    if (selectedFeature) {
-      let vertex = Number(this.state.draggingVertex);
-      if ((isDragging && vertex >= 0) || this.props.mode === MODES.DRAW_RECTANGLE) {
-        const lngLat = this._unproject([x, y]);
+    if (selectedFeature && isDragging && startDragPos) {
+      const vertex = Number(this.state.draggingVertex);
 
-        // when drawing rectangle and not dragging
-        if (vertex < 0 && this.props.mode === MODES.DRAW_RECTANGLE) {
-          vertex = 2;
-        }
-
+      if (vertex >= 0) {
         this._updateFeature(selectedFeature, vertex, lngLat);
+      } else {
+        const dx = x - startDragPos.x;
+        const dy = y - startDragPos.y;
+
+        this.setState({ startDragPos: { x, y } });
+
+        selectedFeature.points.forEach((p, i) => {
+          let world = viewport.projectFlat(p);
+          const pixels = worldToPixels(world, viewport.pixelProjectionMatrix);
+          pixels[0] += dx;
+          pixels[1] += dy;
+
+          world = pixelsToWorld(pixels, viewport.pixelUnprojectionMatrix);
+          selectedFeature.replacePoint(i, viewport.unprojectFlat(world));
+        });
+        this._update(this.state.features);
       }
+    } else if (selectedFeature && this.props.mode === MODES.DRAW_RECTANGLE) {
+      this._updateFeature(selectedFeature, 2, lngLat);
     }
   };
 
   _onMouseOver = (evt: MjolnirEvent) => {
     const { features } = this.state;
     const elem = evt.target;
-    if (elem.className && elem.className.baseVal && elem.className.baseVal.startsWith('feature')) {
+    if (this._isFeature(elem)) {
       const feature = features && features[elem.id];
       this._onHoverFeature(feature && feature.id);
     }
@@ -308,7 +332,7 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
 
   _onMouseOut = (evt: MjolnirEvent) => {
     const elem = evt.target;
-    if (elem.className && elem.className.baseVal && elem.className.baseVal.startsWith('feature')) {
+    if (this._isFeature(elem)) {
       this._onHoverFeature(null);
     }
   };
@@ -319,12 +343,7 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
     const elem = evt.target;
 
     const isDrawing = DRAWING_MODES.indexOf(mode) !== -1;
-    if (
-      !isDrawing &&
-      elem.className &&
-      elem.className.baseVal &&
-      elem.className.baseVal.startsWith('feature')
-    ) {
+    if (!isDrawing && this._isFeature(elem)) {
       const selectedFeature = features && features[elem.id];
       if (selectedFeature) {
         this._onClickFeature(evt, selectedFeature);
@@ -332,8 +351,7 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
       return;
     }
 
-    const elemClass = elem.className && elem.className.baseVal && elem.className.baseVal;
-    if (elemClass && elemClass.startsWith('vertex') && mode !== MODES.DRAW_RECTANGLE) {
+    if (this._isVertex(elem) && mode !== MODES.DRAW_RECTANGLE) {
       const [index, operation] = elem.id.split('.');
       this._onClickVertex(evt, index, operation);
       return;
@@ -357,7 +375,7 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
       case MODES.DRAW_POLYGON:
         if (selectedFeature && selectedFeature.isClosed) {
           // clicked outside
-          this.props.onSelect(null);
+          this._clearSelect();
         } else if (selectedFeature) {
           this._addPoint(x, y, selectedFeature);
         } else {
@@ -368,9 +386,7 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
       case MODES.DRAW_RECTANGLE:
         if (selectedFeature && selectedFeature.isClosed) {
           // clicked outside
-          this.props.onSelect(null);
-        } else if (selectedFeature) {
-          this._closePath();
+          this._clearSelect();
         } else {
           this._addFeature(mode, { x, y });
         }
@@ -390,12 +406,22 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
     return this.state.viewport && this.state.viewport.unproject(pt);
   };
 
-  _getEventPosition(evt: MjolnirEvent) {
+  _isFeature = (elem: HTMLElement) => {
+    const elemClass = elem && elem.getAttribute('class');
+    return Boolean(elemClass && elemClass.startsWith('feature'));
+  };
+
+  _isVertex = (elem: HTMLElement) => {
+    const elemClass = elem && elem.getAttribute('class');
+    return Boolean(elemClass && elemClass.startsWith('vertex'));
+  };
+
+  _getEventPosition = (evt: MjolnirEvent): { x: number, y: number } => {
     const {
       offsetCenter: { x, y }
     } = evt;
-    return { x, y };
-  }
+    return { x: Number(x), y: Number(y) };
+  };
 
   _getProjectedData(feature: Feature) {
     const { points, type, isClosed } = feature;
@@ -475,7 +501,9 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
 
     return (
       <g style={mode === MODES.READ_ONLY || mode === MODES.SELECT_FEATURE ? STATIC_STYLE : null}>
-        {points.length > 1 && <path style={style} d={this._getProjectedData(feature)} />}
+        {points.length > 1 && (
+          <path className="feature current" style={style} d={this._getProjectedData(feature)} />
+        )}
         <g>
           {points &&
             points.map((p, i) => {

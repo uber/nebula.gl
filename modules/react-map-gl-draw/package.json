@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "@turf/helpers": "^6.1.4",
-    "@nebula.gl/edit-modes": "^0.13.0",
+    "@nebula.gl/edit-modes": "0.13.0",
     "uuid": "^3.3.2",
     "mjolnir.js": "^2.1.0",
     "prop-types": "^15.5.7",

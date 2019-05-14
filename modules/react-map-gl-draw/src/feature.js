@@ -1,5 +1,6 @@
 // @flow
-import type { Id, Geometry, Position, Feature as GeoJson } from './types';
+import type { Geometry, Position, Feature as GeoJson } from '@nebula.gl/edit-modes';
+import type { Id } from './types';
 
 type FeatureProps = {
   id: Id,

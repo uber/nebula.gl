@@ -1,14 +1,15 @@
 // @flow
 import React, { PureComponent } from 'react';
 import EventManager, { MjolnirEvent } from 'mjolnir.js';
-import WebMercatorViewport from 'viewport-mercator-project';
+import type { Position, Feature as GeoJson } from '@nebula.gl/edit-modes';
 import uuid from 'uuid';
+import WebMercatorViewport from 'viewport-mercator-project';
 
-import type { Id, ScreenCoordinates, Position, Feature as GeoJson } from './types';
+import Feature from './feature';
+import type { Id, ScreenCoordinates } from './types';
 import type { StyleSheetProps } from './style';
 import { DEFAULT_FEATURE_STYLES, getStyle } from './style';
 import { MODES, DRAWING_MODES, MODE_TO_GEOJSON_TYPE, MODE_TO_RENDER_TYPE } from './constants';
-import Feature from './feature';
 
 const OPERATIONS = {
   SET: 'SET',
@@ -38,7 +39,7 @@ type EditorState = {
   selectedId: ?Id,
   hoveredId: ?Id,
   draggingVertex: ?number,
-  startDragPos?: ?ScreenCoordinates,
+  startDragPos: ?ScreenCoordinates,
   isDragging: ?boolean,
   didDrag: ?boolean,
   viewport: WebMercatorViewport

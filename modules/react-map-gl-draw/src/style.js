@@ -1,3 +1,7 @@
+// @flow
+import Feature from './feature';
+import type { RenderState } from './types';
+
 export const DEFAULT_FEATURE_STYLES = {
   '*': {
     fill: '#202030',
@@ -22,7 +26,21 @@ export const DEFAULT_FEATURE_STYLES = {
   }
 };
 
-export function getStyle(stylesheet, feature, { selected, hovered }) {
+export type StyleSheetProps = {
+  '*': any,
+  selected?: any,
+  hovered?: any,
+  LineString?: any,
+  Point?: any,
+  Polygon?: any,
+  Rectangle?: any
+};
+
+export function getStyle(
+  stylesheet: ?StyleSheetProps,
+  feature: Feature,
+  { hovered, selected }: RenderState
+) {
   if (!feature) {
     return null;
   }
@@ -33,17 +51,18 @@ export function getStyle(stylesheet, feature, { selected, hovered }) {
     return stylesheet(feature.toFeature(), { hovered, selected });
   }
 
+  stylesheet = stylesheet || DEFAULT_FEATURE_STYLES;
   let baseStyle = { ...stylesheet['*'] };
-  let typeStyle = { ...stylesheet[type] };
+  let typeStyle = type ? { ...stylesheet[type] } : {};
 
   if (selected) {
     baseStyle = {
       ...baseStyle,
-      ...stylesheet.selected
+      ...(stylesheet.selected || {})
     };
     typeStyle = {
       ...typeStyle,
-      ...stylesheet[`${type} selected`]
+      ...(type ? stylesheet[`${type} selected`] : null)
     };
   } else if (hovered) {
     baseStyle = {
@@ -52,7 +71,7 @@ export function getStyle(stylesheet, feature, { selected, hovered }) {
     };
     typeStyle = {
       ...typeStyle,
-      ...stylesheet[`${type} selected`]
+      ...(type ? stylesheet[`${type} selected`] : null)
     };
   }
 

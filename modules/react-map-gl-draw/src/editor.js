@@ -1,9 +1,13 @@
+// @flow
 import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
-// import { MjolnirEvent } from 'mjolnir.js';
+import EventManager, { MjolnirEvent } from 'mjolnir.js';
+import type { Position, Feature as GeoJson } from '@nebula.gl/edit-modes';
+import uuid from 'uuid';
 import WebMercatorViewport from 'viewport-mercator-project';
 
 import Feature from './feature';
+import type { Id, ScreenCoordinates } from './types';
+import type { StyleSheetProps } from './style';
 import { DEFAULT_FEATURE_STYLES, getStyle } from './style';
 import { MODES, DRAWING_MODES, MODE_TO_GEOJSON_TYPE, MODE_TO_RENDER_TYPE } from './constants';
 
@@ -12,58 +16,79 @@ const OPERATIONS = {
   INTERSECT: 'INTERSECT'
 };
 
+type Operation = 'SET' | 'INTERSECT';
+
 const STATIC_STYLE = {
   cursor: 'default',
   pointerEvents: 'none'
 };
 
-const propTypes = {
-  mode: PropTypes.string,
-  onSelect: PropTypes.func.isRequired,
-  onUpdate: PropTypes.func.isRequired
+type EditorProps = {
+  features: ?Array<GeoJson>,
+  selectedId: ?Id,
+  mode: string,
+  style: ?StyleSheetProps,
+  eventManager: EventManager,
+  viewport: any,
+  onSelect: Function,
+  onUpdate: Function
+};
+
+type EditorState = {
+  features: ?Array<Feature>,
+  selectedId: ?Id,
+  hoveredId: ?Id,
+  draggingVertex: ?number,
+  startDragPos: ?ScreenCoordinates,
+  isDragging: ?boolean,
+  didDrag: ?boolean,
+  viewport: WebMercatorViewport
 };
 
 const defaultProps = {
+  mode: MODES.READ_ONLY,
   style: DEFAULT_FEATURE_STYLES,
-  mode: MODES.READ_ONLY
+  onSelect: () => {}
 };
 
-export default class Editor extends PureComponent {
-  static propTypes = propTypes;
+export default class Editor extends PureComponent<EditorProps, EditorState> {
   static defaultProps = defaultProps;
 
-  constructor(props) {
+  constructor(props: EditorProps) {
     super(props);
     this.state = {
-      ...this.state,
-      features: props.features ? props.features.map(f => Feature.fromFeature(f)) : null,
+      features: props.features
+        ? props.features.map(f => Feature.fromFeature(f)).filter(Boolean)
+        : null,
       selectedId: null,
       hoveredId: null,
       draggingVertex: -1,
-      startDragPos: {},
+      startDragPos: null,
       isDragging: false,
-      didDrag: false
+      didDrag: false,
+      viewport: new WebMercatorViewport(props.viewport)
     };
 
-    this._eventManager = null;
-    this._viewport = new WebMercatorViewport(props.viewport);
+    this._containerRef = null;
+    this._events = {};
   }
 
   componentDidMount() {
     this._setupEvents();
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps: EditorProps) {
     if (this.props.mode !== nextProps.mode || this.props.features !== nextProps.features) {
       this.setState({
-        features: nextProps.features.map(f => Feature.fromFeature(f))
+        features:
+          nextProps.features && nextProps.features.map(f => Feature.fromFeature(f)).filter(Boolean)
       });
     }
     if (this.props.mode !== nextProps.mode || this.props.selectedId !== nextProps.selectedId) {
       this.setState({ selectedId: nextProps.selectedId });
     }
     if (this.props.viewport !== nextProps.viewport) {
-      this._viewport = new WebMercatorViewport(nextProps.viewport);
+      this.setState({ viewport: new WebMercatorViewport(nextProps.viewport) });
     }
   }
 
@@ -71,48 +96,59 @@ export default class Editor extends PureComponent {
     this._removeEvents();
   }
 
+  _containerRef: HTMLDivElement | null;
+  _events: any;
+
   /* FEATURE OPERATIONS */
-  _update = features => {
-    this.props.onUpdate(features.map(f => f.toFeature()));
+  _update = (features: ?Array<Feature>) => {
+    if (features) {
+      this.props.onUpdate(features.map(f => f.toFeature()));
+    }
   };
 
-  _addPoint = (x, y, feature, isNew) => {
+  _addPoint = (x: number, y: number, feature: ?Feature, isNew: boolean = false) => {
     const { mode } = this.props;
-    const selectedFeature = feature || this._getSelectedFeature();
-    const lngLat = this._unproject([x, y]);
+    feature = feature || this._getSelectedFeature();
+    const lngLat = this._unproject([x, y]) || [];
 
-    if (selectedFeature) {
-      selectedFeature.addPoint([lngLat[0], lngLat[1]]);
-    }
+    if (feature) {
+      feature.addPoint([lngLat[0], lngLat[1]]);
 
-    const features = isNew ? [...this.state.features, selectedFeature] : [...this.state.features];
-    if (
-      mode === MODES.DRAW_POINT ||
-      (mode === MODES.DRAW_PATH && selectedFeature.points.length >= 2)
-    ) {
-      this._update(features);
-      this.props.onSelect(selectedFeature.id);
-    } else {
-      this.setState({
-        features,
-        selectedId: feature.id
-      });
+      const features = [...(this.state.features || [])];
+      if (isNew) {
+        features.push(feature);
+      }
+
+      const validPath = feature.points && feature.points.length >= 2;
+
+      if (mode === MODES.DRAW_POINT || (mode === MODES.DRAW_PATH && validPath)) {
+        this._update(features);
+        this.props.onSelect(feature && feature.id);
+      } else {
+        this.setState({
+          features,
+          selectedId: feature && feature.id
+        });
+      }
     }
   };
 
   _closePath = () => {
-    const selectedFeature = this._getSelectedFeature();
-    selectedFeature.closePath();
-    this._update(this.state.features);
-    this.setState({ selectedId: null });
-    this.props.onSelect(null);
+    const selectedFeature: ?Feature = this._getSelectedFeature();
+    if (selectedFeature) {
+      selectedFeature.closePath();
+      this._update(this.state.features);
+      this.setState({ selectedId: null });
+      this.props.onSelect(null);
+    }
   };
 
-  _addFeature = (mode, point) => {
+  _addFeature = (mode: string, point: ScreenCoordinates) => {
     const type = MODE_TO_GEOJSON_TYPE[mode];
     const renderType = MODE_TO_RENDER_TYPE[mode];
+
     const feature = new Feature({
-      id: Date.now(),
+      id: uuid(),
       type,
       renderType
     });
@@ -126,18 +162,18 @@ export default class Editor extends PureComponent {
     }
   };
 
-  _onHoverFeature = featureId => {
+  _onHoverFeature = (featureId: ?Id) => {
     this.setState({ hoveredId: featureId });
   };
 
-  _onClickFeature = (evt, feature) => {
+  _onClickFeature = (evt: MjolnirEvent, feature: Feature) => {
     if (this.props.mode === MODES.SELECT_FEATURE || this.props.mode === MODES.EDIT_VERTEX) {
       this.props.onSelect(feature.id);
       evt.stopImmediatePropagation();
     }
   };
 
-  _onClickVertex = (evt, index, operation) => {
+  _onClickVertex = (evt: MjolnirEvent, index: number, operation: Operation) => {
     if (operation === OPERATIONS.INTERSECT) {
       this._closePath();
     }
@@ -147,8 +183,9 @@ export default class Editor extends PureComponent {
   /* EVENTS */
   _setupEvents() {
     const ref = this._containerRef;
-    this._eventManager = this.props.eventManager;
-    if (!ref || !this._eventManager) {
+    const { eventManager } = this.props;
+
+    if (!ref || !eventManager) {
       return;
     }
 
@@ -165,11 +202,11 @@ export default class Editor extends PureComponent {
       panend: evt => evt.stopImmediatePropagation()
     };
 
-    this._eventManager.on(this._events, ref);
+    eventManager.on(this._events, ref);
   }
 
   _removeEvents() {
-    const eventManager = this._eventManager;
+    const { eventManager } = this.props;
     if (!eventManager || !this._events) {
       return;
     }
@@ -177,7 +214,7 @@ export default class Editor extends PureComponent {
     this._events = null;
   }
 
-  _onEvent = (handler, evt, ...args) => {
+  _onEvent = (handler: Function, evt: MjolnirEvent, ...args: any) => {
     const { mode } = this.props;
     evt.stopImmediatePropagation();
     if (mode === MODES.READ_ONLY) {
@@ -187,14 +224,13 @@ export default class Editor extends PureComponent {
     handler(evt, ...args);
   };
 
-  // eslint-disable-next-line no-inline-comments
-  _onMouseUp = (evt /* MjolnirEvent */) => {
+  _onMouseUp = (evt: MjolnirEvent) => {
     this.setState({
       isDragging: false,
       didDrag: false
     });
     const { draggingVertex } = this.state;
-    if (draggingVertex >= 0) {
+    if (Number(draggingVertex) >= 0) {
       this.setState({
         draggingVertex: -1
       });
@@ -202,8 +238,7 @@ export default class Editor extends PureComponent {
     }
   };
 
-  // eslint-disable-next-line no-inline-comments
-  _onMouseDown = (evt /* MjolnirEvent */) => {
+  _onMouseDown = (evt: MjolnirEvent) => {
     const elem = evt.target;
     const elemClass = elem.className && elem.className.baseVal && elem.className.baseVal;
     if (elemClass && elemClass.startsWith('vertex')) {
@@ -217,7 +252,7 @@ export default class Editor extends PureComponent {
     }
   };
 
-  _updateFeature = (feature, vertex, lngLat) => {
+  _updateFeature = (feature: any, vertex: number, lngLat: Position) => {
     if (feature.renderType === 'Rectangle') {
       /*
       *       p0.x, p0.y   -----  mouse.x, p0.y
@@ -235,11 +270,10 @@ export default class Editor extends PureComponent {
     this._update(this.state.features);
   };
 
-  // eslint-disable-next-line no-inline-comments
-  _onMouseMove = (evt /* MjolnirEvent */) => {
+  _onMouseMove = (evt: MjolnirEvent) => {
     const { x, y } = this._getEventPosition(evt);
     const { startDragPos, isDragging, didDrag } = this.state;
-    if (isDragging && !didDrag) {
+    if (isDragging && !didDrag && startDragPos) {
       const dx = x - startDragPos.x;
       const dy = y - startDragPos.y;
       if (dx * dx + dy * dy > 5) {
@@ -249,7 +283,7 @@ export default class Editor extends PureComponent {
 
     const selectedFeature = this._getSelectedFeature();
     if (selectedFeature) {
-      let vertex = this.state.draggingVertex;
+      let vertex = Number(this.state.draggingVertex);
       if ((isDragging && vertex >= 0) || this.props.mode === MODES.DRAW_RECTANGLE) {
         const lngLat = this._unproject([x, y]);
 
@@ -263,26 +297,25 @@ export default class Editor extends PureComponent {
     }
   };
 
-  // eslint-disable-next-line no-inline-comments
-  _onMouseOver = (evt /* MjolnirEvent */) => {
+  _onMouseOver = (evt: MjolnirEvent) => {
+    const { features } = this.state;
     const elem = evt.target;
     if (elem.className && elem.className.baseVal && elem.className.baseVal.startsWith('feature')) {
-      const feature = this.state.features[elem.id];
+      const feature = features && features[elem.id];
       this._onHoverFeature(feature && feature.id);
     }
   };
 
-  // eslint-disable-next-line no-inline-comments
-  _onMouseOut = (evt /* MjolnirEvent */) => {
+  _onMouseOut = (evt: MjolnirEvent) => {
     const elem = evt.target;
     if (elem.className && elem.className.baseVal && elem.className.baseVal.startsWith('feature')) {
       this._onHoverFeature(null);
     }
   };
 
-  // eslint-disable-next-line no-inline-comments
-  _onClick = (evt /* MjolnirEvent */) => {
+  _onClick = (evt: MjolnirEvent) => {
     const { mode } = this.props;
+    const { features } = this.state;
     const elem = evt.target;
 
     const isDrawing = DRAWING_MODES.indexOf(mode) !== -1;
@@ -292,7 +325,10 @@ export default class Editor extends PureComponent {
       elem.className.baseVal &&
       elem.className.baseVal.startsWith('feature')
     ) {
-      this._onClickFeature(evt, this.state.features[elem.id]);
+      const selectedFeature = features && features[elem.id];
+      if (selectedFeature) {
+        this._onClickFeature(evt, selectedFeature);
+      }
       return;
     }
 
@@ -346,23 +382,23 @@ export default class Editor extends PureComponent {
   };
 
   /* HELPERS */
-  _project = pt => {
-    return this._viewport.project(pt);
+  _project = (pt: Position) => {
+    return this.state.viewport && this.state.viewport.project(pt);
   };
 
-  _unproject = pt => {
-    return this._viewport.unproject(pt);
+  _unproject = (pt: Position) => {
+    return this.state.viewport && this.state.viewport.unproject(pt);
   };
 
-  // eslint-disable-next-line no-inline-comments
-  _getEventPosition(evt /* MjolnirEvent */) {
+  _getEventPosition(evt: MjolnirEvent) {
     const {
       offsetCenter: { x, y }
     } = evt;
     return { x, y };
   }
 
-  _getProjectedData({ points, type, isClosed }) {
+  _getProjectedData(feature: Feature) {
+    const { points, type, isClosed } = feature;
     if (points.length === 0) {
       return '';
     }
@@ -384,22 +420,22 @@ export default class Editor extends PureComponent {
     }
   }
 
-  _getSelectedFeature = () => {
+  _getSelectedFeature = (): ?Feature => {
     const { features, selectedId } = this.state;
     return features && features.find(f => f.id === selectedId);
   };
 
-  _getStyle = feature => {
+  _getStyle = (feature: Feature) => {
     const { style } = this.props;
     const { selectedId, hoveredId } = this.state;
     const selected = feature.id === selectedId;
     const hovered = feature.id === hoveredId;
-    return getStyle(style, feature, { selected, hovered });
+    return getStyle(style, feature, { selected, hovered }) || {};
   };
 
   /* RENDER */
-  _renderVertex(coords, index, operation, style) {
-    const p = this._project(coords);
+  _renderVertex(position: Position, index: number, operation: Operation, style: any) {
+    const p = this._project(position);
     const { radius, ...others } = style;
     // second <circle> is to make path easily interacted with
     return (
@@ -427,8 +463,13 @@ export default class Editor extends PureComponent {
   }
 
   _renderCurrent() {
-    const { mode } = this.props;
     const feature = this._getSelectedFeature();
+
+    if (!feature) {
+      return null;
+    }
+
+    const { mode } = this.props;
     const { points, isClosed } = feature;
     const style = this._getStyle(feature);
 
@@ -436,24 +477,25 @@ export default class Editor extends PureComponent {
       <g style={mode === MODES.READ_ONLY || mode === MODES.SELECT_FEATURE ? STATIC_STYLE : null}>
         {points.length > 1 && <path style={style} d={this._getProjectedData(feature)} />}
         <g>
-          {points.map((p, i) => {
-            let operation = OPERATIONS.SET;
-            if (isClosed) {
+          {points &&
+            points.map((p, i) => {
+              let operation = OPERATIONS.SET;
+              if (isClosed) {
+                return this._renderVertex(p, i, operation, style);
+              }
+
+              if (mode === MODES.DRAW_POLYGON && i === 0 && points.length > 2) {
+                operation = OPERATIONS.INTERSECT;
+              }
+
               return this._renderVertex(p, i, operation, style);
-            }
-
-            if (mode === MODES.DRAW_POLYGON && i === 0 && points.length > 2) {
-              operation = OPERATIONS.INTERSECT;
-            }
-
-            return this._renderVertex(p, i, operation, style);
-          })}
+            })}
         </g>
       </g>
     );
   }
 
-  _renderFeature = (feature, index) => {
+  _renderFeature = (feature: Feature, index: number) => {
     if (feature === this._getSelectedFeature()) {
       return null;
     }
@@ -463,6 +505,10 @@ export default class Editor extends PureComponent {
 
     const { radius, ...others } = style;
     const points = this._getProjectedData(feature);
+
+    if (!points) {
+      return null;
+    }
 
     switch (type) {
       case 'Point':
@@ -532,7 +578,7 @@ export default class Editor extends PureComponent {
 
   _renderFeatures() {
     const { features } = this.state;
-    return features.map(this._renderFeature);
+    return features && features.map(this._renderFeature);
   }
 
   _renderCanvas() {
@@ -560,8 +606,8 @@ export default class Editor extends PureComponent {
 
     return (
       <div
-        className="svg-editing"
-        id="svg-editing"
+        className="editor"
+        id="editor"
         style={{
           ...(mode === MODES.READ_ONLY ? STATIC_STYLE : null),
           width,
@@ -574,5 +620,3 @@ export default class Editor extends PureComponent {
     );
   }
 }
-
-export { MODES };

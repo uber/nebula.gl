@@ -1,3 +1,4 @@
+// @flow
 export const MODES = {
   READ_ONLY: 'READ_ONLY',
   SELECT_FEATURE: 'SELECT_FEATURE',

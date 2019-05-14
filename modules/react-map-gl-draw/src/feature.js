@@ -1,10 +1,22 @@
-import { polygon, lineString, point } from '@turf/helpers';
+// @flow
+import type { Geometry, Position, Feature as GeoJson } from '@nebula.gl/edit-modes';
+import type { Id } from './types';
+
+type FeatureProps = {
+  id: Id,
+  type: string,
+  renderType?: ?string,
+  points?: ?any,
+  isClosed?: ?boolean,
+  otherProps?: ?any
+};
 
 export default class Feature {
-  static fromFeature(feature) {
+  static fromFeature(feature: GeoJson) {
     const {
+      id,
       geometry: { coordinates, type },
-      properties: { id, renderType, ...otherProps }
+      properties: { renderType, ...otherProps }
     } = feature;
 
     switch (type) {
@@ -14,7 +26,7 @@ export default class Feature {
           type,
           renderType: renderType || type,
           points: [coordinates],
-          ...otherProps
+          otherProps
         });
 
       case 'LineString':
@@ -23,7 +35,7 @@ export default class Feature {
           type,
           renderType: renderType || type,
           points: coordinates,
-          ...otherProps
+          otherProps
         });
 
       case 'Polygon':
@@ -31,9 +43,9 @@ export default class Feature {
           id,
           type,
           renderType: renderType || type,
-          points: coordinates[0].slice(0, -1),
+          points: coordinates && coordinates[0].slice(0, -1),
           isClosed: true,
-          ...otherProps
+          otherProps
         });
 
       default:
@@ -41,21 +53,28 @@ export default class Feature {
     }
   }
 
-  constructor({ id, type, renderType, points = [], isClosed, ...otherProps }) {
-    this.id = id;
-    this.type = type;
-    this.renderType = renderType;
-    this.points = points;
-    this.isClosed = isClosed;
-    this.otherProps = otherProps;
+  constructor(props: FeatureProps) {
+    this.id = props.id;
+    this.type = props.type;
+    this.renderType = props.renderType;
+    this.points = props.points || [];
+    this.isClosed = props.isClosed;
+    this.otherProps = props.otherProps;
   }
 
-  addPoint(pt) {
+  id: Id;
+  type: Geometry;
+  renderType: ?string;
+  isClosed: ?boolean = false;
+  points: Position[];
+  otherProps: ?any;
+
+  addPoint(pt: Array<number>) {
     this.points.push(pt);
     return true;
   }
 
-  removePoint(index) {
+  removePoint(index: number) {
     const { points } = this;
     if (index >= 0 && index < points.length) {
       points.splice(index, 1);
@@ -67,22 +86,10 @@ export default class Feature {
     return false;
   }
 
-  replacePoint(index, pt) {
+  replacePoint(index: number, pt: Array<number>) {
     const { points } = this;
     if (index >= 0 && index < points.length) {
       points[index] = pt;
-      return true;
-    }
-    return false;
-  }
-
-  insertPoint(index) {
-    const { points } = this;
-    const p = points[index];
-    const prevP = points[index ? index - 1 : points.length - 1];
-    if (p && prevP) {
-      const newP = [(p.x + prevP.x) / 2, (p.y + prevP.y) / 2];
-      points.splice(index, 0, newP);
       return true;
     }
     return false;
@@ -97,28 +104,51 @@ export default class Feature {
     return false;
   }
 
-  toFeature() {
+  toFeature(): GeoJson {
     const { id, points, isClosed, renderType, otherProps } = this;
+
     let feature = null;
     if (points.length < 2) {
-      feature = point(points[0], {
-        id,
-        renderType,
-        ...otherProps
-      });
-    } else if (points < 3 || !isClosed) {
-      feature = lineString(points, {
-        id,
-        renderType,
-        ...otherProps
-      });
+      feature = {
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: points[0]
+        },
+        properties: {
+          renderType,
+          ...otherProps
+        },
+        id
+      };
+    } else if (points.length < 3 || !isClosed) {
+      feature = {
+        type: 'Feature',
+        geometry: {
+          type: 'LineString',
+          coordinates: points
+        },
+        properties: {
+          renderType,
+          ...otherProps
+        },
+        id
+      };
     } else {
-      feature = polygon([points.concat([points[0]])], {
-        id,
-        isClosed,
-        renderType,
-        ...otherProps
-      });
+      points.push(points[0]);
+      feature = {
+        type: 'Feature',
+        geometry: {
+          type: 'Polygon',
+          coordinates: [points]
+        },
+        properties: {
+          renderType,
+          isClosed,
+          ...otherProps
+        },
+        id
+      };
     }
 
     return feature;

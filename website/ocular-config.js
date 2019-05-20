@@ -62,7 +62,7 @@ module.exports = {
 
   PROJECT_NAME: 'nebula.gl',
   PROJECT_ORG: 'uber',
-  PROJECT_URL: 'https://nebula.gl',
+  PROJECT_URL: 'https://github.com/uber/nebula.gl',
   PROJECT_DESC: 'High-Performance, 3D-enabled GeoJSON editing deck.gl and React',
   PATH_PREFIX: '/',
 
@@ -76,7 +76,7 @@ module.exports = {
 
   HOME_PATH: '/',
 
-  HOME_HEADING: 'Framework agnostic loaders for visualization assets',
+  HOME_HEADING: 'High-Performance, 3D-enabled GeoJSON editing deck.gl and React',
 
   HOME_RIGHT: null,
 
@@ -99,16 +99,33 @@ module.exports = {
     }
   ],
 
-  PROJECTS: [],
+  PROJECTS: [
+    {
+      name: 'deck.gl',
+      url: 'https://deck.gl'
+    },
+    {
+      name: 'luma.gl',
+      url: 'https://luma.gl'
+    },
+    {
+      name: 'react-map-gl',
+      url: 'https://uber.github.io/react-map-gl'
+    },
+    {
+      name: 'react-vis',
+      url: 'https://uber.github.io/react-vis'
+    }
+  ],
 
-  ADDITIONAL_LINKS: [],
+  ADDITIONAL_LINKS: [{ name: 'GeoJSON Editor', href: '/geojson-editor', index: 0 }],
 
   EXAMPLES: [
-    {
-      title: 'EditableGeoJsonLayer',
-      componentUrl: resolve(__dirname, '../examples/deck/example.js'),
-      path: 'examples/editablegeojsonlayer'
-    }
+    // {
+    //   title: 'EditableGeoJsonLayer',
+    //   componentUrl: resolve(__dirname, '../examples/deck/example.js'),
+    //   path: 'examples/editablegeojsonlayer'
+    // }
   ],
 
   // Avoids duplicate conflicting inputs when importing from examples folders

@@ -6,9 +6,8 @@
 // run by gatsby. Rather, a file of the same name must have the same query in the local tree.
 // During the init process, ocular copies this file over to the local tree.
 
-
 import React from 'react';
-import { StaticQuery, graphql } from 'gatsby';
+import {StaticQuery, graphql} from 'gatsby';
 
 // All common metadata, table-of-contents etc are queried here and put in React context
 const QUERY = graphql`
@@ -19,6 +18,7 @@ const QUERY = graphql`
         PROJECT_TYPE
         PROJECT_DESC
         PROJECT_URL
+        PROJECT_ORG
         HOME_HEADING
         HOME_BULLETS {
           text
@@ -40,6 +40,7 @@ const QUERY = graphql`
         ADDITIONAL_LINKS {
           name
           href
+          index
         }
       }
     }
@@ -105,7 +106,7 @@ const QUERY = graphql`
 // and makes it available on React context
 export default class SiteQuery extends React.Component {
   render() {
-    const { onComplete } = this.props;
+    const {onComplete} = this.props;
     return <StaticQuery query={QUERY} render={onComplete} />;
   }
 }

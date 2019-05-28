@@ -47,6 +47,8 @@ function makeLocalDevConfig(EXAMPLE_DIR = LIB_DIR) {
         'react-map-gl-draw/dist': REACT_EDITOR_LITE_SRC_DIR,
         'react-map-gl-draw': REACT_EDITOR_LITE_SRC_DIR,
 
+        'react-map-gl': resolve(LIB_DIR, './node_modules/react-map-gl'),
+
         '@deck.gl/core': resolve(LIB_DIR, './node_modules/@deck.gl/core'),
         '@deck.gl/layers': resolve(LIB_DIR, './node_modules/@deck.gl/layers'),
 

@@ -19,7 +19,7 @@ export default class App extends Component {
       },
       selectedMode: EditorModes.READ_ONLY,
       features: [],
-      selectedId: null
+      selectedFeatureId: null
     };
     this._mapRef = null;
   }
@@ -35,7 +35,7 @@ export default class App extends Component {
   _onKeydown = evt => {
     if (evt.keyCode === 27) {
       // esc key
-      this.setState({ selectedId: null });
+      this.setState({ selectedFeatureId: null });
     }
   };
 
@@ -43,20 +43,21 @@ export default class App extends Component {
     this.setState({ viewport });
   };
 
-  _onSelect = selectedId => {
-    this.setState({ selectedId });
+  _onSelect = ({ selectedFeatureId }) => {
+    this.setState({ selectedFeatureId });
   };
 
   _onDelete = () => {
-    const { selectedId } = this.state;
-    if (selectedId === null || selectedId === undefined) {
+    const { selectedFeatureId } = this.state;
+    if (selectedFeatureId === null || selectedFeatureId === undefined) {
       return;
     }
-    const selectedIndex = this.state.features.findIndex(f => f.id === selectedId);
+
+    const selectedIndex = this.state.features.findIndex(f => f.id === selectedFeatureId);
     if (selectedIndex >= 0) {
       const newFeatures = [...this.state.features];
       newFeatures.splice(selectedIndex, 1);
-      this.setState({ features: newFeatures, selectedId: null });
+      this.setState({ features: newFeatures, selectedFeatureId: null });
     }
   };
 
@@ -67,18 +68,33 @@ export default class App extends Component {
   };
 
   _switchMode = evt => {
+    let selectedMode = evt.target.id;
+    if (selectedMode === this.state.selectedMode) {
+      selectedMode = null;
+    }
+
     this.setState({
-      selectedMode: evt.target.id,
-      selectedId: null
+      selectedMode,
+      selectedFeatureId: null
     });
   };
 
   _renderToolbar = () => {
-    return <Toolbar selectedMode={this.state.selectedMode} onClick={this._switchMode} />;
+    return (
+      <Toolbar
+        selectedMode={this.state.selectedMode}
+        onSwitchMode={this._switchMode}
+        onDelete={this._onDelete}
+      />
+    );
+  };
+
+  _getEditHandleShape = ({ feature }) => {
+    return feature.properties.renderType === 'Point' ? 'circle' : 'rect';
   };
 
   render() {
-    const { viewport, selectedMode, selectedId, features } = this.state;
+    const { viewport, selectedMode, selectedFeatureId, features } = this.state;
     return (
       <MapGL
         {...viewport}
@@ -89,15 +105,13 @@ export default class App extends Component {
         onViewportChange={this._updateViewport}
       >
         <Editor
-          viewport={viewport}
-          eventManager={this._mapRef && this._mapRef._eventManager}
-          width="100%"
-          height="100%"
+          clickRadius={12}
           mode={selectedMode}
           features={features}
-          selectedId={selectedId}
+          selectedFeatureId={selectedFeatureId}
           onSelect={this._onSelect}
           onUpdate={this._onUpdate}
+          getEditHandleShape={this._getEditHandleShape}
         />
         {this._renderToolbar()}
       </MapGL>

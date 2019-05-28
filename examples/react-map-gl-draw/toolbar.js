@@ -1,3 +1,4 @@
+/* global setTimeout */
 import React, { PureComponent } from 'react';
 import styled from 'styled-components';
 import { EditorModes } from 'react-map-gl-draw';
@@ -28,7 +29,8 @@ const Row = styled.div`
   padding: 7px;
   display: flex;
   justify-content: left;
-  background: ${props => (props.selected ? '#0071bc' : props.hovered ? '#e6e6e6;' : 'inherit')};
+  color: ${props => (props.selected ? '#ffffff' : 'inherit')};
+  background: ${props => (props.selected ? '#0071bc' : props.hovered ? '#e6e6e6' : 'inherit')};
 `;
 
 const Img = styled.img`
@@ -53,40 +55,70 @@ const Tooltip = styled.div`
   align-items: center;
 `;
 
+const Delete = styled(Row)`
+  &:hover {
+    background: ${props => (props.selected ? '#0071bc' : '#e6e6e6')};
+  }
+  &:active: {
+    background: ${props => (props.selected ? '#0071bc' : 'inherit')};
+  }
+`;
+
 export default class Toolbar extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      hoveredMode: null
+      deleting: false,
+      hoveredId: null
     };
   }
 
   _onHover = evt => {
-    this.setState({ hoveredMode: evt && evt.target.id });
+    this.setState({ hoveredId: evt && evt.target.id });
+  };
+
+  _onDelete = evt => {
+    this.props.onDelete(evt);
+    this.setState({ deleting: true });
+    setTimeout(() => this.setState({ deleting: false }), 500);
   };
 
   render() {
     const { selectedMode } = this.props;
-    const { hoveredMode } = this.state;
+    const { hoveredId } = this.state;
 
     return (
       <Container>
         {MODES.map(m => {
           return (
             <Row
-              onClick={this.props.onClick}
-              onMouseOver={this.props.onHover}
+              onClick={this.props.onSwitchMode}
+              onMouseOver={this._onHover}
               onMouseOut={_ => this._onHover(null)}
               selected={m.id === selectedMode}
-              hovered={m.id === hoveredMode}
+              hovered={m.id === hoveredId}
               key={m.id}
               id={m.id}
             >
               <Img id={m.id} onMouseOver={this._onHover} src={m.icon} />
-              {hoveredMode === m.id && <Tooltip>{m.text}</Tooltip>}
+              {hoveredId === m.id && <Tooltip>{m.text}</Tooltip>}
             </Row>
           );
         })}
+        <Delete
+          selected={this.state.deleting}
+          onClick={this._onDelete}
+          onMouseOver={this._onHover}
+          onMouseOut={_ => this._onHover(null)}
+        >
+          <Img
+            id={'delete'}
+            onMouseOver={this._onHover}
+            onClick={this._onDelete}
+            src={'icon-delete.svg'}
+          />
+          {hoveredId === 'delete' && <Tooltip>{'Delete'}</Tooltip>}
+        </Delete>
       </Container>
     );
   }

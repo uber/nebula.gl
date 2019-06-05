@@ -78,7 +78,7 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
       hoveredFeatureId: null,
       hoveredLngLat: null,
       hoveredVertexIndex: -1,
-      hoveredSegmentId: null,
+      hoveredSegmentId: -1,
 
       // intermediate mouse position when drawing
       uncommittedLngLat: null,
@@ -288,8 +288,6 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
       pointermove: evt => this._onEvent(this._onMouseMove, evt),
       pointerdown: evt => this._onEvent(this._onMouseDown, evt),
       pointerup: evt => this._onEvent(this._onMouseUp, evt),
-      pointerover: evt => this._onEvent(this._onMouseOver, evt),
-      pointerout: evt => this._onEvent(this._onMouseOut, evt),
       panmove: evt => evt.stopImmediatePropagation(),
       panstart: evt => evt.stopImmediatePropagation(),
       panend: evt => evt.stopImmediatePropagation()
@@ -351,6 +349,7 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
   };
 
   _onMouseMove = (evt: MjolnirEvent) => {
+    const elem = evt.target;
     const { startDragPos, isDragging, didDrag } = this.state;
     const { mode } = this.props;
     const { x, y } = this._getEventPosition(evt);
@@ -366,6 +365,7 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
 
     const selectedFeature = this._getSelectedFeature();
     const isDrawing = DRAWING_MODES.indexOf(mode) !== -1;
+    const isEditing = mode === MODES.EDIT_VERTEX;
 
     if (selectedFeature) {
       // dragging
@@ -389,66 +389,50 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
       } else if (isDrawing) {
         // drawing other shapes
         this.setState({ uncommittedLngLat: lngLat });
+      } else if (isEditing) {
+        if (
+          (selectedFeature.renderType === RENDER_TYPE.LINE_STRING ||
+            selectedFeature.renderType === RENDER_TYPE.POLYGON) &&
+          this._isLine(elem)
+        ) {
+          // eslint-disable-next-line no-unused-vars
+          const [featureIndex, segmentId] = elem.id.split('.');
+          this.setState({
+            hoveredSegmentId: Number(segmentId),
+            uncommittedLngLat: lngLat
+          });
+        } else {
+          this.setState({
+            hoveredSegmentId: -1,
+            uncommittedLngLat: null
+          });
+        }
       }
     }
-  };
 
-  _onMouseOver = (evt: MjolnirEvent) => {
-    if (!evt || !evt.target) {
-      return;
+    const { features, selectedFeatureId } = this.state;
+    if (selectedFeatureId && this._isVertex(elem)) {
+      const [featureIndex, vertexIndex] = elem.id.split('.');
+      const feature = features && features[featureIndex];
+      if (selectedFeatureId === (feature && feature.id)) {
+        this.setState({
+          hoveredVertexIndex: Number(vertexIndex)
+        });
+      }
+    } else if (!this._isVertex(elem)) {
+      this.setState({
+        hoveredVertexIndex: null
+      });
     }
-    const { features } = this.state;
-    const elem = evt.target;
-
-    // TODO enable adding vertex to existing feature path
-    // const { mode } = this.props;
-    // const { x, y } = this._getEventPosition(evt);
-    // const hoveredLngLat = this._unproject([x, y]);
-    //
-    // const selectedFeature = this._getSelectedFeature();
-    // if (mode === MODES.EDIT_VERTEX && selectedFeature) {
-    //   if (
-    //     (selectedFeature.renderType === RENDER_TYPE.LINE_STRING ||
-    //       selectedFeature.renderType === RENDER_TYPE.POLYGON) &&
-    //     this._isLine(elem)
-    //   ) {
-    //     let [featureIndex, segmentId] = elem.id.split('.');
-    //     const hoveredFeatureId = features && features[featureIndex] && features[featureIndex].id;
-    //     this.setState({
-    //       hoveredFeatureId,
-    //       hoveredSegmentId: Number(segmentId),
-    //       hoveredLngLat
-    //     });
-    //   } else if (this._isVertex(elem)) {
-    //     const [featureIndex, vertexId] = elem.id.split('.');
-    //     this.setState({
-    //       hoveredFeatureId: features && features[featureIndex].id,
-    //       hoveredVertexIndex: Number(vertexId)
-    //     });
-    //   }
-    // }
 
     if (this._isFeature(elem)) {
       const feature = features && features[elem.id];
       this.setState({
         hoveredFeatureId: feature && feature.id
       });
-    }
-  };
-
-  _onMouseOut = (evt: MjolnirEvent) => {
-    const elem = evt.target;
-    if (this._isVertex(elem)) {
+    } else {
       this.setState({
-        hoveredVertexIndex: -1
-      });
-    } else if (this._isLine(elem)) {
-      this.setState({
-        hoveredLngLat: null
-      });
-    } else if (this._isFeature(elem)) {
-      this.setState({
-        hoveredFeatureId: -1
+        hoveredFeatureId: null
       });
     }
   };
@@ -779,8 +763,9 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
     const { points, isClosed, renderType } = feature;
     const { mode } = this.props;
     const { uncommittedLngLat } = this.state;
+    const isDrawing = DRAWING_MODES.find(m => m === mode);
 
-    if (!points || isClosed) {
+    if (!points || isClosed || !isDrawing) {
       return null;
     }
 
@@ -829,6 +814,8 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
   };
 
   _renderFill = (index: number, feature: Feature, style: any) => {
+    const { mode } = this.props;
+    const isDrawing = DRAWING_MODES.find(m => m === mode);
     const { points, renderType, isClosed } = feature;
     if (renderType !== RENDER_TYPE.POLYGON && renderType !== RENDER_TYPE.RECTANGLE) {
       return null;
@@ -837,7 +824,7 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
     const { uncommittedLngLat } = this.state;
 
     let fillPoints = points;
-    if (uncommittedLngLat) {
+    if (uncommittedLngLat && isDrawing) {
       fillPoints = [...points, uncommittedLngLat];
     }
 

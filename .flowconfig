@@ -3,6 +3,8 @@
 
 <PROJECT_ROOT>/node_modules/jsonlint-lines-primitives/.*
 <PROJECT_ROOT>/node_modules/@mapbox/jsonlint-lines-primitives/.*
+<PROJECT_ROOT>/node_modules/mapbox-gl/src/style-spec/node_modules/jsonlint-lines-primitives/.*
+
 <PROJECT_ROOT>/website/node_modules/.*
 <PROJECT_ROOT>/website/examples/.*
 

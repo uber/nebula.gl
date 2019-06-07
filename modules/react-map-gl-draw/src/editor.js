@@ -31,6 +31,7 @@ type EditorProps = {
 
   onSelect: Function,
   onUpdate: Function,
+
   getEditHandleStyle: Function,
   getFeatureStyle: Function,
   getFeatureShape: Function | string,

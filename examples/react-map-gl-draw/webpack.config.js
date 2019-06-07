@@ -16,11 +16,13 @@ const config = {
     contentBase: [resolve(__dirname), resolve(__dirname, './static')]
   },
 
-  devtool: 'source-map',
-
   output: {
-    library: 'App'
+    library: 'App',
+    path: resolve(__dirname, './dist'),
+    filename: 'app.js'
   },
+
+  devtool: 'source-map',
 
   module: {
     rules: [
@@ -58,7 +60,7 @@ const config = {
   },
 
   // Optional: Enables reading mapbox token from environment variable
-  plugins: [new webpack.EnvironmentPlugin(['MapboxAccessToken'])]
+  plugins: [new webpack.EnvironmentPlugin(['MapboxAccessToken', 'MapStyle'])]
 };
 
 // Enables bundling against src in this repo rather than the installed version

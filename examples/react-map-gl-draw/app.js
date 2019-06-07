@@ -6,6 +6,9 @@ import { Editor, EditorModes } from 'react-map-gl-draw';
 
 import Toolbar from './toolbar';
 
+// eslint-disable-next-line no-process-env, no-undef
+const MAP_STYLE = process.env.MapStyle || 'mapbox://styles/mapbox/light-v9';
+
 export default class App extends Component {
   constructor(props) {
     super(props);
@@ -101,7 +104,7 @@ export default class App extends Component {
         ref={_ => (this._mapRef = _)}
         width="100%"
         height="100%"
-        mapStyle="mapbox://styles/uberdata/cive48w2e001a2imn5mcu2vrs"
+        mapStyle={MAP_STYLE}
         onViewportChange={this._updateViewport}
       >
         <Editor

@@ -1,79 +1,113 @@
-// @flow
-import Feature from './feature';
-import type { RenderState } from './types';
+import { RENDER_STATE, RENDER_TYPE } from './constants';
 
-export const DEFAULT_FEATURE_STYLES = {
-  '*': {
-    fill: '#202030',
-    stroke: '#202020',
-    fillOpacity: 0.2,
-    strokeWidth: 2,
-    radius: 6
-  },
-  selected: {
-    strokeDasharray: '2,1',
-    fill: '#204090',
-    stroke: '#002090',
-    fillOpacity: 0.5,
-    radius: 10
-  },
-  hovered: {
+const rectStyle = {
+  x: -6,
+  y: -6,
+  height: 12,
+  width: 12
+};
+
+export function getFeatureStyle({ feature, state }) {
+  const style = {
+    stroke:
+      state === RENDER_STATE.SELECTED || state === RENDER_STATE.HOVERED
+        ? '#7ac943'
+        : state === RENDER_STATE.UNCOMMITTED
+          ? '#a9a9a9'
+          : '#000',
     strokeWidth: 4,
-    fillOpacity: 0.4
-  },
-  LineString: {
-    fill: 'none'
-  }
-};
+    fill:
+      state === RENDER_STATE.INACTIVE
+        ? '#333333'
+        : state === RENDER_STATE.HOVERED
+          ? '#7ac943'
+          : state === RENDER_STATE.SELECTED
+            ? '#ffff00'
+            : state === RENDER_STATE.UNCOMMITTED
+              ? '#a9a9a9'
+              : '#000000',
+    fillOpacity:
+      state === RENDER_STATE.INACTIVE
+        ? 0.1
+        : state === RENDER_STATE.SELECTED
+          ? 0.7
+          : state === RENDER_STATE.HOVERED
+            ? 0.5
+            : state === RENDER_STATE.UNCOMMITTED
+              ? 0.3
+              : 1
+  };
 
-export type StyleSheetProps = {
-  '*': any,
-  selected?: any,
-  hovered?: any,
-  LineString?: any,
-  Point?: any,
-  Polygon?: any,
-  Rectangle?: any
-};
+  const renderType = feature.properties ? feature.properties.renderType : feature.renderType;
 
-export function getStyle(
-  stylesheet: ?StyleSheetProps,
-  feature: Feature,
-  { hovered, selected }: RenderState
-) {
-  if (!feature) {
-    return null;
-  }
-
-  const type = feature.renderType;
-
-  if (typeof stylesheet === 'function') {
-    return stylesheet(feature.toFeature(), { hovered, selected });
-  }
-
-  stylesheet = stylesheet || DEFAULT_FEATURE_STYLES;
-  let baseStyle = { ...stylesheet['*'] };
-  let typeStyle = type ? { ...stylesheet[type] } : {};
-
-  if (selected) {
-    baseStyle = {
-      ...baseStyle,
-      ...(stylesheet.selected || {})
-    };
-    typeStyle = {
-      ...typeStyle,
-      ...(type ? stylesheet[`${type} selected`] : null)
-    };
-  } else if (hovered) {
-    baseStyle = {
-      ...baseStyle,
-      ...stylesheet.hovered
-    };
-    typeStyle = {
-      ...typeStyle,
-      ...(type ? stylesheet[`${type} selected`] : null)
-    };
+  switch (renderType) {
+    case RENDER_TYPE.POINT:
+      style.r = 8;
+      break;
+    case RENDER_TYPE.LINE_STRING:
+      style.fill = 'none';
+      break;
+    case RENDER_TYPE.RECTANGLE:
+      if (state === RENDER_STATE.UNCOMMITTED) {
+        style.strokeDasharray = '4,2';
+      }
+      break;
+    default:
   }
 
-  return { ...baseStyle, ...typeStyle };
+  return style;
+}
+
+export function getEditHandleStyle({ feature, index, state }) {
+  const style = {
+    fill:
+      state === RENDER_STATE.INACTIVE
+        ? '#ffffff'
+        : state === RENDER_STATE.SELECTED
+          ? '#ffff00'
+          : state === RENDER_STATE.HOVERED
+            ? '#7ac943'
+            : state === RENDER_STATE.UNCOMMITTED
+              ? '#a9a9a9'
+              : '#000000',
+    fillOpacity:
+      state === RENDER_STATE.INACTIVE
+        ? 1
+        : state === RENDER_STATE.HOVERED
+          ? 1
+          : state === RENDER_STATE.SELECTED
+            ? 0.8
+            : state === RENDER_STATE.UNCOMMITTED
+              ? 0.3
+              : 1,
+    stroke: state === RENDER_STATE.SELECTED || state === RENDER_STATE.HOVERED ? '#7ac943' : '#000',
+    strokeWidth: state === RENDER_STATE.SELECTED ? 4 : 2,
+    r: 8
+  };
+
+  const renderType = feature.properties ? feature.properties.renderType : feature.renderType;
+
+  switch (renderType) {
+    case RENDER_TYPE.POINT:
+      style.fill =
+        state === RENDER_STATE.INACTIVE
+          ? '#333333'
+          : state === RENDER_STATE.SELECTED
+            ? '#ffff00'
+            : state === RENDER_STATE.HOVERED
+              ? '#7ac943'
+              : state === RENDER_STATE.UNCOMMITTED
+                ? '#a9a9a9'
+                : '#000000';
+      style.stroke = state === RENDER_STATE.SELECTED ? '#7ac943' : '#000';
+      break;
+    case RENDER_TYPE.LINE_STRING:
+    case RENDER_TYPE.POLYGON:
+    case RENDER_TYPE.RECTANGLE:
+      Object.assign(style, rectStyle);
+      break;
+    default:
+  }
+
+  return style;
 }

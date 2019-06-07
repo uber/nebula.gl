@@ -1,11 +1,12 @@
 // @flow
 import type { Geometry, Position, Feature as GeoJson } from '@nebula.gl/edit-modes';
-import type { Id } from './types';
+import type { Id, RenderType } from './types';
+import { GEOJSON_TYPE } from './constants';
 
 type FeatureProps = {
   id: Id,
   type: string,
-  renderType?: ?string,
+  renderType?: ?RenderType,
   points?: ?any,
   isClosed?: ?boolean,
   otherProps?: ?any
@@ -20,30 +21,31 @@ export default class Feature {
     } = feature;
 
     switch (type) {
-      case 'Point':
+      case GEOJSON_TYPE.POINT:
         return new Feature({
           id,
           type,
-          renderType: renderType || type,
+          renderType,
           points: [coordinates],
           otherProps
         });
 
-      case 'LineString':
+      case GEOJSON_TYPE.LINE_STRING:
         return new Feature({
           id,
           type,
-          renderType: renderType || type,
+          renderType,
           points: coordinates,
           otherProps
         });
 
-      case 'Polygon':
+      case GEOJSON_TYPE.POLYGON:
+        const points = coordinates[0] && coordinates[0].slice(0, -1);
         return new Feature({
           id,
           type,
-          renderType: renderType || type,
-          points: coordinates && coordinates[0].slice(0, -1),
+          renderType,
+          points,
           isClosed: true,
           otherProps
         });
@@ -69,9 +71,13 @@ export default class Feature {
   points: Position[];
   otherProps: ?any;
 
-  addPoint(pt: Array<number>) {
+  addPoint(pt: number[]) {
     this.points.push(pt);
     return true;
+  }
+
+  insertPoint(pt: number[], index: number) {
+    this.points.splice(index, 0, pt);
   }
 
   removePoint(index: number) {
@@ -97,7 +103,7 @@ export default class Feature {
 
   closePath() {
     const { points } = this;
-    if (points.length >= 3) {
+    if (points.length >= 3 && !this.isClosed) {
       this.isClosed = true;
       return true;
     }
@@ -112,7 +118,7 @@ export default class Feature {
       feature = {
         type: 'Feature',
         geometry: {
-          type: 'Point',
+          type: GEOJSON_TYPE.POINT,
           coordinates: points[0]
         },
         properties: {
@@ -125,7 +131,7 @@ export default class Feature {
       feature = {
         type: 'Feature',
         geometry: {
-          type: 'LineString',
+          type: GEOJSON_TYPE.LINE_STRING,
           coordinates: points
         },
         properties: {
@@ -135,12 +141,11 @@ export default class Feature {
         id
       };
     } else {
-      points.push(points[0]);
       feature = {
         type: 'Feature',
         geometry: {
-          type: 'Polygon',
-          coordinates: [points]
+          type: GEOJSON_TYPE.POLYGON,
+          coordinates: [[...points, points[0]]]
         },
         properties: {
           renderType,

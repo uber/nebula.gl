@@ -12,11 +12,17 @@ const config = {
     app: resolve('./app.js')
   },
 
-  devtool: 'source-map',
+  devServer: {
+    contentBase: [resolve(__dirname), resolve(__dirname, './static')]
+  },
 
   output: {
-    library: 'App'
+    library: 'App',
+    path: resolve(__dirname, './dist'),
+    filename: 'app.js'
   },
+
+  devtool: 'source-map',
 
   module: {
     rules: [
@@ -45,12 +51,16 @@ const config = {
         test: /\.mjs$/,
         include: /node_modules/,
         type: 'javascript/auto'
+      },
+      {
+        test: /\.(eot|svg|ttf|woff|woff2|gif|jpe?g|png)$/,
+        loader: 'url-loader'
       }
     ]
   },
 
   // Optional: Enables reading mapbox token from environment variable
-  plugins: [new webpack.EnvironmentPlugin(['MapboxAccessToken'])]
+  plugins: [new webpack.EnvironmentPlugin(['MapboxAccessToken', 'MapStyle'])]
 };
 
 // Enables bundling against src in this repo rather than the installed version

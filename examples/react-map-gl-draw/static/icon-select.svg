@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <style>.cls-1,.cls-2{fill:none;}.cls-2{stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:2px;}
+    </style>
+  </defs>
+  <title>icon-select</title>
+  <g id="toolbar">
+    <rect class="cls-1" width="32" height="32"/>
+    <polygon class="cls-2" points="16.42 21.42 27.24 21.4 8.77 2.94 8.76 29.06 16.42 21.42"/>
+  </g>
+</svg>

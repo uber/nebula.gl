@@ -6,4 +6,6 @@ export type ScreenCoordinates = {
 
 export type Id = string | number;
 
-export type RenderState = { selected: ?boolean, hovered: ?boolean };
+export type RenderType = 'Point' | 'LineString' | 'Polygon' | 'Rectangle';
+
+export type Operation = 'NONE' | 'SET' | 'INTERSECT' | 'INSERT';

@@ -4,9 +4,14 @@ import destination from '@turf/destination';
 import bearing from '@turf/bearing';
 import pointToLineDistance from '@turf/point-to-line-distance';
 import { point } from '@turf/helpers';
-import type { Position, LineString } from '@nebula.gl/edit-modes';
+import type {
+  Position,
+  Point,
+  LineString,
+  FeatureOf,
+  FeatureWithProps
+} from '@nebula.gl/edit-modes';
 import { WebMercatorViewport } from '@deck.gl/core';
-import type { Position, Point, LineString, FeatureOf, FeatureWithProps } from './geojson-types.js';
 
 export type NearestPointType = FeatureWithProps<Point, { dist: number, index: number }>;
 

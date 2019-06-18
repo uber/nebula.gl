@@ -7,6 +7,9 @@
 Demonstrates how to draw with `react-map-gl-draw` 
 
 ```
-    npm install
-    npm start
+    yarn bootstrap // from root of `nebula.gl` if you haven't done so
+    
+    // then inside this exmaple dir
+    yarn 
+    yarn start-local
 ```

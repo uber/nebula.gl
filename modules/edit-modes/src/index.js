@@ -36,6 +36,7 @@ export type {
   Polygonal,
   BoundingBoxArray,
   FeatureOf,
+  FeatureWithProps,
   Feature,
   FeatureCollection,
   AnyGeoJson

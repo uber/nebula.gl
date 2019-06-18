@@ -95,8 +95,15 @@ export class ModifyHandler extends ModeHandler {
   nearestPointOnLine(line: FeatureOf<LineString>, inPoint: FeatureOf<Point>): NearestPointType {
     const { coordinates } = line.geometry;
     if (coordinates.some(coord => coord.length > 2)) {
-      // This line has elevation, we need to use alternative algorithm
-      return nearestPointOnProjectedLine(line, inPoint, this._context.viewport);
+      const modeConfig = this.getModeConfig();
+      if (modeConfig && modeConfig.viewport) {
+        // This line has elevation, we need to use alternative algorithm
+        return nearestPointOnProjectedLine(line, inPoint, modeConfig.viewport);
+      }
+      // eslint-disable-next-line no-console,no-undef
+      console.log(
+        'Editing 3D point but modeConfig.viewport not provided. Falling back to 2D logic.'
+      );
     }
 
     return nearestPointOnLine(line, inPoint);

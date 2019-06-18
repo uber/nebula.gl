@@ -4,7 +4,16 @@ import destination from '@turf/destination';
 import bearing from '@turf/bearing';
 import pointToLineDistance from '@turf/point-to-line-distance';
 import { point } from '@turf/helpers';
-import type { Position, LineString } from '@nebula.gl/edit-modes';
+import type {
+  Position,
+  Point,
+  LineString,
+  FeatureOf,
+  FeatureWithProps
+} from '@nebula.gl/edit-modes';
+import { WebMercatorViewport } from '@deck.gl/core';
+
+export type NearestPointType = FeatureWithProps<Point, { dist: number, index: number }>;
 
 export function toDeckColor(
   color?: ?[number, number, number, number],
@@ -86,4 +95,80 @@ export function generatePointsParallelToLinePoints(
   const p4 = destination(p1, ddistance, orthogonalBearing);
 
   return [p3.geometry.coordinates, p4.geometry.coordinates];
+}
+
+export function distance2d(x1: number, y1: number, x2: number, y2: number): number {
+  const dx = x1 - x2;
+  const dy = y1 - y2;
+  return Math.sqrt(dx * dx + dy * dy);
+}
+
+export function mix(a: number, b: number, ratio: number): number {
+  return b * ratio + a * (1 - ratio);
+}
+
+export function nearestPointOnProjectedLine(
+  line: FeatureOf<LineString>,
+  inPoint: FeatureOf<Point>,
+  viewport: WebMercatorViewport
+): NearestPointType {
+  // Project the line to viewport, then find the nearest point
+  const coordinates: Array<Array<number>> = (line.geometry.coordinates: any);
+  const projectedCoords = coordinates.map(([x, y, z = 0]) => viewport.project([x, y, z]));
+  const [x, y] = viewport.project(inPoint.geometry.coordinates);
+
+  let minDistance = Infinity;
+  let minPointInfo = {};
+
+  projectedCoords.forEach(([x2, y2], index) => {
+    if (index === 0) {
+      return;
+    }
+
+    const [x1, y1] = projectedCoords[index - 1];
+
+    // line from projectedCoords[index - 1] to projectedCoords[index]
+    // convert to Ax + By + C = 0
+    const A = y1 - y2;
+    const B = x2 - x1;
+    const C = x1 * y2 - x2 * y1;
+
+    // https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
+    const div = A * A + B * B;
+    const distance = Math.abs(A * x + B * y + C) / Math.sqrt(div);
+
+    // TODO: Check if inside bounds
+
+    if (distance < minDistance) {
+      minDistance = distance;
+      minPointInfo = {
+        index,
+        x0: (B * (B * x - A * y) - A * C) / div,
+        y0: (A * (-B * x + A * y) - B * C) / div
+      };
+    }
+  });
+
+  const { index, x0, y0 } = minPointInfo;
+  const [x1, y1, z1 = 0] = projectedCoords[index - 1];
+  const [x2, y2, z2 = 0] = projectedCoords[index];
+
+  // calculate what ratio of the line we are on to find the proper z
+  const lineLength = distance2d(x1, y1, x2, y2);
+  const startToPointLength = distance2d(x1, y1, x0, y0);
+  const ratio = startToPointLength / lineLength;
+  const z0 = mix(z1, z2, ratio);
+
+  return {
+    type: 'Feature',
+    geometry: {
+      type: 'Point',
+      coordinates: viewport.unproject([x0, y0, z0])
+    },
+    properties: {
+      // TODO: calculate the distance in proper units
+      dist: minDistance,
+      index: index - 1
+    }
+  };
 }

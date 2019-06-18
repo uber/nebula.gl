@@ -1,7 +1,10 @@
 import {
   toDeckColor,
   recursivelyTraverseNestedArrays,
-  generatePointsParallelToLinePoints
+  generatePointsParallelToLinePoints,
+  distance2d,
+  mix,
+  nearestPointOnProjectedLine
 } from '../../src/utils';
 
 const Point = {
@@ -130,5 +133,36 @@ describe('generatePointsParallelToLinePoints()', () => {
     const [p3, p4] = generatePointsParallelToLinePoints(p1, p2, [-124.5, 37.9]);
     expect(p3).toEqual([-123.14819346449626, 36.26988514860277]);
     expect(p4).toEqual([-123.09803547871964, 36.254027457172775]);
+  });
+});
+
+describe('nearestPointOnProjectedLine() and related functions', () => {
+  it('distance2d()', () => {
+    expect(distance2d(0, 0, 0, 0)).toEqual(0);
+    expect(distance2d(0, 1, 0, 0)).toEqual(1);
+  });
+  it('mix()', () => {
+    expect(mix(1, 2, 0)).toEqual(1);
+    expect(mix(1, 2, 1)).toEqual(2);
+  });
+  it('nearestPointOnProjectedLine()', () => {
+    const line = {
+      geometry: {
+        coordinates: [[0, 0, 0], [1, 1, 1]]
+      }
+    };
+    const inPoint = {
+      geometry: {
+        coordinates: [0.5, 0.5]
+      }
+    };
+    const viewport = {
+      project: x => x,
+      unproject: x => x
+    };
+    const result = nearestPointOnProjectedLine(line, inPoint, viewport);
+    expect(result.geometry.type).toEqual('Point');
+    expect(result.geometry.coordinates).toEqual([0.5, 0.5, 0.5]);
+    expect(result.properties.index).toEqual(0);
   });
 });

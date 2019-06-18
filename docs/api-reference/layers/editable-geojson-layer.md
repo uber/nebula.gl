@@ -326,6 +326,13 @@ The height of each edit handle, in pixels.
 
 The rotating angle of each object, in degrees.
 
+##### `billboard` (Boolean, optional)
+
+* Default: `true`
+
+Passed to `GeoJsonLayer`. If `true`, extrude the path in screen space.
+Useful for showing features with altitude.
+
 ## Methods
 
 These methods can be overridden in a derived class in order to customize event handling.

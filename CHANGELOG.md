@@ -4,6 +4,16 @@ _All notable changes to this project will be documented in this file. This proje
 
 <!-- INSERT HERE -->
 
+## [0.14.0](https://github.com/uber/nebula.gl/compare/v0.13.0...v0.14.0) - 2019-06-18
+
+### Changes
+
+* Implement elevation-aware nearestPointOnLine (#236)
+* add billboard prop to editable-geojson-layer (#234)
+* upgrade deck to 7.1 (#235)
+* Refactor react-map-gl-draw (#230)
+* Enable flow for react-map-gl-draw (#227)
+
 ## [0.13.0](https://github.com/uber/nebula.gl/compare/v0.12.1...v0.13.0) - 2019-05-13
 
 ### Breaking changes

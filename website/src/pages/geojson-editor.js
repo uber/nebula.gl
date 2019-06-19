@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 
-import Example from '../../../examples/deck/example';
+import Example from '../../../examples/advanced/example';
 import '../styles/editor.css';
 
 const Container = styled.div`

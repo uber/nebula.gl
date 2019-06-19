@@ -11,7 +11,7 @@ const remark = gatsbyConfig.plugins.find(p => p.resolve === 'gatsby-transformer-
 remark.options.plugins.unshift({
   resolve: 'gatsby-remark-embedded-codesandbox',
   options: {
-    directory: `${__dirname}/../examples/website`,
+    directory: `${__dirname}/../examples/codesandbox`,
     protocol: 'embedded-codesandbox://',
     embedOptions: {
       // https://codesandbox.io/docs/embedding#embed-options

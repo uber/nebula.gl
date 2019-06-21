@@ -22,7 +22,7 @@ export default class ElevatedEditHandleLayer extends CompositeLayer {
         pickable: false,
         getSourcePosition: ({ position }) => [position[0], position[1], 0],
         getTargetPosition: ({ position }) => [position[0], position[1], position[2] || 0],
-        getColor: [50, 50, 50, 100],
+        getColor: [150, 150, 150, 200],
         getStrokeWidth: 3
       })
     );

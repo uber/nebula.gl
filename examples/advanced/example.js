@@ -27,14 +27,12 @@ import sampleGeoJson from '../data/sample-geojson.json';
 import iconSheet from '../data/edit-handles.png';
 
 import {
+  Toolbox,
   ToolboxControl,
-  ToolboxDivider,
-  ToolboxLabel,
+  ToolboxTitle,
   ToolboxRow,
-  ToolboxRowWrapping,
   ToolboxButton,
-  ToolboxCheckbox,
-  styles as ToolboxStyles
+  ToolboxCheckbox
 } from './toolbox';
 
 // TODO: once we refactor EditableGeoJsonLayer to use new EditMode interface, this can go away
@@ -116,7 +114,25 @@ const modeHandlers = Object.assign(
   EditableGeoJsonLayerImpl.defaultProps.modeHandlers
 );
 
-const FEATURE_COLORS = [[1, 0, 0], [0, 1, 0], [0, 0, 1], [0, 1, 1], [1, 0, 1], [1, 1, 0]];
+function hex2rgb(hex: string) {
+  const value = parseInt(hex, 16);
+  return [16, 8, 0].map(shift => ((value >> shift) & 0xff) / 255);
+}
+
+const FEATURE_COLORS = [
+  '00AEE4',
+  'DAF0E3',
+  '9BCC32',
+  '07A35A',
+  'F7DF90',
+  'EA376C',
+  '6A126A',
+  'FCB09B',
+  'B0592D',
+  'C1B5E3',
+  '9C805B',
+  'CCDFE5'
+].map(hex2rgb);
 
 function getEditHandleColor(handle: Object) {
   switch (handle.type) {
@@ -224,6 +240,34 @@ export default class Example extends Component<
           features: []
         }
       });
+    } else if (type === 'file') {
+      const el = document.createElement('input');
+      el.type = 'file';
+      el.onchange = e => {
+        if (e.target.files && e.target.files[0]) {
+          const reader = new FileReader();
+          reader.onload = ee => {
+            let testFeatures = null;
+            try {
+              testFeatures = JSON.parse(ee.target.result);
+              if (Array.isArray(testFeatures)) {
+                testFeatures = {
+                  type: 'FeatureCollection',
+                  features: testFeatures
+                };
+              }
+              // eslint-disable-next-line
+              console.log('Loaded JSON:', testFeatures);
+              this.setState({ testFeatures });
+            } catch (err) {
+              // eslint-disable-next-line
+              alert(err);
+            }
+          };
+          reader.readAsText(e.target.files[0]);
+        }
+      };
+      el.click();
     }
   };
 
@@ -245,36 +289,34 @@ export default class Example extends Component<
   _renderSelectFeatureCheckbox(index: number, featureType: string) {
     const { selectedFeatureIndexes } = this.state;
     return (
-      <ToolboxLabel key={index}>
-        <label>
-          <ToolboxCheckbox
-            style={styles.checkbox}
-            type="checkbox"
-            checked={selectedFeatureIndexes.includes(index)}
-            onChange={() => {
-              if (selectedFeatureIndexes.includes(index)) {
-                this.setState({
-                  selectedFeatureIndexes: selectedFeatureIndexes.filter(e => e !== index)
-                });
-              } else {
-                this.setState({
-                  selectedFeatureIndexes: [...selectedFeatureIndexes, index]
-                });
-              }
+      <div key={index}>
+        <ToolboxCheckbox
+          style={styles.checkbox}
+          type="checkbox"
+          checked={selectedFeatureIndexes.includes(index)}
+          onChange={() => {
+            if (selectedFeatureIndexes.includes(index)) {
+              this.setState({
+                selectedFeatureIndexes: selectedFeatureIndexes.filter(e => e !== index)
+              });
+            } else {
+              this.setState({
+                selectedFeatureIndexes: [...selectedFeatureIndexes, index]
+              });
+            }
+          }}
+        >
+          <span
+            style={{
+              color: this._getHtmlColorForFeature(index, selectedFeatureIndexes.includes(index))
             }}
           >
-            <span
-              style={{
-                color: this._getHtmlColorForFeature(index, selectedFeatureIndexes.includes(index))
-              }}
-            >
-              {index}
-              {': '}
-              {featureType}
-            </span>
-          </ToolboxCheckbox>
-        </label>
-      </ToolboxLabel>
+            {index}
+            {': '}
+            {featureType}
+          </span>
+        </ToolboxCheckbox>
+      </div>
     );
   }
 
@@ -293,17 +335,16 @@ export default class Example extends Component<
     const operations = ['union', 'difference', 'intersection'];
     return (
       <ToolboxRow key="booleanOperations">
-        <ToolboxLabel>Boolean operation (requires single selection)</ToolboxLabel>
+        <ToolboxTitle>
+          Boolean operation<br />(requires single selection)
+        </ToolboxTitle>
         <ToolboxControl>
           {operations.map(operation => (
             <ToolboxButton
               key={operation}
-              style={{
-                backgroundColor:
-                  this.state.modeConfig && this.state.modeConfig.booleanOperation === operation
-                    ? '#a0cde8'
-                    : '#171C29'
-              }}
+              selected={
+                this.state.modeConfig && this.state.modeConfig.booleanOperation === operation
+              }
               onClick={() => {
                 if (this.state.modeConfig && this.state.modeConfig.booleanOperation === operation) {
                   this.setState({ modeConfig: null });
@@ -323,7 +364,7 @@ export default class Example extends Component<
   _renderDrawLineStringModeControls() {
     return (
       <ToolboxRow key="drawLineString">
-        <ToolboxLabel>Draw LineString At Front</ToolboxLabel>
+        <ToolboxTitle>Draw LineString At Front</ToolboxTitle>
         <ToolboxControl>
           <input
             type="checkbox"
@@ -344,7 +385,7 @@ export default class Example extends Component<
   _renderModifyModeControls() {
     return (
       <ToolboxRow key="modify">
-        <ToolboxLabel>Allow removing points</ToolboxLabel>
+        <ToolboxTitle>Allow removing points</ToolboxTitle>
         <ToolboxControl>
           <input
             type="checkbox"
@@ -359,7 +400,7 @@ export default class Example extends Component<
   _renderSplitModeControls() {
     return (
       <ToolboxRow key="split">
-        <ToolboxLabel>Constrain to 90&deg;</ToolboxLabel>
+        <ToolboxTitle>Constrain to 90&deg;</ToolboxTitle>
         <ToolboxControl>
           <input
             type="checkbox"
@@ -377,7 +418,7 @@ export default class Example extends Component<
     return (
       <div key="snap">
         <ToolboxRow>
-          <ToolboxLabel>Enable snapping</ToolboxLabel>
+          <ToolboxTitle>Enable snapping</ToolboxTitle>
           <ToolboxControl>
             <input
               type="checkbox"
@@ -420,16 +461,14 @@ export default class Example extends Component<
 
   _renderToolBox() {
     return (
-      <div style={ToolboxStyles.toolbox}>
+      <Toolbox>
         {ALL_MODES.map(category => (
-          <ToolboxRowWrapping key={category.category}>
-            <div style={{ paddingRight: '4px' }}>{category.category} Modes</div>
+          <ToolboxRow key={category.category}>
+            <ToolboxTitle>{category.category} Modes</ToolboxTitle>
             {category.modes.map(mode => (
               <ToolboxButton
                 key={mode}
-                style={{
-                  backgroundColor: this.state.mode === mode ? '#a0cde8' : '#171C29'
-                }}
+                selected={this.state.mode === mode}
                 onClick={() => {
                   this.setState({ mode, modeConfig: {}, selectionTool: null });
                 }}
@@ -437,20 +476,15 @@ export default class Example extends Component<
                 {mode}
               </ToolboxButton>
             ))}
-          </ToolboxRowWrapping>
+          </ToolboxRow>
         ))}
         {this._renderModeConfigControls()}
-        <ToolboxDivider />
         {this.state.showGeoJson && (
           <React.Fragment>
-            <ToolboxLabel>
-              GeoJSON{' '}
-              <ToolboxButton
-                onClick={() => this.setState({ showGeoJson: !this.state.showGeoJson })}
-              >
-                hide &#9650;
-              </ToolboxButton>
-            </ToolboxLabel>
+            <ToolboxTitle>GeoJSON</ToolboxTitle>
+            <ToolboxButton onClick={() => this.setState({ showGeoJson: !this.state.showGeoJson })}>
+              hide &#9650;
+            </ToolboxButton>
             <ToolboxControl>
               <textarea
                 id="geo-json-text"
@@ -464,28 +498,24 @@ export default class Example extends Component<
         )}
         {!this.state.showGeoJson && (
           <React.Fragment>
-            <ToolboxLabel>
-              GeoJSON{' '}
-              <ToolboxButton
-                onClick={() => this.setState({ showGeoJson: !this.state.showGeoJson })}
-              >
-                show &#9660;
-              </ToolboxButton>
-            </ToolboxLabel>
+            <ToolboxTitle>GeoJSON</ToolboxTitle>
+            <ToolboxButton onClick={() => this.setState({ showGeoJson: !this.state.showGeoJson })}>
+              show &#9660;
+            </ToolboxButton>
           </React.Fragment>
         )}
-        <ToolboxDivider />
         <ToolboxRow>
-          <ToolboxLabel>Load sample data</ToolboxLabel>
+          <ToolboxTitle>Load sample data</ToolboxTitle>
           <ToolboxControl>
             <ToolboxButton onClick={() => this._loadSample('mixed')}>Mixed</ToolboxButton>
             <ToolboxButton onClick={() => this._loadSample('complex')}>Complex</ToolboxButton>
             <ToolboxButton onClick={() => this._loadSample('blank')}>Blank</ToolboxButton>
+            <ToolboxButton onClick={() => this._loadSample('file')}>From file...</ToolboxButton>
           </ToolboxControl>
         </ToolboxRow>
 
         <ToolboxRow>
-          <ToolboxLabel>Options</ToolboxLabel>
+          <ToolboxTitle>Options</ToolboxTitle>
           <ToolboxControl>
             <ToolboxCheckbox
               type="checkbox"
@@ -516,31 +546,32 @@ export default class Example extends Component<
         </ToolboxRow>
 
         <ToolboxRow>
-          <ToolboxLabel>Select Features</ToolboxLabel>
+          <ToolboxTitle>Select Features</ToolboxTitle>
           <ToolboxControl>
             <ToolboxButton
               onClick={() =>
                 this.setState({ selectedFeatureIndexes: [], selectionTool: SELECTION_TYPE.NONE })
               }
             >
-              Clear
+              Clear Selection
             </ToolboxButton>
             <ToolboxButton
               onClick={() =>
                 this.setState({ mode: 'view', selectionTool: SELECTION_TYPE.RECTANGLE })
               }
             >
-              Rect
+              Rect Select
             </ToolboxButton>
             <ToolboxButton
               onClick={() => this.setState({ mode: 'view', selectionTool: SELECTION_TYPE.POLYGON })}
             >
-              Lasso
+              Lasso Select
             </ToolboxButton>
           </ToolboxControl>
         </ToolboxRow>
-        <ToolboxRowWrapping>{this._renderSelectFeatureCheckboxes()}</ToolboxRowWrapping>
-      </div>
+        <ToolboxTitle>Features</ToolboxTitle>
+        <ToolboxRow>{this._renderSelectFeatureCheckboxes()}</ToolboxRow>
+      </Toolbox>
     );
   }
 
@@ -666,13 +697,13 @@ export default class Example extends Component<
         const index = testFeatures.features.indexOf(feature);
         return isSelected
           ? this._getDeckColorForFeature(index, 1.0, 0.5)
-          : this._getDeckColorForFeature(index, 0.7, 0.5);
+          : this._getDeckColorForFeature(index, 0.5, 0.5);
       },
       getLineColor: (feature, isSelected) => {
         const index = testFeatures.features.indexOf(feature);
         return isSelected
           ? this._getDeckColorForFeature(index, 1.0, 1.0)
-          : this._getDeckColorForFeature(index, 0.7, 1.0);
+          : this._getDeckColorForFeature(index, 0.5, 1.0);
       },
 
       // Can customize editing points props

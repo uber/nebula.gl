@@ -9,7 +9,8 @@
     "@deck.gl/react": "^7.0.0",
     "react": "^16.0.0",
     "react-dom": "^16.4.2",
-    "react-map-gl": "^3.3.4"
+    "react-map-gl": "^3.3.4",
+    "styled-components": "^4.3.2"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",

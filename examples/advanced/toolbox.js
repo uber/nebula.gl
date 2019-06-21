@@ -1,63 +1,83 @@
 import React from 'react';
+import styled from 'styled-components';
 
-export const styles = {
-  toolbox: {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    color: '#F0F0F0',
-    background: '#272D3B',
-    padding: 0,
-    width: 230,
-    height: '100%',
-    fontFamily: 'Arial, Helvetica, sans-serif',
-    fontSize: '14px',
-    overflow: 'scroll',
-    zIndex: 999
-  },
-  toolboxRow: {},
-  toolboxRowWrapping: {
-    marginBottom: '5px'
-  },
-  toolboxDivider: {
-    marginBottom: '5px',
-    borderBottom: '1px solid gray'
-  },
+const styles = {
   toolboxItem: {
     flexBasis: '50%'
-  },
-  toolboxLabel: {},
-  toolboxButton: {
-    display: 'block',
-    width: '100%',
-    border: 'none',
-    color: '#F0F0F0',
-    background: '#171C29',
-    textAlign: 'left',
-    textTransform: 'capitalize',
-    fontSize: 15,
-    outline: 'none',
-    height: 44
   }
 };
 
-export const ToolboxRow = props => <div style={styles.toolboxRow}>{props.children}</div>;
-export const ToolboxRowWrapping = props => (
-  <div style={styles.toolboxRowWrapping}>{props.children}</div>
-);
-export const ToolboxLabel = props => <div style={styles.toolboxLabel}>{props.children}</div>;
-export const ToolboxControl = props => <div style={styles.toolboxItem}>{props.children}</div>;
-export const ToolboxDivider = props => <div style={styles.toolboxDivider} />;
+export const Toolbox = styled.div`
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  color: #f0f0f0;
+  padding: 0;
+  width: 230px;
+  height: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 16px;
+  overflow: scroll;
+  z-index: 999;
+`;
 
-export const ToolboxButton = props => (
-  <button {...props} style={{ ...styles.toolboxButton, ...props.style }}>
-    {props.children}
-  </button>
-);
+export const ToolboxRow = props => <div>{props.children}</div>;
+export const ToolboxControl = props => <div style={styles.toolboxItem}>{props.children}</div>;
+
+export const ToolboxTitle = styled.div`
+  background: rgba(39, 45, 59, 0.8);
+  font-size: 16px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  padding: 0px 8px;
+`;
+
+const buttonBackground = props =>
+  props.selected ? 'rgba(30, 84, 183, 0.8)' : 'rgba(23, 28, 41, 0.8)';
+
+export const ToolboxButton = styled.button`
+  display: block;
+  width: 100%;
+  border: none;
+  color: #f0f0f0;
+  background: ${buttonBackground};
+  text-align: left;
+  text-transform: capitalize;
+  font-size: 16px;
+  outline: none;
+  height: 44px;
+  cursor: pointer;
+
+  &:hover {
+    background: #276ef1;
+  }
+`;
+
+const ToolboxCheckboxContainer = styled.div`
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border: none;
+  color: #f0f0f0;
+  background: ${buttonBackground};
+  text-align: left;
+  text-transform: capitalize;
+  font-size: 16px;
+  outline: none;
+  height: 44px;
+  cursor: pointer;
+
+  &:hover {
+    background: #276ef1;
+  }
+`;
 
 export const ToolboxCheckbox = props => (
-  <div style={styles.toolboxButton}>
-    <input {...{ ...props, children: null }} />
-    {props.children}
-  </div>
+  <label>
+    <ToolboxCheckboxContainer>
+      <input {...{ ...props, children: null }} />
+      {props.children}
+    </ToolboxCheckboxContainer>
+  </label>
 );

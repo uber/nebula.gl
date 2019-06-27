@@ -559,6 +559,11 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
     }
   };
 
+  // don't forward pan events to the underlying map when:
+  // - the pan target is a feature/vertex/line
+  // - the user is dragging something around
+  // - there is currently an uncommitted position
+  // (i.e. the user is creating a feature/vertex/line)
   _onPan = (evt: MjolnirEvent) => {
     if (
       this._isFeature(evt.target) ||

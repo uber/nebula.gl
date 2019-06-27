@@ -284,14 +284,14 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
     }
 
     this._events = {
-      anyclick: evt => this._onEvent(this._onClick, evt),
+      anyclick: evt => this._onEvent(this._onClick, evt, true),
       click: evt => evt.stopImmediatePropagation(),
-      pointermove: evt => this._onEvent(this._onMouseMove, evt),
-      pointerdown: evt => this._onEvent(this._onMouseDown, evt),
-      pointerup: evt => this._onEvent(this._onMouseUp, evt),
-      panmove: evt => evt.stopImmediatePropagation(),
-      panstart: evt => evt.stopImmediatePropagation(),
-      panend: evt => evt.stopImmediatePropagation()
+      pointermove: evt => this._onEvent(this._onMouseMove, evt, true),
+      pointerdown: evt => this._onEvent(this._onMouseDown, evt, true),
+      pointerup: evt => this._onEvent(this._onMouseUp, evt, true),
+      panmove: evt => this._onEvent(this._onPan, evt, false),
+      panstart: evt => this._onEvent(this._onPan, evt, false),
+      panend: evt => this._onEvent(this._onPan, evt, false)
     };
 
     this._context.eventManager.on(this._events, ref);
@@ -305,14 +305,17 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
     this._events = null;
   }
 
-  _onEvent = (handler: Function, evt: MjolnirEvent, ...args: any) => {
+  _onEvent = (handler: Function, evt: MjolnirEvent, stopPropagation: boolean, ...args: any) => {
     const { mode } = this.props;
     if (mode === MODES.READ_ONLY) {
       return;
     }
 
     handler(evt, ...args);
-    evt.stopImmediatePropagation();
+
+    if (stopPropagation) {
+      evt.stopImmediatePropagation();
+    }
   };
 
   _onMouseUp = (evt: MjolnirEvent) => {
@@ -553,6 +556,18 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
         break;
 
       default:
+    }
+  };
+
+  _onPan = (evt: MjolnirEvent) => {
+    if (
+      this._isFeature(evt.target) ||
+      this._isVertex(evt.target) ||
+      this._isLine(evt.target) ||
+      this.state.isDragging ||
+      this.state.uncommittedLngLat !== null
+    ) {
+      evt.stopImmediatePropagation();
     }
   };
 

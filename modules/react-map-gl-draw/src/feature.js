@@ -80,6 +80,25 @@ export default class Feature {
     this.points.splice(index, 0, pt);
   }
 
+  getBoundingBox() {
+    if (!this.points || !this.points.length) {
+      return null;
+    }
+    const bbox = this.points.reduce(
+      (result, pt) => {
+        result.xmin = Math.min(pt[0], result.xmin);
+        result.xmax = Math.min(pt[0], result.xmax);
+        result.ymin = Math.min(pt[1], result.ymin);
+        result.ymax = Math.min(pt[1], result.ymax);
+
+        return result;
+      },
+      { xmin: Infinity, xmax: -Infinity, ymin: Infinity, ymax: -Infinity }
+    );
+
+    return bbox;
+  }
+
   removePoint(index: number) {
     const { points } = this;
     if (index >= 0 && index < points.length) {
@@ -136,6 +155,7 @@ export default class Feature {
         },
         properties: {
           renderType,
+          bbox: this.getBoundingBox(),
           ...otherProps
         },
         id
@@ -150,6 +170,7 @@ export default class Feature {
         properties: {
           renderType,
           isClosed,
+          bbox: this.getBoundingBox(),
           ...otherProps
         },
         id

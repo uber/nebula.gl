@@ -97,9 +97,14 @@ export function getEditHandleStyle({ feature, index, state }) {
             : state === RENDER_STATE.HOVERED
               ? '#7ac943'
               : state === RENDER_STATE.UNCOMMITTED
-                ? '#a9a9a9'
+                ? 'none'
                 : '#000000';
-      style.stroke = state === RENDER_STATE.SELECTED ? '#7ac943' : '#000';
+      style.stroke =
+        state === RENDER_STATE.SELECTED
+          ? '#7ac943'
+          : state === RENDER_STATE.UNCOMMITTED
+            ? 'none'
+            : '#000';
       break;
     case RENDER_TYPE.LINE_STRING:
     case RENDER_TYPE.POLYGON:

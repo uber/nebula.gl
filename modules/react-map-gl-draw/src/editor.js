@@ -337,8 +337,7 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
     const elem = evt.target;
 
     if (this._isVertex(elem)) {
-      // eslint-disable-next-line no-unused-vars
-      const [featureIndex, vertexIndex] = elem.id.split('.');
+      const [, , vertexIndex] = elem.id.split('.');
       this.setState({
         draggingVertexIndex: Number(vertexIndex),
         startDragPos: { x, y },
@@ -399,8 +398,7 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
             selectedFeature.renderType === RENDER_TYPE.POLYGON) &&
           this._isLine(elem)
         ) {
-          // eslint-disable-next-line no-unused-vars
-          const [featureIndex, segmentId] = elem.id.split('.');
+          const [, , segmentId] = elem.id.split('.');
           this.setState({
             hoveredSegmentId: Number(segmentId),
             uncommittedLngLat: lngLat
@@ -416,7 +414,7 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
 
     const { features, selectedFeatureId } = this.state;
     if (selectedFeatureId && this._isVertex(elem)) {
-      const [featureIndex, vertexIndex] = elem.id.split('.');
+      const [, featureIndex, vertexIndex] = elem.id.split('.');
       const feature = features && features[featureIndex];
       if (selectedFeatureId === (feature && feature.id)) {
         this.setState({
@@ -430,7 +428,8 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
     }
 
     if (this._isFeature(elem)) {
-      const feature = features && features[elem.id];
+      const [, featureIndex] = elem.id.split('.');
+      const feature = features && features[featureIndex];
       this.setState({
         hoveredFeatureId: feature && feature.id
       });
@@ -455,8 +454,7 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
   _onClickVertex = (evt: MjolnirEvent) => {
     const { mode } = this.props;
     const elem = evt.target;
-    // eslint-disable-next-line no-unused-vars
-    const [featureIndex, vertexId, operation] = elem.id.split('.');
+    const [, , , operation] = elem.id.split('.');
     if (
       operation === OPERATIONS.INTERSECT ||
       (operation === OPERATIONS.SET && mode === MODES.DRAW_RECTANGLE)
@@ -476,8 +474,7 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
         feature.renderType === RENDER_TYPE.LINE_STRING) &&
       elem
     ) {
-      // eslint-disable-next-line no-unused-vars
-      const [featureIndex, segmentId] = elem.id.split('.');
+      const [, , segmentId] = elem.id.split('.');
       const [index] = segmentId.split('-');
 
       const { x, y } = this._getEventPosition(evt);
@@ -513,7 +510,8 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
 
     const isDrawing = DRAWING_MODES.indexOf(mode) !== -1;
     if (!isDrawing && this._isFeature(elem)) {
-      const selectedFeature = features && features[elem.id];
+      const [, featureIndex] = elem.id.split('.');
+      const selectedFeature = features && features[featureIndex];
       this._onClickFeature(evt, selectedFeature);
       return;
     }
@@ -588,18 +586,30 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
   };
 
   _isFeature = (elem: HTMLElement) => {
-    const elemClass = elem && elem.getAttribute('class');
-    return Boolean(elemClass && elemClass.startsWith('feature'));
+    const elemId = elem && elem.id;
+    if (!elemId) {
+      return false;
+    }
+    const [elemType] = elemId.split('.');
+    return elemType === 'feature';
   };
 
   _isVertex = (elem: HTMLElement) => {
-    const elemClass = elem && elem.getAttribute('class');
-    return Boolean(elemClass && elemClass.startsWith('vertex'));
+    const elemId = elem && elem.id;
+    if (!elemId) {
+      return false;
+    }
+    const [elemType] = elemId.split('.');
+    return elemType === 'vertex';
   };
 
   _isLine = (elem: HTMLElement) => {
-    const elemClass = elem && elem.getAttribute('class');
-    return Boolean(elemClass && elemClass.startsWith('segment'));
+    const elemId = elem && elem.id;
+    if (!elemId) {
+      return false;
+    }
+    const [elemType] = elemId.split('.');
+    return elemType === 'segment';
   };
 
   _getEventPosition = (evt: MjolnirEvent): { x: number, y: number } => {
@@ -688,18 +698,16 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
         return (
           <g key={`${vertexId}.vertex`} transform={`translate(${p[0]}, ${p[1]})`}>
             <circle
-              id={`${featureIndex}.${vertexId}.${operation}.hidden`}
+              id={`vertex.${featureIndex}.${vertexId}.${operation}.hidden`}
               key={`${vertexId}.hidden`}
-              className="vertex hidden"
               style={{ ...style, stroke: 'none', fill: '#000', fillOpacity: 0 }}
               cx={0}
               cy={0}
               r={clickRadius}
             />
             <circle
-              id={`${featureIndex}.${vertexId}.${operation}`}
+              id={`vertex.${featureIndex}.${vertexId}.${operation}`}
               key={`${vertexId}`}
-              className="vertex"
               style={style}
               cx={0}
               cy={0}
@@ -708,18 +716,16 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
         );
       case 'rect':
         return (
-          <g key={`${vertexId}.vertex`} transform={`translate(${p[0]}, ${p[1]})`}>
+          <g key={`vertex.${vertexId}`} transform={`translate(${p[0]}, ${p[1]})`}>
             <rect
-              id={`${featureIndex}.${vertexId}.${operation}.hidden`}
-              key={`${vertexId}.hidden`}
-              className="vertex hidden"
+              id={`vertex.${featureIndex}.${vertexId}.${operation}.hidden`}
+              key={`vertex.${vertexId}.hidden`}
               style={{ ...style, fill: '#000', fillOpacity: 0 }}
               r={clickRadius}
             />
             <rect
-              id={`${featureIndex}.${vertexId}.${operation}`}
-              key={`${vertexId}`}
-              className="vertex"
+              id={`vertex.${featureIndex}.${vertexId}.${operation}`}
+              key={`vertex.${vertexId}`}
               style={style}
             />
           </g>
@@ -740,18 +746,16 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
     const projected = this._getProjectedData([startPos, endPos], RENDER_TYPE.LINE_STRING);
     const { clickRadius, radius, ...others } = style;
     return (
-      <g id={`${startVertexId}.segment`} key={`segment-group.${startVertexId}`}>
+      <g id={`segment.${startVertexId}.segment`} key={`segment.${startVertexId}`}>
         <path
-          id={`${featureIndex}.${startVertexId}`}
-          key={`${featureIndex}.${startVertexId}.segment-hidden`}
-          className="segment hidden"
+          id={`segment.${featureIndex}.${startVertexId}`}
+          key={`segment.${featureIndex}.${startVertexId}.hidden`}
           style={{ ...others, stroke: clickRadius || radius || 24, opacity: 0 }}
           d={projected}
         />
         <path
-          id={`${featureIndex}.${startVertexId}`}
-          key={`${startVertexId}.segment`}
-          className="segment"
+          id={`segment.${featureIndex}.${startVertexId}`}
+          key={`segment.${startVertexId}`}
           style={others}
           d={projected}
         />
@@ -852,9 +856,8 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
     const fillPath = this._getProjectedData(fillPoints, renderType, isClosed);
     return (
       <path
-        id={index}
-        key="fill"
-        className="feature current fill"
+        id={`feature.${index}.fill`}
+        key={`feature.${index}.fill`}
         style={{ ...style, stroke: 'none' }}
         d={fillPath}
       />
@@ -926,8 +929,9 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
       const style = getEditHandleStyle({
         feature: geoJson,
         index: -1,
-        state: this._getEditHandleState(-1)
+        state: this._getEditHandleState(-1, RENDER_STATE.UNCOMMITTED)
       });
+
       const shape =
         typeof getEditHandleShape === 'function'
           ? getEditHandleShape({
@@ -1007,21 +1011,15 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
         if (shape === 'rect') {
           return (
             <g
-              key={`${index}.feature`}
+              key={`feature.${index}`}
               transform={`translate(${projected[0][0]}, ${projected[0][1]})`}
             >
               <rect
-                className="feature point hidden"
                 key={`${index}.feature-hidden`}
-                id={`${index}`}
+                id={`feature.${index}.hidden`}
                 style={{ ...style, fill: '#000', fillOpacity: 0 }}
               />
-              <rect
-                className="feature point"
-                key={`${index}.feature`}
-                id={`${index}`}
-                style={style}
-              />
+              <rect key={`feature.${index}`} id={`feature.${index}`} style={style} />
             </g>
           );
         }
@@ -1032,8 +1030,7 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
             transform={`translate(${projected[0][0]}, ${projected[0][1]})`}
           >
             <circle
-              className="feature point hidden"
-              key={`${index}.feature-hidden`}
+              key={`feature.${index}.hidden`}
               id={`${index}`}
               style={{
                 ...style,
@@ -1042,32 +1039,17 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
               cx={0}
               cy={0}
             />
-            <circle
-              className="feature point"
-              key={`${index}.feature`}
-              id={`${index}`}
-              style={style}
-              cx={0}
-              cy={0}
-            />
+            <circle key={`feature.${index}`} id={`feature.${index}`} style={style} cx={0} cy={0} />
           </g>
         );
 
       // first <path> is to make path easily interacted with
       case RENDER_TYPE.LINE_STRING:
         return (
-          <g key={`${index}.feature`} className="feature line-string">
+          <g key={`${index}.feature`}>
             <path
-              className="feature line-string"
-              key={`${index}.feature`}
-              id={index}
-              style={style}
-              d={projected}
-            />
-            <path
-              className="feature line-string hidden"
-              key={`${index}.feature-hidden`}
-              id={index}
+              key={`feature.${index}.hidden`}
+              id={`feature.${index}.hidden`}
               style={{
                 ...style,
                 strokeWidth: 10,
@@ -1075,19 +1057,14 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
               }}
               d={projected}
             />
+            <path key={`feature.${index}`} id={`feature.${index}`} style={style} d={projected} />
           </g>
         );
 
       case 'Polygon':
       case 'Rectangle':
         return (
-          <path
-            className="feature polygon"
-            key={`${index}.feature`}
-            id={`${index}`}
-            style={style}
-            d={projected}
-          />
+          <path key={`feature.${index}`} id={`feature.${index}`} style={style} d={projected} />
         );
 
       default:
@@ -1104,13 +1081,8 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
     const { selectedFeatureId, features } = this.state;
 
     return (
-      <svg className="draw-canvas" key="draw-canvas" width="100%" height="100%">
-        {features &&
-          features.length > 0 && (
-            <g className="feature-group" key="feature-group">
-              {this._renderFeatures()}
-            </g>
-          )}
+      <svg key="draw-canvas" width="100%" height="100%">
+        {features && features.length > 0 && <g key="feature-group">{this._renderFeatures()}</g>}
         {selectedFeatureId && this._renderCurrent()}
       </svg>
     );
@@ -1122,7 +1094,6 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
 
     return (
       <div
-        className="editor"
         id="editor"
         style={{
           width,

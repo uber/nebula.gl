@@ -337,8 +337,7 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
     const elem = evt.target;
 
     if (this._isVertex(elem)) {
-      // eslint-disable-next-line no-unused-vars
-      const [elemType, featureIndex, vertexIndex] = elem.id.split('.');
+      const [, , vertexIndex] = elem.id.split('.');
       this.setState({
         draggingVertexIndex: Number(vertexIndex),
         startDragPos: { x, y },
@@ -399,8 +398,7 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
             selectedFeature.renderType === RENDER_TYPE.POLYGON) &&
           this._isLine(elem)
         ) {
-          // eslint-disable-next-line no-unused-vars
-          const [elemType, featureIndex, segmentId] = elem.id.split('.');
+          const [, , segmentId] = elem.id.split('.');
           this.setState({
             hoveredSegmentId: Number(segmentId),
             uncommittedLngLat: lngLat
@@ -456,8 +454,7 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
   _onClickVertex = (evt: MjolnirEvent) => {
     const { mode } = this.props;
     const elem = evt.target;
-    // eslint-disable-next-line no-unused-vars
-    const [elemType, featureIndex, vertexId, operation] = elem.id.split('.');
+    const [, , , operation] = elem.id.split('.');
     if (
       operation === OPERATIONS.INTERSECT ||
       (operation === OPERATIONS.SET && mode === MODES.DRAW_RECTANGLE)
@@ -477,8 +474,7 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
         feature.renderType === RENDER_TYPE.LINE_STRING) &&
       elem
     ) {
-      // eslint-disable-next-line no-unused-vars
-      const [elemType, featureIndex, segmentId] = elem.id.split('.');
+      const [, , segmentId] = elem.id.split('.');
       const [index] = segmentId.split('-');
 
       const { x, y } = this._getEventPosition(evt);

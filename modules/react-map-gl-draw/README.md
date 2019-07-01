@@ -54,6 +54,8 @@ Feature object structure:
 ```
 
 ### Styling related Options
+- `style` (Object, optional) - Customized css [style objects](https://reactjs.org/docs/dom-elements.html#style) apply to the editor. Default style includes width and height from current viewport.
+  
 - `getFeatureStyle` (Function, Optional) : Object - A function to style a feature, function parameters are 
   - `feature`: feature to style .
   - `state`: one of `SELECTED`, `HOVERED`, `INACTIVE`, `UNCOMMITTED`.

@@ -28,6 +28,7 @@ type EditorProps = {
   selectedFeatureId: ?Id,
   mode: string,
   clickRadius: ?number,
+  style: ?Object,
 
   onSelect: Function,
   onUpdate: Function,
@@ -1132,6 +1133,7 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
 
   _renderEditor = () => {
     const viewport = (this._context && this._context.viewport) || {};
+    const { style } = this.props;
     const { width, height } = viewport;
 
     return (
@@ -1139,7 +1141,8 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
         id="editor"
         style={{
           width,
-          height
+          height,
+          ...style
         }}
         ref={_ => {
           this._containerRef = _;

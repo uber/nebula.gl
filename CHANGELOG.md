@@ -4,6 +4,22 @@ _All notable changes to this project will be documented in this file. This proje
 
 <!-- INSERT HERE -->
 
+## [0.14.4](https://github.com/uber/nebula.gl/compare/v0.14.0...v0.14.4) - 2019-07-02
+
+### Changes
+
+* v0.14.4
+* Exposing ReactMapGl Draw constants: RENDER_TYPE and RENDER_STATE (#248)
+* v0.14.3
+* support customized react-map-gl-draw-editor style (#247)
+* v0.14.2
+* Support polygon closing styling (#241)
+* Support pan gestures when not interacting with a feature (#242)
+* v0.14.1
+* Update advanced example style to dark mode (#239)
+* RFC: react-map-gl-draw (#229)
+* v0.14.0 Changelog
+
 ## [0.14.0](https://github.com/uber/nebula.gl/compare/v0.13.0...v0.14.0) - 2019-06-18
 
 ### Changes

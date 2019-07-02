@@ -379,7 +379,7 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
         if (vertexIndex >= 0) {
           // dragging vertex
           this._updateFeature(selectedFeature, 'vertex', { vertexIndex, lngLat });
-        } else {
+        } else if (this._matchesFeature(elem, selectedFeature)) {
           // dragging feature
           const dx = x - startDragPos.x;
           const dy = y - startDragPos.y;
@@ -415,8 +415,8 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
 
     const { features, selectedFeatureId } = this.state;
     if (selectedFeatureId && this._isVertex(elem)) {
-      const [, featureIndex, vertexIndex] = elem.id.split('.');
-      const feature = features && features[featureIndex];
+      const [, featureIndex, vertexIndex]: string[] = elem.id.split('.');
+      const feature = features && features[Number(featureIndex)];
       if (selectedFeatureId === (feature && feature.id)) {
         this.setState({
           hoveredVertexIndex: Number(vertexIndex)
@@ -559,16 +559,15 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
   };
 
   // don't forward pan events to the underlying map when:
-  // - the pan target is a feature/vertex/line
+  // - the pan target is a vertex/line/the currently selected feature
   // - the user is dragging something around
   // - there is currently an uncommitted position
   // (i.e. the user is creating a feature/vertex/line)
   _onPan = (evt: MjolnirEvent) => {
     if (
-      this._isFeature(evt.target) ||
       this._isVertex(evt.target) ||
       this._isLine(evt.target) ||
-      this.state.isDragging ||
+      (this._matchesFeature(evt.target, this._getSelectedFeature()) && this.state.isDragging) ||
       this.state.uncommittedLngLat !== null
     ) {
       evt.stopImmediatePropagation();
@@ -611,6 +610,17 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
     }
     const [elemType] = elemId.split('.');
     return elemType === 'segment';
+  };
+
+  _matchesFeature = (elem: HTMLElement, feature: ?Feature) => {
+    if (!this._isFeature(elem) || !feature) {
+      return false;
+    }
+
+    const [, featureIndex]: string[] = elem.id.split('.');
+    const { features } = this.props;
+    const elemFeature = features && features[Number(featureIndex)];
+    return elemFeature && feature.id === elemFeature.id;
   };
 
   _getEventPosition = (evt: MjolnirEvent): { x: number, y: number } => {

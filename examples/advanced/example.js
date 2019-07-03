@@ -157,7 +157,12 @@ export default class Example extends Component<
     selectedFeatureIndexes: number[],
     editHandleType: string,
     selectionTool: ?string,
-    showGeoJson: boolean
+    showGeoJson: boolean,
+    featureMenu: ?{
+      index: number,
+      x: number,
+      y: number
+    }
   }
 > {
   constructor() {
@@ -172,7 +177,8 @@ export default class Example extends Component<
       selectedFeatureIndexes: [],
       editHandleType: 'point',
       selectionTool: null,
-      showGeoJson: false
+      showGeoJson: false,
+      featureMenu: null
     };
   }
 
@@ -246,29 +252,68 @@ export default class Example extends Component<
       el.onchange = e => {
         if (e.target.files && e.target.files[0]) {
           const reader = new FileReader();
-          reader.onload = ee => {
-            let testFeatures = null;
-            try {
-              testFeatures = JSON.parse(ee.target.result);
-              if (Array.isArray(testFeatures)) {
-                testFeatures = {
-                  type: 'FeatureCollection',
-                  features: testFeatures
-                };
-              }
-              // eslint-disable-next-line
-              console.log('Loaded JSON:', testFeatures);
-              this.setState({ testFeatures });
-            } catch (err) {
-              // eslint-disable-next-line
-              alert(err);
-            }
+          reader.onload = ({ target }) => {
+            this._parseStringJson(target.result);
           };
           reader.readAsText(e.target.files[0]);
         }
       };
       el.click();
     }
+  };
+
+  _copy = () => {
+    if (navigator && navigator.clipboard) {
+      navigator.clipboard.writeText(JSON.stringify(this.state.testFeatures));
+    } else {
+      this._error('No navigator.clipboard');
+    }
+  };
+
+  _paste = () => {
+    if (navigator && navigator.clipboard) {
+      navigator.clipboard.readText().then(
+        value => {
+          this._parseStringJson(value);
+        },
+        reason => {
+          this._error(reason);
+        }
+      );
+    } else {
+      this._error('No navigator.clipboard');
+    }
+  };
+
+  _download = () => {
+    const blob = new Blob([JSON.stringify(this.state.testFeatures)], { type: 'octet/stream' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'nebula.geojson';
+    a.click();
+  };
+
+  _parseStringJson = (json: string) => {
+    let testFeatures = null;
+    try {
+      testFeatures = JSON.parse(json);
+      if (Array.isArray(testFeatures)) {
+        testFeatures = {
+          type: 'FeatureCollection',
+          features: testFeatures
+        };
+      }
+      // eslint-disable-next-line
+      console.log('Loaded JSON:', testFeatures);
+      this.setState({ testFeatures });
+    } catch (err) {
+      this._error(err);
+    }
+  };
+
+  _error = (err: any) => {
+    // eslint-disable-next-line
+    alert(err);
   };
 
   _getHtmlColorForFeature(index: number, selected: boolean) {
@@ -315,6 +360,19 @@ export default class Example extends Component<
             {': '}
             {featureType}
           </span>
+          <a
+            style={{ position: 'absolute', right: 12 }}
+            onClick={e => {
+              e.preventDefault();
+              e.stopPropagation();
+              this.setState({
+                selectedFeatureIndexes: [index],
+                featureMenu: { index, x: e.clientX, y: e.clientY }
+              });
+            }}
+          >
+            &gt;&gt;
+          </a>
         </ToolboxCheckbox>
       </div>
     );
@@ -504,13 +562,18 @@ export default class Example extends Component<
             </ToolboxButton>
           </React.Fragment>
         )}
+        <ToolboxButton onClick={() => this._copy()}>Copy</ToolboxButton>
+        <ToolboxButton onClick={() => this._paste()}>Paste</ToolboxButton>
+        <ToolboxButton onClick={() => this._download()}>Download</ToolboxButton>
         <ToolboxRow>
-          <ToolboxTitle>Load sample data</ToolboxTitle>
+          <ToolboxTitle>Load data</ToolboxTitle>
           <ToolboxControl>
-            <ToolboxButton onClick={() => this._loadSample('mixed')}>Mixed</ToolboxButton>
-            <ToolboxButton onClick={() => this._loadSample('complex')}>Complex</ToolboxButton>
+            <ToolboxButton onClick={() => this._loadSample('mixed')}>Mixed Sample</ToolboxButton>
+            <ToolboxButton onClick={() => this._loadSample('complex')}>
+              Complex Sample
+            </ToolboxButton>
             <ToolboxButton onClick={() => this._loadSample('blank')}>Blank</ToolboxButton>
-            <ToolboxButton onClick={() => this._loadSample('file')}>From file...</ToolboxButton>
+            <ToolboxButton onClick={() => this._loadSample('file')}>Open file...</ToolboxButton>
           </ToolboxControl>
         </ToolboxRow>
 
@@ -577,6 +640,37 @@ export default class Example extends Component<
 
   renderStaticMap(viewport: Object) {
     return <StaticMap {...viewport} mapStyle={'mapbox://styles/mapbox/dark-v10'} />;
+  }
+
+  _featureMenuClick(action: string) {
+    const { index } = this.state.featureMenu || {};
+    let testFeatures = this.state.testFeatures;
+
+    if (action === 'delete') {
+      const features = [...testFeatures.features];
+      features.splice(index, 1);
+      testFeatures = Object.assign({}, testFeatures, {
+        features
+      });
+    } else if (action === 'split') {
+      // TODO
+    } else if (action === 'info') {
+      // eslint-disable-next-line
+      console.log(testFeatures.features[index]);
+    }
+
+    this.setState({ featureMenu: null, testFeatures });
+  }
+
+  _renderFeatureMenu({ x, y, index }: Object) {
+    return (
+      <div style={{ position: 'fixed', top: y - 40, left: x + 20 }}>
+        <ToolboxButton onClick={() => this._featureMenuClick('delete')}>Delete</ToolboxButton>
+        <ToolboxButton onClick={() => this._featureMenuClick('split')}>Split</ToolboxButton>
+        <ToolboxButton onClick={() => this._featureMenuClick('info')}>Info</ToolboxButton>
+        <ToolboxButton onClick={() => this._featureMenuClick('')}>Close</ToolboxButton>
+      </div>
+    );
   }
 
   customizeLayers(layers: Object[]) {}
@@ -768,6 +862,7 @@ export default class Example extends Component<
           {this.renderStaticMap(viewport)}
         </DeckGL>
         {this._renderToolBox()}
+        {this.state.featureMenu && this._renderFeatureMenu(this.state.featureMenu)}
       </div>
     );
   }

@@ -29,7 +29,7 @@
 1.  `git clone git@github.com:uber/nebula.gl.git`
 2.  `cd nebula.gl`
 3.  `yarn`
-4.  `cd examples/deck`
+4.  `cd examples/advanced`
 5.  `yarn`
 6.  `export MapboxAccessToken='<Add your key>'`
 7.  `yarn start-local`
@@ -48,6 +48,7 @@ nebula.gl will automatically install a compatible version of deck.gl.
 The Editable GeoJSON layer accepts a [GeoJSON](http://geojson.org) `FeatureCollection` and renders the features as editable polygons, lines, and points. See the example below and for the official documentation click [here](https://github.com/uber/nebula.gl/blob/master/docs/overview.md).
 
 ```js
+import React from 'react';
 import DeckGL from 'deck.gl';
 import { EditableGeoJsonLayer } from 'nebula.gl';
 

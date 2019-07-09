@@ -344,7 +344,7 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
         startDragPos: { x, y },
         isDragging: true
       });
-    } else if (this._isFeature(elem)) {
+    } else if (this._matchesFeature(elem, this._getSelectedFeature())) {
       this.setState({
         startDragPos: { x, y },
         isDragging: true
@@ -379,7 +379,7 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
         if (vertexIndex >= 0) {
           // dragging vertex
           this._updateFeature(selectedFeature, 'vertex', { vertexIndex, lngLat });
-        } else if (this._matchesFeature(elem, selectedFeature)) {
+        } else {
           // dragging feature
           const dx = x - startDragPos.x;
           const dy = y - startDragPos.y;

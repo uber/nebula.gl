@@ -2,7 +2,7 @@
   "name": "react-map-gl-draw",
   "description": "A lite version editing layer with react",
   "license": "MIT",
-  "version": "0.14.5",
+  "version": "0.14.6",
   "author": "Xintong Xia <xintong@uber.com>",
   "repository": {
     "type": "git",

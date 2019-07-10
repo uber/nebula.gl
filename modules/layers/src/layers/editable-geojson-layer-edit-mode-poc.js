@@ -5,6 +5,7 @@ import { GeoJsonLayer, ScatterplotLayer, IconLayer } from '@deck.gl/layers';
 
 import {
   ViewMode,
+  DrawPointMode,
   DrawPolygonMode,
   DrawRectangleMode,
   DrawCircleFromCenterMode,
@@ -127,6 +128,7 @@ const defaultProps = {
     // modify: new ModifyMode(),
 
     // Draw modes
+    drawPoint: new DrawPointMode(),
     drawPolygon: new DrawPolygonMode(),
     drawRectangle: new DrawRectangleMode(),
     drawCircleFromCenter: new DrawCircleFromCenterMode(),
@@ -140,7 +142,6 @@ const defaultProps = {
     // translate: new SnappableMode(new TranslateMode()),
     // duplicate: new DuplicateMode(),
     // scale: new ScaleMode(),
-    // drawPoint: new DrawPointMode(),
     // drawLineString: new DrawLineStringMode(),
     // draw90DegreePolygon: new Draw90DegreePolygonMode(),
     // split: new SplitPolygonMode(),

@@ -9,6 +9,12 @@ _All notable changes to this project will be documented in this file. This proje
 
 ### Breaking changes
 
+* `featureIndexes` is now nested under `editContext.featureIndexes` in parameter passed to `onEdit` callback
+* `ModeHandler`: if you built a custom `ModeHandler`, note the following breaking changes:
+  * Fire an edit action by calling `super.onEdit` rather than returning an `EditAction` from your `handle...` functions
+  * Update edit handles and tentative feature by calling `super.onUpdateGuides` rather than defining a `getEditHandles` function
+  * Update cursor by calling `super.onUpdateCursor` instead of defining a `getCursor` function
+  * `groundCoords` renamed to `mapCoords` in event objects
 * `editHandleType` no longer supports passing a function/constructor. Use `_subLayerProps` instead.
 * `editHandleParameters` removed. Use `_subLayerProps` instead.
 * `editHandleLayerProps` removed. Use `_subLayerProps` instead.

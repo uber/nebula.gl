@@ -764,7 +764,7 @@ export default class Example extends Component<
       autoHighlight: false,
 
       // Editing callbacks
-      onEdit: ({ updatedData, editType, featureIndexes, editContext }) => {
+      onEdit: ({ updatedData, editType, editContext }) => {
         let updatedSelectedFeatureIndexes = this.state.selectedFeatureIndexes;
         if (
           !['movePosition', 'extruding', 'rotating', 'translating', 'scaling'].includes(editType)
@@ -782,8 +782,7 @@ export default class Example extends Component<
           return;
         }
         if (editType === 'addFeature' && mode !== 'duplicate') {
-          // TODO: once we refactor EditableGeoJsonLayer to use new EditMode interface, this check can go away
-          featureIndexes = featureIndexes || editContext.featureIndexes;
+          const { featureIndexes } = editContext;
           // Add the new feature to the selection
           updatedSelectedFeatureIndexes = [...this.state.selectedFeatureIndexes, ...featureIndexes];
         }

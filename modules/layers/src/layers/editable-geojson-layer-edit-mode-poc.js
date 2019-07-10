@@ -5,6 +5,7 @@ import { GeoJsonLayer, ScatterplotLayer, IconLayer } from '@deck.gl/layers';
 
 import {
   ViewMode,
+  ModifyMode,
   DrawPointMode,
   DrawLineStringMode,
   DrawPolygonMode,
@@ -126,7 +127,7 @@ const defaultProps = {
     view: new ViewMode(),
 
     // Alter modes
-    // modify: new ModifyMode(),
+    modify: new ModifyMode(),
 
     // Draw modes
     drawPoint: new DrawPointMode(),
@@ -138,6 +139,7 @@ const defaultProps = {
     drawEllipseByBoundingBox: new DrawEllipseByBoundingBoxMode(),
     drawRectangleUsing3Points: new DrawRectangleUsingThreePointsMode(),
     drawEllipseUsing3Points: new DrawEllipseUsingThreePointsMode()
+
     // elevation: new ElevationMode(),
     // extrude: new ExtrudeMode(),
     // rotate: new RotateMode(),

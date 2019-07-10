@@ -2,6 +2,7 @@
 
 export { EditMode } from './lib/edit-mode.js';
 export { ViewMode } from './lib/view-mode.js';
+export { ModifyMode } from './lib/modify-mode.js';
 export { DrawPointMode } from './lib/draw-point-mode.js';
 export { DrawLineStringMode } from './lib/draw-line-string-mode.js';
 export { DrawPolygonMode } from './lib/draw-polygon-mode.js';

@@ -7,6 +7,8 @@ export { DrawRectangleMode } from './lib/draw-rectangle-mode.js';
 export { DrawCircleByBoundingBoxMode } from './lib/draw-circle-by-bounding-box-mode.js';
 export { DrawCircleFromCenterMode } from './lib/draw-circle-from-center-mode.js';
 export { DrawEllipseByBoundingBoxMode } from './lib/draw-ellipse-by-bounding-box-mode.js';
+export { DrawEllipseUsingThreePointsMode } from './lib/draw-ellipse-using-three-points-mode.js';
+export { DrawRectangleUsingThreePointsMode } from './lib/draw-rectangle-using-three-points-mode.js';
 // export { XYZ } from './lib/xyz.js';
 export { ImmutableFeatureCollection } from './lib/immutable-feature-collection.js';
 

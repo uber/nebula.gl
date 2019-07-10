@@ -9,7 +9,9 @@ import {
   DrawRectangleMode,
   DrawCircleFromCenterMode,
   DrawCircleByBoundingBoxMode,
-  DrawEllipseByBoundingBoxMode
+  DrawEllipseByBoundingBoxMode,
+  DrawRectangleUsingThreePointsMode,
+  DrawEllipseUsingThreePointsMode
 } from '@nebula.gl/edit-modes';
 
 import type {
@@ -120,12 +122,18 @@ const defaultProps = {
   // Mode handlers
   modeHandlers: {
     view: new ViewMode(),
+
+    // Alter modes
     // modify: new ModifyMode(),
+
+    // Draw modes
     drawPolygon: new DrawPolygonMode(),
     drawRectangle: new DrawRectangleMode(),
     drawCircleFromCenter: new DrawCircleFromCenterMode(),
     drawCircleByBoundingBox: new DrawCircleByBoundingBoxMode(),
-    drawEllipseByBoundingBox: new DrawEllipseByBoundingBoxMode()
+    drawEllipseByBoundingBox: new DrawEllipseByBoundingBoxMode(),
+    drawRectangleUsing3Points: new DrawRectangleUsingThreePointsMode(),
+    drawEllipseUsing3Points: new DrawEllipseUsingThreePointsMode()
     // elevation: new ElevationMode(),
     // extrude: new ExtrudeMode(),
     // rotate: new RotateMode(),
@@ -136,8 +144,6 @@ const defaultProps = {
     // drawLineString: new DrawLineStringMode(),
     // draw90DegreePolygon: new Draw90DegreePolygonMode(),
     // split: new SplitPolygonMode(),
-    // drawRectangleUsing3Points: new DrawRectangleUsingThreePointsMode(),
-    // drawEllipseUsing3Points: new DrawEllipseUsingThreePointsMode()
   }
 };
 

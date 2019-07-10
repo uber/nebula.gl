@@ -17,7 +17,8 @@ import {
   DrawCircleByBoundingBoxMode,
   DrawEllipseByBoundingBoxMode,
   DrawRectangleUsingThreePointsMode,
-  DrawEllipseUsingThreePointsMode
+  DrawEllipseUsingThreePointsMode,
+  Draw90DegreePolygonMode
 } from '@nebula.gl/edit-modes';
 
 import type {
@@ -144,14 +145,14 @@ const defaultProps = {
     drawCircleByBoundingBox: new DrawCircleByBoundingBoxMode(),
     drawEllipseByBoundingBox: new DrawEllipseByBoundingBoxMode(),
     drawRectangleUsing3Points: new DrawRectangleUsingThreePointsMode(),
-    drawEllipseUsing3Points: new DrawEllipseUsingThreePointsMode()
+    drawEllipseUsing3Points: new DrawEllipseUsingThreePointsMode(),
+    draw90DegreePolygon: new Draw90DegreePolygonMode()
 
     // translate: new SnappableMode(new TranslateMode()),
 
     // elevation: new ElevationMode(),
     // extrude: new ExtrudeMode(),
     // duplicate: new DuplicateMode(),
-    // draw90DegreePolygon: new Draw90DegreePolygonMode(),
     // split: new SplitPolygonMode(),
   }
 };

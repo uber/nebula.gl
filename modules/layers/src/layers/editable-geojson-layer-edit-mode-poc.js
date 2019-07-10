@@ -3,8 +3,7 @@
 
 import { GeoJsonLayer, ScatterplotLayer, IconLayer } from '@deck.gl/layers';
 
-import { ViewMode, DrawPolygonMode } from '@nebula.gl/edit-modes';
-
+import { ViewMode, DrawPolygonMode, DrawRectangleMode } from '@nebula.gl/edit-modes';
 import type {
   EditAction,
   ClickEvent,
@@ -113,7 +112,8 @@ const defaultProps = {
   // Mode handlers
   modeHandlers: {
     view: new ViewMode(),
-    drawPolygon: new DrawPolygonMode()
+    drawPolygon: new DrawPolygonMode(),
+    drawRectangle: new DrawRectangleMode()
   }
 };
 

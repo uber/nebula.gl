@@ -3,7 +3,15 @@
 
 import { GeoJsonLayer, ScatterplotLayer, IconLayer } from '@deck.gl/layers';
 
-import { ViewMode, DrawPolygonMode, DrawRectangleMode } from '@nebula.gl/edit-modes';
+import {
+  ViewMode,
+  DrawPolygonMode,
+  DrawRectangleMode,
+  DrawCircleFromCenterMode,
+  DrawCircleByBoundingBoxMode,
+  DrawEllipseByBoundingBoxMode
+} from '@nebula.gl/edit-modes';
+
 import type {
   EditAction,
   ClickEvent,
@@ -112,8 +120,24 @@ const defaultProps = {
   // Mode handlers
   modeHandlers: {
     view: new ViewMode(),
+    // modify: new ModifyMode(),
     drawPolygon: new DrawPolygonMode(),
-    drawRectangle: new DrawRectangleMode()
+    drawRectangle: new DrawRectangleMode(),
+    drawCircleFromCenter: new DrawCircleFromCenterMode(),
+    drawCircleByBoundingBox: new DrawCircleByBoundingBoxMode(),
+    drawEllipseByBoundingBox: new DrawEllipseByBoundingBoxMode()
+    // elevation: new ElevationMode(),
+    // extrude: new ExtrudeMode(),
+    // rotate: new RotateMode(),
+    // translate: new SnappableMode(new TranslateMode()),
+    // duplicate: new DuplicateMode(),
+    // scale: new ScaleMode(),
+    // drawPoint: new DrawPointMode(),
+    // drawLineString: new DrawLineStringMode(),
+    // draw90DegreePolygon: new Draw90DegreePolygonMode(),
+    // split: new SplitPolygonMode(),
+    // drawRectangleUsing3Points: new DrawRectangleUsingThreePointsMode(),
+    // drawEllipseUsing3Points: new DrawEllipseUsingThreePointsMode()
   }
 };
 

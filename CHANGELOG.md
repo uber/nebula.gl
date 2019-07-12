@@ -4,6 +4,15 @@ _All notable changes to this project will be documented in this file. This proje
 
 <!-- INSERT HERE -->
 
+## [0.14.7](https://github.com/uber/nebula.gl/compare/v0.14.4...v0.14.7) - 2019-07-12
+
+### Changes
+
+* React-map-gl-draw: propagating onSelect mouse event (#254)
+* Make dragging features more resilient to lagging feature element (#251)
+* add clipboard support and featureMenu to advanced example (#250)
+* Only permit drags on the currently selected feature (#246)
+
 ## [0.14.4](https://github.com/uber/nebula.gl/compare/v0.14.0...v0.14.4) - 2019-07-02
 
 ### Changes

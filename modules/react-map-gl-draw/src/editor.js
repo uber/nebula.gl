@@ -447,7 +447,8 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
       (this.props.mode === MODES.SELECT_FEATURE || this.props.mode === MODES.EDIT_VERTEX)
     ) {
       this.props.onSelect({
-        selectedFeatureId: feature.id
+        selectedFeatureId: feature.id,
+        sourceEvent: evt
       });
     }
   };
@@ -523,7 +524,10 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
     switch (mode) {
       case MODES.EDIT_VERTEX:
         if (selectedFeature) {
-          this.props.onSelect({ selectedFeatureId: null });
+          this.props.onSelect({
+            selectedFeatureId: null,
+            sourceEvent: evt
+          });
         }
         break;
 
@@ -547,7 +551,10 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
         if (selectedFeature && selectedFeature.isClosed) {
           // clicked outside
           this._clearCache();
-          this.props.onSelect({ selectedFeatureId: null });
+          this.props.onSelect({
+            selectedFeatureId: null,
+            sourceEvent: evt
+          });
         } else {
           this._addFeature(mode, { x, y });
         }

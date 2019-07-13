@@ -5,13 +5,13 @@
       "title": "Overview",
       "entries": [
         {
-          "entry": "docs/overview"
+          "entry": "docs/README.md"
         },
         {
-          "entry": "docs/roadmap"
+          "entry": "docs/roadmap.md"
         },
         {
-          "entry": "docs/faq"
+          "entry": "docs/faq.md"
         }
       ]
     },
@@ -23,6 +23,9 @@
         },
         {
           "entry": "docs/get-started/basic-usage.md"
+        },
+        {
+          "entry": "docs/get-started/html-overlays.md"
         }
       ]
     },
@@ -35,21 +38,7 @@
       ]
     },
     {
-      "title": "Developer Guide",
-      "entries": [
-        {
-          "entry": "docs/developer-guide/configuring-nebula.md"
-        },
-        {
-          "entry": "docs/developer-guide/editable-layers.md"
-        },
-        {
-          "entry": "docs/developer-guide/html-overlays.md"
-        }
-      ]
-    },
-    {
-      "title": "API Reference",
+      "title": "API Reference (Layers)",
       "entries": [
         {
           "entry": "docs/api-reference/layers/editable-geojson-layer.md"
@@ -59,15 +48,21 @@
         },
         {
           "entry": "docs/api-reference/mode-handlers/overview.md"
+        },
+        {
+          "entry": "docs/api-reference/layers/path-marker-layer.md"
+        },
+        {
+          "entry": "docs/api-reference/layers/mesh-layer.md"
+        },
+        {
+          "entry": "docs/api-reference/layers/outline.md"
         }
       ]
     },
     {
-      "title": "API Reference (React)",
+      "title": "API Reference (Overlays)",
       "entries": [
-        {
-          "entry": "docs/api-reference/nebula.md"
-        },
         {
           "entry": "docs/api-reference/overlays/html-overlay.md"
         },
@@ -75,13 +70,15 @@
           "entry": "docs/api-reference/overlays/html-cluster-overlay.md"
         },
         {
-          "entry": "docs/api-reference/overlays/html-tooltip-overlay.md"
-        },
-        {
           "entry": "docs/api-reference/overlays/html-overlay-item.md"
-        },
+        }
+      ]
+    },
+    {
+      "title": "API Reference (Map GL Draw)",
+      "entries": [
         {
-          "entry": "docs/api-reference/overlays/nebula-overlay.md"
+          "entry": "docs/api-reference/react-map-gl-draw/react-map-gl-draw.md"
         }
       ]
     }

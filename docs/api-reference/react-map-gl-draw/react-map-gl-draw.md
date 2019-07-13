@@ -1,4 +1,4 @@
-# react-map-gl-draw
+# React Map GL Draw
 
 ## Options 
 - `mode` (String, Optional)

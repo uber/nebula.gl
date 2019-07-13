@@ -1,4 +1,4 @@
-# outline Shader Module
+# Outline (Shader Module)
 
 The `outline` module is useful when you are rendering 2D elements in the same plane (on top of each other), but want to show some kind of outline or shadow to indicate which element is logically on top.
 

@@ -1,11 +1,11 @@
 # HtmlOverlayItem
 
 This is an HTML item that will be rendered inside
-[HtmlOverlay](documentation/api-reference/htmloverlay) or
-[HtmlClusterOverlay](documentation/api-reference/htmlclusteroverlay).
+[HtmlOverlay](/docs/api-reference/overlays/html-overlay) or
+[HtmlClusterOverlay](/docs/api-reference/overlays/html-cluster-overlay).
 
 
-```js
+```jsx
 return (
   <HtmlOverlayItem
     style={{
@@ -22,7 +22,7 @@ return (
 
 ## Props
 ### coordinates
-Array of two numbers where this will be displayed.
+Array of two (or three if you want to specify elevation) numbers where this will be displayed.
 
 ## Best practices
 

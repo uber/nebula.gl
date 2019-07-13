@@ -2,17 +2,11 @@
 
 Use this class if you have HTML items that need to be displayed at specific geo coordinates on the map
 and cluster based on the zoom level.
-**You need to subclass this class**. Then use it as a `react component` inside `Nebula`.
+**You need to subclass this class**. Then use it as a `react component` inside `DeckGL`.
 
 
-```js
-<Nebula
-  ref={nebula => (this.nebula = nebula || this.nebula)}
-  {...{ layers, viewport }}
->
-  <YourNewClass />
-</Nebula>
-```
+## Example 
+For example code see [Unesco World Heritage](/docs/interactive-examples/world-heritage).
 
 
 ## Methods to override
@@ -35,7 +29,7 @@ Use `getClusterObjects(clusterId)` to get cluster contents.
 
 
 
-## Methods
+## Methods (provided)
 
 ### getClusterObjects(clusterId)
 Returns an array of objects.
@@ -43,5 +37,3 @@ Returns an array of objects.
 ### getClusterOptions()
 Override to return options used when instantiating the overlay and thus the 
 underlying [supercluster](https://www.npmjs.com/package/supercluster#options) object.
-
-

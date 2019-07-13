@@ -131,8 +131,7 @@ Whether the layer should be rendered in high-precision 64-bit mode
 
 ##### `lightSettings` (Object, optional)
 
-**EXPERIMENTAL**
+**TO BE REPLACED**
 
-This is an object that contains light settings for extruded polygons.
-Be aware that this prop will likely be changed in a future version of deck.gl.
+With `@deck.gl/mesh-layers`
 

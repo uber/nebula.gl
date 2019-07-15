@@ -80,6 +80,12 @@ export default class Feature {
     this.points.splice(index, 0, pt);
   }
 
+  deletePoint(index: number) {
+    if (this.points && this.points.length >= 1 && index >= 0 && index < this.points.length) {
+      this.points.splice(index, 1);
+    }
+  }
+
   getBoundingBox() {
     if (!this.points || !this.points.length) {
       return null;

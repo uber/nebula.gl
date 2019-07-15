@@ -42,6 +42,8 @@ type EditorProps = {
 type EditorState = {
   features: ?Array<Feature>,
   selectedFeatureId: ?Id,
+  selectedVertexIndex: ?number,
+
   uncommittedLngLat: ?Position,
 
   hoveredFeatureId: ?Id,
@@ -76,6 +78,7 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
         : null,
 
       selectedFeatureId: -1,
+      selectedVertexIndex: -1,
 
       hoveredFeatureId: null,
       hoveredLngLat: null,
@@ -137,6 +140,35 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
   _containerRef: ?HTMLDivElement;
   _events: any;
   _context: ?MapContext;
+
+  _onKeydown = (evt: MjolnirEvent) => {
+    const { features } = this.state;
+    if (
+      features &&
+      (evt.key === 'Backspace' || evt.key === 'Delete') &&
+      this.props.mode === MODES.EDIT_VERTEX
+    ) {
+      const selectedFeature = this._getSelectedFeature();
+      const selectedVertexIndex = Number(this.state.selectedVertexIndex);
+      const featureIndex = features.findIndex(
+        f => f.id === (selectedFeature && selectedFeature.id)
+      );
+      if (
+        selectedFeature &&
+        selectedVertexIndex >= 0 &&
+        selectedFeature.renderType !== RENDER_TYPE.RECTANGLE
+      ) {
+        selectedFeature.deletePoint(selectedVertexIndex);
+        if (!selectedFeature.points || selectedFeature.points.length === 0) {
+          features.splice(featureIndex, 1);
+        }
+        this._update(features);
+      } else if (selectedFeature) {
+        features.splice(featureIndex, 1);
+        this._update(features);
+      }
+    }
+  };
 
   /* FEATURE OPERATIONS */
   _update = (features: ?Array<Feature>) => {
@@ -279,8 +311,9 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
   /* EVENTS */
   _setupEvents() {
     const ref = this._containerRef;
+    const eventManager = this._context && this._context.eventManager;
 
-    if (!ref || !this._context || !this._context.eventManager) {
+    if (!ref || !eventManager) {
       return;
     }
 
@@ -295,7 +328,8 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
       panend: evt => this._onEvent(this._onPan, evt, false)
     };
 
-    this._context.eventManager.on(this._events, ref);
+    eventManager.on(this._events, ref);
+    eventManager.on('keydown', evt => this._onEvent(this._onKeydown, evt, false));
   }
 
   _removeEvents() {
@@ -307,11 +341,6 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
   }
 
   _onEvent = (handler: Function, evt: MjolnirEvent, stopPropagation: boolean, ...args: any) => {
-    const { mode } = this.props;
-    if (mode === MODES.READ_ONLY) {
-      return;
-    }
-
     handler(evt, ...args);
 
     if (stopPropagation) {
@@ -455,14 +484,21 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
 
   _onClickVertex = (evt: MjolnirEvent) => {
     const { mode } = this.props;
+    const { features } = this.state;
     const elem = evt.target;
-    const [, , , operation] = elem.id.split('.');
+    const [, featureIndex, vertexIndex, operation] = elem.id.split('.');
+    const selectedFeature = this._getSelectedFeature();
+    const clickedFeature = features && features[featureIndex];
     if (
       operation === OPERATIONS.INTERSECT ||
       (operation === OPERATIONS.SET && mode === MODES.DRAW_RECTANGLE)
     ) {
       this._closePath();
       this._clearCache();
+    } else if (clickedFeature === selectedFeature && vertexIndex >= 0) {
+      this.setState({
+        selectedVertexIndex: Number(vertexIndex)
+      });
     }
   };
 
@@ -504,6 +540,8 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
       this._onClickVertex(evt);
       return;
     }
+
+    this.setState({ selectedVertexIndex: -1 });
 
     if (this._isLine(elem) && mode === MODES.EDIT_VERTEX) {
       this._onClickLine(evt);
@@ -667,10 +705,11 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
 
   _getEditHandleState = (index: number, renderState: ?string) => {
     const { mode } = this.props;
-    const { draggingVertexIndex, hoveredVertexIndex } = this.state;
+    const { selectedVertexIndex, draggingVertexIndex, hoveredVertexIndex } = this.state;
     const selectedFeature = this._getSelectedFeature();
     const isSelected =
       index === draggingVertexIndex ||
+      index === selectedVertexIndex ||
       (selectedFeature && selectedFeature.renderType === RENDER_TYPE.POINT);
     const isClosing = mode === MODES.DRAW_POLYGON && hoveredVertexIndex === 0 && index === -1;
 

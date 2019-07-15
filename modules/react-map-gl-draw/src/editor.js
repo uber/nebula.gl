@@ -42,7 +42,7 @@ type EditorProps = {
 type EditorState = {
   features: ?Array<Feature>,
   selectedFeatureId: ?Id,
-  selectedVertexIndex: ?number,
+  selectedVertexIndex: ?Id,
 
   uncommittedLngLat: ?Position,
 
@@ -67,6 +67,24 @@ const defaultProps = {
   onSelect: () => {}
 };
 
+const defaultEditingState = {
+  selectedFeatureId: -1,
+  selectedVertexIndex: -1,
+
+  hoveredFeatureId: null,
+  hoveredLngLat: null,
+  hoveredVertexIndex: -1,
+  hoveredSegmentId: -1,
+
+  // intermediate mouse position when drawing
+  uncommittedLngLat: null,
+
+  draggingVertexIndex: -1,
+  startDragPos: null,
+  isDragging: false,
+  didDrag: false
+};
+
 export default class Editor extends PureComponent<EditorProps, EditorState> {
   static defaultProps = defaultProps;
 
@@ -76,22 +94,7 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
       features: props.features
         ? props.features.map(f => Feature.fromFeature(f)).filter(Boolean)
         : null,
-
-      selectedFeatureId: -1,
-      selectedVertexIndex: -1,
-
-      hoveredFeatureId: null,
-      hoveredLngLat: null,
-      hoveredVertexIndex: -1,
-      hoveredSegmentId: -1,
-
-      // intermediate mouse position when drawing
-      uncommittedLngLat: null,
-
-      draggingVertexIndex: -1,
-      startDragPos: null,
-      isDragging: false,
-      didDrag: false
+      ...defaultEditingState
     };
 
     this._containerRef = null;
@@ -158,6 +161,7 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
         selectedVertexIndex >= 0 &&
         selectedFeature.renderType !== RENDER_TYPE.RECTANGLE
       ) {
+        this.setState({ selectedVertexIndex: -1, hoveredVertexIndex: -1 });
         selectedFeature.deletePoint(selectedVertexIndex);
         if (!selectedFeature.points || selectedFeature.points.length === 0) {
           features.splice(featureIndex, 1);
@@ -265,20 +269,7 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
   };
 
   _clearCache = () => {
-    this.setState({
-      selectedFeatureId: null,
-      uncommittedLngLat: null,
-
-      hoveredFeatureId: null,
-      hoveredLngLat: null,
-      hoveredVertexIndex: -1,
-      hoveredSegmentId: null,
-
-      draggingVertexIndex: -1,
-      startDragPos: null,
-      isDragging: false,
-      didDrag: false
-    });
+    this.setState(defaultEditingState);
   };
 
   _closePath = () => {
@@ -453,7 +444,7 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
       }
     } else if (!this._isVertex(elem)) {
       this.setState({
-        hoveredVertexIndex: null
+        hoveredVertexIndex: -1
       });
     }
 
@@ -703,7 +694,7 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
     return features && features.find(f => f.id === selectedFeatureId);
   };
 
-  _getEditHandleState = (index: number, renderState: ?string) => {
+  _getEditHandleState = (index: Id, renderState: ?string) => {
     const { mode } = this.props;
     const { selectedVertexIndex, draggingVertexIndex, hoveredVertexIndex } = this.state;
     const selectedFeature = this._getSelectedFeature();
@@ -711,7 +702,8 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
       index === draggingVertexIndex ||
       index === selectedVertexIndex ||
       (selectedFeature && selectedFeature.renderType === RENDER_TYPE.POINT);
-    const isClosing = mode === MODES.DRAW_POLYGON && hoveredVertexIndex === 0 && index === -1;
+    const isClosing =
+      mode === MODES.DRAW_POLYGON && hoveredVertexIndex === 0 && index === 'uncommitted';
 
     if (renderState) {
       return renderState;
@@ -728,7 +720,7 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
     switch (index) {
       case hoveredVertexIndex:
         return RENDER_STATE.HOVERED;
-      case -1:
+      case 'uncommitted':
         return RENDER_STATE.UNCOMMITTED;
       default:
         return RENDER_STATE.INACTIVE;
@@ -1013,23 +1005,23 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
     if (selectedFeatureId === id && uncommittedLngLat) {
       const style = getEditHandleStyle({
         feature: geoJson,
-        index: -1,
-        state: this._getEditHandleState(-1, RENDER_STATE.UNCOMMITTED)
+        index: 'uncommitted',
+        state: this._getEditHandleState('uncommitted', RENDER_STATE.UNCOMMITTED)
       });
 
       const shape =
         typeof getEditHandleShape === 'function'
           ? getEditHandleShape({
               feature: geoJson,
-              index: -1,
-              state: this._getEditHandleState(-1)
+              index: 'uncommitted',
+              state: this._getEditHandleState('uncommitted')
             })
           : getEditHandleShape;
 
       uncommittedVertex = this._renderVertex(
         uncommittedLngLat,
         featureIndex,
-        -1,
+        'uncommitted',
         OPERATIONS.INSERT,
         { ...style, pointerEvents: 'none' },
         shape

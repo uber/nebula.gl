@@ -574,7 +574,7 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
     if (
       this._isVertex(evt.target) ||
       this._isLine(evt.target) ||
-      (this._matchesFeature(evt.target, this._getSelectedFeature()) && this.state.isDragging) ||
+      this.state.isDragging ||
       this.state.uncommittedLngLat !== null
     ) {
       evt.stopImmediatePropagation();

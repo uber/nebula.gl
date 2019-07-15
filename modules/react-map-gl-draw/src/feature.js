@@ -1,7 +1,7 @@
 // @flow
 import type { Geometry, Position, Feature as GeoJson } from '@nebula.gl/edit-modes';
 import type { Id, RenderType } from './types';
-import { GEOJSON_TYPE } from './constants';
+import { GEOJSON_TYPE, RENDER_TYPE } from './constants';
 
 type FeatureProps = {
   id: Id,
@@ -83,6 +83,13 @@ export default class Feature {
   deletePoint(index: number) {
     if (this.points && this.points.length >= 1 && index >= 0 && index < this.points.length) {
       this.points.splice(index, 1);
+      if (this.points.length < 3 && this.renderType !== RENDER_TYPE.LINE_STRING) {
+        this.renderType = RENDER_TYPE.LINE_STRING;
+        this.isClosed = false;
+      }
+      if (this.points.length < 2 && this.renderType !== RENDER_TYPE.POINT) {
+        this.renderType = RENDER_TYPE.POINT;
+      }
     }
   }
 

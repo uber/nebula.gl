@@ -767,7 +767,7 @@ export default class Example extends Component<
       onEdit: ({ updatedData, editType, editContext }) => {
         let updatedSelectedFeatureIndexes = this.state.selectedFeatureIndexes;
         if (
-          !['movePosition', 'extruding', 'rotating', 'translating', 'scaling'].includes(editType)
+          true // !['movePosition', 'extruding', 'rotating', 'translating', 'scaling'].includes(editType)
         ) {
           const updatedDataInfo = updatedData.features.map(
             feature => `${feature.geometry.type}(${getPositionCount(feature.geometry)})`

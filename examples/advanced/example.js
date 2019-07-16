@@ -109,6 +109,34 @@ const EMPTY_FEATURE_COLLECTION = {
   features: []
 };
 
+const EDIT_HANDLE_ICON_MAPPING = {
+  intermediate: {
+    x: 0,
+    y: 0,
+    width: 58,
+    height: 58,
+    mask: false
+  },
+  existing: {
+    x: 58,
+    y: 0,
+    width: 58,
+    height: 58,
+    mask: false
+  }
+};
+
+const GET_EDIT_HANDLE_ICON = d => d.type;
+
+const GL_PARAMETERS = {
+  depthTest: true,
+  depthMask: false,
+
+  blend: true,
+  blendEquation: GL.FUNC_ADD,
+  blendFunc: [GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA]
+};
+
 const modeHandlers = Object.assign(
   {
     'drawLineString+modify': new CompositeModeHandler([
@@ -686,6 +714,48 @@ export default class Example extends Component<
 
   customizeLayers(layers: Object[]) {}
 
+  onEdit = ({ updatedData, editType, editContext }) => {
+    let updatedSelectedFeatureIndexes = this.state.selectedFeatureIndexes;
+    if (
+      !['movePosition', 'extruding', 'rotating', 'transZZZZZlating', 'scaling'].includes(editType)
+    ) {
+      const updatedDataInfo = updatedData.features.map(
+        feature => `${feature.geometry.type}(${getPositionCount(feature.geometry)})`
+      );
+      // Don't log edits that happen as the pointer moves since they're really chatty
+      // eslint-disable-next-line
+      console.log('onEdit', editType, editContext, JSON.stringify(updatedDataInfo));
+    }
+    if (editType === 'removePosition' && !this.state.pointsRemovable) {
+      // This is a simple example of custom handling of edits
+      // reject the edit
+      return;
+    }
+    if (editType === 'addFeature' && this.state.mode !== 'duplicate') {
+      const { featureIndexes } = editContext;
+      // Add the new feature to the selection
+      updatedSelectedFeatureIndexes = [...this.state.selectedFeatureIndexes, ...featureIndexes];
+    }
+    this.setState({
+      testFeatures: updatedData,
+      selectedFeatureIndexes: updatedSelectedFeatureIndexes
+    });
+  };
+
+  getFillColor = (feature, isSelected) => {
+    const index = this.state.testFeatures.features.indexOf(feature);
+    return isSelected
+      ? this._getDeckColorForFeature(index, 1.0, 0.5)
+      : this._getDeckColorForFeature(index, 0.5, 0.5);
+  };
+
+  getLineColor = (feature, isSelected) => {
+    const index = this.state.testFeatures.features.indexOf(feature);
+    return isSelected
+      ? this._getDeckColorForFeature(index, 1.0, 1.0)
+      : this._getDeckColorForFeature(index, 0.5, 1.0);
+  };
+
   render() {
     const { testFeatures, selectedFeatureIndexes, mode } = this.state;
     let { modeConfig } = this.state;
@@ -764,33 +834,7 @@ export default class Example extends Component<
       autoHighlight: false,
 
       // Editing callbacks
-      onEdit: ({ updatedData, editType, editContext }) => {
-        let updatedSelectedFeatureIndexes = this.state.selectedFeatureIndexes;
-        if (
-          true // !['movePosition', 'extruding', 'rotating', 'translating', 'scaling'].includes(editType)
-        ) {
-          const updatedDataInfo = updatedData.features.map(
-            feature => `${feature.geometry.type}(${getPositionCount(feature.geometry)})`
-          );
-          // Don't log edits that happen as the pointer moves since they're really chatty
-          // eslint-disable-next-line
-          console.log('onEdit', editType, editContext, JSON.stringify(updatedDataInfo));
-        }
-        if (editType === 'removePosition' && !this.state.pointsRemovable) {
-          // This is a simple example of custom handling of edits
-          // reject the edit
-          return;
-        }
-        if (editType === 'addFeature' && mode !== 'duplicate') {
-          const { featureIndexes } = editContext;
-          // Add the new feature to the selection
-          updatedSelectedFeatureIndexes = [...this.state.selectedFeatureIndexes, ...featureIndexes];
-        }
-        this.setState({
-          testFeatures: updatedData,
-          selectedFeatureIndexes: updatedSelectedFeatureIndexes
-        });
-      },
+      onEdit: this.onEdit,
 
       editHandleType: this.state.editHandleType,
 
@@ -819,29 +863,19 @@ export default class Example extends Component<
       // Specify the same GeoJsonLayer props
       lineWidthMinPixels: 2,
       pointRadiusMinPixels: 5,
-      getLineDashArray: () => [0, 0],
+      // getLineDashArray: () => [0, 0],
 
       // Accessors receive an isSelected argument
-      getFillColor: (feature, isSelected) => {
-        const index = testFeatures.features.indexOf(feature);
-        return isSelected
-          ? this._getDeckColorForFeature(index, 1.0, 0.5)
-          : this._getDeckColorForFeature(index, 0.5, 0.5);
-      },
-      getLineColor: (feature, isSelected) => {
-        const index = testFeatures.features.indexOf(feature);
-        return isSelected
-          ? this._getDeckColorForFeature(index, 1.0, 1.0)
-          : this._getDeckColorForFeature(index, 0.5, 1.0);
-      },
+      getFillColor: this.getFillColor,
+      getLineColor: this.getLineColor,
 
       // Can customize editing points props
       getEditHandlePointColor: getEditHandleColor,
       editHandlePointRadiusScale: 2,
 
       // customize tentative feature style
-      getTentativeLineDashArray: () => [7, 4],
-      getTentativeLineColor: () => [0x8f, 0x8f, 0x8f, 0xff],
+      // getTentativeLineDashArray: () => [7, 4],
+      // getTentativeLineColor: () => [0x8f, 0x8f, 0x8f, 0xff],
 
       _subLayerProps,
 

@@ -9,6 +9,7 @@ import {
   TranslateMode,
   ScaleMode,
   RotateMode,
+  DuplicateMode,
   DrawPointMode,
   DrawLineStringMode,
   DrawPolygonMode,
@@ -135,6 +136,7 @@ const defaultProps = {
     translate: new TranslateMode(),
     scale: new ScaleMode(),
     rotate: new RotateMode(),
+    duplicate: new DuplicateMode(),
 
     // Draw modes
     drawPoint: new DrawPointMode(),
@@ -152,7 +154,6 @@ const defaultProps = {
 
     // elevation: new ElevationMode(),
     // extrude: new ExtrudeMode(),
-    // duplicate: new DuplicateMode(),
     // split: new SplitPolygonMode(),
   }
 };

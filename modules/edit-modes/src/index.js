@@ -6,6 +6,7 @@ export { ModifyMode } from './lib/modify-mode.js';
 export { TranslateMode } from './lib/translate-mode.js';
 export { ScaleMode } from './lib/scale-mode.js';
 export { RotateMode } from './lib/rotate-mode.js';
+export { DuplicateMode } from './lib/duplicate-mode.js';
 export { DrawPointMode } from './lib/draw-point-mode.js';
 export { DrawLineStringMode } from './lib/draw-line-string-mode.js';
 export { DrawPolygonMode } from './lib/draw-polygon-mode.js';

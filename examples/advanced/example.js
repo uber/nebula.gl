@@ -104,6 +104,11 @@ const POLYGON_DRAWING_MODES = [
   'drawEllipseUsing3Points'
 ];
 
+const EMPTY_FEATURE_COLLECTION = {
+  type: 'FeatureCollection',
+  features: []
+};
+
 const modeHandlers = Object.assign(
   {
     'drawLineString+modify': new CompositeModeHandler([
@@ -170,7 +175,7 @@ export default class Example extends Component<
 
     this.state = {
       viewport: initialViewport,
-      testFeatures: sampleGeoJson,
+      testFeatures: EMPTY_FEATURE_COLLECTION,
       mode: 'drawPolygon',
       modeConfig: null,
       pointsRemovable: true,
@@ -241,10 +246,8 @@ export default class Example extends Component<
       });
     } else if (type === 'blank') {
       this.setState({
-        testFeatures: {
-          type: 'FeatureCollection',
-          features: []
-        }
+        testFeatures: EMPTY_FEATURE_COLLECTION,
+        selectedFeatureIndexes: []
       });
     } else if (type === 'file') {
       const el = document.createElement('input');
@@ -734,9 +737,12 @@ export default class Example extends Component<
         if (
           !['movePosition', 'extruding', 'rotating', 'translating', 'scaling'].includes(editType)
         ) {
+          const updatedDataInfo = updatedData.features.map(
+            feature => `${feature.geometry.type}(${getPositionCount(feature.geometry)})`
+          );
           // Don't log edits that happen as the pointer moves since they're really chatty
           // eslint-disable-next-line
-          console.log('onEdit', editType, editContext);
+          console.log('onEdit', editType, editContext, JSON.stringify(updatedDataInfo));
         }
         if (editType === 'removePosition' && !this.state.pointsRemovable) {
           // This is a simple example of custom handling of edits
@@ -865,5 +871,28 @@ export default class Example extends Component<
         {this.state.featureMenu && this._renderFeatureMenu(this.state.featureMenu)}
       </div>
     );
+  }
+}
+
+function getPositionCount(geometry): number {
+  // const getSum = (total: number, num: number) => total + num;
+  const flatMap = (f, arr) => arr.reduce((x, y) => [...x, ...f(y)], []);
+
+  const { type, coordinates } = geometry;
+  switch (type) {
+    case 'Point':
+      return 1;
+    case 'LineString':
+    case 'MultiPoint':
+      return coordinates.length;
+    case 'Polygon':
+    case 'MultiLineString':
+      return flatMap(x => x, coordinates).length;
+    case 'MultiPolygon':
+      // return coordinates.reduce(getSum, 0);
+      return flatMap(x => flatMap(y => y, x), coordinates).length;
+    // return coordinates.reduce((acc, x) => acc.concat([x]), []).reduce(getSum, 0);
+    default:
+      throw Error(`Unknown geometry type: ${type}`);
   }
 }

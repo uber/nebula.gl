@@ -22,7 +22,7 @@ export type ModeState<TData, TGuides> = {
   guides: ?TGuides,
 
   // The cursor type, as a [CSS Cursor](https://developer.mozilla.org/en-US/docs/Web/CSS/cursor)
-  cursor: string,
+  cursor: ?string,
 
   // Callback used to notify applications of an edit action
   onEdit: (editAction: EditAction<TData>) => void,
@@ -103,16 +103,20 @@ export class BaseEditMode<TData, TGuides> implements EditMode<TData, TGuides> {
   getGuides(): ?TGuides {
     return this.state && this.state.guides;
   }
-  getCursor(): string {
+  getCursor(): ?string {
     return this.state && this.state.cursor;
   }
   onEdit(editAction: EditAction<TData>): void {
     this.state.onEdit(editAction);
   }
   onUpdateGuides(guides: ?TGuides): void {
-    this.state.onUpdateGuides(guides);
+    if (guides !== this.state.guides) {
+      this.state.onUpdateGuides(guides);
   }
-  onUpdateCursor(cursor: string): void {
-    this.state.onUpdateCursor(cursor);
   }
+  onUpdateCursor(cursor: ?string): void {
+    if (cursor !== this.state.cursor) {
+      this.state.onUpdateCursor(cursor);
+  }
+}
 }

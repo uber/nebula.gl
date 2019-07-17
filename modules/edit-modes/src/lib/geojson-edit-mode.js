@@ -164,7 +164,7 @@ export class BaseGeoJsonEditMode extends BaseEditMode<FeatureCollection, ModeHan
 
   _refreshCursor(): void {
     const currentCursor = this.getCursor();
-    const updatedCursor = this.getCursorAdapter({ isDragging: false });
+    const updatedCursor = this.getCursorAdapter();
 
     if (currentCursor !== updatedCursor) {
       this.onUpdateCursor(updatedCursor);
@@ -184,8 +184,9 @@ export class BaseGeoJsonEditMode extends BaseEditMode<FeatureCollection, ModeHan
     return DEFAULT_EDIT_HANDLES;
   }
 
-  getCursorAdapter({ isDragging }: { isDragging: boolean }): string {
-    return 'cell';
+  getCursorAdapter(): ?string {
+    // Just return what is in state by default
+    return this.getCursor();
   }
 
   isSelectionPicked(picks: Pick[]): boolean {

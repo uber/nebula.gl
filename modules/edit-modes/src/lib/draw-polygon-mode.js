@@ -88,6 +88,8 @@ export class DrawPolygonMode extends BaseGeoJsonEditMode {
   handlePointerMoveAdapter({
     mapCoords
   }: PointerMoveEvent): { editAction: ?GeoJsonEditAction, cancelMapPan: boolean } {
+    this.onUpdateCursor('cell');
+
     const clickSequence = this.getClickSequence();
     const result = { editAction: null, cancelMapPan: false };
 

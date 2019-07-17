@@ -4,6 +4,7 @@
 import { GeoJsonLayer, ScatterplotLayer, IconLayer } from '@deck.gl/layers';
 
 import { ViewMode, DrawPolygonMode } from '@nebula.gl/edit-modes';
+
 import type {
   EditAction,
   ClickEvent,
@@ -25,6 +26,8 @@ const DEFAULT_EDITING_SNAP_POINT_COLOR = [0x7c, 0x00, 0xc0, 0xff];
 const DEFAULT_EDITING_EXISTING_POINT_RADIUS = 5;
 const DEFAULT_EDITING_INTERMEDIATE_POINT_RADIUS = 3;
 const DEFAULT_EDITING_SNAP_POINT_RADIUS = 7;
+
+const DEFAULT_EDIT_MODE = new ViewMode();
 
 function getEditHandleColor(handle) {
   switch (handle.type) {
@@ -183,7 +186,6 @@ export default class EditableGeoJsonLayer_EDIT_MODE_POC extends EditableLayer {
     super.initializeState();
 
     this.setState({
-      cursor: 'grab',
       selectedFeatures: [],
       editHandles: []
     });
@@ -237,11 +239,11 @@ export default class EditableGeoJsonLayer_EDIT_MODE_POC extends EditableLayer {
         if (!modeHandler) {
           console.warn(`No handler configured for mode ${props.mode}`); // eslint-disable-line no-console,no-undef
           // Use default mode handler
-          modeHandler = new ViewMode();
+          modeHandler = DEFAULT_EDIT_MODE;
         }
 
         if (modeHandler !== this.state.modeHandler) {
-          this.setState({ modeHandler });
+          this.setState({ modeHandler, cursor: null });
         }
       }
     }
@@ -256,7 +258,7 @@ export default class EditableGeoJsonLayer_EDIT_MODE_POC extends EditableLayer {
   }
 
   updateModeState(props: Props) {
-    const modeHandler = props.modeHandlers[props.mode];
+    const modeHandler = props.modeHandlers[props.mode] || DEFAULT_EDIT_MODE;
 
     modeHandler.updateState({
       modeConfig: props.modeConfig,
@@ -450,7 +452,11 @@ export default class EditableGeoJsonLayer_EDIT_MODE_POC extends EditableLayer {
   }
 
   getCursor({ isDragging }: { isDragging: boolean }) {
-    return this.state.cursor;
+    let { cursor } = this.state;
+    if (!cursor) {
+      cursor = isDragging ? 'grabbing' : 'grab';
+    }
+    return cursor;
   }
 
   getActiveModeHandler(): GeoJsonEditMode {

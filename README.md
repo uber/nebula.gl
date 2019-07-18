@@ -8,8 +8,13 @@
   <a href="https://npmjs.org/package/@nebula.gl/overlays">
     <img src="https://img.shields.io/npm/v/@nebula.gl/overlays.svg?label=@nebula.gl/overlays" alt="version" />
   </a>
+</p>
+<p align="right">
   <a href="https://travis-ci.org/uber/nebula.gl">
     <img src="https://img.shields.io/travis/uber/nebula.gl/master.svg" alt="build" />
+  </a>
+  <a href="https://app.fossa.com/projects/custom%2B4458%2Fgithub.com%2Fuber%2Fnebula.gl?ref=badge_shield" alt="FOSSA Status">
+    <img src="https://app.fossa.com/api/projects/custom%2B4458%2Fgithub.com%2Fuber%2Fnebula.gl.svg?type=shield"/>
   </a>
   <a href="https://coveralls.io/github/uber/nebula.gl">
     <img src="https://img.shields.io/coveralls/github/uber/nebula.gl.svg" alt="coveralls" />

@@ -3,7 +3,7 @@
 
 import { GeoJsonLayer, ScatterplotLayer, IconLayer } from '@deck.gl/layers';
 
-import { ViewMode, DrawPolygonMode } from '@nebula.gl/edit-modes';
+import { ViewMode, DrawPolygonMode, ModeHandlerGuides } from '@nebula.gl/edit-modes';
 
 import type {
   EditAction,
@@ -176,8 +176,11 @@ export default class EditableGeoJsonLayer_EDIT_MODE_POC extends EditableLayer {
 
     let layers: any = [new GeoJsonLayer(subLayerProps)];
 
-    layers = layers.concat(this.createTentativeLayers());
-    layers = layers.concat(this.createEditHandleLayers());
+    const mode = this.props.modeHandlers[this.props.mode] || DEFAULT_EDIT_MODE;
+    const guides = mode.getGuides(this.getModeProps(this.props));
+
+    layers = layers.concat(this.createTentativeLayers(guides));
+    layers = layers.concat(this.createEditHandleLayers(guides));
 
     return layers;
   }
@@ -191,34 +194,15 @@ export default class EditableGeoJsonLayer_EDIT_MODE_POC extends EditableLayer {
     });
   }
 
-  setState(partialState: any) {
-    super.setState(partialState);
-    this.updateModeState(this.props);
+  // TODO: is this the best way to properly update state from an outside event handler?
+  shouldUpdateState(opts: any) {
+    // console.log(
+    //   'shouldUpdateState',
+    //   opts.changeFlags.propsOrDataChanged,
+    //   opts.changeFlags.stateChanged
+    // );
+    return super.shouldUpdateState(opts) || opts.changeFlags.stateChanged;
   }
-
-  // TODO: figure out how to properly update state from an outside event handler
-  shouldUpdateState() {
-    return true;
-  }
-
-  // shouldUpdateState(opts: Object) {
-  //   let shouldUpdateState = super.shouldUpdateState(opts);
-
-  //   if (opts.changeFlags.stateChanged) {
-  //     shouldUpdateState = true;
-
-  //     // const needsRedraw = this.getNeedsRedraw && this.getNeedsRedraw()
-  //     // console.log(
-  //     //   'calling modeHandler.updateState',
-  //     //   this.getNeedsRedraw(),
-  //     //   this.internalState.needsRedraw,
-  //     //   JSON.stringify(changeFlags)
-  //     // );
-
-  //     this.updateModeState(this.props);
-  //   }
-  //   return shouldUpdateState;
-  // }
 
   updateState({
     props,
@@ -257,40 +241,20 @@ export default class EditableGeoJsonLayer_EDIT_MODE_POC extends EditableLayer {
     this.setState({ selectedFeatures });
   }
 
-  updateModeState(props: Props) {
-    const modeHandler = props.modeHandlers[props.mode] || DEFAULT_EDIT_MODE;
-
-    modeHandler.updateState({
+  getModeProps(props: Props) {
+    return {
       modeConfig: props.modeConfig,
       data: props.data,
       selectedIndexes: props.selectedFeatureIndexes,
-      guides: this.state && {
-        tentativeFeature: this.state.tentativeFeature,
-        editHandles: this.state.editHandles
-      },
+      lastPointerMoveEvent: this.state.lastPointerMoveEvent,
       cursor: this.state.cursor,
       onEdit: (editAction: EditAction<FeatureCollection>) => {
         props.onEdit(editAction);
       },
-      onUpdateGuides: guides => {
-        if (guides) {
-          this.setState({
-            tentativeFeature: guides.tentativeFeature,
-            editHandles: guides.editHandles
-          });
-        } else {
-          this.setState({
-            tentativeFeature: null,
-            editHandles: null
-          });
-        }
-        this.setLayerNeedsUpdate();
-        this.setNeedsRedraw();
-      },
-      onUpdateCursor: cursor => {
+      onUpdateCursor: (cursor: ?string) => {
         this.setState({ cursor });
       }
-    });
+    };
   }
 
   selectionAwareAccessor(accessor: any) {
@@ -320,14 +284,16 @@ export default class EditableGeoJsonLayer_EDIT_MODE_POC extends EditableLayer {
     return info;
   }
 
-  createEditHandleLayers() {
-    if (!this.state.editHandles.length) {
+  createEditHandleLayers(guides: ModeHandlerGuides) {
+    const editHandles = guides.editHandles;
+
+    if (!editHandles || !editHandles.length) {
       return [];
     }
 
     const sharedProps = {
       id: `${this.props.editHandleType.layerName || this.props.editHandleType}-edit-handles`,
-      data: this.state.editHandles,
+      data: editHandles,
       fp64: this.props.fp64,
 
       parameters: this.props.editHandleParameters,
@@ -395,15 +361,17 @@ export default class EditableGeoJsonLayer_EDIT_MODE_POC extends EditableLayer {
     return [layer];
   }
 
-  createTentativeLayers() {
-    if (!this.state.tentativeFeature) {
+  createTentativeLayers(guides: ModeHandlerGuides) {
+    const tentativeFeature = guides.tentativeFeature;
+
+    if (!tentativeFeature) {
       return [];
     }
 
     const layer = new GeoJsonLayer(
       this.getSubLayerProps({
         id: 'tentative',
-        data: this.state.tentativeFeature,
+        data: tentativeFeature,
         fp64: this.props.fp64,
         pickable: false,
         stroked: true,
@@ -436,19 +404,20 @@ export default class EditableGeoJsonLayer_EDIT_MODE_POC extends EditableLayer {
   }
 
   onLayerClick(event: ClickEvent) {
-    this.getActiveModeHandler().handleClick(event);
+    this.getActiveModeHandler().handleClick(event, this.getModeProps(this.props));
   }
 
   onStartDragging(event: StartDraggingEvent) {
-    this.getActiveModeHandler().handleStartDragging(event);
+    this.getActiveModeHandler().handleStartDragging(event, this.getModeProps(this.props));
   }
 
   onStopDragging(event: StopDraggingEvent) {
-    this.getActiveModeHandler().handleStopDragging(event);
+    this.getActiveModeHandler().handleStopDragging(event, this.getModeProps(this.props));
   }
 
   onPointerMove(event: PointerMoveEvent) {
-    this.getActiveModeHandler().handlePointerMove(event);
+    this.setState({ lastPointerMoveEvent: event });
+    this.getActiveModeHandler().handlePointerMove(event, this.getModeProps(this.props));
   }
 
   getCursor({ isDragging }: { isDragging: boolean }) {

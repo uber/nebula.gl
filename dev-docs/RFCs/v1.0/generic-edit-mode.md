@@ -70,6 +70,55 @@ A user of this interface will need to call `updateState` anytime the data within
 
 An implementation of a mode is intended to override the `handle...` functions in order to handle user input. The mode can then call the callbacks provided in `ModeState` (e.g. `onEdit`).
 
+### Guides
+
+```js
+// Example guides after drawing two points of a line string
+// eslint-disable-next-line
+const exampleGuides = {
+  type: 'FeatureCollection',
+  features: [
+    // Line string that follows the mouse as it moves
+    {
+      type: 'Feature',
+      properties: {
+        guideType: 'tentative'
+      },
+      geometry: {
+        type: 'LineString',
+        coordinates: []
+      }
+    },
+    // Point 0 (first one clicked)
+    {
+      type: 'Feature',
+      properties: {
+        guideType: 'existingEditHandle',
+        positionIndexes: [0],
+        featureIndex: 0
+      },
+      geometry: {
+        type: 'Point',
+        coordinates: []
+      }
+    },
+    // Point 1 (second one clicked)
+    {
+      type: 'Feature',
+      properties: {
+        guideType: 'existingEditHandle',
+        positionIndexes: [1],
+        featureIndex: 0
+      },
+      geometry: {
+        type: 'Point',
+        coordinates: []
+      }
+    }
+  ]
+};
+```
+
 ## Integration to react-map-gl-draw
 
 TODO

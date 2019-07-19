@@ -22,7 +22,7 @@ export function getFeatureStyle({ feature, state }) {
         : state === RENDER_STATE.UNCOMMITTED || state === RENDER_STATE.CLOSING
           ? '#a9a9a9'
           : '#000',
-    strokeWidth: 4,
+    strokeWidth: 2,
     fill:
       state === RENDER_STATE.INACTIVE
         ? '#333333'

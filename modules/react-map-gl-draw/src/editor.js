@@ -22,6 +22,7 @@ import {
   RENDER_TYPE,
   STATIC_STYLE
 } from './constants';
+import { findClosestPointOnLineSegment } from './utils';
 
 type EditorProps = {
   features: ?Array<GeoJson>,
@@ -47,7 +48,6 @@ type EditorState = {
   hoveredFeatureId: ?Id,
   hoveredLngLat: ?Position,
   hoveredVertexIndex: ?Id,
-  hoveredSegmentId: ?Id,
 
   draggingVertexIndex: ?number,
   startDragPos: ?ScreenCoordinates,
@@ -80,7 +80,6 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
       hoveredFeatureId: null,
       hoveredLngLat: null,
       hoveredVertexIndex: -1,
-      hoveredSegmentId: -1,
 
       // intermediate mouse position when drawing
       uncommittedLngLat: null,
@@ -240,7 +239,6 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
       hoveredFeatureId: null,
       hoveredLngLat: null,
       hoveredVertexIndex: -1,
-      hoveredSegmentId: null,
 
       draggingVertexIndex: -1,
       startDragPos: null,
@@ -400,13 +398,19 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
           this._isLine(elem)
         ) {
           const [, , segmentId] = elem.id.split('.');
+          // segmentId is start vertexIndex
+          const vertexIndex = Number(segmentId);
+          const uncommittedLngLat = this._getClosestPositionOnSegment(
+            vertexIndex,
+            lngLat,
+            selectedFeature
+          );
+
           this.setState({
-            hoveredSegmentId: Number(segmentId),
-            uncommittedLngLat: lngLat
+            uncommittedLngLat
           });
         } else {
           this.setState({
-            hoveredSegmentId: -1,
             uncommittedLngLat: null
           });
         }
@@ -466,6 +470,18 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
     }
   };
 
+  _getClosestPositionOnSegment = (vertexIndex: number, pointLngLat: Position, feature: Feature) => {
+    const points = feature && feature.points;
+    if (!points || !points.length) {
+      return null;
+    }
+
+    // segmentId is start vertexIndex
+    const startPos = points[vertexIndex];
+    const endPos = points[(vertexIndex + 1) % points.length];
+    return findClosestPointOnLineSegment(startPos, endPos, pointLngLat);
+  };
+
   _onClickLine = (evt: MjolnirEvent) => {
     const feature = this._getSelectedFeature();
     const elem = evt.target;
@@ -477,19 +493,25 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
       elem
     ) {
       const [, , segmentId] = elem.id.split('.');
-      const [index] = segmentId.split('-');
+      const vertexIndex = Number(segmentId);
 
-      const { x, y } = this._getEventPosition(evt);
-      const lngLat = this._unproject([x, y]);
+      const { uncommittedLngLat } = this.state;
+
+      let lngLat = uncommittedLngLat;
+      if (!lngLat) {
+        const { x, y } = this._getEventPosition(evt);
+        lngLat = this._unproject([x, y]);
+        lngLat = this._getClosestPositionOnSegment(vertexIndex, lngLat, feature);
+      }
 
       if (lngLat) {
-        const insertPosition = (Number(index) + 1) % feature.points.length;
+        const insertPosition = (Number(vertexIndex) + 1) % feature.points.length;
         feature.insertPoint(lngLat, insertPosition);
         this._update(this.state.features);
       }
 
       this.setState({
-        hoveredSegmentId: -1,
+        uncommittedLngLat: null,
         hoveredLngLat: null
       });
     }
@@ -758,8 +780,13 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
             <rect
               id={`vertex.${featureIndex}.${vertexId}.${operation}.hidden`}
               key={`vertex.${vertexId}.hidden`}
-              style={{ ...style, fill: '#000', fillOpacity: 0 }}
-              r={clickRadius}
+              style={{
+                ...style,
+                width: clickRadius,
+                height: clickRadius,
+                fill: '#000',
+                fillOpacity: 0
+              }}
             />
             <rect
               id={`vertex.${featureIndex}.${vertexId}.${operation}`}
@@ -781,14 +808,15 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
     endPos: Position,
     style: any = {}
   ) => {
+    const { clickRadius } = this.props;
     const projected = this._getProjectedData([startPos, endPos], RENDER_TYPE.LINE_STRING);
-    const { clickRadius, radius, ...others } = style;
+    const { radius, ...others } = style;
     return (
       <g id={`segment.${startVertexId}.segment`} key={`segment.${startVertexId}`}>
         <path
-          id={`segment.${featureIndex}.${startVertexId}`}
+          id={`segment.${featureIndex}.${startVertexId}.hidden`}
           key={`segment.${featureIndex}.${startVertexId}.hidden`}
-          style={{ ...others, stroke: clickRadius || radius || 24, opacity: 0 }}
+          style={{ ...others, strokeWidth: clickRadius || radius, opacity: 0 }}
           d={projected}
         />
         <path
@@ -1046,6 +1074,7 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
       return null;
     }
 
+    const { clickRadius } = this.props;
     const { id, points, renderType, isClosed } = feature;
     if (!points || !points.length) {
       return null;
@@ -1077,7 +1106,13 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
               <rect
                 key={`${index}.feature-hidden`}
                 id={`feature.${index}.hidden`}
-                style={{ ...style, fill: '#000', fillOpacity: 0 }}
+                style={{
+                  ...style,
+                  fill: '#000',
+                  width: clickRadius,
+                  height: clickRadius,
+                  fillOpacity: 0
+                }}
               />
               <rect key={`feature.${index}`} id={`feature.${index}`} style={style} />
             </g>
@@ -1091,13 +1126,14 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
           >
             <circle
               key={`feature.${index}.hidden`}
-              id={`${index}`}
+              id={`feature.${index}.hidden`}
               style={{
                 ...style,
                 opacity: 0
               }}
               cx={0}
               cy={0}
+              r={clickRadius}
             />
             <circle key={`feature.${index}`} id={`feature.${index}`} style={style} cx={0} cy={0} />
           </g>
@@ -1112,7 +1148,7 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
               id={`feature.${index}.hidden`}
               style={{
                 ...style,
-                strokeWidth: 10,
+                strokeWidth: clickRadius,
                 opacity: 0
               }}
               d={projected}

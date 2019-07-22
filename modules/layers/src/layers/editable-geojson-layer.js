@@ -309,7 +309,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }
 
   getPickingInfo({ info, sourceLayer }: Object) {
-    if (sourceLayer.id.endsWith('-edit-handles')) {
+    if (sourceLayer.id.endsWith('editHandles')) {
       // If user is picking an editing handle, add additional data to the info
       info.isEditingHandle = true;
     }
@@ -323,7 +323,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
 
     const sharedProps = {
-      id: `${this.props.editHandleType.layerName || this.props.editHandleType}-edit-handles`,
+      id: 'editHandles',
       data: this.state.editHandles,
       fp64: this.props.fp64,
 
@@ -335,7 +335,9 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
     switch (this.props.editHandleType) {
       case 'icon':
-        layer = new IconLayer(
+        const EditHandleIconLayer = this.getSubLayerClass('editHandles', IconLayer);
+
+        layer = new EditHandleIconLayer(
           this.getSubLayerProps({
             ...sharedProps,
             iconAtlas: this.props.editHandleIconAtlas,
@@ -352,7 +354,10 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         break;
 
       case 'point':
-        layer = new ScatterplotLayer(
+      default:
+        const EditHandlePointLayer = this.getSubLayerClass('editHandles', ScatterplotLayer);
+
+        layer = new EditHandlePointLayer(
           this.getSubLayerProps({
             ...sharedProps,
 
@@ -366,26 +371,6 @@ export default class EditableGeoJsonLayer extends EditableLayer {
             getColor: this.props.getEditHandlePointColor
           })
         );
-        break;
-
-      default:
-        if (typeof this.props.editHandleType === 'function') {
-          const EditHandleType = this.props.editHandleType;
-          layer = new EditHandleType(
-            this.getSubLayerProps({
-              ...sharedProps,
-
-              // Proxy editing point props
-              radiusScale: this.props.editHandlePointRadiusScale,
-              outline: this.props.editHandlePointOutline,
-              strokeWidth: this.props.editHandlePointStrokeWidth,
-              radiusMinPixels: this.props.editHandlePointRadiusMinPixels,
-              radiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
-              getRadius: this.props.getEditHandlePointRadius,
-              getColor: this.props.getEditHandlePointColor
-            })
-          );
-        }
         break;
     }
 

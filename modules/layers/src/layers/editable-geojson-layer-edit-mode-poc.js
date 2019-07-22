@@ -3,7 +3,7 @@
 
 import { GeoJsonLayer, ScatterplotLayer, IconLayer } from '@deck.gl/layers';
 
-import { ViewMode, DrawPolygonMode, ModeHandlerGuides } from '@nebula.gl/edit-modes';
+import { ViewMode, DrawPolygonMode } from '@nebula.gl/edit-modes';
 
 import type {
   EditAction,
@@ -30,7 +30,7 @@ const DEFAULT_EDITING_SNAP_POINT_RADIUS = 7;
 const DEFAULT_EDIT_MODE = new ViewMode();
 
 function getEditHandleColor(handle) {
-  switch (handle.type) {
+  switch (handle.sourceFeature.feature.properties.editHandleType) {
     case 'existing':
       return DEFAULT_EDITING_EXISTING_POINT_COLOR;
     case 'snap':
@@ -42,7 +42,7 @@ function getEditHandleColor(handle) {
 }
 
 function getEditHandleRadius(handle) {
-  switch (handle.type) {
+  switch (handle.sourceFeature.feature.properties.editHandleType) {
     case 'existing':
       return DEFAULT_EDITING_EXISTING_POINT_RADIUS;
     case 'snap':
@@ -91,8 +91,6 @@ const defaultProps = {
   getTentativeLineWidth: (f, mode) => (f && f.properties && f.properties.lineWidth) || 1,
 
   editHandleType: 'point',
-  editHandleParameters: {},
-  editHandleLayerProps: {},
 
   // point handles
   editHandlePointRadiusScale: 1,
@@ -107,7 +105,7 @@ const defaultProps = {
   editHandleIconAtlas: null,
   editHandleIconMapping: null,
   editHandleIconSizeScale: 1,
-  getEditHandleIcon: handle => handle.type,
+  getEditHandleIcon: handle => handle.sourceFeature.feature.properties.editHandleType,
   getEditHandleIconSize: 10,
   getEditHandleIconColor: getEditHandleColor,
   getEditHandleIconAngle: 0,
@@ -176,11 +174,7 @@ export default class EditableGeoJsonLayer_EDIT_MODE_POC extends EditableLayer {
 
     let layers: any = [new GeoJsonLayer(subLayerProps)];
 
-    const mode = this.props.modeHandlers[this.props.mode] || DEFAULT_EDIT_MODE;
-    const guides = mode.getGuides(this.getModeProps(this.props));
-
-    layers = layers.concat(this.createTentativeLayers(guides));
-    layers = layers.concat(this.createEditHandleLayers(guides));
+    layers = layers.concat(this.createGuidesLayers());
 
     return layers;
   }
@@ -284,119 +278,58 @@ export default class EditableGeoJsonLayer_EDIT_MODE_POC extends EditableLayer {
     return info;
   }
 
-  createEditHandleLayers(guides: ModeHandlerGuides) {
-    const editHandles = guides.editHandles;
+  createGuidesLayers() {
+    const mode = this.props.modeHandlers[this.props.mode] || DEFAULT_EDIT_MODE;
+    const guides: FeatureCollection = mode.getGuides(this.getModeProps(this.props));
 
-    if (!editHandles || !editHandles.length) {
+    if (!guides || !guides.features.length) {
       return [];
     }
 
-    const sharedProps = {
-      id: `${this.props.editHandleType.layerName || this.props.editHandleType}-edit-handles`,
-      data: editHandles,
-      fp64: this.props.fp64,
-
-      parameters: this.props.editHandleParameters,
-      ...this.props.editHandleLayerProps
-    };
-
-    let layer;
-
-    switch (this.props.editHandleType) {
-      case 'icon':
-        layer = new IconLayer(
-          this.getSubLayerProps({
-            ...sharedProps,
-            iconAtlas: this.props.editHandleIconAtlas,
-            iconMapping: this.props.editHandleIconMapping,
-            sizeScale: this.props.editHandleIconSizeScale,
-            getIcon: this.props.getEditHandleIcon,
-            getSize: this.props.getEditHandleIconSize,
-            getColor: this.props.getEditHandleIconColor,
-            getAngle: this.props.getEditHandleIconAngle,
-
-            getPosition: d => d.position
-          })
-        );
-        break;
-
-      case 'point':
-        layer = new ScatterplotLayer(
-          this.getSubLayerProps({
-            ...sharedProps,
-
-            // Proxy editing point props
-            radiusScale: this.props.editHandlePointRadiusScale,
-            outline: this.props.editHandlePointOutline,
-            strokeWidth: this.props.editHandlePointStrokeWidth,
-            radiusMinPixels: this.props.editHandlePointRadiusMinPixels,
-            radiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
-            getRadius: this.props.getEditHandlePointRadius,
-            getColor: this.props.getEditHandlePointColor
-          })
-        );
-        break;
-
-      default:
-        if (typeof this.props.editHandleType === 'function') {
-          const EditHandleType = this.props.editHandleType;
-          layer = new EditHandleType(
-            this.getSubLayerProps({
-              ...sharedProps,
-
-              // Proxy editing point props
-              radiusScale: this.props.editHandlePointRadiusScale,
-              outline: this.props.editHandlePointOutline,
-              strokeWidth: this.props.editHandlePointStrokeWidth,
-              radiusMinPixels: this.props.editHandlePointRadiusMinPixels,
-              radiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
-              getRadius: this.props.getEditHandlePointRadius,
-              getColor: this.props.getEditHandlePointColor
-            })
-          );
-        }
-        break;
-    }
-
-    return [layer];
-  }
-
-  createTentativeLayers(guides: ModeHandlerGuides) {
-    const tentativeFeature = guides.tentativeFeature;
-
-    if (!tentativeFeature) {
-      return [];
+    let pointLayerProps;
+    if (this.props.editHandleType === 'icon') {
+      pointLayerProps = {
+        type: IconLayer,
+        iconAtlas: this.props.editHandleIconAtlas,
+        iconMapping: this.props.editHandleIconMapping,
+        sizeScale: this.props.editHandleIconSizeScale,
+        getIcon: this.props.getEditHandleIcon,
+        getSize: this.props.getEditHandleIconSize,
+        getColor: this.props.getEditHandleIconColor,
+        getAngle: this.props.getEditHandleIconAngle
+      };
+    } else {
+      pointLayerProps = {
+        type: ScatterplotLayer,
+        radiusScale: this.props.editHandlePointRadiusScale,
+        stroked: this.props.editHandlePointOutline,
+        getLineWidth: this.props.editHandlePointStrokeWidth,
+        radiusMinPixels: this.props.editHandlePointRadiusMinPixels,
+        radiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
+        getRadius: this.props.getEditHandlePointRadius,
+        getFillColor: this.props.getEditHandlePointColor,
+        getlineColor: this.props.getEditHandlePointColor
+      };
     }
 
     const layer = new GeoJsonLayer(
       this.getSubLayerProps({
-        id: 'tentative',
-        data: tentativeFeature,
+        id: `guides`,
+        data: guides,
         fp64: this.props.fp64,
-        pickable: false,
-        stroked: true,
-        autoHighlight: false,
+        _subLayerProps: {
+          points: pointLayerProps
+        },
         lineWidthScale: this.props.lineWidthScale,
         lineWidthMinPixels: this.props.lineWidthMinPixels,
         lineWidthMaxPixels: this.props.lineWidthMaxPixels,
         lineWidthUnits: this.props.lineWidthUnits,
         lineJointRounded: this.props.lineJointRounded,
         lineMiterLimit: this.props.lineMiterLimit,
-        pointRadiusScale: this.props.editHandlePointRadiusScale,
-        outline: this.props.editHandlePointOutline,
-        strokeWidth: this.props.editHandlePointStrokeWidth,
-        pointRadiusMinPixels: this.props.editHandlePointRadiusMinPixels,
-        pointRadiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
-        getRadius: this.props.getEditHandlePointRadius,
-        getLineColor: feature => this.props.getTentativeLineColor(feature, this.props.mode),
-        getLineWidth: feature => this.props.getTentativeLineWidth(feature, this.props.mode),
-        getFillColor: feature => this.props.getTentativeFillColor(feature, this.props.mode),
-        getLineDashArray: feature =>
-          this.props.getTentativeLineDashArray(
-            feature,
-            this.state.selectedFeatures[0],
-            this.props.mode
-          )
+        getLineColor: this.props.getTentativeLineColor,
+        getLineWidth: this.props.getTentativeLineWidth,
+        getFillColor: this.props.getTentativeFillColor,
+        getLineDashArray: this.props.getTentativeLineDashArray
       })
     );
 

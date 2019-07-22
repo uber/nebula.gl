@@ -13,7 +13,15 @@ import type {
   Pick,
   ModeProps
 } from '../types.js';
-import type { FeatureCollection, Feature, Polygon, Geometry, Position } from '../geojson-types.js';
+import type {
+  FeatureCollection,
+  Feature,
+  FeatureOf,
+  Point,
+  Polygon,
+  Geometry,
+  Position
+} from '../geojson-types.js';
 import { EditMode } from './edit-mode.js';
 
 import { ImmutableFeatureCollection } from './immutable-feature-collection.js';
@@ -28,14 +36,13 @@ export type EditHandle = {
 };
 
 export type GeoJsonEditAction = EditAction<FeatureCollection>;
-export type ModeHandlerGuides = { tentativeFeature: ?Feature, editHandles: EditHandle[] };
 
 const DEFAULT_EDIT_HANDLES: EditHandle[] = [];
 
 // Main interface for `EditMode`s that edit GeoJSON
-export type GeoJsonEditMode = EditMode<FeatureCollection, ModeHandlerGuides>;
+export type GeoJsonEditMode = EditMode<FeatureCollection, FeatureCollection>;
 
-export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, ModeHandlerGuides> {
+export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, FeatureCollection> {
   // TODO: add underscore
   featureCollection: ImmutableFeatureCollection;
   _clickSequence: Position[] = [];
@@ -48,13 +55,39 @@ export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, ModeHand
     }
   }
 
-  getGuides({ lastPointerMoveEvent }: ModeProps<FeatureCollection>): ModeHandlerGuides {
+  getGuides({ lastPointerMoveEvent }: ModeProps<FeatureCollection>): FeatureCollection {
     const picks = lastPointerMoveEvent && lastPointerMoveEvent.picks;
     const mapCoords = lastPointerMoveEvent && lastPointerMoveEvent.mapCoords;
     const editHandles = this.getEditHandlesAdapter(picks, mapCoords);
+
+    const tentative: Feature[] = this._tentativeFeature
+      ? [
+          // $FlowFixMe
+          {
+            ...this._tentativeFeature,
+            properties: {
+              guideType: 'tentative'
+            }
+          }
+        ]
+      : [];
+    const editHandleFeatures: FeatureOf<Point>[] = editHandles.map(handle => ({
+      type: 'Feature',
+      properties: {
+        guideType: 'editHandle',
+        editHandleType: handle.type,
+        featureIndex: handle.featureIndex,
+        positionIndexes: handle.positionIndexes
+      },
+      geometry: {
+        type: 'Point',
+        coordinates: handle.position
+      }
+    }));
+
     return {
-      editHandles,
-      tentativeFeature: this._tentativeFeature
+      type: 'FeatureCollection',
+      features: [...tentative, ...editHandleFeatures]
     };
   }
 

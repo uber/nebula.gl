@@ -4,10 +4,6 @@ import type { ClickEvent } from '../types.js';
 import { BaseGeoJsonEditMode, type GeoJsonEditAction } from './geojson-edit-mode.js';
 
 export class DrawPointMode extends BaseGeoJsonEditMode {
-  onStateChanged() {
-    this.onUpdateCursor('cell');
-  }
-
   handleClickAdapter({ mapCoords }: ClickEvent): ?GeoJsonEditAction {
     const geometry = {
       type: 'Point',
@@ -15,5 +11,9 @@ export class DrawPointMode extends BaseGeoJsonEditMode {
     };
 
     return this.getAddFeatureAction(geometry);
+  }
+
+  getCursorAdapter() {
+    return 'cell';
   }
 }

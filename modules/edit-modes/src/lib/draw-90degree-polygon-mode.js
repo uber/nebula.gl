@@ -6,8 +6,8 @@ import lineIntersect from '@turf/line-intersect';
 import turfDistance from '@turf/distance';
 import { point, lineString } from '@turf/helpers';
 import { generatePointsParallelToLinePoints } from '../utils';
-import type { ClickEvent, PointerMoveEvent } from '../types.js';
-import type { Polygon, Position } from '../geojson-types.js';
+import type { ClickEvent, PointerMoveEvent, ModeProps } from '../types.js';
+import type { Polygon, Position, FeatureCollection } from '../geojson-types.js';
 import {
   BaseGeoJsonEditMode,
   getPickedEditHandle,
@@ -17,10 +17,6 @@ import {
 } from './geojson-edit-mode.js';
 
 export class Draw90DegreePolygonMode extends BaseGeoJsonEditMode {
-  onStateChanged() {
-    this.onUpdateCursor('cell');
-  }
-
   getEditHandlesAdapter(picks?: Array<Object>, mapCoords?: Position): EditHandle[] {
     let handles = super.getEditHandlesAdapter(picks, mapCoords);
 
@@ -92,8 +88,8 @@ export class Draw90DegreePolygonMode extends BaseGeoJsonEditMode {
     return result;
   }
 
-  handleClickAdapter(event: ClickEvent): ?GeoJsonEditAction {
-    super.handleClickAdapter(event);
+  handleClickAdapter(event: ClickEvent, props: ModeProps<FeatureCollection>): ?GeoJsonEditAction {
+    super.handleClickAdapter(event, props);
 
     const { picks } = event;
     const tentativeFeature = this.getTentativeFeature();
@@ -118,7 +114,7 @@ export class Draw90DegreePolygonMode extends BaseGeoJsonEditMode {
 
         this.resetClickSequence();
         this._setTentativeFeature(null);
-        editAction = this.getAddFeatureOrBooleanPolygonAction(polygonToAdd);
+        editAction = this.getAddFeatureOrBooleanPolygonAction(polygonToAdd, props);
       }
     }
 
@@ -198,5 +194,9 @@ export class Draw90DegreePolygonMode extends BaseGeoJsonEditMode {
       });
     }
     return pt;
+  }
+
+  getCursorAdapter() {
+    return 'cell';
   }
 }

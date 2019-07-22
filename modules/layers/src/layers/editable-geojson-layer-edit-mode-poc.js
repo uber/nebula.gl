@@ -311,7 +311,7 @@ export default class EditableGeoJsonLayer_EDIT_MODE_POC extends EditableLayer {
   }
 
   getPickingInfo({ info, sourceLayer }: Object) {
-    if (sourceLayer.id.endsWith('-edit-handles')) {
+    if (sourceLayer.id.endsWith('guides')) {
       // If user is picking an editing handle, add additional data to the info
       info.isGuide = true;
     }

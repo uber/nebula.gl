@@ -10,10 +10,6 @@ import {
 } from './geojson-edit-mode.js';
 
 export class DrawPolygonMode extends BaseGeoJsonEditMode {
-  onStateChanged() {
-    this.onUpdateCursor('cell');
-  }
-
   getEditHandlesAdapter(picks?: Array<Object>, mapCoords?: Position): EditHandle[] {
     let handles = super.getEditHandlesAdapter(picks, mapCoords);
 

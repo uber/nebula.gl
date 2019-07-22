@@ -3,8 +3,13 @@
 import turfCentroid from '@turf/centroid';
 import turfBearing from '@turf/bearing';
 import turfTransformRotate from '@turf/transform-rotate';
-import type { FeatureCollection, Position } from '@nebula.gl/edit-modes';
-import type { PointerMoveEvent, StartDraggingEvent, StopDraggingEvent } from '../types.js';
+import type {
+  PointerMoveEvent,
+  StartDraggingEvent,
+  StopDraggingEvent,
+  ModeProps
+} from '../types.js';
+import type { FeatureCollection, Position } from '../geojson-types.js';
 import { BaseGeoJsonEditMode, type GeoJsonEditAction } from './geojson-edit-mode.js';
 
 export class RotateMode extends BaseGeoJsonEditMode {
@@ -12,11 +17,13 @@ export class RotateMode extends BaseGeoJsonEditMode {
   _geometryBeingRotated: ?FeatureCollection;
 
   handlePointerMoveAdapter(
-    event: PointerMoveEvent
+    event: PointerMoveEvent,
+    props: ModeProps<FeatureCollection>
   ): { editAction: ?GeoJsonEditAction, cancelMapPan: boolean } {
     let editAction: ?GeoJsonEditAction = null;
 
-    this._isRotatable = Boolean(this._geometryBeingRotated) || this.isSelectionPicked(event.picks);
+    this._isRotatable =
+      Boolean(this._geometryBeingRotated) || this.isSelectionPicked(event.picks, props);
 
     if (!this._isRotatable || !event.pointerDownMapCoords) {
       // Nothing to do
@@ -25,27 +32,43 @@ export class RotateMode extends BaseGeoJsonEditMode {
 
     if (event.isDragging && this._geometryBeingRotated) {
       // Rotate the geometry
-      editAction = this.getRotateAction(event.pointerDownMapCoords, event.mapCoords, 'rotating');
+      editAction = this.getRotateAction(
+        event.pointerDownMapCoords,
+        event.mapCoords,
+        'rotating',
+        props
+      );
     }
 
     return { editAction, cancelMapPan: true };
   }
 
-  handleStartDraggingAdapter(event: StartDraggingEvent): ?GeoJsonEditAction {
+  handleStartDraggingAdapter(
+    event: StartDraggingEvent,
+    props: ModeProps<FeatureCollection>
+  ): ?GeoJsonEditAction {
     if (!this._isRotatable) {
       return null;
     }
 
-    this._geometryBeingRotated = this.getSelectedFeaturesAsFeatureCollection();
+    this._geometryBeingRotated = this.getSelectedFeaturesAsFeatureCollection(props);
     return null;
   }
 
-  handleStopDraggingAdapter(event: StopDraggingEvent): ?GeoJsonEditAction {
+  handleStopDraggingAdapter(
+    event: StopDraggingEvent,
+    props: ModeProps<FeatureCollection>
+  ): ?GeoJsonEditAction {
     let editAction: ?GeoJsonEditAction = null;
 
     if (this._geometryBeingRotated) {
       // Rotate the geometry
-      editAction = this.getRotateAction(event.pointerDownMapCoords, event.mapCoords, 'rotated');
+      editAction = this.getRotateAction(
+        event.pointerDownMapCoords,
+        event.mapCoords,
+        'rotated',
+        props
+      );
       this._geometryBeingRotated = null;
     }
 
@@ -63,7 +86,8 @@ export class RotateMode extends BaseGeoJsonEditMode {
   getRotateAction(
     startDragPoint: Position,
     currentPoint: Position,
-    editType: string
+    editType: string,
+    props: ModeProps<FeatureCollection>
   ): GeoJsonEditAction {
     const startPosition = startDragPoint;
     const centroid = turfCentroid(this._geometryBeingRotated);
@@ -73,7 +97,7 @@ export class RotateMode extends BaseGeoJsonEditMode {
 
     let updatedData = this.getImmutableFeatureCollection();
 
-    const selectedIndexes = this.getSelectedFeatureIndexes();
+    const selectedIndexes = this.getSelectedFeatureIndexes(props);
     for (let i = 0; i < selectedIndexes.length; i++) {
       const selectedIndex = selectedIndexes[i];
       const movedFeature = rotatedFeatures.features[i];

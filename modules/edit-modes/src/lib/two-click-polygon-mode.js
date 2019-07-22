@@ -1,15 +1,12 @@
 // @flow
 
-import type { ClickEvent } from '../types.js';
+import type { ClickEvent, ModeProps } from '../types.js';
+import type { FeatureCollection } from '../geojson-types.js';
 import { BaseGeoJsonEditMode, type GeoJsonEditAction } from './geojson-edit-mode.js';
 
 export class TwoClickPolygonMode extends BaseGeoJsonEditMode {
-  onStateChanged() {
-    this.onUpdateCursor('cell');
-  }
-
-  handleClickAdapter(event: ClickEvent): ?GeoJsonEditAction {
-    super.handleClickAdapter(event);
+  handleClickAdapter(event: ClickEvent, props: ModeProps<FeatureCollection>): ?GeoJsonEditAction {
+    super.handleClickAdapter(event, props);
 
     const tentativeFeature = this.getTentativeFeature();
     const clickSequence = this.getClickSequence();
@@ -19,12 +16,16 @@ export class TwoClickPolygonMode extends BaseGeoJsonEditMode {
       tentativeFeature &&
       tentativeFeature.geometry.type === 'Polygon'
     ) {
-      const editAction = this.getAddFeatureOrBooleanPolygonAction(tentativeFeature.geometry);
+      const editAction = this.getAddFeatureOrBooleanPolygonAction(tentativeFeature.geometry, props);
       this.resetClickSequence();
       this._setTentativeFeature(null);
       return editAction;
     }
 
     return null;
+  }
+
+  getCursorAdapter() {
+    return 'cell';
   }
 }

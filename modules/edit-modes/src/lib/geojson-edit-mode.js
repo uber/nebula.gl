@@ -28,6 +28,7 @@ import { ImmutableFeatureCollection } from './immutable-feature-collection.js';
 
 export type EditHandleType = 'existing' | 'intermediate' | 'snap';
 
+// TODO: EditMode - Change this to just be a GoeJSON instead
 export type EditHandle = {
   position: Position,
   positionIndexes: number[],
@@ -380,10 +381,22 @@ export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, FeatureC
   }
 }
 
+// TODO: EditMode - refactor to just return `info.object`
 export function getPickedEditHandle(picks: ?(any[])): ?EditHandle {
-  const info = picks && picks.find(pick => pick.isGuide);
+  const info =
+    picks && picks.find(pick => pick.isGuide && pick.object.properties.guideType === 'editHandle');
   if (info) {
-    return info.object;
+    const feature: FeatureOf<Point> = info.object;
+    const { geometry } = feature;
+
+    // $FlowFixMe
+    const properties: { [string]: any } = feature.properties;
+    return {
+      type: properties.editHandleType,
+      position: geometry.coordinates,
+      positionIndexes: properties.positionIndexes,
+      featureIndex: properties.featureIndex
+    };
   }
   return null;
 }

@@ -5,10 +5,6 @@ import type { ClickEvent, PointerMoveEvent } from '../types.js';
 import { BaseGeoJsonEditMode, type GeoJsonEditAction } from './geojson-edit-mode.js';
 
 export class DrawLineStringMode extends BaseGeoJsonEditMode {
-  onStateChanged() {
-    this.onUpdateCursor('cell');
-  }
-
   handleClickAdapter(event: ClickEvent): ?GeoJsonEditAction {
     super.handleClickAdapter(event);
 
@@ -108,5 +104,9 @@ export class DrawLineStringMode extends BaseGeoJsonEditMode {
     }
 
     return result;
+  }
+
+  getCursorAdapter() {
+    return 'cell';
   }
 }

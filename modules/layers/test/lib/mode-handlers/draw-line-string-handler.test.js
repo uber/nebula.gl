@@ -80,7 +80,10 @@ describe('when no selection', () => {
         ]
       },
       featureIndexes: [featureCollection.features.length],
-      editContext: null
+      editContext: {
+      featureIndexes: [featureCollection.features.length],
+
+      }
     });
   });
 });

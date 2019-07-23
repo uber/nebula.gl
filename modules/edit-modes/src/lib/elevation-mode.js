@@ -1,8 +1,7 @@
 // @flow
-import type { PointerMoveEvent, StopDraggingEvent } from '../types.js';
-import type { Position } from '../geojson-types.js';
-import { BaseGeoJsonEditMode, type GeoJsonEditAction } from './geojson-edit-mode.js';
-import { getPickedEditHandle } from './mode-handler.js';
+import type { ModeProps, PointerMoveEvent, StopDraggingEvent } from '../types.js';
+import type { Position, FeatureCollection } from '../geojson-types.js';
+import { getPickedEditHandle, type GeoJsonEditAction } from './geojson-edit-mode.js';
 import { ModifyMode } from './modify-mode.js';
 
 function defaultCalculateElevationChange({
@@ -16,13 +15,17 @@ function defaultCalculateElevationChange({
 }
 
 export class ElevationMode extends ModifyMode {
-  makeElevatedEvent(event: PointerMoveEvent | StopDraggingEvent, position: Position): Object {
+  makeElevatedEvent(
+    event: PointerMoveEvent | StopDraggingEvent,
+    position: Position,
+    props: ModeProps<FeatureCollection>
+  ): Object {
     const {
       minElevation = 0,
       maxElevation = 20000,
       calculateElevationChange = defaultCalculateElevationChange
     } =
-      this.getModeConfig() || {};
+      props.modeConfig || {};
 
     if (!event.pointerDownScreenCoords) {
       return event;
@@ -45,21 +48,25 @@ export class ElevationMode extends ModifyMode {
   }
 
   handlePointerMoveAdapter(
-    event: PointerMoveEvent
+    event: PointerMoveEvent,
+    props: ModeProps<FeatureCollection>
   ): { editAction: ?GeoJsonEditAction, cancelMapPan: boolean } {
     const editHandle = getPickedEditHandle(event.pointerDownPicks);
     const position = editHandle ? editHandle.position : event.mapCoords;
-    return super.handlePointerMoveAdapter(this.makeElevatedEvent(event, position));
+    return super.handlePointerMoveAdapter(this.makeElevatedEvent(event, position, props), props);
   }
 
-  handleStopDraggingAdapter(event: StopDraggingEvent): ?GeoJsonEditAction {
+  handleStopDraggingAdapter(
+    event: StopDraggingEvent,
+    props: ModeProps<FeatureCollection>
+  ): ?GeoJsonEditAction {
     const editHandle = getPickedEditHandle(event.picks);
     const position = editHandle ? editHandle.position : event.mapCoords;
-    return super.handleStopDraggingAdapter(this.makeElevatedEvent(event, position));
+    return super.handleStopDraggingAdapter(this.makeElevatedEvent(event, position, props), props);
   }
 
-  getCursorAdapter(params: { isDragging: boolean }): string {
-    let cursor = super.getCursorAdapter(params);
+  getCursor(event: PointerMoveEvent): ?string {
+    let cursor = super.getCursor(event);
     if (cursor === 'cell') {
       cursor = 'ns-resize';
     }

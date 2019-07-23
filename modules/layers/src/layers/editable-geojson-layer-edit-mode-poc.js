@@ -10,6 +10,9 @@ import {
   ScaleMode,
   RotateMode,
   DuplicateMode,
+  SplitPolygonMode,
+  ExtrudeMode,
+  ElevationMode,
   DrawPointMode,
   DrawLineStringMode,
   DrawPolygonMode,
@@ -134,9 +137,13 @@ const defaultProps = {
     // Alter modes
     modify: new ModifyMode(),
     translate: new TranslateMode(),
+    // translate: new SnappableMode(new TranslateMode()),
     scale: new ScaleMode(),
     rotate: new RotateMode(),
     duplicate: new DuplicateMode(),
+    split: new SplitPolygonMode(),
+    extrude: new ExtrudeMode(),
+    elevation: new ElevationMode(),
 
     // Draw modes
     drawPoint: new DrawPointMode(),
@@ -149,12 +156,6 @@ const defaultProps = {
     drawRectangleUsing3Points: new DrawRectangleUsingThreePointsMode(),
     drawEllipseUsing3Points: new DrawEllipseUsingThreePointsMode(),
     draw90DegreePolygon: new Draw90DegreePolygonMode()
-
-    // translate: new SnappableMode(new TranslateMode()),
-
-    // elevation: new ElevationMode(),
-    // extrude: new ExtrudeMode(),
-    // split: new SplitPolygonMode(),
   }
 };
 

@@ -2,16 +2,19 @@
 
 import bearing from '@turf/bearing';
 import { generatePointsParallelToLinePoints } from '../utils.js';
-import type { PointerMoveEvent, StartDraggingEvent, StopDraggingEvent } from '../types.js';
-import { BaseGeoJsonEditMode, type GeoJsonEditAction } from './geojson-edit-mode.js';
-import { getPickedEditHandle } from './mode-handler.js';
+import type { FeatureCollection } from '../geojson-types.js';
+import type {
+  ModeProps,
+  PointerMoveEvent,
+  StartDraggingEvent,
+  StopDraggingEvent
+} from '../types.js';
+import { getPickedEditHandle, type GeoJsonEditAction } from './geojson-edit-mode.js';
 import { ModifyMode } from './modify-mode.js';
 
 export class ExtrudeMode extends ModifyMode {
   isPointAdded: boolean = false;
-  handlePointerMoveAdapter(
-    event: PointerMoveEvent
-  ): { editAction: ?GeoJsonEditAction, cancelMapPan: boolean } {
+  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>): void {
     let editAction: ?GeoJsonEditAction = null;
 
     const editHandle = getPickedEditHandle(event.pointerDownPicks);
@@ -49,19 +52,28 @@ export class ExtrudeMode extends ModifyMode {
             position: p3
           }
         };
+
+        props.onEdit(editAction);
       }
     }
 
+    const cursor = this.getCursor(event);
+    props.onUpdateCursor(cursor);
+
     // Cancel map panning if pointer went down on an edit handle
     const cancelMapPan = Boolean(editHandle);
-
-    return { editAction, cancelMapPan };
+    if (cancelMapPan) {
+      event.sourceEvent.stopPropagation();
+    }
   }
 
-  handleStartDraggingAdapter(event: StartDraggingEvent): ?GeoJsonEditAction {
+  handleStartDraggingAdapter(
+    event: StartDraggingEvent,
+    props: ModeProps<FeatureCollection>
+  ): ?GeoJsonEditAction {
     let editAction: ?GeoJsonEditAction = null;
 
-    const selectedFeatureIndexes = this.getSelectedFeatureIndexes();
+    const selectedFeatureIndexes = this.getSelectedFeatureIndexes(props);
 
     const editHandle = getPickedEditHandle(event.picks);
     if (selectedFeatureIndexes.length && editHandle && editHandle.type === 'intermediate') {
@@ -115,10 +127,13 @@ export class ExtrudeMode extends ModifyMode {
     return editAction;
   }
 
-  handleStopDraggingAdapter(event: StopDraggingEvent): ?GeoJsonEditAction {
+  handleStopDraggingAdapter(
+    event: StopDraggingEvent,
+    props: ModeProps<FeatureCollection>
+  ): ?GeoJsonEditAction {
     let editAction: ?GeoJsonEditAction = null;
 
-    const selectedFeatureIndexes = this.getSelectedFeatureIndexes();
+    const selectedFeatureIndexes = this.getSelectedFeatureIndexes(props);
     const editHandle = getPickedEditHandle(event.picks);
     if (selectedFeatureIndexes.length && editHandle) {
       const size = this.coordinatesSize(editHandle.positionIndexes, editHandle.featureIndex);

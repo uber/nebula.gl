@@ -178,13 +178,8 @@ export class ModifyMode extends BaseGeoJsonEditMode {
       props.onEdit(editAction);
     }
 
-    const picks = (event && event.picks) || [];
-    const handlesPicked = getPickedEditHandles(picks);
-    if (handlesPicked.length) {
-      props.onUpdateCursor('cell');
-    } else {
-      props.onUpdateCursor(null);
-    }
+    const cursor = this.getCursor(event);
+    props.onUpdateCursor(cursor);
 
     // Cancel map panning if pointer went down on an edit handle
     const cancelMapPan = Boolean(editHandle);
@@ -248,16 +243,13 @@ export class ModifyMode extends BaseGeoJsonEditMode {
     return editAction;
   }
 
-  getCursorAdapter(props: ModeProps<FeatureCollection>): ?string {
-    const picks = props.lastPointerMoveEvent && props.lastPointerMoveEvent.picks;
+  getCursor(event: PointerMoveEvent): ?string {
+    const picks = (event && event.picks) || [];
 
-    if (picks && picks.length > 0) {
-      const handlePicked = picks.some(pick => pick.isGuide);
-      if (handlePicked) {
-        return 'cell';
-      }
+    const handlesPicked = getPickedEditHandles(picks);
+    if (handlesPicked.length) {
+      return 'cell';
     }
-
     return null;
   }
 }

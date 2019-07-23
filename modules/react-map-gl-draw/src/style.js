@@ -1,17 +1,22 @@
 import { RENDER_STATE, RENDER_TYPE } from './constants';
 
-const rectStyle = {
+const RECT_STYLE = {
   x: -6,
   y: -6,
   height: 12,
   width: 12
 };
 
-const closingRectStyle = {
+const CLOSING_RECT_STYLE = {
   x: -10,
   y: -10,
   height: 20,
   width: 20
+};
+
+export const HIDDEN_CLICKABLE_STYLE = {
+  fill: '#000',
+  opacity: 0
 };
 
 export function getFeatureStyle({ feature, state }) {
@@ -127,9 +132,9 @@ export function getEditHandleStyle({ feature, index, state }) {
     case RENDER_TYPE.POLYGON:
     case RENDER_TYPE.RECTANGLE:
       if (state === RENDER_STATE.CLOSING) {
-        Object.assign(style, closingRectStyle);
+        Object.assign(style, CLOSING_RECT_STYLE);
       } else {
-        Object.assign(style, rectStyle);
+        Object.assign(style, RECT_STYLE);
       }
       break;
     default:

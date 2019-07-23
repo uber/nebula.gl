@@ -109,34 +109,6 @@ const EMPTY_FEATURE_COLLECTION = {
   features: []
 };
 
-const EDIT_HANDLE_ICON_MAPPING = {
-  intermediate: {
-    x: 0,
-    y: 0,
-    width: 58,
-    height: 58,
-    mask: false
-  },
-  existing: {
-    x: 58,
-    y: 0,
-    width: 58,
-    height: 58,
-    mask: false
-  }
-};
-
-const GET_EDIT_HANDLE_ICON = d => d.type;
-
-const GL_PARAMETERS = {
-  depthTest: true,
-  depthMask: false,
-
-  blend: true,
-  blendEquation: GL.FUNC_ADD,
-  blendFunc: [GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA]
-};
-
 const modeHandlers = Object.assign(
   {
     'drawLineString+modify': new CompositeModeHandler([
@@ -716,15 +688,11 @@ export default class Example extends Component<
 
   onEdit = ({ updatedData, editType, editContext }) => {
     let updatedSelectedFeatureIndexes = this.state.selectedFeatureIndexes;
-    if (
-      !['movePosition', 'extruding', 'rotating', 'transZZZZZlating', 'scaling'].includes(editType)
-    ) {
-      const updatedDataInfo = updatedData.features.map(
-        feature => `${feature.geometry.type}(${getPositionCount(feature.geometry)})`
-      );
+    if (!['movePosition', 'extruding', 'rotating', 'translating', 'scaling'].includes(editType)) {
       // Don't log edits that happen as the pointer moves since they're really chatty
+      const updatedDataInfo = featuresToInfoString(updatedData);
       // eslint-disable-next-line
-      console.log('onEdit', editType, editContext, JSON.stringify(updatedDataInfo));
+      console.log('onEdit', editType, editContext, updatedDataInfo);
     }
     if (editType === 'removePosition' && !this.state.pointsRemovable) {
       // This is a simple example of custom handling of edits
@@ -939,8 +907,15 @@ export default class Example extends Component<
   }
 }
 
+function featuresToInfoString(featureCollection: any): string {
+  const info = featureCollection.features.map(
+    feature => `${feature.geometry.type}(${getPositionCount(feature.geometry)})`
+  );
+
+  return JSON.stringify(info);
+}
+
 function getPositionCount(geometry): number {
-  // const getSum = (total: number, num: number) => total + num;
   const flatMap = (f, arr) => arr.reduce((x, y) => [...x, ...f(y)], []);
 
   const { type, coordinates } = geometry;
@@ -954,9 +929,7 @@ function getPositionCount(geometry): number {
     case 'MultiLineString':
       return flatMap(x => x, coordinates).length;
     case 'MultiPolygon':
-      // return coordinates.reduce(getSum, 0);
       return flatMap(x => flatMap(y => y, x), coordinates).length;
-    // return coordinates.reduce((acc, x) => acc.concat([x]), []).reduce(getSum, 0);
     default:
       throw Error(`Unknown geometry type: ${type}`);
   }

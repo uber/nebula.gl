@@ -14,6 +14,9 @@ import {
   EditableGeoJsonLayer,
   EditableGeoJsonLayer_EDIT_MODE_POC as EditableGeoJsonLayerEditModePoc,
   SelectionLayer,
+  CompositeMode,
+  DrawLineStringMode,
+  ModifyMode,
   CompositeModeHandler,
   ModifyHandler,
   ElevationHandler,
@@ -37,12 +40,16 @@ import {
 
 // TODO: once we refactor EditableGeoJsonLayer to use new EditMode interface, this can go away
 let EditableGeoJsonLayerImpl = EditableGeoJsonLayer;
+let COMPOSITE_MODE;
 if (
   window.location &&
   window.location.search &&
   window.location.search.indexOf('useEditModePoc') !== -1
 ) {
   EditableGeoJsonLayerImpl = EditableGeoJsonLayerEditModePoc;
+  COMPOSITE_MODE = new CompositeMode([new DrawLineStringMode(), new ModifyMode()]);
+} else {
+  COMPOSITE_MODE = new CompositeModeHandler([new DrawLineStringHandler(), new ModifyHandler()]);
 }
 
 const styles = {
@@ -111,10 +118,7 @@ const EMPTY_FEATURE_COLLECTION = {
 
 const modeHandlers = Object.assign(
   {
-    'drawLineString+modify': new CompositeModeHandler([
-      new DrawLineStringHandler(),
-      new ModifyHandler()
-    ])
+    'drawLineString+modify': COMPOSITE_MODE
   },
   EditableGeoJsonLayerImpl.defaultProps.modeHandlers
 );

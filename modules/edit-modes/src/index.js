@@ -1,7 +1,6 @@
 // @flow
 
 export { EditMode } from './lib/edit-mode.js';
-export { ViewMode } from './lib/view-mode.js';
 
 // Alter modes
 export { ModifyMode } from './lib/modify-mode.js';
@@ -25,6 +24,10 @@ export { DrawEllipseUsingThreePointsMode } from './lib/draw-ellipse-using-three-
 export { DrawRectangleUsingThreePointsMode } from './lib/draw-rectangle-using-three-points-mode.js';
 export { Draw90DegreePolygonMode } from './lib/draw-90degree-polygon-mode.js';
 export { ImmutableFeatureCollection } from './lib/immutable-feature-collection.js';
+
+// Other modes
+export { ViewMode } from './lib/view-mode.js';
+export { CompositeMode } from './lib/composite-mode.js';
 
 export type {
   ScreenCoordinates,

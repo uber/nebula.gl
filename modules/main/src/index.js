@@ -41,3 +41,32 @@ export { DrawCircleByBoundingBoxHandler } from '@nebula.gl/layers';
 export { DrawEllipseByBoundingBoxHandler } from '@nebula.gl/layers';
 export { DrawEllipseUsingThreePointsHandler } from '@nebula.gl/layers';
 export { ElevationHandler } from '@nebula.gl/layers';
+
+export { EditMode } from '@nebula.gl/edit-modes';
+
+// Alter modes
+export { ModifyMode } from '@nebula.gl/edit-modes';
+export { TranslateMode } from '@nebula.gl/edit-modes';
+export { ScaleMode } from '@nebula.gl/edit-modes';
+export { RotateMode } from '@nebula.gl/edit-modes';
+export { DuplicateMode } from '@nebula.gl/edit-modes';
+export { SplitPolygonMode } from '@nebula.gl/edit-modes';
+export { ExtrudeMode } from '@nebula.gl/edit-modes';
+export { ElevationMode } from '@nebula.gl/edit-modes';
+
+// Draw modes
+export { DrawPointMode } from '@nebula.gl/edit-modes';
+export { DrawLineStringMode } from '@nebula.gl/edit-modes';
+export { DrawPolygonMode } from '@nebula.gl/edit-modes';
+export { DrawRectangleMode } from '@nebula.gl/edit-modes';
+export { DrawCircleByBoundingBoxMode } from '@nebula.gl/edit-modes';
+export { DrawCircleFromCenterMode } from '@nebula.gl/edit-modes';
+export { DrawEllipseByBoundingBoxMode } from '@nebula.gl/edit-modes';
+export { DrawEllipseUsingThreePointsMode } from '@nebula.gl/edit-modes';
+export { DrawRectangleUsingThreePointsMode } from '@nebula.gl/edit-modes';
+export { Draw90DegreePolygonMode } from '@nebula.gl/edit-modes';
+export { ImmutableFeatureCollection } from '@nebula.gl/edit-modes';
+
+// Other modes
+export { ViewMode } from '@nebula.gl/edit-modes';
+export { CompositeMode } from '@nebula.gl/edit-modes';

@@ -2,24 +2,25 @@
 
 import type { FeatureCollection, Feature, Position } from '../geojson-types.js';
 import type {
+  ModeProps,
   ClickEvent,
   PointerMoveEvent,
   StartDraggingEvent,
   StopDraggingEvent
 } from '../types.js';
-import { ModeHandler, type GeoJsonEditAction, type EditHandle } from './mode-handler.js';
+import { BaseGeoJsonEditMode, type EditHandle } from './geojson-edit-mode.js';
 
-export class CompositeModeMode extends BaseGeoJsonEditMode {
-  handlers: Array<ModeHandler>;
+export class CompositeMode extends BaseGeoJsonEditMode {
+  handlers: Array<BaseGeoJsonEditMode>;
   options: Object;
 
-  constructor(handlers: Array<ModeHandler>, options: Object = {}) {
+  constructor(handlers: Array<BaseGeoJsonEditMode>, options: Object = {}) {
     super();
     this.handlers = handlers;
     this.options = options;
   }
 
-  _coalesce<T>(callback: ModeHandler => T, resultEval: ?(T) => boolean = null): T {
+  _coalesce<T>(callback: BaseGeoJsonEditMode => T, resultEval: ?(T) => boolean = null): T {
     let result: T;
 
     for (let i = 0; i < this.handlers.length; i++) {
@@ -44,25 +45,20 @@ export class CompositeModeMode extends BaseGeoJsonEditMode {
     this.handlers.forEach(handler => handler.setSelectedFeatureIndexes(indexes));
   }
 
-  handleClickAdapter(event: ClickEvent): ?GeoJsonEditAction {
-    return this._coalesce(handler => handler.handleClickAdapter(event));
+  handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>): void {
+    this._coalesce(handler => handler.handleClick(event, props));
   }
 
-  handlePointerMoveAdapter(
-    event: PointerMoveEvent
-  ): { editAction: ?GeoJsonEditAction, cancelMapPan: boolean } {
-    return this._coalesce(
-      handler => handler.handlePointerMoveAdapter(event),
-      result => result && Boolean(result.editAction)
-    );
+  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>): void {
+    return this._coalesce(handler => handler.handlePointerMove(event, props));
   }
 
-  handleStartDraggingAdapter(event: StartDraggingEvent): ?GeoJsonEditAction {
-    return this._coalesce(handler => handler.handleStartDraggingAdapter(event));
+  handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollection>): void {
+    return this._coalesce(handler => handler.handleStartDragging(event, props));
   }
 
-  handleStopDraggingAdapter(event: StopDraggingEvent): ?GeoJsonEditAction {
-    return this._coalesce(handler => handler.handleStopDraggingAdapter(event));
+  handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollection>): void {
+    return this._coalesce(handler => handler.handleStopDragging(event, props));
   }
 
   getTentativeFeature(): ?Feature {
@@ -70,20 +66,20 @@ export class CompositeModeMode extends BaseGeoJsonEditMode {
   }
 
   getEditHandlesAdapter(
-    picks?: Array<Object>,
-    mapCoords?: Position,
-    tentativeFeature?: ?Feature
+    picks: ?Array<Object>,
+    mapCoords: ?Position,
+    props: ModeProps<FeatureCollection>
   ): EditHandle[] {
     // TODO: Combine the handles *BUT* make sure if none of the results have
     // changed to return the same object so that "editHandles !== this.state.editHandles"
     // in editable-geojson-layer works.
     return this._coalesce(
-      handler => handler.getEditHandlesAdapter(picks, mapCoords, tentativeFeature),
+      handler => handler.getEditHandlesAdapter(picks, mapCoords, props),
       handles => Array.isArray(handles) && handles.length > 0
     );
   }
 
-  getCursorAdapter({ isDragging }: { isDragging: boolean }): string {
-    return this._coalesce(handler => handler.getCursorAdapter({ isDragging }));
+  getCursorAdapter(props: ModeProps<FeatureCollection>): ?string {
+    return this._coalesce(handler => handler.getCursorAdapter(props));
   }
 }

@@ -62,17 +62,8 @@ export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, FeatureC
     const mapCoords = lastPointerMoveEvent && lastPointerMoveEvent.mapCoords;
     const editHandles = this.getEditHandlesAdapter(picks, mapCoords, props);
 
-    const tentative: Feature[] = this._tentativeFeature
-      ? [
-          // $FlowFixMe
-          {
-            ...this._tentativeFeature,
-            properties: {
-              guideType: 'tentative'
-            }
-          }
-        ]
-      : [];
+    const tentativeFeature = this.getTentativeFeature();
+    const tentativeFeatures: Feature[] = tentativeFeature ? [tentativeFeature] : [];
     const editHandleFeatures: FeatureOf<Point>[] = editHandles.map(handle => ({
       type: 'Feature',
       properties: {
@@ -89,7 +80,7 @@ export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, FeatureC
 
     return {
       type: 'FeatureCollection',
-      features: [...tentative, ...editHandleFeatures]
+      features: [...tentativeFeatures, ...editHandleFeatures]
     };
   }
 
@@ -162,6 +153,12 @@ export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, FeatureC
 
   // TODO: delete me once mode handlers do getEditHandles lazily
   _setTentativeFeature(tentativeFeature: ?Feature): void {
+    if (tentativeFeature) {
+      tentativeFeature.properties = {
+        ...(tentativeFeature.properties || {}),
+        guideType: 'tentative'
+      };
+    }
     this._tentativeFeature = tentativeFeature;
   }
 

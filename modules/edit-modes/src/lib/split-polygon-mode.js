@@ -10,20 +10,21 @@ import turfDistance from '@turf/distance';
 import turfDestination from '@turf/destination';
 import turfPolygonToLine from '@turf/polygon-to-line';
 import nearestPointOnLine from '@turf/nearest-point-on-line';
-import { generatePointsParallelToLinePoints } from '../utils';
-import type { ClickEvent, PointerMoveEvent } from '../types.js';
+import { generatePointsParallelToLinePoints } from '../utils.js';
+import type { FeatureCollection } from '../geojson-types.js';
+import type { ClickEvent, PointerMoveEvent, ModeProps } from '../types.js';
 import { BaseGeoJsonEditMode, type GeoJsonEditAction } from './geojson-edit-mode.js';
 
 export class SplitPolygonMode extends BaseGeoJsonEditMode {
-  calculateMapCoords(clickSequence: any, mapCoords: any) {
-    const modeConfig = this.getModeConfig();
+  calculateMapCoords(clickSequence: any, mapCoords: any, props: ModeProps<FeatureCollection>) {
+    const modeConfig = props.modeConfig;
     if (!modeConfig || !modeConfig.lock90Degree || !clickSequence.length) {
       return mapCoords;
     }
     if (clickSequence.length === 1) {
       // if first point is clicked, then find closest polygon point and build ~90deg vector
       const firstPoint = clickSequence[0];
-      const selectedGeometry = this.getSelectedGeometry();
+      const selectedGeometry = this.getSelectedGeometry(props);
       const feature = turfPolygonToLine(selectedGeometry);
 
       const lines = feature.type === 'FeatureCollection' ? feature.features : [feature];
@@ -62,14 +63,17 @@ export class SplitPolygonMode extends BaseGeoJsonEditMode {
     return nearestPt;
   }
 
-  handleClickAdapter(event: ClickEvent): ?GeoJsonEditAction {
-    super.handleClickAdapter({
-      ...event,
-      mapCoords: this.calculateMapCoords(this.getClickSequence(), event.mapCoords)
-    });
+  handleClickAdapter(event: ClickEvent, props: ModeProps<FeatureCollection>): ?GeoJsonEditAction {
+    super.handleClickAdapter(
+      {
+        ...event,
+        mapCoords: this.calculateMapCoords(this.getClickSequence(), event.mapCoords, props)
+      },
+      props
+    );
     const editAction: ?GeoJsonEditAction = null;
     const tentativeFeature = this.getTentativeFeature();
-    const selectedGeometry = this.getSelectedGeometry();
+    const selectedGeometry = this.getSelectedGeometry(props);
     const clickSequence = this.getClickSequence();
 
     if (!selectedGeometry) {
@@ -90,15 +94,16 @@ export class SplitPolygonMode extends BaseGeoJsonEditMode {
         this._setTentativeFeature(null);
         return editAction;
       }
-      return this.splitPolygon();
+      return this.splitPolygon(props);
     }
 
     return editAction;
   }
 
-  handlePointerMoveAdapter({
-    mapCoords
-  }: PointerMoveEvent): { editAction: ?GeoJsonEditAction, cancelMapPan: boolean } {
+  handlePointerMoveAdapter(
+    { mapCoords }: PointerMoveEvent,
+    props: ModeProps<FeatureCollection>
+  ): { editAction: ?GeoJsonEditAction, cancelMapPan: boolean } {
     const clickSequence = this.getClickSequence();
     const result = { editAction: null, cancelMapPan: false };
 
@@ -111,18 +116,18 @@ export class SplitPolygonMode extends BaseGeoJsonEditMode {
       type: 'Feature',
       geometry: {
         type: 'LineString',
-        coordinates: [...clickSequence, this.calculateMapCoords(clickSequence, mapCoords)]
+        coordinates: [...clickSequence, this.calculateMapCoords(clickSequence, mapCoords, props)]
       }
     });
 
     return result;
   }
 
-  splitPolygon() {
-    const selectedGeometry = this.getSelectedGeometry();
+  splitPolygon(props: ModeProps<FeatureCollection>) {
+    const selectedGeometry = this.getSelectedGeometry(props);
     const tentativeFeature = this.getTentativeFeature();
-    const featureIndex = this.getSelectedFeatureIndexes()[0];
-    const modeConfig = this.getModeConfig() || {};
+    const featureIndex = this.getSelectedFeatureIndexes(props)[0];
+    const modeConfig = props.modeConfig || {};
 
     // Default gap in between the polygon
     let { gap = 0.1, units = 'centimeters' } = modeConfig;

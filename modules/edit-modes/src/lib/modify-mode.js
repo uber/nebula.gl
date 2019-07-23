@@ -3,8 +3,9 @@
 import nearestPointOnLine from '@turf/nearest-point-on-line';
 import { point, lineString as toLineString } from '@turf/helpers';
 import { recursivelyTraverseNestedArrays } from '../utils.js';
-import type { Position } from '../geojson-types.js';
+import type { Position, FeatureCollection } from '../geojson-types.js';
 import type {
+  ModeProps,
   ClickEvent,
   PointerMoveEvent,
   StartDraggingEvent,
@@ -13,19 +14,25 @@ import type {
 import {
   BaseGeoJsonEditMode,
   getPickedEditHandle,
+  getPickedEditHandles,
+  getPickedExistingEditHandle,
+  getPickedIntermediateEditHandle,
   getEditHandlesForGeometry,
   type GeoJsonEditAction,
   type EditHandle
 } from './geojson-edit-mode.js';
 
 export class ModifyMode extends BaseGeoJsonEditMode {
-  _lastPointerMovePicks: *;
-
-  getEditHandlesAdapter(picks?: Array<Object>, mapCoords?: Position): EditHandle[] {
+  getEditHandlesAdapter(
+    picks: ?Array<Object>,
+    mapCoords: ?Position,
+    props: ModeProps<FeatureCollection>
+  ): EditHandle[] {
+    this.setFeatureCollection(props.data);
     let handles = [];
-    const { features } = this.featureCollection.getObject();
+    const { features } = this.getFeatureCollection();
 
-    for (const index of this.getSelectedFeatureIndexes()) {
+    for (const index of this.getSelectedFeatureIndexes(props)) {
       if (index < features.length) {
         const { geometry } = features[index];
         handles.push(...getEditHandlesForGeometry(geometry, index));
@@ -36,9 +43,7 @@ export class ModifyMode extends BaseGeoJsonEditMode {
 
     // intermediate edit handle
     if (picks && picks.length && mapCoords) {
-      const existingEditHandle = picks.find(
-        pick => pick.isGuide && pick.object && pick.object.type === 'existing'
-      );
+      const existingEditHandle = getPickedExistingEditHandle(picks);
       // don't show intermediate point when too close to an existing edit handle
       const featureAsPick = !existingEditHandle && picks.find(pick => !pick.isGuide);
 
@@ -46,7 +51,7 @@ export class ModifyMode extends BaseGeoJsonEditMode {
       if (
         featureAsPick &&
         !featureAsPick.object.geometry.type.includes('Point') &&
-        this.getSelectedFeatureIndexes().includes(featureAsPick.index)
+        this.getSelectedFeatureIndexes(props).includes(featureAsPick.index)
       ) {
         let intermediatePoint = null;
         let positionIndexPrefix = [];
@@ -101,58 +106,56 @@ export class ModifyMode extends BaseGeoJsonEditMode {
   handleClickAdapter(event: ClickEvent): ?GeoJsonEditAction {
     let editAction: ?GeoJsonEditAction = null;
 
-    const clickedEditHandle = getPickedEditHandle(event.picks);
+    const pickedExistingHandle = getPickedExistingEditHandle(event.picks);
+    const pickedIntermediateHandle = getPickedIntermediateEditHandle(event.picks);
 
-    if (clickedEditHandle && clickedEditHandle.featureIndex >= 0) {
-      if (clickedEditHandle.type === 'existing') {
-        let updatedData;
-        try {
-          updatedData = this.getImmutableFeatureCollection()
-            .removePosition(clickedEditHandle.featureIndex, clickedEditHandle.positionIndexes)
-            .getObject();
-        } catch (ignored) {
-          // This happens if user attempts to remove the last point
-        }
-
-        if (updatedData) {
-          editAction = {
-            updatedData,
-            editType: 'removePosition',
-            editContext: {
-              featureIndexes: [clickedEditHandle.featureIndex],
-              positionIndexes: clickedEditHandle.positionIndexes,
-              position: clickedEditHandle.position
-            }
-          };
-        }
-      } else if (clickedEditHandle.type === 'intermediate') {
-        const updatedData = this.getImmutableFeatureCollection()
-          .addPosition(
-            clickedEditHandle.featureIndex,
-            clickedEditHandle.positionIndexes,
-            clickedEditHandle.position
-          )
+    if (pickedExistingHandle) {
+      let updatedData;
+      try {
+        updatedData = this.getImmutableFeatureCollection()
+          .removePosition(pickedExistingHandle.featureIndex, pickedExistingHandle.positionIndexes)
           .getObject();
+      } catch (ignored) {
+        // This happens if user attempts to remove the last point
+      }
 
-        if (updatedData) {
-          editAction = {
-            updatedData,
-            editType: 'addPosition',
-            editContext: {
-              featureIndexes: [clickedEditHandle.featureIndex],
-              positionIndexes: clickedEditHandle.positionIndexes,
-              position: clickedEditHandle.position
-            }
-          };
-        }
+      if (updatedData) {
+        editAction = {
+          updatedData,
+          editType: 'removePosition',
+          editContext: {
+            featureIndexes: [pickedExistingHandle.featureIndex],
+            positionIndexes: pickedExistingHandle.positionIndexes,
+            position: pickedExistingHandle.position
+          }
+        };
+      }
+    } else if (pickedIntermediateHandle) {
+      const updatedData = this.getImmutableFeatureCollection()
+        .addPosition(
+          pickedIntermediateHandle.featureIndex,
+          pickedIntermediateHandle.positionIndexes,
+          pickedIntermediateHandle.position
+        )
+        .getObject();
+
+      if (updatedData) {
+        editAction = {
+          updatedData,
+          editType: 'addPosition',
+          editContext: {
+            featureIndexes: [pickedIntermediateHandle.featureIndex],
+            positionIndexes: pickedIntermediateHandle.positionIndexes,
+            position: pickedIntermediateHandle.position
+          }
+        };
       }
     }
     return editAction;
   }
 
-  handlePointerMove(event: PointerMoveEvent): void {
-    this._lastPointerMovePicks = event.picks;
-
+  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>): void {
+    this.setFeatureCollection(props.data);
     let editAction: ?GeoJsonEditAction = null;
 
     const editHandle = getPickedEditHandle(event.pointerDownPicks);
@@ -172,7 +175,15 @@ export class ModifyMode extends BaseGeoJsonEditMode {
         }
       };
 
-      this.onEdit(editAction);
+      props.onEdit(editAction);
+    }
+
+    const picks = (event && event.picks) || [];
+    const handlesPicked = getPickedEditHandles(picks);
+    if (handlesPicked.length) {
+      props.onUpdateCursor('cell');
+    } else {
+      props.onUpdateCursor(null);
     }
 
     // Cancel map panning if pointer went down on an edit handle
@@ -180,27 +191,18 @@ export class ModifyMode extends BaseGeoJsonEditMode {
     if (cancelMapPan) {
       event.sourceEvent.stopPropagation();
     }
-
-    if (event.picks && event.picks.length > 0) {
-      const handlePicked = event.picks.some(pick => pick.isGuide);
-      if (handlePicked) {
-        this.onUpdateCursor('cell');
-      }
-    } else {
-      this.onUpdateCursor(event.isDragging ? 'grabbing' : 'grab');
-    }
-
-    const editHandles = this.getEditHandlesAdapter(event.picks, event.mapCoords);
-    this._setEditHandles(editHandles);
   }
 
-  handleStartDraggingAdapter(event: StartDraggingEvent): ?GeoJsonEditAction {
+  handleStartDraggingAdapter(
+    event: StartDraggingEvent,
+    props: ModeProps<FeatureCollection>
+  ): ?GeoJsonEditAction {
     let editAction: ?GeoJsonEditAction = null;
 
-    const selectedFeatureIndexes = this.getSelectedFeatureIndexes();
+    const selectedFeatureIndexes = this.getSelectedFeatureIndexes(props);
 
-    const editHandle = getPickedEditHandle(event.picks);
-    if (selectedFeatureIndexes.length && editHandle && editHandle.type === 'intermediate') {
+    const editHandle = getPickedIntermediateEditHandle(event.picks);
+    if (selectedFeatureIndexes.length && editHandle) {
       const updatedData = this.getImmutableFeatureCollection()
         .addPosition(editHandle.featureIndex, editHandle.positionIndexes, event.mapCoords)
         .getObject();
@@ -219,10 +221,13 @@ export class ModifyMode extends BaseGeoJsonEditMode {
     return editAction;
   }
 
-  handleStopDraggingAdapter(event: StopDraggingEvent): ?GeoJsonEditAction {
+  handleStopDraggingAdapter(
+    event: StopDraggingEvent,
+    props: ModeProps<FeatureCollection>
+  ): ?GeoJsonEditAction {
     let editAction: ?GeoJsonEditAction = null;
 
-    const selectedFeatureIndexes = this.getSelectedFeatureIndexes();
+    const selectedFeatureIndexes = this.getSelectedFeatureIndexes(props);
     const editHandle = getPickedEditHandle(event.picks);
     if (selectedFeatureIndexes.length && editHandle) {
       const updatedData = this.getImmutableFeatureCollection()
@@ -243,8 +248,8 @@ export class ModifyMode extends BaseGeoJsonEditMode {
     return editAction;
   }
 
-  getCursorAdapter(): ?string {
-    const picks = this._lastPointerMovePicks;
+  getCursorAdapter(props: ModeProps<FeatureCollection>): ?string {
+    const picks = props.lastPointerMoveEvent && props.lastPointerMoveEvent.picks;
 
     if (picks && picks.length > 0) {
       const handlePicked = picks.some(pick => pick.isGuide);

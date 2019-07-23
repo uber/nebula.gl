@@ -1,16 +1,16 @@
 // @flow
 
-import type { Position, LineString } from '@nebula.gl/edit-modes';
-import type { ClickEvent, PointerMoveEvent } from '../types.js';
+import type { Position, LineString, FeatureCollection } from '../geojson-types.js';
+import type { ClickEvent, PointerMoveEvent, ModeProps } from '../types.js';
 import { BaseGeoJsonEditMode, type GeoJsonEditAction } from './geojson-edit-mode.js';
 
 export class DrawLineStringMode extends BaseGeoJsonEditMode {
-  handleClickAdapter(event: ClickEvent): ?GeoJsonEditAction {
-    super.handleClickAdapter(event);
+  handleClickAdapter(event: ClickEvent, props: ModeProps<FeatureCollection>): ?GeoJsonEditAction {
+    super.handleClickAdapter(event, props);
 
     let editAction: ?GeoJsonEditAction = null;
-    const selectedFeatureIndexes = this.getSelectedFeatureIndexes();
-    const selectedGeometry = this.getSelectedGeometry();
+    const selectedFeatureIndexes = this.getSelectedFeatureIndexes(props);
+    const selectedGeometry = this.getSelectedGeometry(props);
     const tentativeFeature = this.getTentativeFeature();
     const clickSequence = this.getClickSequence();
 
@@ -29,7 +29,7 @@ export class DrawLineStringMode extends BaseGeoJsonEditMode {
 
       let positionIndexes = [lineString.coordinates.length];
 
-      const modeConfig = this.getModeConfig();
+      const modeConfig = props.modeConfig;
       if (modeConfig && modeConfig.drawAtFront) {
         positionIndexes = [0];
       }
@@ -61,7 +61,8 @@ export class DrawLineStringMode extends BaseGeoJsonEditMode {
   }
 
   handlePointerMoveAdapter(
-    event: PointerMoveEvent
+    event: PointerMoveEvent,
+    props: ModeProps<FeatureCollection>
   ): { editAction: ?GeoJsonEditAction, cancelMapPan: boolean } {
     const result = { editAction: null, cancelMapPan: false };
 
@@ -69,8 +70,8 @@ export class DrawLineStringMode extends BaseGeoJsonEditMode {
     const mapCoords = event.mapCoords;
 
     let startPosition: ?Position = null;
-    const selectedFeatureIndexes = this.getSelectedFeatureIndexes();
-    const selectedGeometry = this.getSelectedGeometry();
+    const selectedFeatureIndexes = this.getSelectedFeatureIndexes(props);
+    const selectedGeometry = this.getSelectedGeometry(props);
 
     if (
       selectedFeatureIndexes.length > 1 ||
@@ -84,7 +85,7 @@ export class DrawLineStringMode extends BaseGeoJsonEditMode {
       // Draw an extension line starting from one end of the selected LineString
       startPosition = selectedGeometry.coordinates[selectedGeometry.coordinates.length - 1];
 
-      const modeConfig = this.getModeConfig();
+      const modeConfig = props.modeConfig;
       if (modeConfig && modeConfig.drawAtFront) {
         startPosition = selectedGeometry.coordinates[0];
       }

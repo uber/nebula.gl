@@ -17,8 +17,12 @@ import {
 } from './geojson-edit-mode.js';
 
 export class Draw90DegreePolygonMode extends BaseGeoJsonEditMode {
-  getEditHandlesAdapter(picks?: Array<Object>, mapCoords?: Position): EditHandle[] {
-    let handles = super.getEditHandlesAdapter(picks, mapCoords);
+  getEditHandlesAdapter(
+    picks: ?Array<Object>,
+    mapCoords: ?Position,
+    props: ModeProps<FeatureCollection>
+  ): EditHandle[] {
+    let handles = super.getEditHandlesAdapter(picks, mapCoords, props);
 
     const tentativeFeature = this.getTentativeFeature();
     if (tentativeFeature) {

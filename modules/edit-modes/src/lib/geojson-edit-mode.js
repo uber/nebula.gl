@@ -56,10 +56,11 @@ export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, FeatureC
     }
   }
 
-  getGuides({ lastPointerMoveEvent }: ModeProps<FeatureCollection>): FeatureCollection {
+  getGuides(props: ModeProps<FeatureCollection>): FeatureCollection {
+    const { lastPointerMoveEvent } = props;
     const picks = lastPointerMoveEvent && lastPointerMoveEvent.picks;
     const mapCoords = lastPointerMoveEvent && lastPointerMoveEvent.mapCoords;
-    const editHandles = this.getEditHandlesAdapter(picks, mapCoords);
+    const editHandles = this.getEditHandlesAdapter(picks, mapCoords, props);
 
     const tentative: Feature[] = this._tentativeFeature
       ? [
@@ -166,7 +167,7 @@ export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, FeatureC
 
   _refreshCursor(props: ModeProps<FeatureCollection>): void {
     const currentCursor = props.cursor;
-    const updatedCursor = this.getCursorAdapter();
+    const updatedCursor = this.getCursorAdapter(props);
 
     if (currentCursor !== updatedCursor) {
       props.onUpdateCursor(updatedCursor);
@@ -179,14 +180,14 @@ export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, FeatureC
    * @param featureIndex The index of the feature to get edit handles
    */
   getEditHandlesAdapter(
-    picks?: Array<Object>,
-    mapCoords?: Position,
-    tentativeFeature?: ?Feature
+    picks: ?Array<Object>,
+    mapCoords: ?Position,
+    props: ModeProps<FeatureCollection>
   ): EditHandle[] {
     return DEFAULT_EDIT_HANDLES;
   }
 
-  getCursorAdapter(): ?string {
+  getCursorAdapter(props: ModeProps<FeatureCollection>): ?string {
     return null;
   }
 
@@ -383,10 +384,20 @@ export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, FeatureC
 
 // TODO: EditMode - refactor to just return `info.object`
 export function getPickedEditHandle(picks: ?(any[])): ?EditHandle {
-  const info =
-    picks && picks.find(pick => pick.isGuide && pick.object.properties.guideType === 'editHandle');
-  if (info) {
-    const feature: FeatureOf<Point> = info.object;
+  const handles = getPickedEditHandles(picks);
+  return handles.length ? handles[0] : null;
+}
+
+export function getPickedEditHandles(picks: ?(any[])): EditHandle[] {
+  const handles =
+    (picks &&
+      picks
+        .filter(pick => pick.isGuide && pick.object.properties.guideType === 'editHandle')
+        .map(pick => pick.object)) ||
+    [];
+
+  return handles.map(handle => {
+    const feature: FeatureOf<Point> = handle;
     const { geometry } = feature;
 
     // $FlowFixMe
@@ -397,8 +408,17 @@ export function getPickedEditHandle(picks: ?(any[])): ?EditHandle {
       positionIndexes: properties.positionIndexes,
       featureIndex: properties.featureIndex
     };
-  }
-  return null;
+  });
+}
+
+export function getPickedExistingEditHandle(picks: ?(any[])): ?EditHandle {
+  const handles = getPickedEditHandles(picks);
+  return handles.find(h => h.featureIndex >= 0 && h.type === 'existing');
+}
+
+export function getPickedIntermediateEditHandle(picks: ?(any[])): ?EditHandle {
+  const handles = getPickedEditHandles(picks);
+  return handles.find(h => h.featureIndex >= 0 && h.type === 'intermediate');
 }
 
 export function getIntermediatePosition(position1: Position, position2: Position): Position {

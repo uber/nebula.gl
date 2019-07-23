@@ -4,8 +4,13 @@ import turfBearing from '@turf/bearing';
 import turfDistance from '@turf/distance';
 import turfTransformTranslate from '@turf/transform-translate';
 import { point } from '@turf/helpers';
-import type { FeatureCollection, Position } from '@nebula.gl/edit-modes';
-import type { PointerMoveEvent, StartDraggingEvent, StopDraggingEvent } from '../types.js';
+import type { FeatureCollection, Position } from '../geojson-types.js';
+import type {
+  PointerMoveEvent,
+  StartDraggingEvent,
+  StopDraggingEvent,
+  ModeProps
+} from '../types.js';
 import { BaseGeoJsonEditMode, type GeoJsonEditAction } from './geojson-edit-mode.js';
 
 export class TranslateMode extends BaseGeoJsonEditMode {
@@ -13,12 +18,13 @@ export class TranslateMode extends BaseGeoJsonEditMode {
   _isTranslatable: boolean;
 
   handlePointerMoveAdapter(
-    event: PointerMoveEvent
+    event: PointerMoveEvent,
+    props: ModeProps<FeatureCollection>
   ): { editAction: ?GeoJsonEditAction, cancelMapPan: boolean } {
     let editAction: ?GeoJsonEditAction = null;
 
     this._isTranslatable =
-      Boolean(this._geometryBeforeTranslate) || this.isSelectionPicked(event.picks);
+      Boolean(this._geometryBeforeTranslate) || this.isSelectionPicked(event.picks, props);
 
     if (!this._isTranslatable || !event.pointerDownMapCoords) {
       // Nothing to do
@@ -30,23 +36,30 @@ export class TranslateMode extends BaseGeoJsonEditMode {
       editAction = this.getTranslateAction(
         event.pointerDownMapCoords,
         event.mapCoords,
-        'translating'
+        'translating',
+        props
       );
     }
 
     return { editAction, cancelMapPan: true };
   }
 
-  handleStartDraggingAdapter(event: StartDraggingEvent): ?GeoJsonEditAction {
+  handleStartDraggingAdapter(
+    event: StartDraggingEvent,
+    props: ModeProps<FeatureCollection>
+  ): ?GeoJsonEditAction {
     if (!this._isTranslatable) {
       return null;
     }
 
-    this._geometryBeforeTranslate = this.getSelectedFeaturesAsFeatureCollection();
+    this._geometryBeforeTranslate = this.getSelectedFeaturesAsFeatureCollection(props);
     return null;
   }
 
-  handleStopDraggingAdapter(event: StopDraggingEvent): ?GeoJsonEditAction {
+  handleStopDraggingAdapter(
+    event: StopDraggingEvent,
+    props: ModeProps<FeatureCollection>
+  ): ?GeoJsonEditAction {
     let editAction: ?GeoJsonEditAction = null;
 
     if (this._geometryBeforeTranslate) {
@@ -54,7 +67,8 @@ export class TranslateMode extends BaseGeoJsonEditMode {
       editAction = this.getTranslateAction(
         event.pointerDownMapCoords,
         event.mapCoords,
-        'translated'
+        'translated',
+        props
       );
       this._geometryBeforeTranslate = null;
     }
@@ -72,7 +86,8 @@ export class TranslateMode extends BaseGeoJsonEditMode {
   getTranslateAction(
     startDragPoint: Position,
     currentPoint: Position,
-    editType: string
+    editType: string,
+    props: ModeProps<FeatureCollection>
   ): ?GeoJsonEditAction {
     if (!this._geometryBeforeTranslate) {
       return null;
@@ -91,7 +106,7 @@ export class TranslateMode extends BaseGeoJsonEditMode {
 
     let updatedData = this.getImmutableFeatureCollection();
 
-    const selectedIndexes = this.getSelectedFeatureIndexes();
+    const selectedIndexes = this.getSelectedFeatureIndexes(props);
     for (let i = 0; i < selectedIndexes.length; i++) {
       const selectedIndex = selectedIndexes[i];
       const movedFeature = movedFeatures.features[i];

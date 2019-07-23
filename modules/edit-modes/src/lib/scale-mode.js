@@ -3,8 +3,13 @@
 import turfCentroid from '@turf/centroid';
 import turfDistance from '@turf/distance';
 import turfTransformScale from '@turf/transform-scale';
-import type { FeatureCollection, Position } from '@nebula.gl/edit-modes';
-import type { PointerMoveEvent, StartDraggingEvent, StopDraggingEvent } from '../types.js';
+import type { FeatureCollection, Position } from '../geojson-types.js';
+import type {
+  ModeProps,
+  PointerMoveEvent,
+  StartDraggingEvent,
+  StopDraggingEvent
+} from '../types.js';
 import { BaseGeoJsonEditMode, type GeoJsonEditAction } from './geojson-edit-mode.js';
 
 export class ScaleMode extends BaseGeoJsonEditMode {
@@ -12,11 +17,13 @@ export class ScaleMode extends BaseGeoJsonEditMode {
   _geometryBeingScaled: ?FeatureCollection;
 
   handlePointerMoveAdapter(
-    event: PointerMoveEvent
+    event: PointerMoveEvent,
+    props: ModeProps<FeatureCollection>
   ): { editAction: ?GeoJsonEditAction, cancelMapPan: boolean } {
     let editAction: ?GeoJsonEditAction = null;
 
-    this._isScalable = Boolean(this._geometryBeingScaled) || this.isSelectionPicked(event.picks);
+    this._isScalable =
+      Boolean(this._geometryBeingScaled) || this.isSelectionPicked(event.picks, props);
 
     if (!this._isScalable || !event.pointerDownMapCoords) {
       // Nothing to do
@@ -25,27 +32,43 @@ export class ScaleMode extends BaseGeoJsonEditMode {
 
     if (event.isDragging && this._geometryBeingScaled) {
       // Scale the geometry
-      editAction = this.getScaleAction(event.pointerDownMapCoords, event.mapCoords, 'scaling');
+      editAction = this.getScaleAction(
+        event.pointerDownMapCoords,
+        event.mapCoords,
+        'scaling',
+        props
+      );
     }
 
     return { editAction, cancelMapPan: true };
   }
 
-  handleStartDraggingAdapter(event: StartDraggingEvent): ?GeoJsonEditAction {
+  handleStartDraggingAdapter(
+    event: StartDraggingEvent,
+    props: ModeProps<FeatureCollection>
+  ): ?GeoJsonEditAction {
     if (!this._isScalable) {
       return null;
     }
 
-    this._geometryBeingScaled = this.getSelectedFeaturesAsFeatureCollection();
+    this._geometryBeingScaled = this.getSelectedFeaturesAsFeatureCollection(props);
     return null;
   }
 
-  handleStopDraggingAdapter(event: StopDraggingEvent): ?GeoJsonEditAction {
+  handleStopDraggingAdapter(
+    event: StopDraggingEvent,
+    props: ModeProps<FeatureCollection>
+  ): ?GeoJsonEditAction {
     let editAction: ?GeoJsonEditAction = null;
 
     if (this._geometryBeingScaled) {
       // Scale the geometry
-      editAction = this.getScaleAction(event.pointerDownMapCoords, event.mapCoords, 'scaled');
+      editAction = this.getScaleAction(
+        event.pointerDownMapCoords,
+        event.mapCoords,
+        'scaled',
+        props
+      );
       this._geometryBeingScaled = null;
     }
 
@@ -63,7 +86,8 @@ export class ScaleMode extends BaseGeoJsonEditMode {
   getScaleAction(
     startDragPoint: Position,
     currentPoint: Position,
-    editType: string
+    editType: string,
+    props: ModeProps<FeatureCollection>
   ): GeoJsonEditAction {
     const startPosition = startDragPoint;
     const centroid = turfCentroid(this._geometryBeingScaled);
@@ -74,7 +98,7 @@ export class ScaleMode extends BaseGeoJsonEditMode {
 
     let updatedData = this.getImmutableFeatureCollection();
 
-    const selectedIndexes = this.getSelectedFeatureIndexes();
+    const selectedIndexes = this.getSelectedFeatureIndexes(props);
     for (let i = 0; i < selectedIndexes.length; i++) {
       const selectedIndex = selectedIndexes[i];
       const movedFeature = scaledFeatures.features[i];

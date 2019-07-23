@@ -12,8 +12,6 @@ export class ExtrudeMode extends ModifyMode {
   handlePointerMoveAdapter(
     event: PointerMoveEvent
   ): { editAction: ?GeoJsonEditAction, cancelMapPan: boolean } {
-    this._lastPointerMovePicks = event.picks;
-
     let editAction: ?GeoJsonEditAction = null;
 
     const editHandle = getPickedEditHandle(event.pointerDownPicks);

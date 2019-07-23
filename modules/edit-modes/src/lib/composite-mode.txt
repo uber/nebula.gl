@@ -1,6 +1,6 @@
 // @flow
 
-import type { FeatureCollection, Feature, Position } from '@nebula.gl/edit-modes';
+import type { FeatureCollection, Feature, Position } from '../geojson-types.js';
 import type {
   ClickEvent,
   PointerMoveEvent,

@@ -156,6 +156,7 @@ export default class EditableLayer_EDIT_MODE_POC extends CompositeLayer {
     } = this.state._editableLayerState;
 
     let { isDragging } = this.state._editableLayerState;
+    let startedDragging = false;
 
     if (pointerDownScreenCoords) {
       // Pointer went down and is moving
@@ -174,6 +175,8 @@ export default class EditableLayer_EDIT_MODE_POC extends CompositeLayer {
           sourceEvent: event
         });
 
+        startedDragging = true;
+
         isDragging = true;
         this.setState({
           _editableLayerState: {
@@ -184,24 +187,26 @@ export default class EditableLayer_EDIT_MODE_POC extends CompositeLayer {
       }
     }
 
-    const picks = this.context.deck.pickMultipleObjects({
-      x: screenCoords[0],
-      y: screenCoords[1],
-      layerIds: [this.props.id],
-      radius: this.props.pickingRadius || 10,
-      depth: 2
-    });
+    if (!startedDragging) {
+      const picks = this.context.deck.pickMultipleObjects({
+        x: screenCoords[0],
+        y: screenCoords[1],
+        layerIds: [this.props.id],
+        radius: this.props.pickingRadius || 10,
+        depth: 2
+      });
 
-    this.onPointerMove({
-      screenCoords,
-      mapCoords,
-      picks,
-      isDragging,
-      pointerDownPicks,
-      pointerDownScreenCoords,
-      pointerDownMapCoords,
-      sourceEvent: event
-    });
+      this.onPointerMove({
+        screenCoords,
+        mapCoords,
+        picks,
+        isDragging,
+        pointerDownPicks,
+        pointerDownScreenCoords,
+        pointerDownMapCoords,
+        sourceEvent: event
+      });
+    }
   }
 
   _onPointerUp(event: Object) {

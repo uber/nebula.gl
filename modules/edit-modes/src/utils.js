@@ -64,13 +64,13 @@ export function recursivelyTraverseNestedArrays(
 export function generatePointsParallelToLinePoints(
   p1: Position,
   p2: Position,
-  groundCoords: Position
+  mapCoords: Position
 ): Position[] {
   const lineString: LineString = {
     type: 'LineString',
     coordinates: [p1, p2]
   };
-  const pt = point(groundCoords);
+  const pt = point(mapCoords);
   const ddistance = pointToLineDistance(pt, lineString);
   const lineBearing = bearing(p1, p2);
 
@@ -78,7 +78,7 @@ export function generatePointsParallelToLinePoints(
   // Line from A=(x1,y1) to B=(x2,y2) a point P=(x,y)
   // then (x−x1)(y2−y1)−(y−y1)(x2−x1)
   const isPointToLeftOfLine =
-    (groundCoords[0] - p1[0]) * (p2[1] - p1[1]) - (groundCoords[1] - p1[1]) * (p2[0] - p1[0]);
+    (mapCoords[0] - p1[0]) * (p2[1] - p1[1]) - (mapCoords[1] - p1[1]) * (p2[0] - p1[0]);
 
   // Bearing to draw perpendicular to the line string
   const orthogonalBearing = isPointToLeftOfLine < 0 ? lineBearing - 90 : lineBearing - 270;

@@ -56,7 +56,7 @@ export default class App extends Component {
       return;
     }
 
-    const selectedIndex = this.state.features.findIndex(f => f.id === selectedFeatureId);
+    const selectedIndex = this.state.features.findIndex(f => f.properties.id === selectedFeatureId);
     if (selectedIndex >= 0) {
       const newFeatures = [...this.state.features];
       newFeatures.splice(selectedIndex, 1);

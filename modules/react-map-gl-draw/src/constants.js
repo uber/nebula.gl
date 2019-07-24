@@ -1,15 +1,16 @@
 // @flow
+
 export const MODES = {
   READ_ONLY: 'READ_ONLY',
-  SELECT_FEATURE: 'SELECT_FEATURE',
-  EDIT_VERTEX: 'EDIT_VERTEX',
+  SELECT: 'SELECT',
+  EDITING: 'EDITING',
   DRAW_POINT: 'DRAW_POINT',
   DRAW_PATH: 'DRAW_PATH',
   DRAW_POLYGON: 'DRAW_POLYGON',
   DRAW_RECTANGLE: 'DRAW_RECTANGLE'
 };
 
-export const DRAWING_MODES = [
+export const DRAWING_MODE = [
   MODES.DRAW_POINT,
   MODES.DRAW_PATH,
   MODES.DRAW_POLYGON,
@@ -22,25 +23,11 @@ export const GEOJSON_TYPE = {
   POLYGON: 'Polygon'
 };
 
-export const MODE_TO_GEOJSON_TYPE = {
-  [MODES.DRAW_POINT]: GEOJSON_TYPE.POINT,
-  [MODES.DRAW_PATH]: GEOJSON_TYPE.LINE_STRING,
-  [MODES.DRAW_POLYGON]: GEOJSON_TYPE.POLYGON,
-  [MODES.DRAW_RECTANGLE]: GEOJSON_TYPE.POLYGON
-};
-
 export const RENDER_TYPE = {
   POINT: 'Point',
   LINE_STRING: 'LineString',
   POLYGON: 'Polygon',
   RECTANGLE: 'Rectangle'
-};
-
-export const MODE_TO_RENDER_TYPE = {
-  [MODES.DRAW_POINT]: RENDER_TYPE.POINT,
-  [MODES.DRAW_PATH]: RENDER_TYPE.LINE_STRING,
-  [MODES.DRAW_POLYGON]: RENDER_TYPE.POLYGON,
-  [MODES.DRAW_RECTANGLE]: RENDER_TYPE.RECTANGLE
 };
 
 export const RENDER_STATE = {
@@ -51,20 +38,23 @@ export const RENDER_STATE = {
   CLOSING: 'CLOSING'
 };
 
-export const OPERATIONS = {
-  NONE: 'NONE',
-  SET: 'SET',
-  INTERSECT: 'INTERSECT',
-  INSERT: 'INSERT'
-};
-
-export const STATIC_STYLE = {
-  cursor: 'default',
-  pointerEvents: 'none'
+export const GUIDE_TYPE = {
+  TENTATIVE: 'tentative',
+  EDIT_HANDLE: 'editHandle',
+  CURSOR_EDIT_HANDLE: 'cursorEditHandle'
 };
 
 export const ELEMENT_TYPE = {
   FEATURE: 'feature',
+  FILL: 'fill',
   SEGMENT: 'segment',
-  VERTEX: 'vertex'
+  EDIT_HANDLE: 'editHandle'
+};
+
+export const EDIT_TYPE = {
+  ADD_FEATURE: 'addFeature',
+  ADD_POSITION: 'addPosition',
+  REMOVE_POSITION: 'removePosition',
+  MOVE_POSITION: 'movePosition',
+  FINISH_MOVE_POSITION: 'finishMovePosition'
 };

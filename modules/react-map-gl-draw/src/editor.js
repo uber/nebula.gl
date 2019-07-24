@@ -337,6 +337,7 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
     const { x, y } = this._getEventPosition(evt);
     const attributes = parseElemDataAttributes(evt.target);
 
+    // click segment
     if (attributes && attributes.type === ELEMENT_TYPE.VERTEX) {
       const { vertexIndex } = attributes;
       this.setState({
@@ -344,6 +345,8 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
         startDragPos: { x, y },
         isDragging: true
       });
+
+      // click selected feature
     } else if (this._matchesFeature(attributes, this._getSelectedFeature())) {
       this.setState({
         startDragPos: { x, y },
@@ -407,7 +410,7 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
         ) {
           // segmentId is start vertexIndex
           let uncommittedLngLat = null;
-          if (!lngLat && typeof vertexIndex === 'number') {
+          if (lngLat && typeof vertexIndex === 'number') {
             uncommittedLngLat = this._getClosestPositionOnSegment(
               vertexIndex,
               lngLat,
@@ -746,7 +749,7 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
               data-vertex-index={vertexIndex}
               data-operation={operation}
               key={`${elemKey}.hidden`}
-              style={{ ...style, stroke: 'none', fill: '#000', fillOpacity: 0 }}
+              style={{ ...style, ...HIDDEN_CLICKABLE_STYLE, stroke: 'none' }}
               cx={0}
               cy={0}
               r={clickRadius}
@@ -1109,10 +1112,9 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
                 key={`${elemKey}.hidden`}
                 style={{
                   ...style,
-                  fill: '#000',
+                  ...HIDDEN_CLICKABLE_STYLE,
                   width: clickRadius,
-                  height: clickRadius,
-                  fillOpacity: 0
+                  height: clickRadius
                 }}
               />
               <rect

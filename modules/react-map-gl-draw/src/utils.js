@@ -33,19 +33,23 @@ export function findClosestPointOnLineSegment(p1: number[], p2: number[], p: num
   return inBounds(p1, p2, [qx, qy]) ? [qx, qy] : null;
 }
 
+export function isNumeric(n: any) {
+  return !Array.isArray(n) && !isNaN(parseFloat(n)) && isFinite(n);
+}
+
 export function parseElemDataAttributes(elem: HTMLElement) {
   const data = elem && elem.dataset;
   if (!data) {
     return null;
   }
 
-  const featureIndex = parseInt(data.featureIndex, 10);
-  const vertexIndex = parseInt(data.vertexIndex, 10);
+  const featureIndex = data.featureIndex;
+  const vertexIndex = data.vertexIndex;
 
   return {
     type: data.type,
     operation: data.operation,
-    featureIndex: isNaN(featureIndex) ? undefined : featureIndex,
-    vertexIndex: isNaN(vertexIndex) ? undefined : vertexIndex
+    featureIndex: isNumeric(featureIndex) ? Number(featureIndex) : undefined,
+    vertexIndex: isNumeric(vertexIndex) ? Number(vertexIndex) : undefined
   };
 }

@@ -1,7 +1,7 @@
 // @flow
 /* eslint-env jest */
 
-import { findClosestPointOnLineSegment } from '../src/utils.js';
+import { findClosestPointOnLineSegment, isNumeric } from '../src/utils.js';
 
 describe('findClosestPointOnLineSegment', () => {
   it('should return null when point on the line and out of bounds', () => {
@@ -11,7 +11,7 @@ describe('findClosestPointOnLineSegment', () => {
 
     const point = findClosestPointOnLineSegment(p1, p2, p);
 
-    expect(point).toEqual(null);
+    expect(point).toBe(null);
   });
 
   it('should return null when line vertical and point out of bounds', () => {
@@ -21,7 +21,7 @@ describe('findClosestPointOnLineSegment', () => {
 
     const point = findClosestPointOnLineSegment(p1, p2, p);
 
-    expect(point).toEqual(null);
+    expect(point).toBe(null);
   });
 
   it('should return expected when line vertical', () => {
@@ -41,7 +41,7 @@ describe('findClosestPointOnLineSegment', () => {
 
     const point = findClosestPointOnLineSegment(p1, p2, p);
 
-    expect(point).toEqual(null);
+    expect(point).toBe(null);
   });
 
   it('should return expected', () => {
@@ -52,5 +52,16 @@ describe('findClosestPointOnLineSegment', () => {
     const point = findClosestPointOnLineSegment(p1, p2, p);
 
     expect(point).toEqual([2.1724137931034484, 2.931034482758621]);
+  });
+});
+
+describe('isNumeric', () => {
+  it('should match expect', () => {
+    const testCases = [null, undefined, '', 'a', [], [1], '1', '1.1', 1, 1.1];
+
+    const expected = [false, false, false, false, false, false, true, true, true, true];
+    const results = testCases.map(t => isNumeric(t));
+
+    expect(results).toEqual(expected);
   });
 });

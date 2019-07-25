@@ -67,6 +67,8 @@ const defaultProps = {
   onSelect: () => {}
 };
 
+const UNCOMMITTED_ID = 'uncommitted';
+
 export default class Editor extends PureComponent<EditorProps, EditorState> {
   static defaultProps = defaultProps;
 
@@ -695,7 +697,7 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
     switch (index) {
       case hoveredVertexIndex:
         return RENDER_STATE.HOVERED;
-      case 'uncommitted':
+      case UNCOMMITTED_ID:
         return RENDER_STATE.UNCOMMITTED;
       default:
         return RENDER_STATE.INACTIVE;
@@ -712,7 +714,7 @@ export default class Editor extends PureComponent<EditorProps, EditorState> {
         return RENDER_STATE.SELECTED;
       case hoveredFeatureId:
         return RENDER_STATE.HOVERED;
-      case 'uncommitted':
+      case UNCOMMITTED_ID:
         return RENDER_STATE.UNCOMMITTED;
       default:
         return RENDER_STATE.INACTIVE;

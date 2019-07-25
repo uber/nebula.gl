@@ -62,3 +62,9 @@ export const STATIC_STYLE = {
   cursor: 'default',
   pointerEvents: 'none'
 };
+
+export const ELEMENT_TYPE = {
+  FEATURE: 'feature',
+  SEGMENT: 'segment',
+  VERTEX: 'vertex'
+};

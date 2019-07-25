@@ -1,17 +1,26 @@
 import { RENDER_STATE, RENDER_TYPE } from './constants';
 
-const rectStyle = {
+const RECT_STYLE = {
   x: -6,
   y: -6,
   height: 12,
   width: 12
 };
 
-const closingRectStyle = {
+const CLOSING_RECT_STYLE = {
   x: -10,
   y: -10,
   height: 20,
   width: 20
+};
+
+const DEFAULT_STROKE_WIDTH = 2;
+const HIGHLIGHTED_STROKE_WIDTH = 4;
+const DEFAULT_RADIUS = 8;
+
+export const HIDDEN_CLICKABLE_STYLE = {
+  fill: '#000',
+  opacity: 0
 };
 
 export function getFeatureStyle({ feature, state }) {
@@ -22,7 +31,7 @@ export function getFeatureStyle({ feature, state }) {
         : state === RENDER_STATE.UNCOMMITTED || state === RENDER_STATE.CLOSING
           ? '#a9a9a9'
           : '#000',
-    strokeWidth: 4,
+    strokeWidth: DEFAULT_STROKE_WIDTH,
     fill:
       state === RENDER_STATE.INACTIVE
         ? '#333333'
@@ -49,7 +58,7 @@ export function getFeatureStyle({ feature, state }) {
 
   switch (renderType) {
     case RENDER_TYPE.POINT:
-      style.r = 8;
+      style.r = DEFAULT_RADIUS;
       break;
     case RENDER_TYPE.LINE_STRING:
       style.fill = 'none';
@@ -98,8 +107,11 @@ export function getEditHandleStyle({ feature, index, state }) {
       state === RENDER_STATE.CLOSING
         ? '#7ac943'
         : '#000',
-    strokeWidth: state === RENDER_STATE.SELECTED || state === RENDER_STATE.CLOSING ? 4 : 2,
-    r: 8
+    strokeWidth:
+      state === RENDER_STATE.SELECTED || state === RENDER_STATE.CLOSING
+        ? HIGHLIGHTED_STROKE_WIDTH
+        : DEFAULT_STROKE_WIDTH,
+    r: DEFAULT_RADIUS
   };
 
   const renderType = feature.properties ? feature.properties.renderType : feature.renderType;
@@ -127,9 +139,9 @@ export function getEditHandleStyle({ feature, index, state }) {
     case RENDER_TYPE.POLYGON:
     case RENDER_TYPE.RECTANGLE:
       if (state === RENDER_STATE.CLOSING) {
-        Object.assign(style, closingRectStyle);
+        Object.assign(style, CLOSING_RECT_STYLE);
       } else {
-        Object.assign(style, rectStyle);
+        Object.assign(style, RECT_STYLE);
       }
       break;
     default:

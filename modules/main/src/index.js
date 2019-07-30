@@ -29,6 +29,7 @@ export { PathOutlineLayer } from '@nebula.gl/layers';
 export { PathMarkerLayer } from '@nebula.gl/layers';
 export { ModeHandler } from '@nebula.gl/layers';
 export { CompositeModeHandler } from '@nebula.gl/layers';
+export { ViewHandler } from '@nebula.gl/layers';
 export { ModifyHandler } from '@nebula.gl/layers';
 export { DrawPointHandler } from '@nebula.gl/layers';
 export { DrawLineStringHandler } from '@nebula.gl/layers';

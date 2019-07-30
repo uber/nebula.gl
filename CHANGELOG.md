@@ -4,6 +4,17 @@ _All notable changes to this project will be documented in this file. This proje
 
 <!-- INSERT HERE -->
 
+<!--
+## Version TBD
+
+### Breaking changes
+
+* `editHandleType` no longer supports passing a function/constructor. Use `_subLayerProps` instead.
+* `editHandleParameters` removed. Use `_subLayerProps` instead.
+* `editHandleLayerProps` removed. Use `_subLayerProps` instead.
+
+-->
+
 ## [0.14.7](https://github.com/uber/nebula.gl/compare/v0.14.4...v0.14.7) - 2019-07-12
 
 ### Changes

@@ -10,11 +10,19 @@ import type {
   PointerMoveEvent,
   StartDraggingEvent,
   StopDraggingEvent,
-  Pick
+  Pick,
+  ModeProps
 } from '../types.js';
-import type { FeatureCollection, Feature, Polygon, Geometry, Position } from '../geojson-types.js';
-import type { ModeState } from './edit-mode.js';
-import { EditMode, BaseEditMode } from './edit-mode.js';
+import type {
+  FeatureCollection,
+  Feature,
+  FeatureOf,
+  Point,
+  Polygon,
+  Geometry,
+  Position
+} from '../geojson-types.js';
+import { EditMode } from './edit-mode.js';
 
 import { ImmutableFeatureCollection } from './immutable-feature-collection.js';
 
@@ -28,23 +36,59 @@ export type EditHandle = {
 };
 
 export type GeoJsonEditAction = EditAction<FeatureCollection>;
-export type ModeHandlerGuides = { tentativeFeature: ?Feature, editHandles: EditHandle[] };
 
 const DEFAULT_EDIT_HANDLES: EditHandle[] = [];
 
 // Main interface for `EditMode`s that edit GeoJSON
-export type GeoJsonEditMode = EditMode<FeatureCollection, ModeHandlerGuides>;
+export type GeoJsonEditMode = EditMode<FeatureCollection, FeatureCollection>;
 
-export class BaseGeoJsonEditMode extends BaseEditMode<FeatureCollection, ModeHandlerGuides> {
+export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, FeatureCollection> {
   // TODO: add underscore
   featureCollection: ImmutableFeatureCollection;
   _clickSequence: Position[] = [];
+  _editHandles: EditHandle[] = DEFAULT_EDIT_HANDLES;
+  _tentativeFeature: ?Feature;
 
   constructor(featureCollection?: FeatureCollection) {
-    super();
     if (featureCollection) {
       this.setFeatureCollection(featureCollection);
     }
+  }
+
+  getGuides({ lastPointerMoveEvent }: ModeProps<FeatureCollection>): FeatureCollection {
+    const picks = lastPointerMoveEvent && lastPointerMoveEvent.picks;
+    const mapCoords = lastPointerMoveEvent && lastPointerMoveEvent.mapCoords;
+    const editHandles = this.getEditHandlesAdapter(picks, mapCoords);
+
+    const tentative: Feature[] = this._tentativeFeature
+      ? [
+          // $FlowFixMe
+          {
+            ...this._tentativeFeature,
+            properties: {
+              guideType: 'tentative'
+            }
+          }
+        ]
+      : [];
+    const editHandleFeatures: FeatureOf<Point>[] = editHandles.map(handle => ({
+      type: 'Feature',
+      properties: {
+        guideType: 'editHandle',
+        editHandleType: handle.type,
+        featureIndex: handle.featureIndex,
+        positionIndexes: handle.positionIndexes
+      },
+      geometry: {
+        type: 'Point',
+        coordinates: handle.position
+      }
+    }));
+
+    return {
+      type: 'FeatureCollection',
+      features: [...tentative, ...editHandleFeatures]
+    };
   }
 
   getFeatureCollection(): FeatureCollection {
@@ -55,35 +99,28 @@ export class BaseGeoJsonEditMode extends BaseEditMode<FeatureCollection, ModeHan
     return this.featureCollection;
   }
 
-  getSelectedFeature(): ?Feature {
-    if (this.getSelectedIndexes().length === 1) {
-      return this.featureCollection.getObject().features[this.getSelectedIndexes()[0]];
+  getSelectedFeature(props: ModeProps<FeatureCollection>): ?Feature {
+    if (props.selectedIndexes.length === 1) {
+      return props.data.features[props.selectedIndexes[0]];
     }
     return null;
   }
 
-  getSelectedGeometry(): ?Geometry {
-    const feature = this.getSelectedFeature();
+  getSelectedGeometry(props: ModeProps<FeatureCollection>): ?Geometry {
+    const feature = this.getSelectedFeature(props);
     if (feature) {
       return feature.geometry;
     }
     return null;
   }
 
-  getSelectedFeaturesAsFeatureCollection(): FeatureCollection {
-    const { features } = this.featureCollection.getObject();
-    const selectedFeatures = this.getSelectedFeatureIndexes().map(
-      selectedIndex => features[selectedIndex]
-    );
+  getSelectedFeaturesAsFeatureCollection(props: ModeProps<FeatureCollection>): FeatureCollection {
+    const { features } = props.data;
+    const selectedFeatures = props.selectedIndexes.map(selectedIndex => features[selectedIndex]);
     return {
       type: 'FeatureCollection',
       features: selectedFeatures
     };
-  }
-
-  onDataChanged(): void {
-    this.setFeatureCollection(this.getData());
-    this._refreshEditHandles();
   }
 
   setFeatureCollection(featureCollection: FeatureCollection): void {
@@ -96,36 +133,13 @@ export class BaseGeoJsonEditMode extends BaseEditMode<FeatureCollection, ModeHan
   }
 
   // TODO: delete me
-  getSelectedFeatureIndexes(): number[] {
-    return this.getSelectedIndexes();
+  getSelectedFeatureIndexes(props: ModeProps<FeatureCollection>): number[] {
+    return props.selectedIndexes;
   }
 
   // TODO: delete me
   setSelectedFeatureIndexes(indexes: number[]): void {
     console.warn('TODO: call to obsolete setSelectedFeatureIndexes'); // eslint-disable-line
-  }
-
-  onSelectedIndexesChanged(): void {
-    this._setTentativeFeature(null);
-  }
-
-  onGuidesChanged(prevState: ModeState<FeatureCollection, ModeHandlerGuides>): void {
-    const guides = this.getGuides();
-
-    if (!guides) {
-      // Reset the click sequence
-      this._clickSequence = [];
-    }
-
-    if (
-      prevState &&
-      prevState.guides &&
-      guides &&
-      prevState.guides.tentativeFeature !== guides.tentativeFeature
-    ) {
-      // re-calculate edit handles
-      this._refreshEditHandles();
-    }
   }
 
   getClickSequence(): Position[] {
@@ -137,37 +151,24 @@ export class BaseGeoJsonEditMode extends BaseEditMode<FeatureCollection, ModeHan
   }
 
   getTentativeFeature(): ?Feature {
-    const { tentativeFeature } = this.getGuides() || {};
-    return tentativeFeature;
+    return this._tentativeFeature;
   }
 
   getEditHandles(): EditHandle[] {
-    const { editHandles } = this.getGuides() || { editHandles: DEFAULT_EDIT_HANDLES };
-    return editHandles;
+    return this._editHandles;
   }
 
   // TODO: delete me once mode handlers do getEditHandles lazily
   _setTentativeFeature(tentativeFeature: ?Feature): void {
-    this.getState().onUpdateGuides({
-      tentativeFeature,
-      editHandles: this.getEditHandles()
-    });
+    this._tentativeFeature = tentativeFeature;
   }
 
-  // TODO: delete me once mode handlers do getEditHandles lazily
-  _refreshEditHandles(picks?: Array<Object>, mapCoords?: Position): void {
-    this.getState().onUpdateGuides({
-      tentativeFeature: this.getTentativeFeature(),
-      editHandles: this.getEditHandlesAdapter(picks, mapCoords)
-    });
-  }
-
-  _refreshCursor(): void {
-    const currentCursor = this.getCursor();
-    const updatedCursor = this.getCursorAdapter({ isDragging: false });
+  _refreshCursor(props: ModeProps<FeatureCollection>): void {
+    const currentCursor = props.cursor;
+    const updatedCursor = this.getCursorAdapter();
 
     if (currentCursor !== updatedCursor) {
-      this.onUpdateCursor(updatedCursor);
+      props.onUpdateCursor(updatedCursor);
     }
   }
 
@@ -184,14 +185,14 @@ export class BaseGeoJsonEditMode extends BaseEditMode<FeatureCollection, ModeHan
     return DEFAULT_EDIT_HANDLES;
   }
 
-  getCursorAdapter({ isDragging }: { isDragging: boolean }): string {
-    return 'cell';
+  getCursorAdapter(): ?string {
+    return null;
   }
 
-  isSelectionPicked(picks: Pick[]): boolean {
+  isSelectionPicked(picks: Pick[], props: ModeProps<FeatureCollection>): boolean {
     if (!picks.length) return false;
     const pickedIndexes = picks.map(({ index }) => index);
-    const selectedFeatureIndexes = this.getSelectedFeatureIndexes();
+    const selectedFeatureIndexes = props.selectedIndexes;
     return selectedFeatureIndexes.some(index => pickedIndexes.includes(index));
   }
 
@@ -241,9 +242,12 @@ export class BaseGeoJsonEditMode extends BaseEditMode<FeatureCollection, ModeHan
     };
   }
 
-  getAddFeatureOrBooleanPolygonAction(geometry: Polygon): ?GeoJsonEditAction {
-    const selectedFeature = this.getSelectedFeature();
-    const modeConfig = this.getModeConfig();
+  getAddFeatureOrBooleanPolygonAction(
+    geometry: Polygon,
+    props: ModeProps<FeatureCollection>
+  ): ?GeoJsonEditAction {
+    const selectedFeature = this.getSelectedFeature(props);
+    const { modeConfig } = props;
     if (modeConfig && modeConfig.booleanOperation) {
       if (
         !selectedFeature ||
@@ -281,7 +285,7 @@ export class BaseGeoJsonEditMode extends BaseEditMode<FeatureCollection, ModeHan
         return null;
       }
 
-      const featureIndex = this.getSelectedFeatureIndexes()[0];
+      const featureIndex = props.selectedIndexes[0];
 
       const updatedData = this.getImmutableFeatureCollection()
         .replaceGeometry(featureIndex, updatedGeometry.geometry)
@@ -300,17 +304,20 @@ export class BaseGeoJsonEditMode extends BaseEditMode<FeatureCollection, ModeHan
     return this.getAddFeatureAction(geometry);
   }
 
-  handleClick(event: ClickEvent): void {
-    const editAction = this.handleClickAdapter(event);
+  // TODO: factor out all the duplicate calls to setFeatureCollection
 
-    this._refreshEditHandles(event.picks, event.mapCoords);
+  handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>): void {
+    this.setFeatureCollection(props.data);
+    const editAction = this.handleClickAdapter(event, props);
+
     if (editAction) {
-      this.onEdit(editAction);
+      props.onEdit(editAction);
     }
   }
 
-  handlePointerMove(event: PointerMoveEvent): void {
-    const { editAction, cancelMapPan } = this.handlePointerMoveAdapter(event);
+  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>): void {
+    this.setFeatureCollection(props.data);
+    const { editAction, cancelMapPan } = this.handlePointerMoveAdapter(event, props);
 
     if (cancelMapPan) {
       // TODO: is there a less hacky way to prevent map panning?
@@ -318,49 +325,57 @@ export class BaseGeoJsonEditMode extends BaseEditMode<FeatureCollection, ModeHan
       event.sourceEvent.stopPropagation();
     }
 
-    this._refreshCursor();
-    this._refreshEditHandles(event.picks, event.mapCoords);
+    this._refreshCursor(props);
     if (editAction) {
-      this.onEdit(editAction);
+      props.onEdit(editAction);
     }
   }
 
-  handleStartDragging(event: StartDraggingEvent): void {
-    const editAction = this.handleStartDraggingAdapter(event);
+  handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollection>): void {
+    this.setFeatureCollection(props.data);
 
-    this._refreshEditHandles(event.picks, event.mapCoords);
+    const editAction = this.handleStartDraggingAdapter(event, props);
+
     if (editAction) {
-      this.onEdit(editAction);
+      props.onEdit(editAction);
     }
   }
 
-  handleStopDragging(event: StopDraggingEvent): void {
-    const editAction = this.handleStopDraggingAdapter(event);
+  handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollection>): void {
+    this.setFeatureCollection(props.data);
 
-    this._refreshEditHandles(event.picks, event.mapCoords);
+    const editAction = this.handleStopDraggingAdapter(event, props);
+
     if (editAction) {
-      this.onEdit(editAction);
+      props.onEdit(editAction);
     }
   }
 
   // TODO: delete these adapters once all ModeHandler implementations don't use them
-  handleClickAdapter(event: ClickEvent): ?GeoJsonEditAction {
+  handleClickAdapter(event: ClickEvent, props: ModeProps<FeatureCollection>): ?GeoJsonEditAction {
     this._clickSequence.push(event.mapCoords);
 
     return null;
   }
 
   handlePointerMoveAdapter(
-    event: PointerMoveEvent
+    event: PointerMoveEvent,
+    props: ModeProps<FeatureCollection>
   ): { editAction: ?GeoJsonEditAction, cancelMapPan: boolean } {
     return { editAction: null, cancelMapPan: false };
   }
 
-  handleStartDraggingAdapter(event: StartDraggingEvent): ?GeoJsonEditAction {
+  handleStartDraggingAdapter(
+    event: StartDraggingEvent,
+    props: ModeProps<FeatureCollection>
+  ): ?GeoJsonEditAction {
     return null;
   }
 
-  handleStopDraggingAdapter(event: StopDraggingEvent): ?GeoJsonEditAction {
+  handleStopDraggingAdapter(
+    event: StopDraggingEvent,
+    props: ModeProps<FeatureCollection>
+  ): ?GeoJsonEditAction {
     return null;
   }
 }

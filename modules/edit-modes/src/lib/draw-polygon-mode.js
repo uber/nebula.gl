@@ -1,7 +1,7 @@
 // @flow
 
-import type { ClickEvent, PointerMoveEvent } from '../types.js';
-import type { Polygon, Position } from '../geojson-types.js';
+import type { ClickEvent, PointerMoveEvent, ModeProps } from '../types.js';
+import type { Polygon, Position, FeatureCollection } from '../geojson-types.js';
 import type { GeoJsonEditAction, EditHandle } from './geojson-edit-mode.js';
 import {
   BaseGeoJsonEditMode,
@@ -29,8 +29,8 @@ export class DrawPolygonMode extends BaseGeoJsonEditMode {
     return handles;
   }
 
-  handleClickAdapter(event: ClickEvent): ?GeoJsonEditAction {
-    super.handleClickAdapter(event);
+  handleClickAdapter(event: ClickEvent, props: ModeProps<FeatureCollection>): ?GeoJsonEditAction {
+    super.handleClickAdapter(event, props);
 
     const { picks } = event;
     const tentativeFeature = this.getTentativeFeature();
@@ -64,7 +64,7 @@ export class DrawPolygonMode extends BaseGeoJsonEditMode {
 
         this.resetClickSequence();
         this._setTentativeFeature(null);
-        editAction = this.getAddFeatureOrBooleanPolygonAction(polygonToAdd);
+        editAction = this.getAddFeatureOrBooleanPolygonAction(polygonToAdd, props);
       }
     }
 
@@ -80,14 +80,15 @@ export class DrawPolygonMode extends BaseGeoJsonEditMode {
       sourceEvent: null
     };
 
-    this.handlePointerMoveAdapter(fakePointerMoveEvent);
+    this.handlePointerMoveAdapter(fakePointerMoveEvent, props);
 
     return editAction;
   }
 
-  handlePointerMoveAdapter({
-    mapCoords
-  }: PointerMoveEvent): { editAction: ?GeoJsonEditAction, cancelMapPan: boolean } {
+  handlePointerMoveAdapter(
+    { mapCoords }: PointerMoveEvent,
+    props: ModeProps<FeatureCollection>
+  ): { editAction: ?GeoJsonEditAction, cancelMapPan: boolean } {
     const clickSequence = this.getClickSequence();
     const result = { editAction: null, cancelMapPan: false };
 
@@ -117,5 +118,9 @@ export class DrawPolygonMode extends BaseGeoJsonEditMode {
     }
 
     return result;
+  }
+
+  getCursorAdapter() {
+    return 'cell';
   }
 }

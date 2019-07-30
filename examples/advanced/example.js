@@ -104,6 +104,11 @@ const POLYGON_DRAWING_MODES = [
   'drawEllipseUsing3Points'
 ];
 
+const EMPTY_FEATURE_COLLECTION = {
+  type: 'FeatureCollection',
+  features: []
+};
+
 const modeHandlers = Object.assign(
   {
     'drawLineString+modify': new CompositeModeHandler([
@@ -134,8 +139,16 @@ const FEATURE_COLORS = [
   'CCDFE5'
 ].map(hex2rgb);
 
-function getEditHandleColor(handle: Object) {
-  switch (handle.type) {
+// TODO: delete once fully on EditMode implementation and just use handle.sourceFeature.feature...
+// Unwrap the edit handle object from either layer implementation
+function getEditHandleTypeFromEitherLayer(handleOrFeature) {
+  return handleOrFeature.sourceFeature
+    ? handleOrFeature.sourceFeature.feature.properties.editHandleType
+    : handleOrFeature.type;
+}
+
+function getEditHandleColor(handle: {}) {
+  switch (getEditHandleTypeFromEitherLayer(handle)) {
     case 'existing':
       return [0xff, 0x80, 0x00, 0xff];
     case 'snap':
@@ -170,7 +183,7 @@ export default class Example extends Component<
 
     this.state = {
       viewport: initialViewport,
-      testFeatures: sampleGeoJson,
+      testFeatures: EMPTY_FEATURE_COLLECTION,
       mode: 'drawPolygon',
       modeConfig: null,
       pointsRemovable: true,
@@ -241,10 +254,8 @@ export default class Example extends Component<
       });
     } else if (type === 'blank') {
       this.setState({
-        testFeatures: {
-          type: 'FeatureCollection',
-          features: []
-        }
+        testFeatures: EMPTY_FEATURE_COLLECTION,
+        selectedFeatureIndexes: []
       });
     } else if (type === 'file') {
       const el = document.createElement('input');
@@ -719,6 +730,30 @@ export default class Example extends Component<
       };
     }
 
+    // Demonstrate how to override sub layer properties
+    let _subLayerProps = null;
+    if (this.state.editHandleType === 'elevated') {
+      if (EditableGeoJsonLayerImpl === EditableGeoJsonLayerEditModePoc) {
+        _subLayerProps = {
+          guides: {
+            _subLayerProps: {
+              points: {
+                type: ElevatedEditHandleLayer,
+                getFillColor: [0, 255, 0]
+              }
+            }
+          }
+        };
+      } else {
+        _subLayerProps = {
+          editHandles: {
+            type: ElevatedEditHandleLayer,
+            getFillColor: [0, 255, 0]
+          }
+        };
+      }
+    }
+
     const editableGeoJsonLayer = new EditableGeoJsonLayerImpl({
       id: 'geojson',
       data: testFeatures,
@@ -734,9 +769,12 @@ export default class Example extends Component<
         if (
           !['movePosition', 'extruding', 'rotating', 'translating', 'scaling'].includes(editType)
         ) {
+          const updatedDataInfo = updatedData.features.map(
+            feature => `${feature.geometry.type}(${getPositionCount(feature.geometry)})`
+          );
           // Don't log edits that happen as the pointer moves since they're really chatty
           // eslint-disable-next-line
-          console.log('onEdit', editType, editContext);
+          console.log('onEdit', editType, editContext, JSON.stringify(updatedDataInfo));
         }
         if (editType === 'removePosition' && !this.state.pointsRemovable) {
           // This is a simple example of custom handling of edits
@@ -755,11 +793,9 @@ export default class Example extends Component<
         });
       },
 
+      editHandleType: this.state.editHandleType,
+
       // test using icons for edit handles
-      editHandleType:
-        this.state.editHandleType === 'elevated'
-          ? ElevatedEditHandleLayer
-          : this.state.editHandleType,
       editHandleIconAtlas: iconSheet,
       editHandleIconMapping: {
         intermediate: {
@@ -777,7 +813,7 @@ export default class Example extends Component<
           mask: false
         }
       },
-      getEditHandleIcon: d => d.type,
+      getEditHandleIcon: d => getEditHandleTypeFromEitherLayer(d),
       getEditHandleIconSize: 40,
       getEditHandleIconColor: getEditHandleColor,
 
@@ -807,6 +843,8 @@ export default class Example extends Component<
       // customize tentative feature style
       getTentativeLineDashArray: () => [7, 4],
       getTentativeLineColor: () => [0x8f, 0x8f, 0x8f, 0xff],
+
+      _subLayerProps,
 
       parameters: {
         depthTest: true,
@@ -865,5 +903,28 @@ export default class Example extends Component<
         {this.state.featureMenu && this._renderFeatureMenu(this.state.featureMenu)}
       </div>
     );
+  }
+}
+
+function getPositionCount(geometry): number {
+  // const getSum = (total: number, num: number) => total + num;
+  const flatMap = (f, arr) => arr.reduce((x, y) => [...x, ...f(y)], []);
+
+  const { type, coordinates } = geometry;
+  switch (type) {
+    case 'Point':
+      return 1;
+    case 'LineString':
+    case 'MultiPoint':
+      return coordinates.length;
+    case 'Polygon':
+    case 'MultiLineString':
+      return flatMap(x => x, coordinates).length;
+    case 'MultiPolygon':
+      // return coordinates.reduce(getSum, 0);
+      return flatMap(x => flatMap(y => y, x), coordinates).length;
+    // return coordinates.reduce((acc, x) => acc.concat([x]), []).reduce(getSum, 0);
+    default:
+      throw Error(`Unknown geometry type: ${type}`);
   }
 }

@@ -4,6 +4,7 @@
 import { GeoJsonLayer, ScatterplotLayer, IconLayer } from '@deck.gl/layers';
 
 import { ViewMode, DrawPolygonMode } from '@nebula.gl/edit-modes';
+
 import type {
   EditAction,
   ClickEvent,
@@ -26,8 +27,10 @@ const DEFAULT_EDITING_EXISTING_POINT_RADIUS = 5;
 const DEFAULT_EDITING_INTERMEDIATE_POINT_RADIUS = 3;
 const DEFAULT_EDITING_SNAP_POINT_RADIUS = 7;
 
+const DEFAULT_EDIT_MODE = new ViewMode();
+
 function getEditHandleColor(handle) {
-  switch (handle.type) {
+  switch (handle.sourceFeature.feature.properties.editHandleType) {
     case 'existing':
       return DEFAULT_EDITING_EXISTING_POINT_COLOR;
     case 'snap':
@@ -39,7 +42,7 @@ function getEditHandleColor(handle) {
 }
 
 function getEditHandleRadius(handle) {
-  switch (handle.type) {
+  switch (handle.sourceFeature.feature.properties.editHandleType) {
     case 'existing':
       return DEFAULT_EDITING_EXISTING_POINT_RADIUS;
     case 'snap':
@@ -88,8 +91,6 @@ const defaultProps = {
   getTentativeLineWidth: (f, mode) => (f && f.properties && f.properties.lineWidth) || 1,
 
   editHandleType: 'point',
-  editHandleParameters: {},
-  editHandleLayerProps: {},
 
   // point handles
   editHandlePointRadiusScale: 1,
@@ -104,7 +105,7 @@ const defaultProps = {
   editHandleIconAtlas: null,
   editHandleIconMapping: null,
   editHandleIconSizeScale: 1,
-  getEditHandleIcon: handle => handle.type,
+  getEditHandleIcon: handle => handle.sourceFeature.feature.properties.editHandleType,
   getEditHandleIconSize: 10,
   getEditHandleIconColor: getEditHandleColor,
   getEditHandleIconAngle: 0,
@@ -173,8 +174,7 @@ export default class EditableGeoJsonLayer_EDIT_MODE_POC extends EditableLayer {
 
     let layers: any = [new GeoJsonLayer(subLayerProps)];
 
-    layers = layers.concat(this.createTentativeLayers());
-    layers = layers.concat(this.createEditHandleLayers());
+    layers = layers.concat(this.createGuidesLayers());
 
     return layers;
   }
@@ -183,40 +183,20 @@ export default class EditableGeoJsonLayer_EDIT_MODE_POC extends EditableLayer {
     super.initializeState();
 
     this.setState({
-      cursor: 'grab',
       selectedFeatures: [],
       editHandles: []
     });
   }
 
-  setState(partialState: any) {
-    super.setState(partialState);
-    this.updateModeState(this.props);
+  // TODO: is this the best way to properly update state from an outside event handler?
+  shouldUpdateState(opts: any) {
+    // console.log(
+    //   'shouldUpdateState',
+    //   opts.changeFlags.propsOrDataChanged,
+    //   opts.changeFlags.stateChanged
+    // );
+    return super.shouldUpdateState(opts) || opts.changeFlags.stateChanged;
   }
-
-  // TODO: figure out how to properly update state from an outside event handler
-  shouldUpdateState() {
-    return true;
-  }
-
-  // shouldUpdateState(opts: Object) {
-  //   let shouldUpdateState = super.shouldUpdateState(opts);
-
-  //   if (opts.changeFlags.stateChanged) {
-  //     shouldUpdateState = true;
-
-  //     // const needsRedraw = this.getNeedsRedraw && this.getNeedsRedraw()
-  //     // console.log(
-  //     //   'calling modeHandler.updateState',
-  //     //   this.getNeedsRedraw(),
-  //     //   this.internalState.needsRedraw,
-  //     //   JSON.stringify(changeFlags)
-  //     // );
-
-  //     this.updateModeState(this.props);
-  //   }
-  //   return shouldUpdateState;
-  // }
 
   updateState({
     props,
@@ -237,11 +217,11 @@ export default class EditableGeoJsonLayer_EDIT_MODE_POC extends EditableLayer {
         if (!modeHandler) {
           console.warn(`No handler configured for mode ${props.mode}`); // eslint-disable-line no-console,no-undef
           // Use default mode handler
-          modeHandler = new ViewMode();
+          modeHandler = DEFAULT_EDIT_MODE;
         }
 
         if (modeHandler !== this.state.modeHandler) {
-          this.setState({ modeHandler });
+          this.setState({ modeHandler, cursor: null });
         }
       }
     }
@@ -255,40 +235,20 @@ export default class EditableGeoJsonLayer_EDIT_MODE_POC extends EditableLayer {
     this.setState({ selectedFeatures });
   }
 
-  updateModeState(props: Props) {
-    const modeHandler = props.modeHandlers[props.mode];
-
-    modeHandler.updateState({
+  getModeProps(props: Props) {
+    return {
       modeConfig: props.modeConfig,
       data: props.data,
       selectedIndexes: props.selectedFeatureIndexes,
-      guides: this.state && {
-        tentativeFeature: this.state.tentativeFeature,
-        editHandles: this.state.editHandles
-      },
+      lastPointerMoveEvent: this.state.lastPointerMoveEvent,
       cursor: this.state.cursor,
       onEdit: (editAction: EditAction<FeatureCollection>) => {
         props.onEdit(editAction);
       },
-      onUpdateGuides: guides => {
-        if (guides) {
-          this.setState({
-            tentativeFeature: guides.tentativeFeature,
-            editHandles: guides.editHandles
-          });
-        } else {
-          this.setState({
-            tentativeFeature: null,
-            editHandles: null
-          });
-        }
-        this.setLayerNeedsUpdate();
-        this.setNeedsRedraw();
-      },
-      onUpdateCursor: cursor => {
+      onUpdateCursor: (cursor: ?string) => {
         this.setState({ cursor });
       }
-    });
+    };
   }
 
   selectionAwareAccessor(accessor: any) {
@@ -318,115 +278,58 @@ export default class EditableGeoJsonLayer_EDIT_MODE_POC extends EditableLayer {
     return info;
   }
 
-  createEditHandleLayers() {
-    if (!this.state.editHandles.length) {
+  createGuidesLayers() {
+    const mode = this.props.modeHandlers[this.props.mode] || DEFAULT_EDIT_MODE;
+    const guides: FeatureCollection = mode.getGuides(this.getModeProps(this.props));
+
+    if (!guides || !guides.features.length) {
       return [];
     }
 
-    const sharedProps = {
-      id: `${this.props.editHandleType.layerName || this.props.editHandleType}-edit-handles`,
-      data: this.state.editHandles,
-      fp64: this.props.fp64,
-
-      parameters: this.props.editHandleParameters,
-      ...this.props.editHandleLayerProps
-    };
-
-    let layer;
-
-    switch (this.props.editHandleType) {
-      case 'icon':
-        layer = new IconLayer(
-          this.getSubLayerProps({
-            ...sharedProps,
-            iconAtlas: this.props.editHandleIconAtlas,
-            iconMapping: this.props.editHandleIconMapping,
-            sizeScale: this.props.editHandleIconSizeScale,
-            getIcon: this.props.getEditHandleIcon,
-            getSize: this.props.getEditHandleIconSize,
-            getColor: this.props.getEditHandleIconColor,
-            getAngle: this.props.getEditHandleIconAngle,
-
-            getPosition: d => d.position
-          })
-        );
-        break;
-
-      case 'point':
-        layer = new ScatterplotLayer(
-          this.getSubLayerProps({
-            ...sharedProps,
-
-            // Proxy editing point props
-            radiusScale: this.props.editHandlePointRadiusScale,
-            outline: this.props.editHandlePointOutline,
-            strokeWidth: this.props.editHandlePointStrokeWidth,
-            radiusMinPixels: this.props.editHandlePointRadiusMinPixels,
-            radiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
-            getRadius: this.props.getEditHandlePointRadius,
-            getColor: this.props.getEditHandlePointColor
-          })
-        );
-        break;
-
-      default:
-        if (typeof this.props.editHandleType === 'function') {
-          const EditHandleType = this.props.editHandleType;
-          layer = new EditHandleType(
-            this.getSubLayerProps({
-              ...sharedProps,
-
-              // Proxy editing point props
-              radiusScale: this.props.editHandlePointRadiusScale,
-              outline: this.props.editHandlePointOutline,
-              strokeWidth: this.props.editHandlePointStrokeWidth,
-              radiusMinPixels: this.props.editHandlePointRadiusMinPixels,
-              radiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
-              getRadius: this.props.getEditHandlePointRadius,
-              getColor: this.props.getEditHandlePointColor
-            })
-          );
-        }
-        break;
-    }
-
-    return [layer];
-  }
-
-  createTentativeLayers() {
-    if (!this.state.tentativeFeature) {
-      return [];
+    let pointLayerProps;
+    if (this.props.editHandleType === 'icon') {
+      pointLayerProps = {
+        type: IconLayer,
+        iconAtlas: this.props.editHandleIconAtlas,
+        iconMapping: this.props.editHandleIconMapping,
+        sizeScale: this.props.editHandleIconSizeScale,
+        getIcon: this.props.getEditHandleIcon,
+        getSize: this.props.getEditHandleIconSize,
+        getColor: this.props.getEditHandleIconColor,
+        getAngle: this.props.getEditHandleIconAngle
+      };
+    } else {
+      pointLayerProps = {
+        type: ScatterplotLayer,
+        radiusScale: this.props.editHandlePointRadiusScale,
+        stroked: this.props.editHandlePointOutline,
+        getLineWidth: this.props.editHandlePointStrokeWidth,
+        radiusMinPixels: this.props.editHandlePointRadiusMinPixels,
+        radiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
+        getRadius: this.props.getEditHandlePointRadius,
+        getFillColor: this.props.getEditHandlePointColor,
+        getlineColor: this.props.getEditHandlePointColor
+      };
     }
 
     const layer = new GeoJsonLayer(
       this.getSubLayerProps({
-        id: 'tentative',
-        data: this.state.tentativeFeature,
+        id: `guides`,
+        data: guides,
         fp64: this.props.fp64,
-        pickable: false,
-        stroked: true,
-        autoHighlight: false,
+        _subLayerProps: {
+          points: pointLayerProps
+        },
         lineWidthScale: this.props.lineWidthScale,
         lineWidthMinPixels: this.props.lineWidthMinPixels,
         lineWidthMaxPixels: this.props.lineWidthMaxPixels,
         lineWidthUnits: this.props.lineWidthUnits,
         lineJointRounded: this.props.lineJointRounded,
         lineMiterLimit: this.props.lineMiterLimit,
-        pointRadiusScale: this.props.editHandlePointRadiusScale,
-        outline: this.props.editHandlePointOutline,
-        strokeWidth: this.props.editHandlePointStrokeWidth,
-        pointRadiusMinPixels: this.props.editHandlePointRadiusMinPixels,
-        pointRadiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
-        getRadius: this.props.getEditHandlePointRadius,
-        getLineColor: feature => this.props.getTentativeLineColor(feature, this.props.mode),
-        getLineWidth: feature => this.props.getTentativeLineWidth(feature, this.props.mode),
-        getFillColor: feature => this.props.getTentativeFillColor(feature, this.props.mode),
-        getLineDashArray: feature =>
-          this.props.getTentativeLineDashArray(
-            feature,
-            this.state.selectedFeatures[0],
-            this.props.mode
-          )
+        getLineColor: this.props.getTentativeLineColor,
+        getLineWidth: this.props.getTentativeLineWidth,
+        getFillColor: this.props.getTentativeFillColor,
+        getLineDashArray: this.props.getTentativeLineDashArray
       })
     );
 
@@ -434,23 +337,28 @@ export default class EditableGeoJsonLayer_EDIT_MODE_POC extends EditableLayer {
   }
 
   onLayerClick(event: ClickEvent) {
-    this.getActiveModeHandler().handleClick(event);
+    this.getActiveModeHandler().handleClick(event, this.getModeProps(this.props));
   }
 
   onStartDragging(event: StartDraggingEvent) {
-    this.getActiveModeHandler().handleStartDragging(event);
+    this.getActiveModeHandler().handleStartDragging(event, this.getModeProps(this.props));
   }
 
   onStopDragging(event: StopDraggingEvent) {
-    this.getActiveModeHandler().handleStopDragging(event);
+    this.getActiveModeHandler().handleStopDragging(event, this.getModeProps(this.props));
   }
 
   onPointerMove(event: PointerMoveEvent) {
-    this.getActiveModeHandler().handlePointerMove(event);
+    this.setState({ lastPointerMoveEvent: event });
+    this.getActiveModeHandler().handlePointerMove(event, this.getModeProps(this.props));
   }
 
   getCursor({ isDragging }: { isDragging: boolean }) {
-    return this.state.cursor;
+    let { cursor } = this.state;
+    if (!cursor) {
+      cursor = isDragging ? 'grabbing' : 'grab';
+    }
+    return cursor;
   }
 
   getActiveModeHandler(): GeoJsonEditMode {

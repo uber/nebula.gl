@@ -121,18 +121,8 @@ export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, FeatureC
   }
 
   // TODO edit-modes: delete me
-  setModeConfig(modeConfig: any): void {
-    console.warn('call to obsolete setModeConfig'); // eslint-disable-line
-  }
-
-  // TODO edit-modes: delete me
   getSelectedFeatureIndexes(props: ModeProps<FeatureCollection>): number[] {
     return props.selectedIndexes;
-  }
-
-  // TODO edit-modes: delete me
-  setSelectedFeatureIndexes(indexes: number[]): void {
-    console.warn('call to obsolete setSelectedFeatureIndexes'); // eslint-disable-line
   }
 
   getClickSequence(): Position[] {

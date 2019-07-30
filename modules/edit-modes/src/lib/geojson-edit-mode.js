@@ -28,7 +28,7 @@ import { ImmutableFeatureCollection } from './immutable-feature-collection.js';
 
 export type EditHandleType = 'existing' | 'intermediate' | 'snap';
 
-// TODO: EditMode - Change this to just be a GoeJSON instead
+// TODO edit-modes: - Change this to just be a GoeJSON instead
 export type EditHandle = {
   position: Position,
   positionIndexes: number[],
@@ -120,19 +120,19 @@ export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, FeatureC
     this.featureCollection = new ImmutableFeatureCollection(featureCollection);
   }
 
-  // TODO: delete me
+  // TODO edit-modes: delete me
   setModeConfig(modeConfig: any): void {
-    console.warn('TODO: call to obsolete setModeConfig'); // eslint-disable-line
+    console.warn('call to obsolete setModeConfig'); // eslint-disable-line
   }
 
-  // TODO: delete me
+  // TODO edit-modes: delete me
   getSelectedFeatureIndexes(props: ModeProps<FeatureCollection>): number[] {
     return props.selectedIndexes;
   }
 
-  // TODO: delete me
+  // TODO edit-modes: delete me
   setSelectedFeatureIndexes(indexes: number[]): void {
-    console.warn('TODO: call to obsolete setSelectedFeatureIndexes'); // eslint-disable-line
+    console.warn('call to obsolete setSelectedFeatureIndexes'); // eslint-disable-line
   }
 
   getClickSequence(): Position[] {
@@ -151,7 +151,7 @@ export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, FeatureC
     return this._editHandles;
   }
 
-  // TODO: delete me once mode handlers do getEditHandles lazily
+  // TODO edit-modes: delete me once mode handlers do getEditHandles lazily
   _setTentativeFeature(tentativeFeature: ?Feature): void {
     if (tentativeFeature) {
       tentativeFeature.properties = {
@@ -303,8 +303,7 @@ export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, FeatureC
     return this.getAddFeatureAction(geometry);
   }
 
-  // TODO: factor out all the duplicate calls to setFeatureCollection
-
+  // TODO edit-modes: factor out all the duplicate calls to setFeatureCollection
   handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>): void {
     this.setFeatureCollection(props.data);
     const editAction = this.handleClickAdapter(event, props);
@@ -350,7 +349,7 @@ export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, FeatureC
     }
   }
 
-  // TODO: delete these adapters once all ModeHandler implementations don't use them
+  // TODO edit-modes: delete these adapters once all ModeHandler implementations don't use them
   handleClickAdapter(event: ClickEvent, props: ModeProps<FeatureCollection>): ?GeoJsonEditAction {
     this._clickSequence.push(event.mapCoords);
 
@@ -379,12 +378,12 @@ export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, FeatureC
   }
 }
 
-// TODO: EditMode - refactor to just return `info.object`
 export function getPickedEditHandle(picks: ?(any[])): ?EditHandle {
   const handles = getPickedEditHandles(picks);
   return handles.length ? handles[0] : null;
 }
 
+// TODO edit-modes: refactor to just return `info.object`
 export function getPickedEditHandles(picks: ?(any[])): EditHandle[] {
   const handles =
     (picks &&

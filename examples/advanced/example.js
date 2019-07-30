@@ -38,7 +38,7 @@ import {
   ToolboxCheckbox
 } from './toolbox';
 
-// TODO: once we refactor EditableGeoJsonLayer to use new EditMode interface, this can go away
+// TODO edit-modes: once we refactor EditableGeoJsonLayer to use new EditMode interface, this can go away
 let EditableGeoJsonLayerImpl = EditableGeoJsonLayer;
 let COMPOSITE_MODE;
 if (
@@ -143,7 +143,7 @@ const FEATURE_COLORS = [
   'CCDFE5'
 ].map(hex2rgb);
 
-// TODO: delete once fully on EditMode implementation and just use handle.sourceFeature.feature...
+// TODO edit-modes:  delete once fully on EditMode implementation and just use handle.sourceFeature.feature...
 // Unwrap the edit handle object from either layer implementation
 function getEditHandleTypeFromEitherLayer(handleOrFeature) {
   return handleOrFeature.sourceFeature

@@ -7,6 +7,7 @@ import { ModeHandler, getPickedEditHandle, getEditHandlesForGeometry } from './m
 
 type HandlePicks = { pickedHandle?: EditHandle, potentialSnapHandle?: EditHandle };
 
+// TODO edit-modes: delete handlers once EditMode fully implemented
 export class SnappableHandler extends ModeHandler {
   _handler: ModeHandler;
   _editHandlePicks: ?HandlePicks;

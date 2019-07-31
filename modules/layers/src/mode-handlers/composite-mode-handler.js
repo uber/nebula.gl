@@ -9,6 +9,7 @@ import type {
 } from '../event-types.js';
 import { ModeHandler, type EditAction, type EditHandle } from './mode-handler.js';
 
+// TODO edit-modes: delete handlers once EditMode fully implemented
 export class CompositeModeHandler extends ModeHandler {
   handlers: Array<ModeHandler>;
   options: Object;

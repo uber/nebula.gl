@@ -17,6 +17,7 @@ import type {
 import type { EditAction, EditHandle } from './mode-handler.js';
 import { ModeHandler, getPickedEditHandle, getEditHandlesForGeometry } from './mode-handler.js';
 
+// TODO edit-modes: delete handlers once EditMode fully implemented
 export class ModifyHandler extends ModeHandler {
   _lastPointerMovePicks: *;
 

@@ -1,6 +1,6 @@
 // @flow
 
-// TODO edit-modes: delete this once all mode handlers derive from GeoJsonEditMode
+// TODO edit-modes: delete handlers once EditMode fully implemented
 
 import turfUnion from '@turf/union';
 import turfDifference from '@turf/difference';

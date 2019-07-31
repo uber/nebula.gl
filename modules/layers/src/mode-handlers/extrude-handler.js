@@ -7,6 +7,7 @@ import type { EditAction } from './mode-handler.js';
 import { getPickedEditHandle } from './mode-handler.js';
 import { ModifyHandler } from './modify-handler';
 
+// TODO edit-modes: delete handlers once EditMode fully implemented
 export class ExtrudeHandler extends ModifyHandler {
   isPointAdded: boolean = false;
   handlePointerMove(event: PointerMoveEvent): { editAction: ?EditAction, cancelMapPan: boolean } {

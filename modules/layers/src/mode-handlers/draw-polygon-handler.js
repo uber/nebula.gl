@@ -5,6 +5,7 @@ import type { ClickEvent, PointerMoveEvent } from '../event-types.js';
 import type { EditAction, EditHandle } from './mode-handler.js';
 import { ModeHandler, getPickedEditHandle, getEditHandlesForGeometry } from './mode-handler.js';
 
+// TODO edit-modes: delete handlers once EditMode fully implemented
 export class DrawPolygonHandler extends ModeHandler {
   getEditHandles(picks?: Array<Object>, groundCoords?: Position): EditHandle[] {
     let handles = super.getEditHandles(picks, groundCoords);

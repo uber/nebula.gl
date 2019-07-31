@@ -238,91 +238,10 @@ describe('SnappableHandler - TranslateHandler tests', () => {
     expect(allHandles.length).toEqual(0);
   });
 
-  test('_performSnapIfRequired() - positive case', () => {
-    expect(snappableHandler._isSnapped).toBeFalsy();
-    snappableHandler._editHandlePicks = {
-      pickedHandle: mockPickedHandle,
-      potentialSnapHandle: mockNonPickedHandle
-    };
-
-    snappableHandler._performSnapIfRequired();
-    expect(snappableHandler._isSnapped).toBeTruthy();
-  });
-
-  test('_performSnapIfRequired() - already snapped', () => {
-    snappableHandler._isSnapped = true;
-    snappableHandler._editHandlePicks = {
-      pickedHandle: mockPickedHandle,
-      potentialSnapHandle: mockNonPickedHandle
-    };
-
-    snappableHandler._performSnapIfRequired();
-    expect(snappableHandler._isSnapped).toBeTruthy();
-  });
-
-  test('_performSnapIfRequired() - no _editHandlePicks', () => {
-    snappableHandler._performSnapIfRequired();
-    expect(snappableHandler._isSnapped).toBeFalsy();
-  });
-
-  test('_performSnapIfRequired() - no pickedHandles', () => {
-    snappableHandler._editHandlePicks = {
-      potentialSnapHandle: mockNonPickedHandle
-    };
-
-    snappableHandler._performSnapIfRequired();
-    expect(snappableHandler._isSnapped).toBeFalsy();
-  });
-
-  test('_performSnapIfRequired() - no potentialSnapHandle', () => {
-    expect(snappableHandler._isSnapped).toBeFalsy();
-    snappableHandler._editHandlePicks = {
-      pickedHandle: mockPickedHandle
-    };
-
-    snappableHandler._performSnapIfRequired();
-    expect(snappableHandler._isSnapped).toBeFalsy();
-  });
-
-  test('_performUnsnapIfRequired() - positive case', () => {
-    snappableHandler._isSnapped = true;
-    expect(snappableHandler._isSnapped).toBeTruthy();
-    snappableHandler._editHandlePicks = { pickedHandle: mockPickedHandle };
-    snappableHandler._performUnsnapIfRequired();
-    expect(snappableHandler._isSnapped).toBeFalsy();
-  });
-
-  test('_performUnsnapIfRequired() - selected hasnt already been snapped', () => {
-    snappableHandler._editHandlePicks = {
-      pickedHandle: mockPickedHandle,
-      potentialSnapHandle: mockNonPickedHandle
-    };
-    snappableHandler._performUnsnapIfRequired();
-    expect(snappableHandler._isSnapped).toBeFalsy();
-  });
-
-  test('_performUnsnapIfRequired() - no _editHandlePicks', () => {
-    snappableHandler._isSnapped = true;
-    expect(snappableHandler._isSnapped).toBeTruthy();
-    snappableHandler._performUnsnapIfRequired();
-    expect(snappableHandler._isSnapped).toBeFalsy();
-  });
-
-  test('_performUnsnapIfRequired() - potentialSnapHandle is present', () => {
-    snappableHandler._isSnapped = true;
-    snappableHandler._editHandlePicks = {
-      pickedHandle: mockPickedHandle,
-      potentialSnapHandle: mockNonPickedHandle
-    };
-    snappableHandler._performUnsnapIfRequired();
-    expect(snappableHandler._isSnapped).toBeTruthy();
-  });
-
   test('_getSnapAwareEvent() - potentialSnapHandle is present', () => {
     const pointerDownPos = [19, 15];
     const screenGroundCoords = mockNonPickedHandle.position;
 
-    snappableHandler._isSnapped = true;
     snappableHandler._startDragSnapHandlePosition = pointerDownPos;
     snappableHandler._editHandlePicks = { potentialSnapHandle: mockNonPickedHandle };
 
@@ -371,7 +290,6 @@ describe('SnappableHandler - TranslateHandler tests', () => {
   });
 
   test('handleStopDragging()', () => {
-    snappableHandler._isSnapped = true;
     snappableHandler._editHandlePicks = {
       pickedHandle: mockPickedHandle,
       potentialSnapHandle: mockNonPickedHandle
@@ -384,7 +302,6 @@ describe('SnappableHandler - TranslateHandler tests', () => {
     expect(eventSummary).toBeDefined();
 
     expect(snappableHandler._editHandlePicks).toBeNull();
-    expect(snappableHandler._isSnapped).toBeFalsy();
     expect(translateHandler.handleStopDragging).toBeCalled();
   });
 
@@ -406,10 +323,6 @@ describe('SnappableHandler - TranslateHandler tests', () => {
       potentialSnapHandle: mockNonPickedHandle
     };
     // $FlowFixMe
-    snappableHandler._performSnapIfRequired = jest.fn();
-    // $FlowFixMe
-    snappableHandler._performUnsnapIfRequired = jest.fn();
-    // $FlowFixMe
     snappableHandler._updatePickedHandlePosition = jest.fn();
     const mockedEditActionSummary = {
       editAction: Object.assign({}, mockTranslateEditAction(createFeatureCollection()), {
@@ -422,8 +335,6 @@ describe('SnappableHandler - TranslateHandler tests', () => {
     const eventSummary = snappableHandler.handlePointerMove(event);
     expect(eventSummary).toBeDefined();
 
-    expect(snappableHandler._performSnapIfRequired).toBeCalled();
-    expect(snappableHandler._performUnsnapIfRequired).toBeCalled();
     expect(snappableHandler._updatePickedHandlePosition).toBeCalled();
     expect(snappableHandler._updatePickedHandlePosition.mock.calls[0]).toMatchSnapshot();
   });
@@ -434,10 +345,6 @@ describe('SnappableHandler - TranslateHandler tests', () => {
       pickedHandle: mockPickedHandle,
       potentialSnapHandle: mockNonPickedHandle
     };
-    // $FlowFixMe
-    snappableHandler._performSnapIfRequired = jest.fn();
-    // $FlowFixMe
-    snappableHandler._performUnsnapIfRequired = jest.fn();
     // $FlowFixMe
     snappableHandler._updatePickedHandlePosition = jest.fn();
     const mockedEditActionSummary = {
@@ -453,17 +360,11 @@ describe('SnappableHandler - TranslateHandler tests', () => {
     const eventSummary = snappableHandler.handlePointerMove(event);
     expect(eventSummary).toBeDefined();
 
-    expect(snappableHandler._performSnapIfRequired).not.toBeCalled();
-    expect(snappableHandler._performUnsnapIfRequired).not.toBeCalled();
     expect(snappableHandler._updatePickedHandlePosition).toBeCalled();
     expect(snappableHandler._updatePickedHandlePosition.mock.calls[0]).toMatchSnapshot();
   });
 
   test('handlePointerMove() - enableSnapping = false', () => {
-    // $FlowFixMe
-    snappableHandler._performSnapIfRequired = jest.fn();
-    // $FlowFixMe
-    snappableHandler._performUnsnapIfRequired = jest.fn();
     // $FlowFixMe
     snappableHandler._updatePickedHandlePosition = jest.fn();
     const mockedEditActionSummary = {
@@ -477,17 +378,11 @@ describe('SnappableHandler - TranslateHandler tests', () => {
     const eventSummary = snappableHandler.handlePointerMove(event);
     expect(eventSummary).toBeDefined();
 
-    expect(snappableHandler._performSnapIfRequired).not.toBeCalled();
-    expect(snappableHandler._performUnsnapIfRequired).not.toBeCalled();
     expect(snappableHandler._updatePickedHandlePosition).toBeCalled();
     expect(snappableHandler._updatePickedHandlePosition.mock.calls[0]).toMatchSnapshot();
   });
 
   test('handlePointerMove() - editAction does not require pickedHandle position update', () => {
-    // $FlowFixMe
-    snappableHandler._performSnapIfRequired = jest.fn();
-    // $FlowFixMe
-    snappableHandler._performUnsnapIfRequired = jest.fn();
     // $FlowFixMe
     snappableHandler._updatePickedHandlePosition = jest.fn();
     // $FlowFixMe
@@ -496,8 +391,6 @@ describe('SnappableHandler - TranslateHandler tests', () => {
     const eventSummary = snappableHandler.handlePointerMove(event);
     expect(eventSummary).toBeDefined();
 
-    expect(snappableHandler._performSnapIfRequired).not.toBeCalled();
-    expect(snappableHandler._performUnsnapIfRequired).not.toBeCalled();
     expect(snappableHandler._updatePickedHandlePosition).not.toBeCalled();
   });
 });

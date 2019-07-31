@@ -12,7 +12,6 @@ export class SnappableHandler extends ModeHandler {
   _handler: ModeHandler;
   _editHandlePicks: ?HandlePicks;
   _startDragSnapHandlePosition: Position;
-  _isSnapped: boolean;
 
   constructor(handler: ModeHandler) {
     super();
@@ -68,7 +67,6 @@ export class SnappableHandler extends ModeHandler {
         const { positionIndexes, featureIndex } = pickedHandle;
         if (selectedIndex >= 0 && featureIndex === selectedIndex) {
           const { coordinates } = updatedFeature.geometry;
-          // $FlowFixMe
           pickedHandle.position = positionIndexes.reduce(
             (a: any[], b: number) => a[b],
             coordinates
@@ -136,25 +134,6 @@ export class SnappableHandler extends ModeHandler {
     return handles.filter(Boolean);
   }
 
-  _performSnapIfRequired() {
-    if (this._isSnapped) return;
-    const { pickedHandle, potentialSnapHandle } = this._editHandlePicks || {};
-    if (pickedHandle && potentialSnapHandle) {
-      this._isSnapped = true;
-    }
-  }
-
-  // Unsnapping only occurs after the user snaps two polygons but continues to drag the
-  // cursor past the point of resistance.
-  _performUnsnapIfRequired() {
-    if (!this._isSnapped) return;
-
-    const { potentialSnapHandle } = this._editHandlePicks || {};
-    if (!potentialSnapHandle) {
-      this._isSnapped = false;
-    }
-  }
-
   _getSnapAwareEvent(event: Object): Object {
     const { potentialSnapHandle } = this._editHandlePicks || {};
 
@@ -172,7 +151,6 @@ export class SnappableHandler extends ModeHandler {
     const modeActionSummary = this._handler.handleStopDragging(this._getSnapAwareEvent(event));
 
     this._editHandlePicks = null;
-    this._isSnapped = false;
     return modeActionSummary;
   }
 
@@ -185,10 +163,6 @@ export class SnappableHandler extends ModeHandler {
 
     if (enableSnapping) {
       this._editHandlePicks = this._getEditHandlePicks(event);
-      if (this._editHandlePicks) {
-        this._performSnapIfRequired();
-        this._performUnsnapIfRequired();
-      }
     }
 
     const modeActionSummary = this._handler.handlePointerMove(this._getSnapAwareEvent(event));

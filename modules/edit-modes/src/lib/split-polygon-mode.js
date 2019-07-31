@@ -169,8 +169,9 @@ export class SplitPolygonMode extends BaseGeoJsonEditMode {
     const editAction: GeoJsonEditAction = {
       updatedData: updatedData.getObject(),
       editType: 'split',
-      featureIndexes: [featureIndex],
-      editContext: null
+      editContext: {
+        featureIndexes: [featureIndex]
+      }
     };
 
     return editAction;

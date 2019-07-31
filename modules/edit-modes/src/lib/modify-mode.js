@@ -232,8 +232,8 @@ export class ModifyMode extends BaseGeoJsonEditMode {
       editAction = {
         updatedData,
         editType: 'finishMovePosition',
-        featureIndexes: [editHandle.featureIndex],
         editContext: {
+          featureIndexes: [editHandle.featureIndex],
           positionIndexes: editHandle.positionIndexes,
           position: event.mapCoords
         }

@@ -116,8 +116,9 @@ export class TranslateMode extends BaseGeoJsonEditMode {
     return {
       updatedData: updatedData.getObject(),
       editType,
-      featureIndexes: selectedIndexes,
-      editContext: null
+      editContext: {
+        featureIndexes: selectedIndexes
+      }
     };
   }
 }

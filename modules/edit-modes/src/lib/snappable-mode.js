@@ -1,31 +1,36 @@
 // @flow
 
 import type { Feature, FeatureCollection, Position } from '../geojson-types.js';
-import type { PointerMoveEvent, StartDraggingEvent, StopDraggingEvent } from '../types.js';
-import type { EditHandle, GeoJsonEditAction } from './mode-handler.js';
-import { BaseGeoJsonEditMode, getPickedEditHandle, getEditHandlesForGeometry } from './geojson-edit-mode.js';
+import type {
+  PointerMoveEvent,
+  StartDraggingEvent,
+  StopDraggingEvent,
+  ModeProps
+} from '../types.js';
+import type { EditHandle, GeoJsonEditAction } from './geojson-edit-mode.js';
+import {
+  BaseGeoJsonEditMode,
+  getPickedEditHandle,
+  getPickedEditHandles,
+  getEditHandlesForGeometry
+} from './geojson-edit-mode.js';
 
 type HandlePicks = { pickedHandle?: EditHandle, potentialSnapHandle?: EditHandle };
 
-  // TODO edit-modes: implement SnappableMode
+// TODO edit-modes: implement SnappableMode
 
 export class SnappableMode extends BaseGeoJsonEditMode {
-  _handler: ModeHandler;
+  _handler: BaseGeoJsonEditMode;
   _editHandlePicks: ?HandlePicks;
   _startDragSnapHandlePosition: Position;
-  _isSnapped: boolean;
 
-  constructor(handler: ModeHandler) {
+  constructor(handler: BaseGeoJsonEditMode) {
     super();
     this._handler = handler;
   }
 
   setFeatureCollection(featureCollection: FeatureCollection): void {
     this._handler.setFeatureCollection(featureCollection);
-  }
-
-  setSelectedFeatureIndexes(indexes: number[]): void {
-    this._handler.setSelectedFeatureIndexes(indexes);
   }
 
   _getSnappedMouseEvent(event: Object, snapPoint: Position): PointerMoveEvent {
@@ -38,10 +43,10 @@ export class SnappableMode extends BaseGeoJsonEditMode {
   _getEditHandlePicks(event: PointerMoveEvent): HandlePicks {
     const { picks } = event;
 
-    const potentialSnapHandle = picks.find(
-      pick => pick.object && pick.object.type === 'intermediate'
+    const potentialSnapHandle = getPickedEditHandles(picks).find(
+      handle => handle.type === 'intermediate'
     );
-    const handles = { potentialSnapHandle: potentialSnapHandle && potentialSnapHandle.object };
+    const handles = { potentialSnapHandle };
 
     const pickedHandle = getPickedEditHandle(event.pointerDownPicks);
     if (pickedHandle) {
@@ -79,25 +84,21 @@ export class SnappableMode extends BaseGeoJsonEditMode {
   // method will return those features along with the features
   // that live in the current layer. Otherwise, this method will simply return the
   // features from the current layer
-  _getSnapTargets(): Feature[] {
-    let { additionalSnapTargets } = this.getModeConfig() || {};
+  _getSnapTargets(props: ModeProps<FeatureCollection>): Feature[] {
+    let { additionalSnapTargets } = props.modeConfig || {};
     additionalSnapTargets = additionalSnapTargets || [];
 
-    const features = [
-      ...this._handler.featureCollection.getObject().features,
-      ...additionalSnapTargets
-    ];
+    const features = [...props.data.features, ...additionalSnapTargets];
     return features;
   }
 
-  _getNonPickedIntermediateHandles(): EditHandle[] {
+  _getNonPickedIntermediateHandles(props: ModeProps<FeatureCollection>): EditHandle[] {
     const handles = [];
-    const features = this._getSnapTargets();
+    const features = this._getSnapTargets(props);
 
     for (let i = 0; i < features.length; i++) {
       // Filter out the currently selected feature(s)
-      const isCurrentIndexFeatureNotSelected =
-        i < features.length && !this._handler.getSelectedFeatureIndexes().includes(i);
+      const isCurrentIndexFeatureNotSelected = !props.selectedIndexes.includes(i);
 
       if (isCurrentIndexFeatureNotSelected) {
         const { geometry } = features[i];
@@ -110,20 +111,24 @@ export class SnappableMode extends BaseGeoJsonEditMode {
   // If no snap handle has been picked, only display the edit handles of the
   // selected feature. If a snap handle has been picked, display said snap handle
   // along with all snappable points on all non-selected features.
-  getEditHandlesAdapter(picks?: Array<Object>, mapCoords?: Position): any[] {
-    const { enableSnapping } = this.getModeConfig() || {};
-    const handles = this._handler.getEditHandlesAdapter(picks, mapCoords);
+  getEditHandlesAdapter(
+    picks: ?Array<Object>,
+    mapCoords: ?Position,
+    props: ModeProps<FeatureCollection>
+  ): any[] {
+    const { enableSnapping } = props.modeConfig || {};
+    const handles = [...this._handler.getEditHandlesAdapter(picks, mapCoords, props)];
 
     if (!enableSnapping) return handles;
     const { pickedHandle } = this._editHandlePicks || {};
 
     if (pickedHandle) {
-      handles.push(...this._getNonPickedIntermediateHandles(), pickedHandle);
+      handles.push(...this._getNonPickedIntermediateHandles(props), pickedHandle);
       return handles;
     }
 
-    const { features } = this._handler.featureCollection.getObject();
-    for (const index of this._handler.getSelectedFeatureIndexes()) {
+    const { features } = props.data;
+    for (const index of props.selectedIndexes) {
       if (index < features.length) {
         const { geometry } = features[index];
         handles.push(...getEditHandlesForGeometry(geometry, index, 'snap'));
@@ -131,25 +136,6 @@ export class SnappableMode extends BaseGeoJsonEditMode {
     }
 
     return handles.filter(Boolean);
-  }
-
-  _performSnapIfRequired() {
-    if (this._isSnapped) return;
-    const { pickedHandle, potentialSnapHandle } = this._editHandlePicks || {};
-    if (pickedHandle && potentialSnapHandle) {
-      this._isSnapped = true;
-    }
-  }
-
-  // Unsnapping only occurs after the user snaps two polygons but continues to drag the
-  // cursor past the point of resistance.
-  _performUnsnapIfRequired() {
-    if (!this._isSnapped) return;
-
-    const { potentialSnapHandle } = this._editHandlePicks || {};
-    if (!potentialSnapHandle) {
-      this._isSnapped = false;
-    }
   }
 
   _getSnapAwareEvent(event: Object): Object {
@@ -160,40 +146,44 @@ export class SnappableMode extends BaseGeoJsonEditMode {
       : event;
   }
 
-  handleStartDraggingAdapter(event: StartDraggingEvent): ?GeoJsonEditAction {
+  handleStartDraggingAdapter(
+    event: StartDraggingEvent,
+    props: ModeProps<FeatureCollection>
+  ): ?GeoJsonEditAction {
     this._startDragSnapHandlePosition = (getPickedEditHandle(event.picks) || {}).position;
-    return this._handler.handleStartDraggingAdapter(event);
+    return this._handler.handleStartDraggingAdapter(event, props);
   }
 
-  handleStopDraggingAdapter(event: StopDraggingEvent): ?GeoJsonEditAction {
+  handleStopDraggingAdapter(
+    event: StopDraggingEvent,
+    props: ModeProps<FeatureCollection>
+  ): ?GeoJsonEditAction {
     const modeActionSummary = this._handler.handleStopDraggingAdapter(
-      this._getSnapAwareEvent(event)
+      this._getSnapAwareEvent(event),
+      props
     );
 
     this._editHandlePicks = null;
-    this._isSnapped = false;
     return modeActionSummary;
   }
 
-  getCursorAdapter(event: { isDragging: boolean }): string {
-    return this._handler.getCursorAdapter(event);
+  getCursorAdapter(props: ModeProps<FeatureCollection>): ?string {
+    return this._handler.getCursorAdapter(props);
   }
 
   handlePointerMoveAdapter(
-    event: PointerMoveEvent
+    event: PointerMoveEvent,
+    props: ModeProps<FeatureCollection>
   ): { editAction: ?GeoJsonEditAction, cancelMapPan: boolean } {
-    const { enableSnapping } = this._handler.getModeConfig() || {};
+    const { enableSnapping } = props.modeConfig || {};
 
     if (enableSnapping) {
       this._editHandlePicks = this._getEditHandlePicks(event);
-      if (this._editHandlePicks) {
-        this._performSnapIfRequired();
-        this._performUnsnapIfRequired();
-      }
     }
 
     const modeActionSummary = this._handler.handlePointerMoveAdapter(
-      this._getSnapAwareEvent(event)
+      this._getSnapAwareEvent(event),
+      props
     );
     const { editAction } = modeActionSummary;
     if (editAction) {

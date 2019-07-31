@@ -28,6 +28,7 @@ export { ImmutableFeatureCollection } from './lib/immutable-feature-collection.j
 // Other modes
 export { ViewMode } from './lib/view-mode.js';
 export { CompositeMode } from './lib/composite-mode.js';
+export { SnappableMode } from './lib/snappable-mode.js';
 
 export type {
   ScreenCoordinates,

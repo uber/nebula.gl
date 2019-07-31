@@ -180,9 +180,10 @@ export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, FeatureC
 
   isSelectionPicked(picks: Pick[], props: ModeProps<FeatureCollection>): boolean {
     if (!picks.length) return false;
-    const pickedIndexes = picks.map(({ index }) => index);
-    const selectedFeatureIndexes = props.selectedIndexes;
-    return selectedFeatureIndexes.some(index => pickedIndexes.includes(index));
+    const pickedFeatures = getNonGuidePicks(picks).map(({ index }) => index);
+    const pickedHandles = getPickedEditHandles(picks).map(handle => handle.featureIndex);
+    const pickedIndexes = new Set([...pickedFeatures, ...pickedHandles]);
+    return props.selectedIndexes.some(index => pickedIndexes.has(index));
   }
 
   getAddFeatureAction(geometry: Geometry): GeoJsonEditAction {
@@ -371,6 +372,10 @@ export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, FeatureC
 export function getPickedEditHandle(picks: ?(any[])): ?EditHandle {
   const handles = getPickedEditHandles(picks);
   return handles.length ? handles[0] : null;
+}
+
+export function getNonGuidePicks(picks: any[]): any[] {
+  return picks && picks.filter(pick => !pick.isGuide);
 }
 
 // TODO edit-modes: refactor to just return `info.object`

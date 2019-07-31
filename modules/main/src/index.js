@@ -27,6 +27,8 @@ export { SelectionLayer } from '@nebula.gl/layers';
 export { ElevatedEditHandleLayer } from '@nebula.gl/layers';
 export { PathOutlineLayer } from '@nebula.gl/layers';
 export { PathMarkerLayer } from '@nebula.gl/layers';
+
+// TODO edit-modes: delete handlers once EditMode fully implemented
 export { ModeHandler } from '@nebula.gl/layers';
 export { CompositeModeHandler } from '@nebula.gl/layers';
 export { ViewHandler } from '@nebula.gl/layers';
@@ -70,3 +72,4 @@ export { ImmutableFeatureCollection } from '@nebula.gl/edit-modes';
 // Other modes
 export { ViewMode } from '@nebula.gl/edit-modes';
 export { CompositeMode } from '@nebula.gl/edit-modes';
+export { SnappableMode } from '@nebula.gl/edit-modes';

@@ -22,7 +22,8 @@ import {
   DrawEllipseByBoundingBoxMode,
   DrawRectangleUsingThreePointsMode,
   DrawEllipseUsingThreePointsMode,
-  Draw90DegreePolygonMode
+  Draw90DegreePolygonMode,
+  SnappableMode
 } from '@nebula.gl/edit-modes';
 
 import type {
@@ -81,6 +82,7 @@ const defaultProps = {
 
   pickable: true,
   pickingRadius: 10,
+  pickingDepth: 5,
   fp64: false,
   filled: true,
   stroked: true,
@@ -136,8 +138,7 @@ const defaultProps = {
 
     // Alter modes
     modify: new ModifyMode(),
-    translate: new TranslateMode(),
-    // translate: new SnappableMode(new TranslateMode()),
+    translate: new SnappableMode(new TranslateMode()),
     scale: new ScaleMode(),
     rotate: new RotateMode(),
     duplicate: new DuplicateMode(),

@@ -132,6 +132,9 @@ const defaultProps = {
   getEditHandleIconColor: getEditHandleColor,
   getEditHandleIconAngle: 0,
 
+  // misc
+  billboard: true,
+
   // Mode handlers
   modeHandlers: {
     view: new ViewMode(),
@@ -205,6 +208,15 @@ export default class EditableGeoJsonLayer_EDIT_MODE_POC extends EditableLayer {
       getRadius: this.selectionAwareAccessor(this.props.getRadius),
       getLineWidth: this.selectionAwareAccessor(this.props.getLineWidth),
       getLineDashArray: this.selectionAwareAccessor(this.props.getLineDashArray),
+
+      _subLayerProps: {
+        'line-strings': {
+          billboard: this.props.billboard
+        },
+        'polygons-stroke': {
+          billboard: this.props.billboard
+        }
+      },
 
       updateTriggers: {
         getLineColor: [this.props.selectedFeatureIndexes, this.props.mode],

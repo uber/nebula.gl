@@ -741,12 +741,15 @@ export default class Example extends Component<
     if (mode === 'elevation') {
       modeConfig = {
         ...modeConfig,
-        viewport: new WebMercatorViewport(viewport),
+        viewport,
         calculateElevationChange: opts =>
           ElevationHandler.calculateElevationChangeWithViewport(viewport, opts)
       };
     } else if (mode === 'modify') {
-      modeConfig = { ...modeConfig, viewport: new WebMercatorViewport(viewport) };
+      modeConfig = {
+        ...modeConfig,
+        viewport
+      };
     } else if (mode === 'translate' && modeConfig && modeConfig.enableSnapping) {
       // Snapping can be accomplished to features that aren't rendered in the same layer
       modeConfig = {

@@ -8,7 +8,6 @@ import { MapView, MapController } from '@deck.gl/core';
 import { StaticMap } from 'react-map-gl';
 import GL from '@luma.gl/constants';
 import circle from '@turf/circle';
-import WebMercatorViewport from 'viewport-mercator-project';
 
 import {
   EditableGeoJsonLayer,

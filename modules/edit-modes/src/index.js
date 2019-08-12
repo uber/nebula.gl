@@ -38,7 +38,8 @@ export type {
   PointerMoveEvent,
   StartDraggingEvent,
   StopDraggingEvent,
-  ModeProps
+  ModeProps,
+  Viewport
 } from './types.js';
 
 export type {

@@ -5,6 +5,7 @@ import bearing from '@turf/bearing';
 import pointToLineDistance from '@turf/point-to-line-distance';
 import { point } from '@turf/helpers';
 import WebMercatorViewport from 'viewport-mercator-project';
+import type { Viewport } from './types.js';
 import type { Position, Point, LineString, FeatureOf, FeatureWithProps } from './geojson-types.js';
 
 export type NearestPointType = FeatureWithProps<Point, { dist: number, index: number }>;
@@ -104,12 +105,14 @@ export function mix(a: number, b: number, ratio: number): number {
 export function nearestPointOnProjectedLine(
   line: FeatureOf<LineString>,
   inPoint: FeatureOf<Point>,
-  viewport: WebMercatorViewport
+  viewport: Viewport
 ): NearestPointType {
+  const wmViewport = new WebMercatorViewport(viewport);
   // Project the line to viewport, then find the nearest point
   const coordinates: Array<Array<number>> = (line.geometry.coordinates: any);
-  const projectedCoords = coordinates.map(([x, y, z = 0]) => viewport.project([x, y, z]));
-  const [x, y] = viewport.project(inPoint.geometry.coordinates);
+  const projectedCoords = coordinates.map(([x, y, z = 0]) => wmViewport.project([x, y, z]));
+  const [x, y] = wmViewport.project(inPoint.geometry.coordinates);
+  // console.log('projectedCoords', JSON.stringify(projectedCoords));
 
   let minDistance = Infinity;
   let minPointInfo = {};
@@ -157,7 +160,7 @@ export function nearestPointOnProjectedLine(
     type: 'Feature',
     geometry: {
       type: 'Point',
-      coordinates: viewport.unproject([x0, y0, z0])
+      coordinates: wmViewport.unproject([x0, y0, z0])
     },
     properties: {
       // TODO: calculate the distance in proper units

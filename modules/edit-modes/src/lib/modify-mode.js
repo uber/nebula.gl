@@ -2,14 +2,25 @@
 
 import nearestPointOnLine from '@turf/nearest-point-on-line';
 import { point, lineString as toLineString } from '@turf/helpers';
-import { recursivelyTraverseNestedArrays } from '../utils.js';
-import type { Position, FeatureCollection } from '../geojson-types.js';
+import {
+  recursivelyTraverseNestedArrays,
+  nearestPointOnProjectedLine,
+  type NearestPointType
+} from '../utils.js';
+import type {
+  Position,
+  LineString,
+  Point,
+  FeatureCollection,
+  FeatureOf
+} from '../geojson-types.js';
 import type {
   ModeProps,
   ClickEvent,
   PointerMoveEvent,
   StartDraggingEvent,
-  StopDraggingEvent
+  StopDraggingEvent,
+  Viewport
 } from '../types.js';
 import {
   BaseGeoJsonEditMode,
@@ -53,7 +64,7 @@ export class ModifyMode extends BaseGeoJsonEditMode {
         !featureAsPick.object.geometry.type.includes('Point') &&
         this.getSelectedFeatureIndexes(props).includes(featureAsPick.index)
       ) {
-        let intermediatePoint = null;
+        let intermediatePoint: ?NearestPointType = null;
         let positionIndexPrefix = [];
         const referencePoint = point(mapCoords);
         // process all lines of the (single) feature
@@ -64,7 +75,8 @@ export class ModifyMode extends BaseGeoJsonEditMode {
             const lineStringFeature = toLineString(lineString);
             const candidateIntermediatePoint = this.nearestPointOnLine(
               lineStringFeature,
-              referencePoint
+              referencePoint,
+              props.modeConfig && props.modeConfig.viewport
             );
             if (
               !intermediatePoint ||
@@ -98,8 +110,23 @@ export class ModifyMode extends BaseGeoJsonEditMode {
   }
 
   // turf.js does not support elevation for nearestPointOnLine
-  nearestPointOnLine(line: any, inPoint: any): any {
-    // TODO: implement 3D nearestPointOnLine
+  nearestPointOnLine(
+    line: FeatureOf<LineString>,
+    inPoint: FeatureOf<Point>,
+    viewport: ?Viewport
+  ): NearestPointType {
+    const { coordinates } = line.geometry;
+    if (coordinates.some(coord => coord.length > 2)) {
+      if (viewport) {
+        // This line has elevation, we need to use alternative algorithm
+        return nearestPointOnProjectedLine(line, inPoint, viewport);
+      }
+      // eslint-disable-next-line no-console,no-undef
+      console.log(
+        'Editing 3D point but modeConfig.viewport not provided. Falling back to 2D logic.'
+      );
+    }
+
     return nearestPointOnLine(line, inPoint);
   }
 

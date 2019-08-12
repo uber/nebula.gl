@@ -18,6 +18,16 @@ export type Pick = {
   isGuide: boolean
 };
 
+export type Viewport = {
+  width: number,
+  height: number,
+  longitude: number,
+  latitude: number,
+  zoom: number,
+  bearing?: number,
+  pitch?: number
+};
+
 // Represents a click event
 export type ClickEvent = {
   picks: Pick[],

@@ -84,10 +84,12 @@ export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, FeatureC
     };
   }
 
+  // TODO edit-modes: delete me and get from props instead
   getFeatureCollection(): FeatureCollection {
     return this.featureCollection.getObject();
   }
 
+  // TODO edit-modes: delete me and get from props instead
   getImmutableFeatureCollection(): ImmutableFeatureCollection {
     return this.featureCollection;
   }
@@ -116,6 +118,7 @@ export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, FeatureC
     };
   }
 
+  // TODO edit-modes: delete me and get from props instead
   setFeatureCollection(featureCollection: FeatureCollection): void {
     this.featureCollection = new ImmutableFeatureCollection(featureCollection);
   }

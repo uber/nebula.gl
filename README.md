@@ -29,36 +29,38 @@
   </a>
 </p>
 
-<h1 align="center">Nebula.gl | <a href="https://neb.gl">Website</a></h1>
+<h1 align="center">nebula.gl | <a href="https://nebula.gl">Website</a></h1>
 
 <h5 align="center">An editing framework for deck.gl</h5>
 
-[![docs](https://i.imgur.com/BTVrsR4.jpg)](https://neb.gl)
+[![docs](https://i.imgur.com/bRDL1oh.gif)](https://nebula.gl)
 
-# Getting started
+[nebula.gl](https://nebula.gl) provides editable and interactive map overlay layers, built using the power of [deck.gl](https://uber.github.io/deck.gl).
 
-## Running the example
+## Getting started
 
-1.  `git clone git@github.com:uber/nebula.gl.git`
-2.  `cd nebula.gl`
-3.  `yarn`
-4.  `cd examples/advanced`
-5.  `yarn`
-6.  `export MapboxAccessToken='<Add your key>'`
-7.  `yarn start-local`
-8.  You can view/edit geometry.
+### Running the example
 
-## Installation
+1. `git clone git@github.com:uber/nebula.gl.git`
+2. `cd nebula.gl`
+3. `yarn`
+4. `cd examples/advanced`
+5. `yarn`
+6. `export MapboxAccessToken='<Add your key>'`
+7. `yarn start-local`
+8. You can now view and edit geometry.
+
+### Installation
 
 ```
 yarn add nebula.gl
 ```
 
-nebula.gl will automatically install a compatible version of deck.gl.
+`nebula.gl` will automatically install a compatible version of `deck.gl`.
 
-## EditableGeoJsonLayer
+### `EditableGeoJsonLayer`
 
-The Editable GeoJSON layer accepts a [GeoJSON](http://geojson.org) `FeatureCollection` and renders the features as editable polygons, lines, and points. See the example below and for the official documentation click [here](https://github.com/uber/nebula.gl/blob/master/docs/overview.md).
+[EditableGeoJsonLayer](/docs/api-reference/layers/editable-geojson-layer.md) is implemented as a [deck.gl](https://deck.gl) layer. It provides the ability to view and edit multiple types of geometry formatted as [GeoJSON](https://tools.ietf.org/html/rfc7946) (an open standard format for geometry) including polygons, lines, and points.
 
 ```js
 import React from 'react';
@@ -74,8 +76,8 @@ const myFeatureCollection = {
 
 class App extends React.Component {
   state = {
-    mode: 'modify',
-    selectedFeatureIndexes: [0],
+    mode: 'drawPolygon',
+    selectedFeatureIndexes: [],
     data: myFeatureCollection
   };
 

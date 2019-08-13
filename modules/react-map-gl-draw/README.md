@@ -1,4 +1,4 @@
-[![docs](https://i.imgur.com/BTVrsR4.jpg)](https://neb.gl)
+[![docs](https://i.imgur.com/bRDL1oh.gif)](https://nebula.gl)
 
 `react-map-gl-draw` is a drawing library tailored for [`react-map-gl`](https://github.com/uber/react-map-gl).
 
@@ -21,7 +21,7 @@
 yarn add react-map-gl-draw
 ```
 
-## Options 
+## Options
 - `mode` (String, Optional)
   - `EditorModes.READ_ONLY` - Not interactive. This is the default mode.
   - `EditorModes.SELECT_FEATURE` - Lets you select, delete, and drag features.
@@ -41,7 +41,7 @@ Feature object structure:
 `react-map-gl-draw` is stateful component.
 ```js
 {
-  id, // an unique identified generated inside react-map-gl-draw library 
+  id, // an unique identified generated inside react-map-gl-draw library
   geometry: {
     coordinates, // latitude longitude pairs of the geometry points
     type // geojson type, one of `Point`, `LineString`, or `Polygon`
@@ -55,18 +55,18 @@ Feature object structure:
 
 ### Styling related Options
 - `style` (Object, optional) - Customized css [style objects](https://reactjs.org/docs/dom-elements.html#style) apply to the editor. Default style includes width and height from current viewport.
-  
-- `getFeatureStyle` (Function, Optional) : Object - A function to style a feature, function parameters are 
+
+- `getFeatureStyle` (Function, Optional) : Object - A function to style a feature, function parameters are
   - `feature`: feature to style .
   - `state`: one of `SELECTED`, `HOVERED`, `INACTIVE`, `UNCOMMITTED`.
-  
+
 Returns is a map of [style objects](https://reactjs.org/docs/dom-elements.html#style) passed to SVG `path` elements.
 
-- `getEditHandleStyle` (Function, Optional) : Object - A function to style an `editHandle, function parameters are 
+- `getEditHandleStyle` (Function, Optional) : Object - A function to style an `editHandle, function parameters are
   - `feature`: feature to style.
   - `index`: index of the editHandle vertex in the feature.
   - `state`: one of `SELECTED`, `HOVERED`, `INACTIVE`, `UNCOMMITTED`.
-  
+
 Returns is a map of [style objects](https://reactjs.org/docs/dom-elements.html#style) passed to SVG `circle` or `rect` elements.
 
 - `getEditHandleShape` (String|Function, Optional): if is a string, should be one of `rect` or `circle`. If is a function, will receive the following parameters
@@ -80,7 +80,7 @@ Returns is a map of [style objects](https://reactjs.org/docs/dom-elements.html#s
 
 ### State related concepts:
 - `INACTIVE`: neither selected nor hovered, default state of a complete `feature` or `editHandle`.
-- `SELECTED`: being clicked or dragged. 
+- `SELECTED`: being clicked or dragged.
 - `HOVERED`: hovered over by the mouse pointer.
 - `UNCOMMITTED`: in the middle of drawing, not yet added to the feature being edited.
 
@@ -88,10 +88,10 @@ Returns is a map of [style objects](https://reactjs.org/docs/dom-elements.html#s
 
 ![img](https://raw.githubusercontent.com/uber-common/deck.gl-data/master/nebula.gl/edit-handle.png)
 
-As shown in the above image, for the feature currently being edited, 
+As shown in the above image, for the feature currently being edited,
 - `getFeatureStyle({feature, state: SELECTED})` will be applied to the committed parts of the feature. (Green strokes)
 - `getEditHandleStyle({state: SELECTED})` will be applied to the committed editHandle vertices.  (Vertices with black stroke)
-- `getFeatureStyle({feature, state: UNCOMMITTED})` will be applied to the uncommitted parts of the feature. (Gray stroke) 
+- `getFeatureStyle({feature, state: UNCOMMITTED})` will be applied to the uncommitted parts of the feature. (Gray stroke)
 - `getEditHandleStyle({state: UNCOMMITTED})` will be applied to the uncommitted editHandle vertex. (Gray vertex)
 
 
@@ -125,21 +125,21 @@ class App extends Component {
       selectedFeatureId: null
     };
   }
-  
+
   componentDidMount() {
     // add features
     const initialFeatures = [{...}];
     this._mapRef.add(initialFeatures);
   }
-  
+
   _updateViewport = (viewport) => {
     this.setState({viewport});
   }
-  
+
   _onSelect = ({ selectedFeatureId }) => {
     this.setState({ selectedFeatureId });
   };
-  
+
   _onUpdate = features => {
     this.setState({
       features
@@ -153,7 +153,7 @@ class App extends Component {
       selectedFeatureId: null
     });
   };
-  
+
   _renderControlPanel = () => {
     return (
       <div style={{position: absolute, top: 0, right: 0, maxWidth: '320px'}}>
@@ -164,14 +164,14 @@ class App extends Component {
       </div>
     );
   }
-  
+
   _getEditHandleStyle = ({feature, featureState, vertexIndex, vertexState}) => {
     return {
       fill: vertexState === `SELECTED` ? '#000' : '#aaa',
       stroke: vertexState === `SELECTED` ? '#000' : 'none'
     }
   }
-  
+
   _getFeatureStyle = ({feature, featureState}) => {
     return {
       stroke: featureState === `SELECTED` ? '#000' : 'none',

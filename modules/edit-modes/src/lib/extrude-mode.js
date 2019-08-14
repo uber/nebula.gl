@@ -204,7 +204,11 @@ export class ExtrudeMode extends ModifyMode {
     return editAction;
   }
 
-  coordinatesSize(positionIndexes: number[], featureIndex: number, features: FeatureCollection) {
+  coordinatesSize(
+    positionIndexes: number[],
+    featureIndex: number,
+    { features }: FeatureCollection
+  ) {
     let size = 0;
     const feature = features[featureIndex];
     const coordinates: any = feature.geometry.coordinates;
@@ -275,7 +279,7 @@ export class ExtrudeMode extends ModifyMode {
   getPointForPositionIndexes(
     positionIndexes: number[],
     featureIndex: number,
-    features: FeatureCollection
+    { features }: FeatureCollection
   ) {
     let p1;
     const feature = features[featureIndex];

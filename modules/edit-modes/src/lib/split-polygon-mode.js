@@ -14,6 +14,7 @@ import { generatePointsParallelToLinePoints } from '../utils.js';
 import type { FeatureCollection } from '../geojson-types.js';
 import type { ClickEvent, PointerMoveEvent, ModeProps } from '../types.js';
 import { BaseGeoJsonEditMode, type GeoJsonEditAction } from './geojson-edit-mode.js';
+import { ImmutableFeatureCollection } from './immutable-feature-collection.js';
 
 export class SplitPolygonMode extends BaseGeoJsonEditMode {
   calculateMapCoords(clickSequence: any, mapCoords: any, props: ModeProps<FeatureCollection>) {
@@ -161,7 +162,7 @@ export class SplitPolygonMode extends BaseGeoJsonEditMode {
     }
 
     // Update the type to Mulitpolygon
-    const updatedData = this.getImmutableFeatureCollection().replaceGeometry(featureIndex, {
+    const updatedData = new ImmutableFeatureCollection(props.data).replaceGeometry(featureIndex, {
       type: 'MultiPolygon',
       coordinates: updatedCoordinates
     });

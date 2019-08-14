@@ -44,17 +44,9 @@ const DEFAULT_EDIT_HANDLES: EditHandle[] = [];
 export type GeoJsonEditMode = EditMode<FeatureCollection, FeatureCollection>;
 
 export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, FeatureCollection> {
-  // TODO: add underscore
-  featureCollection: ImmutableFeatureCollection;
   _clickSequence: Position[] = [];
   _editHandles: EditHandle[] = DEFAULT_EDIT_HANDLES;
   _tentativeFeature: ?Feature;
-
-  constructor(featureCollection?: FeatureCollection) {
-    if (featureCollection) {
-      this.setFeatureCollection(featureCollection);
-    }
-  }
 
   getGuides(props: ModeProps<FeatureCollection>): FeatureCollection {
     const { lastPointerMoveEvent } = props;
@@ -84,16 +76,6 @@ export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, FeatureC
     };
   }
 
-  // TODO edit-modes: delete me and get from props instead
-  getFeatureCollection(): FeatureCollection {
-    return this.featureCollection.getObject();
-  }
-
-  // TODO edit-modes: delete me and get from props instead
-  getImmutableFeatureCollection(): ImmutableFeatureCollection {
-    return this.featureCollection;
-  }
-
   getSelectedFeature(props: ModeProps<FeatureCollection>): ?Feature {
     if (props.selectedIndexes.length === 1) {
       return props.data.features[props.selectedIndexes[0]];
@@ -116,11 +98,6 @@ export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, FeatureC
       type: 'FeatureCollection',
       features: selectedFeatures
     };
-  }
-
-  // TODO edit-modes: delete me and get from props instead
-  setFeatureCollection(featureCollection: FeatureCollection): void {
-    this.featureCollection = new ImmutableFeatureCollection(featureCollection);
   }
 
   // TODO edit-modes: delete me
@@ -189,11 +166,11 @@ export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, FeatureC
     return props.selectedIndexes.some(index => pickedIndexes.has(index));
   }
 
-  getAddFeatureAction(geometry: Geometry): GeoJsonEditAction {
+  getAddFeatureAction(geometry: Geometry, features: FeatureCollection): GeoJsonEditAction {
     // Unsure why flow can't deal with Geometry type, but there I fixed it
     const geometryAsAny: any = geometry;
 
-    const updatedData = this.getImmutableFeatureCollection()
+    const updatedData = new ImmutableFeatureCollection(features)
       .addFeature({
         type: 'Feature',
         properties: {},
@@ -212,7 +189,7 @@ export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, FeatureC
 
   getAddManyFeaturesAction(featureCollection: FeatureCollection): GeoJsonEditAction {
     const features = featureCollection.features;
-    let updatedData = this.getImmutableFeatureCollection();
+    let updatedData = new ImmutableFeatureCollection(featureCollection);
     const initialIndex = updatedData.getObject().features.length;
     const updatedIndexes = [];
     for (const feature of features) {
@@ -280,7 +257,7 @@ export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, FeatureC
 
       const featureIndex = props.selectedIndexes[0];
 
-      const updatedData = this.getImmutableFeatureCollection()
+      const updatedData = new ImmutableFeatureCollection(props.data)
         .replaceGeometry(featureIndex, updatedGeometry.geometry)
         .getObject();
 
@@ -294,12 +271,10 @@ export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, FeatureC
 
       return editAction;
     }
-    return this.getAddFeatureAction(geometry);
+    return this.getAddFeatureAction(geometry, props.data);
   }
 
-  // TODO edit-modes: factor out all the duplicate calls to setFeatureCollection
   handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>): void {
-    this.setFeatureCollection(props.data);
     const editAction = this.handleClickAdapter(event, props);
 
     if (editAction) {
@@ -308,7 +283,6 @@ export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, FeatureC
   }
 
   handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>): void {
-    this.setFeatureCollection(props.data);
     const { editAction, cancelMapPan } = this.handlePointerMoveAdapter(event, props);
 
     if (cancelMapPan) {
@@ -324,8 +298,6 @@ export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, FeatureC
   }
 
   handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollection>): void {
-    this.setFeatureCollection(props.data);
-
     const editAction = this.handleStartDraggingAdapter(event, props);
 
     if (editAction) {
@@ -334,8 +306,6 @@ export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, FeatureC
   }
 
   handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollection>): void {
-    this.setFeatureCollection(props.data);
-
     const editAction = this.handleStopDraggingAdapter(event, props);
 
     if (editAction) {

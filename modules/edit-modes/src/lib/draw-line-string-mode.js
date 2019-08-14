@@ -3,6 +3,7 @@
 import type { Position, LineString, FeatureCollection } from '../geojson-types.js';
 import type { ClickEvent, PointerMoveEvent, ModeProps } from '../types.js';
 import { BaseGeoJsonEditMode, type GeoJsonEditAction } from './geojson-edit-mode.js';
+import { ImmutableFeatureCollection } from './immutable-feature-collection.js';
 
 export class DrawLineStringMode extends BaseGeoJsonEditMode {
   handleClickAdapter(event: ClickEvent, props: ModeProps<FeatureCollection>): ?GeoJsonEditAction {
@@ -34,7 +35,7 @@ export class DrawLineStringMode extends BaseGeoJsonEditMode {
         positionIndexes = [0];
       }
       const featureIndex = selectedFeatureIndexes[0];
-      const updatedData = this.getImmutableFeatureCollection()
+      const updatedData = new ImmutableFeatureCollection(props.data)
         .addPosition(featureIndex, positionIndexes, event.mapCoords)
         .getObject();
 
@@ -52,7 +53,7 @@ export class DrawLineStringMode extends BaseGeoJsonEditMode {
     } else if (clickSequence.length === 2 && tentativeFeature) {
       // Add a new LineString
       const geometry: any = tentativeFeature.geometry;
-      editAction = this.getAddFeatureAction(geometry);
+      editAction = this.getAddFeatureAction(geometry, props.data);
 
       this.resetClickSequence();
     }

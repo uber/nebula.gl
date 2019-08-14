@@ -33,10 +33,6 @@ export class CompositeMode extends BaseGeoJsonEditMode {
     return (result: any);
   }
 
-  setFeatureCollection(featureCollection: FeatureCollection): void {
-    this.handlers.forEach(handler => handler.setFeatureCollection(featureCollection));
-  }
-
   handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>): void {
     this._coalesce(handler => handler.handleClick(event, props));
   }

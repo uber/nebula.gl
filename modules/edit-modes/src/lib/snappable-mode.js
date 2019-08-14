@@ -29,10 +29,6 @@ export class SnappableMode extends BaseGeoJsonEditMode {
     this._handler = handler;
   }
 
-  setFeatureCollection(featureCollection: FeatureCollection): void {
-    this._handler.setFeatureCollection(featureCollection);
-  }
-
   _getSnappedMouseEvent(event: Object, snapPoint: Position): PointerMoveEvent {
     return Object.assign({}, event, {
       mapCoords: snapPoint,

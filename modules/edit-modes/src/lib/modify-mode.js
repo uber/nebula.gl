@@ -32,6 +32,7 @@ import {
   type GeoJsonEditAction,
   type EditHandle
 } from './geojson-edit-mode.js';
+import { ImmutableFeatureCollection } from './immutable-feature-collection.js';
 
 export class ModifyMode extends BaseGeoJsonEditMode {
   getEditHandlesAdapter(
@@ -39,9 +40,8 @@ export class ModifyMode extends BaseGeoJsonEditMode {
     mapCoords: ?Position,
     props: ModeProps<FeatureCollection>
   ): EditHandle[] {
-    this.setFeatureCollection(props.data);
     let handles = [];
-    const { features } = this.getFeatureCollection();
+    const { features } = props.data;
 
     for (const index of this.getSelectedFeatureIndexes(props)) {
       if (index < features.length) {
@@ -130,7 +130,7 @@ export class ModifyMode extends BaseGeoJsonEditMode {
     return nearestPointOnLine(line, inPoint);
   }
 
-  handleClickAdapter(event: ClickEvent): ?GeoJsonEditAction {
+  handleClickAdapter(event: ClickEvent, props: ModeProps<FeatureCollection>): ?GeoJsonEditAction {
     let editAction: ?GeoJsonEditAction = null;
 
     const pickedExistingHandle = getPickedExistingEditHandle(event.picks);
@@ -139,7 +139,7 @@ export class ModifyMode extends BaseGeoJsonEditMode {
     if (pickedExistingHandle) {
       let updatedData;
       try {
-        updatedData = this.getImmutableFeatureCollection()
+        updatedData = new ImmutableFeatureCollection(props.data)
           .removePosition(pickedExistingHandle.featureIndex, pickedExistingHandle.positionIndexes)
           .getObject();
       } catch (ignored) {
@@ -158,7 +158,7 @@ export class ModifyMode extends BaseGeoJsonEditMode {
         };
       }
     } else if (pickedIntermediateHandle) {
-      const updatedData = this.getImmutableFeatureCollection()
+      const updatedData = new ImmutableFeatureCollection(props.data)
         .addPosition(
           pickedIntermediateHandle.featureIndex,
           pickedIntermediateHandle.positionIndexes,
@@ -182,13 +182,12 @@ export class ModifyMode extends BaseGeoJsonEditMode {
   }
 
   handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>): void {
-    this.setFeatureCollection(props.data);
     let editAction: ?GeoJsonEditAction = null;
 
     const editHandle = getPickedEditHandle(event.pointerDownPicks);
 
     if (event.isDragging && editHandle) {
-      const updatedData = this.getImmutableFeatureCollection()
+      const updatedData = new ImmutableFeatureCollection(props.data)
         .replacePosition(editHandle.featureIndex, editHandle.positionIndexes, event.mapCoords)
         .getObject();
 
@@ -225,7 +224,7 @@ export class ModifyMode extends BaseGeoJsonEditMode {
 
     const editHandle = getPickedIntermediateEditHandle(event.picks);
     if (selectedFeatureIndexes.length && editHandle) {
-      const updatedData = this.getImmutableFeatureCollection()
+      const updatedData = new ImmutableFeatureCollection(props.data)
         .addPosition(editHandle.featureIndex, editHandle.positionIndexes, event.mapCoords)
         .getObject();
 
@@ -252,7 +251,7 @@ export class ModifyMode extends BaseGeoJsonEditMode {
     const selectedFeatureIndexes = this.getSelectedFeatureIndexes(props);
     const editHandle = getPickedEditHandle(event.picks);
     if (selectedFeatureIndexes.length && editHandle) {
-      const updatedData = this.getImmutableFeatureCollection()
+      const updatedData = new ImmutableFeatureCollection(props.data)
         .replacePosition(editHandle.featureIndex, editHandle.positionIndexes, event.mapCoords)
         .getObject();
 

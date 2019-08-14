@@ -12,6 +12,7 @@ import type {
   ModeProps
 } from '../types.js';
 import { BaseGeoJsonEditMode, type GeoJsonEditAction } from './geojson-edit-mode.js';
+import { ImmutableFeatureCollection } from './immutable-feature-collection.js';
 
 export class TranslateMode extends BaseGeoJsonEditMode {
   _geometryBeforeTranslate: ?FeatureCollection;
@@ -104,7 +105,7 @@ export class TranslateMode extends BaseGeoJsonEditMode {
       direction
     );
 
-    let updatedData = this.getImmutableFeatureCollection();
+    let updatedData = new ImmutableFeatureCollection(props.data);
 
     const selectedIndexes = this.getSelectedFeatureIndexes(props);
     for (let i = 0; i < selectedIndexes.length; i++) {

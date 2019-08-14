@@ -11,6 +11,7 @@ import type {
 } from '../types.js';
 import type { FeatureCollection, Position } from '../geojson-types.js';
 import { BaseGeoJsonEditMode, type GeoJsonEditAction } from './geojson-edit-mode.js';
+import { ImmutableFeatureCollection } from './immutable-feature-collection.js';
 
 export class RotateMode extends BaseGeoJsonEditMode {
   _isRotatable: boolean;
@@ -95,7 +96,7 @@ export class RotateMode extends BaseGeoJsonEditMode {
 
     const rotatedFeatures = turfTransformRotate(this._geometryBeingRotated, angle);
 
-    let updatedData = this.getImmutableFeatureCollection();
+    let updatedData = new ImmutableFeatureCollection(props.data);
 
     const selectedIndexes = this.getSelectedFeatureIndexes(props);
     for (let i = 0; i < selectedIndexes.length; i++) {

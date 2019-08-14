@@ -6,7 +6,6 @@ export { ArrowStyles, DEFAULT_ARROWS, MAX_ARROWS } from './style.js';
 export { default as EditableGeoJsonLayer } from './layers/editable-geojson-layer.js';
 
 export {
-  // eslint-disable-next-line camelcase
   default as EditableGeoJsonLayerEditModePoc
 } from './layers/editable-geojson-layer-edit-mode-poc.js';
 export { default as SelectionLayer } from './layers/selection-layer.js';

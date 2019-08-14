@@ -178,7 +178,6 @@ type Props = {
 //   selectedFeatures: Feature[]
 // };
 
-// eslint-disable-next-line camelcase
 export default class EditableGeoJsonLayerEditModePoc extends EditableLayer {
   // state: State;
   // props: Props;
@@ -421,7 +420,5 @@ export default class EditableGeoJsonLayerEditModePoc extends EditableLayer {
   }
 }
 
-// eslint-disable-next-line camelcase
 EditableGeoJsonLayerEditModePoc.layerName = 'EditableGeoJsonLayerEditModePoc';
-// eslint-disable-next-line camelcase
 EditableGeoJsonLayerEditModePoc.defaultProps = defaultProps;

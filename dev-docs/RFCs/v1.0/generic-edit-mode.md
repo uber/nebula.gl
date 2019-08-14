@@ -234,3 +234,29 @@ Here's an example guides object after drawing two points of a line string:
   ]
 };
 ```
+
+## Custom EditMode
+
+A user can provide their own `EditMode` implementation. If it is for editing GeoJSON, it is likely easier to extend `BaseGeoJsonEditMode` or one of the existing edit modes implemented in nebula.
+
+The following example demonstrates the `EditMode` interface. This `DrawPointsMode` class implements the ability to add a point to an array of points upon click.
+
+```javascript
+class DrawPointsMode implements EditMode {
+ handleClick(event, props) {
+   // props.data is an array of points and should not be mutated directly
+   // event.mapCoords is the coordinates on the map (lat/long) that the user clicked
+   const updatedData = [...props.data, event.mapCoords];
+
+   // props.onEdit is the edit callback sent to the application using nebula.gl
+   // updatedData is the immutably-updated data
+   // nebula.gl will subsequently call updateState with the updated data
+   props.onEdit({ updatedData, editType: 'ADD_POINT' });
+ }
+
+ // No special handling for dragging
+ handlePointerMove(event) {}
+ handleStartDragging(event) {}
+ handleStopDragging(event) {}
+}
+```

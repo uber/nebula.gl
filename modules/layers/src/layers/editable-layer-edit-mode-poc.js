@@ -14,7 +14,7 @@ import type {
 const MINIMUM_POINTER_MOVE_THRESHOLD_PIXELS = 7;
 
 // eslint-disable-next-line camelcase
-export default class EditableLayer_EDIT_MODE_POC extends CompositeLayer {
+export default class EditableLayerEditModePoc extends CompositeLayer {
   // Overridable interaction event handlers
   onLayerClick(event: ClickEvent) {
     // default implementation - do nothing
@@ -274,4 +274,4 @@ export default class EditableLayer_EDIT_MODE_POC extends CompositeLayer {
 }
 
 // eslint-disable-next-line camelcase
-EditableLayer_EDIT_MODE_POC.layerName = 'EditableLayer_EDIT_MODE_POC';
+EditableLayerEditModePoc.layerName = 'EditableLayerEditModePoc';

@@ -179,7 +179,7 @@ type Props = {
 // };
 
 // eslint-disable-next-line camelcase
-export default class EditableGeoJsonLayer_EDIT_MODE_POC extends EditableLayer {
+export default class EditableGeoJsonLayerEditModePoc extends EditableLayer {
   // state: State;
   // props: Props;
   // setState: ($Shape<State>) => void;
@@ -422,6 +422,6 @@ export default class EditableGeoJsonLayer_EDIT_MODE_POC extends EditableLayer {
 }
 
 // eslint-disable-next-line camelcase
-EditableGeoJsonLayer_EDIT_MODE_POC.layerName = 'EditableGeoJsonLayer_EDIT_MODE_POC';
+EditableGeoJsonLayerEditModePoc.layerName = 'EditableGeoJsonLayerEditModePoc';
 // eslint-disable-next-line camelcase
-EditableGeoJsonLayer_EDIT_MODE_POC.defaultProps = defaultProps;
+EditableGeoJsonLayerEditModePoc.defaultProps = defaultProps;

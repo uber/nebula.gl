@@ -11,7 +11,7 @@ import circle from '@turf/circle';
 
 import {
   EditableGeoJsonLayer,
-  EditableGeoJsonLayer_EDIT_MODE_POC as EditableGeoJsonLayerEditModePoc,
+  EditableGeoJsonLayerEditModePoc,
   SelectionLayer,
   CompositeMode,
   DrawLineStringMode,
@@ -187,7 +187,7 @@ export default class Example extends Component<
     this.state = {
       viewport: initialViewport,
       testFeatures: EMPTY_FEATURE_COLLECTION,
-      mode: 'drawPolygon',
+      mode: 'drawLineString+modify',
       modeConfig: null,
       pointsRemovable: true,
       selectedFeatureIndexes: [],

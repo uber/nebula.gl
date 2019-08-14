@@ -17,7 +17,7 @@ export class DuplicateMode extends TranslateMode {
     this._geometryBeforeTranslate = this.getSelectedFeaturesAsFeatureCollection(props);
 
     return this._geometryBeforeTranslate
-      ? this.getAddManyFeaturesAction(this._geometryBeforeTranslate)
+      ? this.getAddManyFeaturesAction(this._geometryBeforeTranslate, props.data)
       : null;
   }
 

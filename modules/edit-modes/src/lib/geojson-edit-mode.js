@@ -187,12 +187,14 @@ export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, FeatureC
     };
   }
 
-  getAddManyFeaturesAction(featureCollection: FeatureCollection): GeoJsonEditAction {
-    const features = featureCollection.features;
-    let updatedData = new ImmutableFeatureCollection(featureCollection);
+  getAddManyFeaturesAction(
+    { features: featuresToAdd }: FeatureCollection,
+    features: FeatureCollection
+  ): GeoJsonEditAction {
+    let updatedData = new ImmutableFeatureCollection(features);
     const initialIndex = updatedData.getObject().features.length;
     const updatedIndexes = [];
-    for (const feature of features) {
+    for (const feature of featuresToAdd) {
       const { properties, geometry } = feature;
       const geometryAsAny: any = geometry;
       updatedData = updatedData.addFeature({

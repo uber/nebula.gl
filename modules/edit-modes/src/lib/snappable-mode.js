@@ -17,8 +17,6 @@ import {
 
 type HandlePicks = { pickedHandle?: EditHandle, potentialSnapHandle?: EditHandle };
 
-// TODO edit-modes: implement SnappableMode
-
 export class SnappableMode extends BaseGeoJsonEditMode {
   _handler: BaseGeoJsonEditMode;
   _editHandlePicks: ?HandlePicks;

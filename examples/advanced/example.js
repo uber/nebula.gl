@@ -187,7 +187,7 @@ export default class Example extends Component<
     this.state = {
       viewport: initialViewport,
       testFeatures: EMPTY_FEATURE_COLLECTION,
-      mode: 'drawLineString+modify',
+      mode: 'drawPolygon',
       modeConfig: null,
       pointsRemovable: true,
       selectedFeatureIndexes: [],

@@ -127,7 +127,7 @@ export class SplitPolygonMode extends BaseGeoJsonEditMode {
   splitPolygon(props: ModeProps<FeatureCollection>) {
     const selectedGeometry = this.getSelectedGeometry(props);
     const tentativeFeature = this.getTentativeFeature();
-    const featureIndex = this.getSelectedFeatureIndexes(props)[0];
+    const featureIndex = props.selectedIndexes[0];
     const modeConfig = props.modeConfig || {};
 
     // Default gap in between the polygon

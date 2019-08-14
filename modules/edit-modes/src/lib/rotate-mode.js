@@ -98,7 +98,7 @@ export class RotateMode extends BaseGeoJsonEditMode {
 
     let updatedData = new ImmutableFeatureCollection(props.data);
 
-    const selectedIndexes = this.getSelectedFeatureIndexes(props);
+    const selectedIndexes = props.selectedIndexes;
     for (let i = 0; i < selectedIndexes.length; i++) {
       const selectedIndex = selectedIndexes[i];
       const movedFeature = rotatedFeatures.features[i];

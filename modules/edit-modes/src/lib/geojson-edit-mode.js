@@ -100,11 +100,6 @@ export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, FeatureC
     };
   }
 
-  // TODO edit-modes: delete me
-  getSelectedFeatureIndexes(props: ModeProps<FeatureCollection>): number[] {
-    return props.selectedIndexes;
-  }
-
   getClickSequence(): Position[] {
     return this._clickSequence;
   }

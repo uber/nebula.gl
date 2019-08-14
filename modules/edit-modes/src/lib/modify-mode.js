@@ -43,7 +43,7 @@ export class ModifyMode extends BaseGeoJsonEditMode {
     let handles = [];
     const { features } = props.data;
 
-    for (const index of this.getSelectedFeatureIndexes(props)) {
+    for (const index of props.selectedIndexes) {
       if (index < features.length) {
         const { geometry } = features[index];
         handles.push(...getEditHandlesForGeometry(geometry, index));
@@ -62,7 +62,7 @@ export class ModifyMode extends BaseGeoJsonEditMode {
       if (
         featureAsPick &&
         !featureAsPick.object.geometry.type.includes('Point') &&
-        this.getSelectedFeatureIndexes(props).includes(featureAsPick.index)
+        props.selectedIndexes.includes(featureAsPick.index)
       ) {
         let intermediatePoint: ?NearestPointType = null;
         let positionIndexPrefix = [];
@@ -220,7 +220,7 @@ export class ModifyMode extends BaseGeoJsonEditMode {
   ): ?GeoJsonEditAction {
     let editAction: ?GeoJsonEditAction = null;
 
-    const selectedFeatureIndexes = this.getSelectedFeatureIndexes(props);
+    const selectedFeatureIndexes = props.selectedIndexes;
 
     const editHandle = getPickedIntermediateEditHandle(event.picks);
     if (selectedFeatureIndexes.length && editHandle) {
@@ -248,7 +248,7 @@ export class ModifyMode extends BaseGeoJsonEditMode {
   ): ?GeoJsonEditAction {
     let editAction: ?GeoJsonEditAction = null;
 
-    const selectedFeatureIndexes = this.getSelectedFeatureIndexes(props);
+    const selectedFeatureIndexes = props.selectedIndexes;
     const editHandle = getPickedEditHandle(event.picks);
     if (selectedFeatureIndexes.length && editHandle) {
       const updatedData = new ImmutableFeatureCollection(props.data)

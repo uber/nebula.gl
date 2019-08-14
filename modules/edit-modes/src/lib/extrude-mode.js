@@ -83,7 +83,7 @@ export class ExtrudeMode extends ModifyMode {
   ): ?GeoJsonEditAction {
     let editAction: ?GeoJsonEditAction = null;
 
-    const selectedFeatureIndexes = this.getSelectedFeatureIndexes(props);
+    const selectedFeatureIndexes = props.selectedIndexes;
 
     const editHandle = getPickedEditHandle(event.picks);
     if (selectedFeatureIndexes.length && editHandle && editHandle.type === 'intermediate') {
@@ -152,7 +152,7 @@ export class ExtrudeMode extends ModifyMode {
   ): ?GeoJsonEditAction {
     let editAction: ?GeoJsonEditAction = null;
 
-    const selectedFeatureIndexes = this.getSelectedFeatureIndexes(props);
+    const selectedFeatureIndexes = props.selectedIndexes;
     const editHandle = getPickedEditHandle(event.picks);
     if (selectedFeatureIndexes.length && editHandle) {
       const size = this.coordinatesSize(

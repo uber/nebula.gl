@@ -10,7 +10,7 @@ export class DrawLineStringMode extends BaseGeoJsonEditMode {
     super.handleClickAdapter(event, props);
 
     let editAction: ?GeoJsonEditAction = null;
-    const selectedFeatureIndexes = this.getSelectedFeatureIndexes(props);
+    const selectedFeatureIndexes = props.selectedIndexes;
     const selectedGeometry = this.getSelectedGeometry(props);
     const tentativeFeature = this.getTentativeFeature();
     const clickSequence = this.getClickSequence();
@@ -71,7 +71,7 @@ export class DrawLineStringMode extends BaseGeoJsonEditMode {
     const mapCoords = event.mapCoords;
 
     let startPosition: ?Position = null;
-    const selectedFeatureIndexes = this.getSelectedFeatureIndexes(props);
+    const selectedFeatureIndexes = props.selectedIndexes;
     const selectedGeometry = this.getSelectedGeometry(props);
 
     if (

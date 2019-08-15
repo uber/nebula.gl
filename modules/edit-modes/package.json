@@ -67,6 +67,6 @@
     "@turf/transform-scale": ">=4.0.0",
     "@turf/transform-translate": ">=4.0.0",
     "@turf/union": ">=4.0.0",
-    "viewport-mercator-project": ">=5.0.0"
+    "viewport-mercator-project": ">=6.0.0"
   }
 }

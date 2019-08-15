@@ -71,7 +71,7 @@
     "cubic-hermite-spline": "^1.0.1",
     "geojson-types": "^2.0.1",
     "global": ">=4.3.0",
-    "viewport-mercator-project": ">=5.0.0"
+    "viewport-mercator-project": ">=6.0.0"
   },
   "peerDependencies": {
     "@deck.gl/core": "^7.0.0",

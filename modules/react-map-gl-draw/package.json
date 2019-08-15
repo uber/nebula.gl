@@ -33,19 +33,19 @@
     "test": "yarn lint && yarn build && yarn flow && yarn jest"
   },
   "dependencies": {
-    "@nebula.gl/edit-modes": "0.14.9",
+    "@nebula.gl/edit-modes": "^0.14.9",
     "@turf/helpers": "^6.1.4",
-    "mjolnir.js": "^2.1.0",
-    "prop-types": "^15.5.7",
+    "mjolnir.js": "^2.2.1",
+    "prop-types": "^15.7.2",
     "uuid": "^3.3.2",
-    "viewport-mercator-project": ">=5.0.0"
+    "viewport-mercator-project": "^6.1.0"
   },
   "devDependencies": {
     "react-map-gl": "^5.0.2"
   },
   "peerDependencies": {
-    "react": "0.14.x - 16.x",
-    "react-dom": "0.14.x - 16.x",
-    "react-map-gl": ">=4.0.0"
+    "react": "^16.x",
+    "react-dom": "^16.x",
+    "react-map-gl": "^5.x"
   }
 }

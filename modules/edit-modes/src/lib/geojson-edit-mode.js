@@ -45,7 +45,6 @@ export type GeoJsonEditMode = EditMode<FeatureCollection, FeatureCollection>;
 
 export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, FeatureCollection> {
   _clickSequence: Position[] = [];
-  _editHandles: EditHandle[] = DEFAULT_EDIT_HANDLES;
   _tentativeFeature: ?Feature;
 
   getGuides(props: ModeProps<FeatureCollection>): FeatureCollection {
@@ -110,10 +109,6 @@ export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, FeatureC
 
   getTentativeFeature(): ?Feature {
     return this._tentativeFeature;
-  }
-
-  getEditHandles(): EditHandle[] {
-    return this._editHandles;
   }
 
   // TODO edit-modes: delete me once mode handlers do getEditHandles lazily

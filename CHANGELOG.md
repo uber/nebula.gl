@@ -7,17 +7,37 @@ _All notable changes to this project will be documented in this file. This proje
 <!--
 ## Version TBD
 
-### Breaking changes
+### Breaking changes between `EditableGeoJsonLayer` and `EditableGeoJsonLayerEditModePoc`
 
 * `featureIndexes` is now nested under `editContext.featureIndexes` in parameter passed to `onEdit` callback
-* `ModeHandler`: if you built a custom `ModeHandler`, note the following breaking changes:
-  * Fire an edit action by calling `super.onEdit` rather than returning an `EditAction` from your `handle...` functions
-  * Update edit handles and tentative feature by calling `super.onUpdateGuides` rather than defining a `getEditHandles` function
-  * Update cursor by calling `super.onUpdateCursor` instead of defining a `getCursor` function
-  * `groundCoords` renamed to `mapCoords` in event objects
 * `editHandleType` no longer supports passing a function/constructor. Use `_subLayerProps` instead.
 * `editHandleParameters` removed. Use `_subLayerProps` instead.
 * `editHandleLayerProps` removed. Use `_subLayerProps` instead.
+
+### Breaking changes between `ModeHandler` and `BaseGeoJsonEditMode`
+
+If you built a custom `ModeHandler`, note the following breaking changes:
+
+  * Extend `BaseGeoJsonEditMode` instead of `ModeHandler`
+  * Each function now takes a `props` parameter with the state, so use `props` rather than `this.get...()` (e.g. `this.getFeatureCollection()`, `this.getModeConfig()`, etc).
+  * `handleClick`
+    * Call `props.onEdit` instead of returning an `EditAction`
+  * `handlePointerMove`
+    * Call `props.onEdit` instead of returning an `EditAction`
+    * Call `event.sourceEvent.stopPropagation()` instead of returning `cancelMapPan: true`
+  * `handleStartDragging`
+    * Call `props.onEdit` instead of returning an `EditAction`
+  * `handleStopDragging`
+    * Call `props.onEdit` instead of returning an `EditAction`
+  * Guides
+    * Edit handles and tentative features are now encompassed as "guides"
+    * Guides are formatted as GeoJSON FeatureCollection
+    * Override `getGuides` instead of `getEditHandles`
+    * Format edit handles as GeoJSON Features instead of custom objects
+    * Override `getGuides` instead of calling `this._setTentativeFeature()`
+  * `getCursor`
+    * Instead of defining a `getCursor` function, call `props.onUpdateCursor`
+  * `groundCoords` renamed to `mapCoords` in event objects
 
 -->
 

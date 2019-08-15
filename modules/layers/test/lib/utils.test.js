@@ -162,7 +162,10 @@ describe('nearestPointOnProjectedLine() and related functions', () => {
     };
     const result = nearestPointOnProjectedLine(line, inPoint, viewport);
     expect(result.geometry.type).toEqual('Point');
-    expect(result.geometry.coordinates).toEqual([0.5, 0.5, 0.5]);
+    expect(result.geometry.coordinates.length).toEqual(3);
+    expect(result.geometry.coordinates[0]).toBeCloseTo(0.5, 3);
+    expect(result.geometry.coordinates[1]).toBeCloseTo(0.5, 3);
+    expect(result.geometry.coordinates[2]).toBeCloseTo(0.5, 3);
     expect(result.properties.index).toEqual(0);
   });
 });

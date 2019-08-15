@@ -12,7 +12,7 @@ import type {
   FeatureWithProps,
   Viewport
 } from '@nebula.gl/edit-modes';
-import { WebMercatorViewport } from '@deck.gl/core';
+import WebMercatorViewport from 'viewport-mercator-project';
 
 // TODO edit-modes: delete and use edit-modes/utils instead
 

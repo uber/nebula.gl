@@ -24,7 +24,7 @@ If you built a custom `ModeHandler`, note the following breaking changes:
     * Call `props.onEdit` instead of returning an `EditAction`
   * `handlePointerMove`
     * Call `props.onEdit` instead of returning an `EditAction`
-    * Call `event.sourceEvent.stopPropagation()` instead of returning `cancelMapPan: true`
+    * Call `event.sourceEvent.stopPropagation()` instead of returning `{cancelMapPan: true}`
   * `handleStartDragging`
     * Call `props.onEdit` instead of returning an `EditAction`
   * `handleStopDragging`

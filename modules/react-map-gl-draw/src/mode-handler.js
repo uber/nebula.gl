@@ -92,7 +92,7 @@ export default class ModeHandler extends Component<EditorProps, EditorState> {
         this._degregisterEvents();
       }
 
-      if (this.props.mode === MODES.READ_ONLY && nextProps.mode) {
+      if ((!this.props.mode || this.props.mode === MODES.READ_ONLY) && nextProps.mode) {
         this._registerEvents();
       }
 
@@ -122,6 +122,7 @@ export default class ModeHandler extends Component<EditorProps, EditorState> {
       const selectedFeatureIndex =
         features && features.findIndex(f => f.properties.id === nextProps.selectedFeatureId);
       this.setState({
+        selectedFeatureId: nextProps.selectedFeatureId,
         selectedFeatureIndex: isNumeric(selectedFeatureIndex) ? selectedFeatureIndex : null
       });
     }
@@ -261,8 +262,8 @@ export default class ModeHandler extends Component<EditorProps, EditorState> {
         });
       } else if (this.state.selectedFeatureId) {
         onSelect({
-          selectedFeatureId: null,
-          selectedFeatureIndex: null
+          selectedFeatureIndex: null,
+          selectedFeatureId: null
         });
       }
     }

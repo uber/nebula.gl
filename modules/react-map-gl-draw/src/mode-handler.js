@@ -71,6 +71,7 @@ export default class ModeHandler extends Component<EditorProps, EditorState> {
   constructor() {
     super();
     this.state = defaultState;
+    this._eventsRegistered = false;
 
     this._events = {
       anyclick: evt => this._onEvent(this._onClick, evt, true),
@@ -88,11 +89,11 @@ export default class ModeHandler extends Component<EditorProps, EditorState> {
     if (this.props.mode !== nextProps.mode) {
       this._clearEditingState();
 
-      if (nextProps.mode === MODES.READ_ONLY) {
+      if (this._eventsRegistered && (!nextProps.mode || nextProps.mode === MODES.READ_ONLY)) {
         this._degregisterEvents();
       }
 
-      if ((!this.props.mode || this.props.mode === MODES.READ_ONLY) && nextProps.mode) {
+      if (!this._eventsRegistered && nextProps.mode && nextProps.mode !== MODES.READ_ONLY) {
         this._registerEvents();
       }
 
@@ -133,6 +134,7 @@ export default class ModeHandler extends Component<EditorProps, EditorState> {
   }
 
   _events: any;
+  _eventsRegistered: boolean;
   _modeHandler: any;
   _context: ?MapContext;
   _containerRef: ?HTMLElement;
@@ -228,6 +230,7 @@ export default class ModeHandler extends Component<EditorProps, EditorState> {
       return;
     }
     eventManager.off(this._events);
+    this._eventsRegistered = false;
   };
 
   _registerEvents = () => {
@@ -237,6 +240,7 @@ export default class ModeHandler extends Component<EditorProps, EditorState> {
       return;
     }
     eventManager.on(this._events, ref);
+    this._eventsRegistered = true;
   };
 
   _onEvent = (handler: Function, evt: MjolnirEvent, stopPropagation: boolean) => {

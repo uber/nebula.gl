@@ -10,24 +10,26 @@ LICENSE file in the root directory of this source tree.
 // @flow
 
 const path = require('path');
+const { lstatSync, readdirSync } = require('fs');
+const { join } = require('path');
 const flowCopySource = require('flow-copy-source');
 
-async function run() {
-  await flowCopySource(
-    [path.resolve(__dirname, '../modules/core/src')],
-    path.resolve(__dirname, '../modules/core/dist-es6'),
-    {
-      ignore: ['**/*.test.js', 'test/**/*.js']
-    }
-  );
+const isDirectory = source => lstatSync(source).isDirectory();
+const getDirectories = source =>
+  readdirSync(source)
+    .map(name => join(source, name))
+    .filter(isDirectory);
 
-  await flowCopySource(
-    [path.resolve(__dirname, '../modules/react/src')],
-    path.resolve(__dirname, '../modules/react/dist-es6'),
-    {
+async function run() {
+  const directories = getDirectories(path.resolve(__dirname, '../modules'));
+
+  for (const directory of directories) {
+    console.log(`Copying flow source for directory ${directory}`); // eslint-disable-line
+
+    await flowCopySource([join(directory, 'src')], join(directory, 'dist-es6'), {
       ignore: ['**/*.test.js', 'test/**/*.js']
-    }
-  );
+    });
+  }
 }
 
 run();

@@ -2,7 +2,7 @@
   "name": "@nebula.gl/edit-modes",
   "description": "GeoJSON editing modes for nebula.gl",
   "license": "MIT",
-  "version": "0.15.0-alpha.4",
+  "version": "0.15.0-alpha.5",
   "author": "Georgios Karnas <georgios@uber.com>",
   "repository": {
     "type": "git",

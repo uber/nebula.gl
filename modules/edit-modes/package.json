@@ -29,8 +29,6 @@
     "flow": "(cd ../.. && yarn flow)",
     "lint": "(cd ../.. && yarn lint)",
     "prepublish": "yarn build",
-    "publish-prod": "yarn build && yarn test && yarn test-dist && npm publish",
-    "publish-beta": "yarn build && yarn test && yarn test-dist && npm publish --tag beta",
     "test": "yarn lint && yarn build && yarn flow && yarn jest",
     "test-r": "yarn lint && yarn build && yarn test-node && (cd test/rendering-test && node node-rendering.js)",
     "test-fast": "yarn test-node",
@@ -68,5 +66,6 @@
     "@turf/transform-translate": ">=4.0.0",
     "@turf/union": ">=4.0.0",
     "viewport-mercator-project": ">=6.0.0"
-  }
+  },
+  "gitHead": "fc8aab6f4fb01bdb75e53c567a3030138705caf4"
 }

@@ -17,7 +17,7 @@
     "modules/*"
   ],
   "scripts": {
-    "start": "open http://neb.gl/#/documentation/overview",
+    "start": "open http://nebula.gl/docs",
     "bootstrap": "lerna bootstrap",
     "build": "lerna exec npm run build",
     "pretty": "prettier --write \"{modules,examples,test}/**/*.js\" --loglevel warn",

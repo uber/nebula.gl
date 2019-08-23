@@ -25,7 +25,7 @@
     "lint": "npm run lint-yarn && eslint modules/**/src examples",
     "lint-yarn": "!(grep -q unpm.u yarn.lock) && echo 'Lockfile valid.' || (echo 'Please rebuild yarn file using public npmrc' && false)",
     "flow": "flow",
-    "prepublish": "npm run bootstrap && npm run test && npm run flow-copy-src",
+    "prepack": "npm run bootstrap && npm run test && npm run flow-copy-src",
     "postpublish": "./scripts/changelog.sh",
     "test": "npm run lint && npm run build && npm run flow && npm run jest",
     "test-r": "npm run lint && npm run build && npm run test-node && (cd test/rendering-test && node node-rendering.js)",

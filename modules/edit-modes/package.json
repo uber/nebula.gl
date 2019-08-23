@@ -28,7 +28,6 @@
     "build": "yarn build-clean && yarn build-es6 && yarn build-es5 && cp ../../README.md .",
     "flow": "(cd ../.. && yarn flow)",
     "lint": "(cd ../.. && yarn lint)",
-    "prepublish": "yarn build",
     "test": "yarn lint && yarn build && yarn flow && yarn jest",
     "test-r": "yarn lint && yarn build && yarn test-node && (cd test/rendering-test && node node-rendering.js)",
     "test-fast": "yarn test-node",

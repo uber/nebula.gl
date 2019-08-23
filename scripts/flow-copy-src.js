@@ -9,6 +9,9 @@ LICENSE file in the root directory of this source tree.
 /* eslint-env node */
 // @flow
 
+// This file copies flow source files to dist output for all modules
+// This way the flow typings will be available in the npm module
+
 const path = require('path');
 const { lstatSync, readdirSync } = require('fs');
 const { join } = require('path');

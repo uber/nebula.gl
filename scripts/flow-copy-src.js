@@ -31,6 +31,10 @@ async function run() {
     await flowCopySource([join(directory, 'src')], join(directory, 'dist-es6'), {
       ignore: ['**/*.test.js', 'test/**/*.js']
     });
+
+    await flowCopySource([join(directory, 'src')], join(directory, 'dist'), {
+      ignore: ['**/*.test.js', 'test/**/*.js']
+    });
   }
 }
 

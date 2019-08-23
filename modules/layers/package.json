@@ -75,6 +75,5 @@
     "@deck.gl/layers": "^7.0.0",
     "@luma.gl/constants": "^7.0.0",
     "@luma.gl/core": "^7.0.0"
-  },
-  "gitHead": "fc8aab6f4fb01bdb75e53c567a3030138705caf4"
+  }
 }

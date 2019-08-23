@@ -47,6 +47,5 @@
   },
   "resolutions": {
     "@turf/difference": "6.0.1"
-  },
-  "gitHead": "fc8aab6f4fb01bdb75e53c567a3030138705caf4"
+  }
 }

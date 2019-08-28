@@ -1,6 +1,6 @@
 # React Map GL Draw
 
-react-map-gl-draw is a react based drawing library tailored for [`react-map-gl`](https://github.com/uber/react-map-gl).
+`react-map-gl-draw` is a react based drawing library tailored for [`react-map-gl`](https://github.com/uber/react-map-gl).
 
 ## Options 
 - `mode` (String, Optional)
@@ -43,22 +43,22 @@ react-map-gl-draw is a react based drawing library tailored for [`react-map-gl`]
 ```
 
 ### Styling related Options
-- `getFeatureStyle` (Function, Optional) : Object - A function to style a feature, function parameters are 
+- `featureStyle` (Function, Optional) : Object - A function to style a feature, function parameters are 
   - `feature`: feature to style.
   - `state`: one of `SELECTED`, `HOVERED`, `INACTIVE`, `UNCOMMITTED`.
   - `shape`: shape resolved from `getFeautureShape`.
   
 Returns is a map of [style objects](https://reactjs.org/docs/dom-elements.html#style) passed to SVG `path` elements.
 
-- `getEditHandleStyle` (Function, Optional) : Object - A function to style an `editHandle, function parameters are 
+- `editHandleStyle` (Function, Optional) : Object - A function to style an `editHandle, function parameters are 
   - `feature`: feature to style.
   - `index`: index of the editHandle vertex in the feature.
   - `state`: one of `SELECTED`, `HOVERED`, `INACTIVE`, `UNCOMMITTED`.
-  - `shape`: shape resolved from `getEditHandleShape`.
+  - `shape`: shape resolved from `editHandleShape`.
   
 Returns is a map of [style objects](https://reactjs.org/docs/dom-elements.html#style) passed to SVG `circle` or `rect` elements.
 
-- `getEditHandleShape` (String|Function, Optional): if is a string, should be one of `rect` or `circle`. If is a function, will receive the following parameters
+- `editHandleShape` (String|Function, Optional): if is a string, should be one of `rect` or `circle`. If is a function, will receive the following parameters
   - `feature`: feature to style.
   - `index`: index of the editHandle vertex in the feature.
   - `state`: one of `SELECTED`, `HOVERED`, `INACTIVE`, `UNCOMMITTED`.
@@ -78,14 +78,14 @@ Returns is a map of [style objects](https://reactjs.org/docs/dom-elements.html#s
 ![img](https://raw.githubusercontent.com/uber-common/deck.gl-data/master/nebula.gl/edit-handle.png)
 
 As shown in the above image, for the feature currently being edited, 
-- `getFeatureStyle({feature, state: SELECTED})` will be applied to the committed parts of the feature. (Green strokes)
-- `getEditHandleStyle({state: SELECTED})` will be applied to the committed editHandle vertices.  (Vertices with black stroke)
-- `getFeatureStyle({feature, state: UNCOMMITTED})` will be applied to the uncommitted parts of the feature. (Gray stroke) 
-- `getEditHandleStyle({state: UNCOMMITTED})` will be applied to the uncommitted editHandle vertex. (Gray vertex)
+- `featureStyle({feature, state: SELECTED})` will be applied to the committed parts of the feature. (Green strokes)
+- `editHandleStyle({state: SELECTED})` will be applied to the committed editHandle vertices.  (Vertices with black stroke)
+- `featureStyle({feature, state: UNCOMMITTED})` will be applied to the uncommitted parts of the feature. (Gray stroke) 
+- `editHandleStyle({state: UNCOMMITTED})` will be applied to the uncommitted editHandle vertex. (Gray vertex)
 
 ## Methods
 
-##### `getFeatures` 
+##### `features` 
 
 - Return a list of finished GeoJson features.
 

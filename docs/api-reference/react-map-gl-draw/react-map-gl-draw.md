@@ -126,9 +126,7 @@ class App extends Component {
       // map
       viewport: DEFAULT_VIEWPORT,
       // editor
-      selectedMode: EditorModes.READ_ONLY,
-      features: [],
-      selectedFeatureIndex: null
+      selectedMode: EditorModes.READ_ONLY
     };
     this._mapRef = null;
     this._editorRef = null;

@@ -64,7 +64,7 @@ export default class App extends Component {
   };
 
   render() {
-    const { viewport, selectedMode, selectedFeatureIndex } = this.state;
+    const { viewport, selectedMode } = this.state;
     return (
       <MapGL
         {...viewport}
@@ -77,7 +77,6 @@ export default class App extends Component {
         <Editor
           ref={_ => (this._editorRef = _)}
           clickRadius={12}
-          selectedFeatureIndex={selectedFeatureIndex}
           onSelect={selected =>
             this.setState({ selectedFeatureIndex: selected && selected.selectedFeatureIndex })
           }

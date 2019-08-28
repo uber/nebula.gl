@@ -1,5 +1,7 @@
 # React Map GL Draw
 
+react-map-gl-draw is a react based drawing library tailored for [`react-map-gl`](https://github.com/uber/react-map-gl).
+
 ## Options 
 - `mode` (String, Optional)
   - `EditorModes.READ_ONLY` - Not interactive. This is the default mode.
@@ -81,6 +83,19 @@ As shown in the above image, for the feature currently being edited,
 - `getFeatureStyle({feature, state: UNCOMMITTED})` will be applied to the uncommitted parts of the feature. (Gray stroke) 
 - `getEditHandleStyle({state: UNCOMMITTED})` will be applied to the uncommitted editHandle vertex. (Gray vertex)
 
+## Methods
+
+##### `getFeatures` 
+
+- Return a list of finished GeoJson features.
+
+##### `addFeatures` (Feature | Feature[])
+
+- Add a single or multiple GeoJson features to editor.
+
+##### `deleteDeatures` (Feature | Feature[])
+
+- Delete a single or multiple GeoJson features to editor.
 
 ## Code Example
 ```js

@@ -519,6 +519,137 @@ describe('addFeature()', () => {
   });
 });
 
+describe('addFeatures()', () => {
+  it(`doesn't mutate original`, () => {
+    const features = new ImmutableFeatureCollection({
+      type: 'FeatureCollection',
+      features: []
+    });
+    features.addFeatures([multiPointFeature, pointFeature]);
+
+    expect(features.getObject().features.length).toEqual(0);
+  });
+
+  it('adds features to empty array', () => {
+    const features = new ImmutableFeatureCollection({
+      type: 'FeatureCollection',
+      features: []
+    });
+    const actualFeatures = features.addFeatures([multiPointFeature, pointFeature]).getObject();
+
+    const expectedFeatures = {
+      type: 'FeatureCollection',
+      features: [multiPointFeature, pointFeature]
+    };
+
+    expect(actualFeatures).toEqual(expectedFeatures);
+  });
+
+  it('adds features to end of array', () => {
+    const features = new ImmutableFeatureCollection({
+      type: 'FeatureCollection',
+      features: [multiPointFeature]
+    });
+    const actualFeatures = features.addFeatures([multiLineStringFeature]).getObject();
+
+    const expectedFeatures = {
+      type: 'FeatureCollection',
+      features: [multiPointFeature, multiLineStringFeature]
+    };
+
+    expect(actualFeatures).toEqual(expectedFeatures);
+  });
+});
+
+describe('deleteFeature()', () => {
+  it(`Do nothing when empty array`, () => {
+    const features = new ImmutableFeatureCollection({
+      type: 'FeatureCollection',
+      features: []
+    });
+    features.deleteFeature(0);
+
+    expect(features.getObject().features.length).toEqual(0);
+  });
+
+  it(`doesn't mutate original`, () => {
+    const features = new ImmutableFeatureCollection({
+      type: 'FeatureCollection',
+      features: [multiPointFeature]
+    });
+    features.deleteFeature(0);
+
+    expect(features.getObject().features.length).toEqual(1);
+  });
+
+  it('delete feature', () => {
+    const features = new ImmutableFeatureCollection({
+      type: 'FeatureCollection',
+      features: [multiPointFeature, multiLineStringFeature]
+    });
+    const actualFeatures = features.deleteFeature(1).getObject();
+
+    const expectedFeatures = {
+      type: 'FeatureCollection',
+      features: [multiPointFeature]
+    };
+
+    expect(actualFeatures).toEqual(expectedFeatures);
+  });
+});
+
+describe('deleteFeatures()', () => {
+  it(`Do nothing when empty array`, () => {
+    const features = new ImmutableFeatureCollection({
+      type: 'FeatureCollection',
+      features: []
+    });
+    features.deleteFeatures([0, 1]);
+
+    expect(features.getObject().features.length).toEqual(0);
+  });
+
+  it(`doesn't mutate original`, () => {
+    const features = new ImmutableFeatureCollection({
+      type: 'FeatureCollection',
+      features: [multiPointFeature]
+    });
+    features.deleteFeatures([0]);
+
+    expect(features.getObject().features.length).toEqual(1);
+  });
+
+  it('delete single feature', () => {
+    const features = new ImmutableFeatureCollection({
+      type: 'FeatureCollection',
+      features: [multiPointFeature, multiLineStringFeature]
+    });
+    const actualFeatures = features.deleteFeatures([1]).getObject();
+
+    const expectedFeatures = {
+      type: 'FeatureCollection',
+      features: [multiPointFeature]
+    };
+
+    expect(actualFeatures).toEqual(expectedFeatures);
+  });
+
+  it('delete multiple features', () => {
+    const features = new ImmutableFeatureCollection({
+      type: 'FeatureCollection',
+      features: [multiPointFeature, multiLineStringFeature]
+    });
+    const actualFeatures = features.deleteFeatures([0, 1]).getObject();
+
+    const expectedFeatures = {
+      type: 'FeatureCollection',
+      features: []
+    };
+
+    expect(actualFeatures).toEqual(expectedFeatures);
+  });
+});
+
 describe('replacePosition() with elevation', () => {
   it('replaces position in Point', () => {
     const elevatedPointFeature = {

@@ -50,7 +50,7 @@ export type EditorProps = {
   mode: Mode,
   style: ?Object,
   features: ?(Feature[]),
-  selectedFeatureId: ?Id,
+  selectedFeatureIndex: ?number,
   clickRadius: number,
   getFeatureShape: Function | string,
   getEditHandleShape: Function | string,
@@ -64,8 +64,6 @@ export type EditorState = {
   featureCollection: ?ImmutableFeatureCollection,
 
   selectedFeatureIndex: ?number,
-  // TODO deprecate selectedFeatureId
-  selectedFeatureId: ?Id,
 
   hovered: ?Pick,
   lastPointerMoveEvent: PointerMoveEvent,
@@ -79,3 +77,10 @@ export type EditorState = {
 };
 
 export type BaseEvent = ClickEvent;
+
+export type SelectAction = {
+  selectedFeatureIndex?: ?number,
+  selectedEditHandleIndex?: ?number,
+  screenCoords: ?ScreenCoordinates,
+  mapCoords: ?Position
+};

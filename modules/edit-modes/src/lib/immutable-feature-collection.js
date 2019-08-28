@@ -133,7 +133,7 @@ export class ImmutableFeatureCollection {
    * Works with MultiPoint, LineString, MultiLineString, Polygon, and MultiPolygon.
    *
    * @param featureIndex The index of the feature to update
-   * @param positionIndexes An array containing the indexes of the postion that will preceed the new position
+   * @param positionIndexes An array containing the indexes of the position that will proceed the new position
    * @param positionToAdd The new position to place in the result (i.e. [lng, lat])
    *
    * @returns A new `ImmutableFeatureCollection` with the given coordinate removed. Does not modify this `ImmutableFeatureCollection`.
@@ -185,6 +185,48 @@ export class ImmutableFeatureCollection {
     const updatedFeatureCollection = {
       ...this.featureCollection,
       features: [...this.featureCollection.features, feature]
+    };
+
+    return new ImmutableFeatureCollection(updatedFeatureCollection);
+  }
+
+  addFeatures(features: Feature[]): ImmutableFeatureCollection {
+    const updatedFeatureCollection = {
+      ...this.featureCollection,
+      features: [...this.featureCollection.features, ...features]
+    };
+
+    return new ImmutableFeatureCollection(updatedFeatureCollection);
+  }
+
+  deleteFeature(featureIndex: number) {
+    if (featureIndex < 0 || featureIndex >= this.featureCollection.features.length) {
+      return this;
+    }
+    const features = [...this.featureCollection.features];
+    features.splice(featureIndex, 1);
+
+    const updatedFeatureCollection = {
+      ...this.featureCollection,
+      features
+    };
+
+    return new ImmutableFeatureCollection(updatedFeatureCollection);
+  }
+
+  deleteFeatures(featureIndexes: number[]) {
+    const features = [...this.featureCollection.features];
+    featureIndexes.sort();
+    for (let i = featureIndexes.length - 1; i >= 0; i--) {
+      const featureIndex = featureIndexes[i];
+      if (featureIndex >= 0 && featureIndex < features.length) {
+        features.splice(featureIndex, 1);
+      }
+    }
+
+    const updatedFeatureCollection = {
+      ...this.featureCollection,
+      features
     };
 
     return new ImmutableFeatureCollection(updatedFeatureCollection);

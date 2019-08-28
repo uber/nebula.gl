@@ -3,11 +3,11 @@ import { _MapContext as MapContext } from 'react-map-gl';
 import React, { Component } from 'react';
 import { ImmutableFeatureCollection } from '@nebula.gl/edit-modes';
 
-import type { Position, EditAction } from '@nebula.gl/edit-modes';
+import type { Feature, Position, EditAction } from '@nebula.gl/edit-modes';
 import type { MjolnirEvent } from 'mjolnir.js';
-import type { BaseEvent, EditorProps, EditorState, Mode } from './types';
+import type { BaseEvent, EditorProps, EditorState, Mode, SelectAction } from './types';
 
-import { DRAWING_MODE, EDIT_TYPE, MODES } from './constants';
+import { DRAWING_MODE, EDIT_TYPE, ELEMENT_TYPE, MODES } from './constants';
 import { getScreenCoords, isNumeric, parseEventElement } from './edit-modes/utils';
 import {
   BaseMode,
@@ -34,13 +34,13 @@ const MODE_TO_HANDLER = Object.freeze({
 
 const defaultProps = {
   mode: MODES.READ_ONLY,
-  selectedFeatureId: null,
   clickRadius: 0,
   getEditHandleStyle: defaultGetEditHandleStyle,
   getFeatureStyle: defaultGetFeatureStyle,
   getFeatureShape: 'circle',
-  getEditHandleShape: 'circle',
-  onSelect: () => {}
+  getEditHandleShape: 'rect',
+  onSelect: null,
+  onUpdate: null
 };
 
 const defaultState = {
@@ -50,7 +50,6 @@ const defaultState = {
   }),
 
   selectedFeatureIndex: null,
-  selectedFeatureId: null,
 
   // index, isGuide, mapCoords, screenCoords
   hovered: null,
@@ -100,9 +99,8 @@ export default class ModeHandler extends Component<EditorProps, EditorState> {
       this._setupModeHandler(nextProps.mode);
     }
 
-    if (this.props.features !== nextProps.features) {
+    if ('features' in nextProps) {
       let featureCollection = nextProps.features;
-
       if (nextProps.features && Array.isArray(nextProps.features)) {
         featureCollection = {
           type: 'FeatureCollection',
@@ -110,21 +108,16 @@ export default class ModeHandler extends Component<EditorProps, EditorState> {
         };
       }
 
-      featureCollection = new ImmutableFeatureCollection(featureCollection);
-
       this.setState({
-        featureCollection
+        featureCollection: new ImmutableFeatureCollection(featureCollection)
       });
     }
 
-    if (this.props.selectedFeatureId !== nextProps.selectedFeatureId) {
-      this._clearEditingState();
-      const features = this.getFeatures();
-      const selectedFeatureIndex =
-        features && features.findIndex(f => f.properties.id === nextProps.selectedFeatureId);
+    if ('selectedFeatureIndex' in nextProps) {
       this.setState({
-        selectedFeatureId: nextProps.selectedFeatureId,
-        selectedFeatureIndex: isNumeric(selectedFeatureIndex) ? selectedFeatureIndex : null
+        selectedFeatureIndex: isNumeric(nextProps.selectedFeatureIndex)
+          ? nextProps.selectedFeatureIndex
+          : null
       });
     }
   }
@@ -143,6 +136,35 @@ export default class ModeHandler extends Component<EditorProps, EditorState> {
     let featureCollection = this.state.featureCollection;
     featureCollection = featureCollection && featureCollection.getObject();
     return featureCollection && featureCollection.features;
+  };
+
+  addFeatures = (features: Feature | Feature[]) => {
+    let featureCollection = this.state.featureCollection;
+    if (featureCollection) {
+      if (!Array.isArray(features)) {
+        features = [features];
+      }
+
+      featureCollection = featureCollection.addFeatures(features);
+      this.setState({ featureCollection });
+    }
+  };
+
+  deleteFeatures = (featureIndexes: number | number[]) => {
+    let { featureCollection } = this.state;
+    const { selectedFeatureIndex } = this.state;
+
+    if (featureCollection) {
+      if (!Array.isArray(featureIndexes)) {
+        featureIndexes = [featureIndexes];
+      }
+      featureCollection = featureCollection.deleteFeatures(featureIndexes);
+      const newState: any = { featureCollection };
+      if (featureIndexes.findIndex(index => selectedFeatureIndex === index) >= 0) {
+        newState.selectedFeatureIndex = null;
+      }
+      this.setState(newState);
+    }
   };
 
   getModeProps() {
@@ -183,40 +205,58 @@ export default class ModeHandler extends Component<EditorProps, EditorState> {
     });
   };
 
+  _onSelect = (selected: SelectAction) => {
+    this.setState({ selectedFeatureIndex: selected && selected.selectedFeatureIndex });
+    if (this.props.onSelect) {
+      this.props.onSelect(selected);
+    }
+  };
+
+  _onUpdate = (editAction: EditAction, isInternal: ?boolean) => {
+    const { editType, updatedData, editContext } = editAction;
+    this.setState({ featureCollection: new ImmutableFeatureCollection(updatedData) });
+    if (this.props.onUpdate && !isInternal) {
+      this.props.onUpdate({
+        data: updatedData && updatedData.features,
+        editType,
+        editContext
+      });
+    }
+  };
+
   _onEdit = (editAction: EditAction) => {
-    const { mode, onSelect, onUpdate } = this.props;
+    const { mode } = this.props;
     const { editType, updatedData } = editAction;
+    const { pointerDownMapCoords, pointerDownScreenCoords } = this.state;
 
     switch (editType) {
       case EDIT_TYPE.MOVE_POSITION:
         // intermediate feature, do not need forward to application
-        // update editor state
-        this.setState({
-          featureCollection: new ImmutableFeatureCollection(updatedData)
-        });
+        // only need update editor internal state
+        this._onUpdate(editAction, true);
         break;
       case EDIT_TYPE.ADD_FEATURE:
-        onUpdate(updatedData && updatedData.features);
+        this._onUpdate(editAction);
         if (mode === MODES.DRAW_PATH) {
           const featureIndex = updatedData.features.length - 1;
-          const feature = updatedData.features[featureIndex];
 
-          // TODO deprecate selectedFeatureId
-          onSelect({
-            selectedFeatureId: feature.properties.id,
-            selectedFeatureIndex: featureIndex
+          this._onSelect({
+            selectedFeatureIndex: featureIndex,
+            screenCoords: pointerDownScreenCoords,
+            mapCoords: pointerDownMapCoords
           });
         } else {
-          onSelect({
-            selectedFeatureId: null,
-            selectedFeatureIndex: null
+          this._onSelect({
+            selectedFeatureIndex: null,
+            screenCoords: pointerDownScreenCoords,
+            mapCoords: pointerDownMapCoords
           });
         }
         break;
       case EDIT_TYPE.ADD_POSITION:
       case EDIT_TYPE.REMOVE_POSITION:
       case EDIT_TYPE.FINISH_MOVE_POSITION:
-        onUpdate(updatedData && updatedData.features);
+        this._onUpdate(editAction);
         break;
 
       default:
@@ -254,20 +294,24 @@ export default class ModeHandler extends Component<EditorProps, EditorState> {
 
   _onClick = (event: BaseEvent) => {
     const { mode } = this.props;
+
     if (mode === MODES.SELECT || mode === MODES.EDITING) {
-      const { onSelect } = this.props;
+      const { mapCoords, screenCoords } = event;
       const pickedObject = event.picks && event.picks[0] && event.picks[0].object;
       if (pickedObject && isNumeric(pickedObject.featureIndex)) {
-        const features = this.getFeatures();
-        const feature = features && features[pickedObject.featureIndex];
-        onSelect({
+        this._onSelect({
           selectedFeatureIndex: pickedObject.featureIndex,
-          selectedFeatureId: feature && feature.properties.id
+          selectedEditHandleIndex:
+            pickedObject.type === ELEMENT_TYPE.EDIT_HANDLE ? pickedObject.index : null,
+          mapCoords,
+          screenCoords
         });
-      } else if (this.state.selectedFeatureId) {
-        onSelect({
+      } else if (isNumeric(this.state.selectedFeatureIndex)) {
+        this._onSelect({
           selectedFeatureIndex: null,
-          selectedFeatureId: null
+          selectedEditHandleIndex: null,
+          mapCoords,
+          screenCoords
         });
       }
     }
@@ -388,11 +432,16 @@ export default class ModeHandler extends Component<EditorProps, EditorState> {
   }
 
   _getHoverState = (event: BaseEvent) => {
-    if (this._isDrawing()) {
+    const object = event.picks && event.picks[0] && event.picks[0].object;
+    if (!object) {
       return null;
     }
 
-    return event.picks && event.picks[0] && event.picks[0].object;
+    return {
+      screenCoords: event.screenCoords,
+      mapCoords: event.mapCoords,
+      ...object
+    };
   };
 
   _isDrawing() {

@@ -54,8 +54,18 @@ export default class Editor extends ModeHandler {
       return RENDER_STATE.SELECTED;
     }
 
-    if (hovered && hovered.type === ELEMENT_TYPE.EDIT_HANDLE && hovered.index === editHandleIndex) {
-      return RENDER_STATE.HOVERED;
+    if (hovered && hovered.type === ELEMENT_TYPE.EDIT_HANDLE) {
+      if (hovered.index === editHandleIndex) {
+        return RENDER_STATE.HOVERED;
+      }
+
+      // cursor hovered on first vertex when drawing polygon
+      if (
+        hovered.index === 0 &&
+        editHandle.properties.guideType === GUIDE_TYPE.CURSOR_EDIT_HANDLE
+      ) {
+        return RENDER_STATE.CLOSING;
+      }
     }
 
     return RENDER_STATE.INACTIVE;
@@ -107,6 +117,7 @@ export default class Editor extends ModeHandler {
     let style = getEditHandleStyle({
       feature: feature || editHandle,
       index,
+      shape,
       state: this._getEditHandleState(editHandle)
     });
 

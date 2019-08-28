@@ -10,14 +10,22 @@
   - `EditorModes.DRAW_POINT` - Lets you draw a GeoJson `Point` feature.
   - `EditorModes.DRAW_RECTANGLE` - Lets you draw a `Rectangle` (represented as GeoJson `Polygon` feature).
 
-- `selectedFeatureId` (String, Optional) - id of the selected feature. `EditorModes` assigns a unique id to each feature which is stored in `feature.properties.id`.
-- `clickRadius` (Number, optional) - Radius to detect features around a hovered or clicked point. Default value is `0`
+- `features` (Feature[], Optional) - List of features in GeoJson format.
+- `selectedFeatureIndex` (String, Optional) - Index of the selected feature. `EditorModes` assigns a unique id to each feature which is stored in `feature.properties.id`.
+- `clickRadius` (Number, Optional) - Radius to detect features around a hovered or clicked point. Default value is `0`
 
-- `onSelect` (Function, Required) - callback when a feature is selected. Receives an object containing `selectedFeatureId`.
-- `onUpdate` (Function, Required) - callback when anything is updated. Receives one argument `features` that is the updated list of GeoJSON features.
-
-Feature object structure:
-`react-map-gl-draw` is stateful component.
+- `onSelect` (Function, Optional) - callback when a feature or an editHandle is selected. Receives an object containing the following parameters
+  - `selectedFeatureIndex`: selected feature index.
+  - `editHandleIndex`: selected editHandle index.
+  - `screenCoords`: screen coordinates of the clicked position.
+  - `mapCoords`: map coordinates of the clicked position.
+  
+- `onUpdate` (Function, Optional) - callback when anything is updated. Receives an object containing the following parameters
+  - `features` (Feature[]) - the updated list of GeoJSON features.
+  - `editType` (String) -  `addFeature`, `addPosition`, `finishMovePosition`
+  - `editContext` (Array) - list of edit objects, depend on `editType`, each object may contain `featureIndexes`, `editHandleIndexes`, `screenCoords`, `mapCoords`.
+ 
+**Feature object structure:**
 ```js
 {
   id, // an unique identified generated inside react-map-gl-draw library 
@@ -34,8 +42,9 @@ Feature object structure:
 
 ### Styling related Options
 - `getFeatureStyle` (Function, Optional) : Object - A function to style a feature, function parameters are 
-  - `feature`: feature to style .
+  - `feature`: feature to style.
   - `state`: one of `SELECTED`, `HOVERED`, `INACTIVE`, `UNCOMMITTED`.
+  - `shape`: shape resolved from `getFeautureShape`.
   
 Returns is a map of [style objects](https://reactjs.org/docs/dom-elements.html#style) passed to SVG `path` elements.
 
@@ -43,6 +52,7 @@ Returns is a map of [style objects](https://reactjs.org/docs/dom-elements.html#s
   - `feature`: feature to style.
   - `index`: index of the editHandle vertex in the feature.
   - `state`: one of `SELECTED`, `HOVERED`, `INACTIVE`, `UNCOMMITTED`.
+  - `shape`: shape resolved from `getEditHandleShape`.
   
 Returns is a map of [style objects](https://reactjs.org/docs/dom-elements.html#style) passed to SVG `circle` or `rect` elements.
 
@@ -75,63 +85,48 @@ As shown in the above image, for the feature currently being edited,
 ## Code Example
 ```js
 import React, { Component } from 'react';
-import MapGL, {_MapContext as MapContext} from 'react-map-gl';
-import MapGLDraw, { EditorModes } from 'react-map-gl-draw';
+import MapGL from 'react-map-gl';
+import { Editor, EditorModes } from 'react-map-gl-draw';
 
 const MODES = [
-  { id: EditorModes.EDIT_VERTEX, text: 'Select and Edit Feature'},
+  { id: EditorModes.EDITING, text: 'Select and Edit Feature'},
   { id: EditorModes.DRAW_POINT, text: 'Draw Point'},
   { id: EditorModes.DRAW_PATH, text: 'Draw Polyline'},
   { id: EditorModes.DRAW_POLYGON, text: 'Draw Polygon'},
   { id: EditorModes.DRAW_RECTANGLE, text: 'Draw Rectangle'}
 ];
 
+const DEFAULT_VIEWPORT = {
+  width: 800,
+  height: 600,
+  longitude: -122.45,
+  latitude: 37.78,
+  zoom: 14
+};
+
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      viewport: {
-        width: 800,
-        height: 600,
-        longitude: -122.45,
-        latitude: 37.78,
-        zoom: 14
-      },
+      // map
+      viewport: DEFAULT_VIEWPORT,
+      // editor
       selectedMode: EditorModes.READ_ONLY,
       features: [],
-      selectedFeatureId: null
+      selectedFeatureIndex: null
     };
+    this._mapRef = null;
+    this._editorRef = null;
   }
-  
-  componentDidMount() {
-    // add features
-    const initialFeatures = [{...}];
-    this._mapRef.add(initialFeatures);
-  }
-  
-  _updateViewport = (viewport) => {
-    this.setState({viewport});
-  }
-  
-  _onSelect = ({ selectedFeatureId }) => {
-    this.setState({ selectedFeatureId });
-  };
-  
-  _onUpdate = features => {
+
+  _switchMode = evt => {
+    const selectedMode = evt.target.id;
     this.setState({
-      features
+     selectedMode: selectedMode === this.state.selectedMode ? null : selectedMode
     });
   };
 
-  _switchMode = evt => {
-    const selectedMode = evt.target.id === this.state.selectedMode ? EditorModes.READ_ONLY : evt.target.id;
-    this.setState({
-      selectedMode,
-      selectedFeatureId: null
-    });
-  };
-  
-  _renderControlPanel = () => {
+  _renderToolbar = () => {
     return (
       <div style={{position: absolute, top: 0, right: 0, maxWidth: '320px'}}>
         <select onChange={this._switchMode}>
@@ -140,44 +135,25 @@ class App extends Component {
         </select>
       </div>
     );
-  }
-  
-  _getEditHandleStyle = ({feature, featureState, vertexIndex, vertexState}) => {
-    return {
-      fill: vertexState === `SELECTED` ? '#000' : '#aaa',
-      stroke: vertexState === `SELECTED` ? '#000' : 'none'
-    }
-  }
-  
-  _getFeatureStyle = ({feature, featureState}) => {
-    return {
-      stroke: featureState === `SELECTED` ? '#000' : 'none',
-      fill: featureState === `SELECTED` ? '#080' : 'none',
-      fillOpacity: 0.8
-    }
-  }
+  };
 
   render() {
-    const { viewport, selectedMode, selectedFeatureId, features } = this.state;
+    const { viewport, selectedMode } = this.state;
     return (
       <MapGL
         {...viewport}
+        ref={_ => (this._mapRef = _)}
         width="100%"
         height="100%"
-        mapStyle="mapbox://styles/uberdata/cive48w2e001a2imn5mcu2vrs"
-        onViewportChange={this._updateViewport}
+        mapStyle={'mapbox://styles/mapbox/light-v9'}
+        onViewportChange={this.setState({ viewport })}
       >
-        <MapGLDraw
-          ref={_ => this._drawRef = _}
+        <Editor
+          ref={_ => (this._editorRef = _)}
+          clickRadius={12}
           mode={selectedMode}
-          features={features}
-          selectedFeatureId={selectedFeatureId}
-          onSelect={this._onSelect}
-          onUpdate={this._onUpdate}
-          getEditHandleStyle={this._getEditHandleStyle}
-          getFeatureStyle={this._getFeatureStyle}
         />
-        {this._renderControlPanel()}
+        {this._renderToolbar()}
       </MapGL>
     );
   }

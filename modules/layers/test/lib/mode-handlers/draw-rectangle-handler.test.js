@@ -80,7 +80,9 @@ test('adds a new feature after two clicks', () => {
       ]
     },
     featureIndexes: [featureCollection.features.length],
-    editContext: null
+    editContext: {
+      featureIndexes: [featureCollection.features.length]
+    }
   };
 
   expect(action1).toBeNull();

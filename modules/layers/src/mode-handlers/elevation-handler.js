@@ -16,6 +16,7 @@ function defaultCalculateElevationChange({
   return 10 * (pointerDownScreenCoords[1] - screenCoords[1]);
 }
 
+// TODO edit-modes: delete handlers once EditMode fully implemented
 export class ElevationHandler extends ModifyHandler {
   makeElevatedEvent(event: PointerMoveEvent | StopDraggingEvent, position: Position): Object {
     if (!event.pointerDownScreenCoords) {

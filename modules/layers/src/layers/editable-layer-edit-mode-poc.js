@@ -13,8 +13,7 @@ import type {
 // Minimum number of pixels the pointer must move from the original pointer down to be considered dragging
 const MINIMUM_POINTER_MOVE_THRESHOLD_PIXELS = 7;
 
-// eslint-disable-next-line camelcase
-export default class EditableLayer_EDIT_MODE_POC extends CompositeLayer {
+export default class EditableLayerEditModePoc extends CompositeLayer {
   // Overridable interaction event handlers
   onLayerClick(event: ClickEvent) {
     // default implementation - do nothing
@@ -130,8 +129,8 @@ export default class EditableLayer_EDIT_MODE_POC extends CompositeLayer {
       x: screenCoords[0],
       y: screenCoords[1],
       layerIds: [this.props.id],
-      radius: this.props.pickingRadius || 10,
-      depth: 2
+      radius: this.props.pickingRadius,
+      depth: this.props.pickingDepth
     });
 
     this.setState({
@@ -156,6 +155,7 @@ export default class EditableLayer_EDIT_MODE_POC extends CompositeLayer {
     } = this.state._editableLayerState;
 
     let { isDragging } = this.state._editableLayerState;
+    let startedDragging = false;
 
     if (pointerDownScreenCoords) {
       // Pointer went down and is moving
@@ -174,6 +174,8 @@ export default class EditableLayer_EDIT_MODE_POC extends CompositeLayer {
           sourceEvent: event
         });
 
+        startedDragging = true;
+
         isDragging = true;
         this.setState({
           _editableLayerState: {
@@ -184,24 +186,26 @@ export default class EditableLayer_EDIT_MODE_POC extends CompositeLayer {
       }
     }
 
-    const picks = this.context.deck.pickMultipleObjects({
-      x: screenCoords[0],
-      y: screenCoords[1],
-      layerIds: [this.props.id],
-      radius: this.props.pickingRadius || 10,
-      depth: 2
-    });
+    if (!startedDragging) {
+      const picks = this.context.deck.pickMultipleObjects({
+        x: screenCoords[0],
+        y: screenCoords[1],
+        layerIds: [this.props.id],
+        radius: this.props.pickingRadius,
+        depth: this.props.pickingDepth
+      });
 
-    this.onPointerMove({
-      screenCoords,
-      mapCoords,
-      picks,
-      isDragging,
-      pointerDownPicks,
-      pointerDownScreenCoords,
-      pointerDownMapCoords,
-      sourceEvent: event
-    });
+      this.onPointerMove({
+        screenCoords,
+        mapCoords,
+        picks,
+        isDragging,
+        pointerDownPicks,
+        pointerDownScreenCoords,
+        pointerDownMapCoords,
+        sourceEvent: event
+      });
+    }
   }
 
   _onPointerUp(event: Object) {
@@ -268,5 +272,4 @@ export default class EditableLayer_EDIT_MODE_POC extends CompositeLayer {
   }
 }
 
-// eslint-disable-next-line camelcase
-EditableLayer_EDIT_MODE_POC.layerName = 'EditableLayer_EDIT_MODE_POC';
+EditableLayerEditModePoc.layerName = 'EditableLayerEditModePoc';

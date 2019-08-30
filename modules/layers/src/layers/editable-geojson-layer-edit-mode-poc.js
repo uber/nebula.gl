@@ -3,7 +3,28 @@
 
 import { GeoJsonLayer, ScatterplotLayer, IconLayer } from '@deck.gl/layers';
 
-import { ViewMode, DrawPolygonMode } from '@nebula.gl/edit-modes';
+import {
+  ViewMode,
+  ModifyMode,
+  TranslateMode,
+  ScaleMode,
+  RotateMode,
+  DuplicateMode,
+  SplitPolygonMode,
+  ExtrudeMode,
+  ElevationMode,
+  DrawPointMode,
+  DrawLineStringMode,
+  DrawPolygonMode,
+  DrawRectangleMode,
+  DrawCircleFromCenterMode,
+  DrawCircleByBoundingBoxMode,
+  DrawEllipseByBoundingBoxMode,
+  DrawRectangleUsingThreePointsMode,
+  DrawEllipseUsingThreePointsMode,
+  Draw90DegreePolygonMode,
+  SnappableMode
+} from '@nebula.gl/edit-modes';
 
 import type {
   EditAction,
@@ -61,6 +82,7 @@ const defaultProps = {
 
   pickable: true,
   pickingRadius: 10,
+  pickingDepth: 5,
   fp64: false,
   filled: true,
   stroked: true,
@@ -110,10 +132,34 @@ const defaultProps = {
   getEditHandleIconColor: getEditHandleColor,
   getEditHandleIconAngle: 0,
 
+  // misc
+  billboard: true,
+
   // Mode handlers
   modeHandlers: {
     view: new ViewMode(),
-    drawPolygon: new DrawPolygonMode()
+
+    // Alter modes
+    modify: new ModifyMode(),
+    translate: new SnappableMode(new TranslateMode()),
+    scale: new ScaleMode(),
+    rotate: new RotateMode(),
+    duplicate: new DuplicateMode(),
+    split: new SplitPolygonMode(),
+    extrude: new ExtrudeMode(),
+    elevation: new ElevationMode(),
+
+    // Draw modes
+    drawPoint: new DrawPointMode(),
+    drawLineString: new DrawLineStringMode(),
+    drawPolygon: new DrawPolygonMode(),
+    drawRectangle: new DrawRectangleMode(),
+    drawCircleFromCenter: new DrawCircleFromCenterMode(),
+    drawCircleByBoundingBox: new DrawCircleByBoundingBoxMode(),
+    drawEllipseByBoundingBox: new DrawEllipseByBoundingBoxMode(),
+    drawRectangleUsing3Points: new DrawRectangleUsingThreePointsMode(),
+    drawEllipseUsing3Points: new DrawEllipseUsingThreePointsMode(),
+    draw90DegreePolygon: new Draw90DegreePolygonMode()
   }
 };
 
@@ -132,8 +178,7 @@ type Props = {
 //   selectedFeatures: Feature[]
 // };
 
-// eslint-disable-next-line camelcase
-export default class EditableGeoJsonLayer_EDIT_MODE_POC extends EditableLayer {
+export default class EditableGeoJsonLayerEditModePoc extends EditableLayer {
   // state: State;
   // props: Props;
   // setState: ($Shape<State>) => void;
@@ -162,6 +207,15 @@ export default class EditableGeoJsonLayer_EDIT_MODE_POC extends EditableLayer {
       getRadius: this.selectionAwareAccessor(this.props.getRadius),
       getLineWidth: this.selectionAwareAccessor(this.props.getLineWidth),
       getLineDashArray: this.selectionAwareAccessor(this.props.getLineDashArray),
+
+      _subLayerProps: {
+        'line-strings': {
+          billboard: this.props.billboard
+        },
+        'polygons-stroke': {
+          billboard: this.props.billboard
+        }
+      },
 
       updateTriggers: {
         getLineColor: [this.props.selectedFeatureIndexes, this.props.mode],
@@ -270,7 +324,7 @@ export default class EditableGeoJsonLayer_EDIT_MODE_POC extends EditableLayer {
   }
 
   getPickingInfo({ info, sourceLayer }: Object) {
-    if (sourceLayer.id.endsWith('-edit-handles')) {
+    if (sourceLayer.id.endsWith('guides')) {
       // If user is picking an editing handle, add additional data to the info
       info.isGuide = true;
     }
@@ -366,7 +420,5 @@ export default class EditableGeoJsonLayer_EDIT_MODE_POC extends EditableLayer {
   }
 }
 
-// eslint-disable-next-line camelcase
-EditableGeoJsonLayer_EDIT_MODE_POC.layerName = 'EditableGeoJsonLayer_EDIT_MODE_POC';
-// eslint-disable-next-line camelcase
-EditableGeoJsonLayer_EDIT_MODE_POC.defaultProps = defaultProps;
+EditableGeoJsonLayerEditModePoc.layerName = 'EditableGeoJsonLayerEditModePoc';
+EditableGeoJsonLayerEditModePoc.defaultProps = defaultProps;

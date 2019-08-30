@@ -4,6 +4,7 @@ import type { ClickEvent } from '../event-types.js';
 import { ModeHandler } from './mode-handler.js';
 import type { EditAction } from './mode-handler.js';
 
+// TODO edit-modes: delete handlers once EditMode fully implemented
 export class TwoClickPolygonHandler extends ModeHandler {
   handleClick(event: ClickEvent): ?EditAction {
     super.handleClick(event);

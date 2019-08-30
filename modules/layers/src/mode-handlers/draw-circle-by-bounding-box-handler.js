@@ -7,6 +7,7 @@ import type { EditAction } from './mode-handler.js';
 import { TwoClickPolygonHandler } from './two-click-polygon-handler.js';
 import { getIntermediatePosition } from './mode-handler.js';
 
+// TODO edit-modes: delete handlers once EditMode fully implemented
 export class DrawCircleByBoundingBoxHandler extends TwoClickPolygonHandler {
   handlePointerMove(event: PointerMoveEvent): { editAction: ?EditAction, cancelMapPan: boolean } {
     const result = { editAction: null, cancelMapPan: false };

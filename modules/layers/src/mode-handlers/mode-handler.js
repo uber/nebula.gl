@@ -1,6 +1,6 @@
 // @flow
 
-// TODO: delete this once all mode handlers derive from GeoJsonEditMode
+// TODO edit-modes: delete handlers once EditMode fully implemented
 
 import turfUnion from '@turf/union';
 import turfDifference from '@turf/difference';
@@ -173,7 +173,9 @@ export class ModeHandler {
       updatedData,
       editType: 'addFeature',
       featureIndexes: [updatedData.features.length - 1],
-      editContext: null
+      editContext: {
+        featureIndexes: [updatedData.features.length - 1]
+      }
     };
   }
 
@@ -197,7 +199,9 @@ export class ModeHandler {
       updatedData: updatedData.getObject(),
       editType: 'addFeature',
       featureIndexes: updatedIndexes,
-      editContext: null
+      editContext: {
+        featureIndexes: updatedIndexes
+      }
     };
   }
 
@@ -251,7 +255,9 @@ export class ModeHandler {
         updatedData,
         editType: 'unionGeometry',
         featureIndexes: [featureIndex],
-        editContext: null
+        editContext: {
+          featureIndexes: [featureIndex]
+        }
       };
 
       return editAction;

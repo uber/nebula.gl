@@ -8,12 +8,14 @@ import { MapView, MapController } from '@deck.gl/core';
 import { StaticMap } from 'react-map-gl';
 import GL from '@luma.gl/constants';
 import circle from '@turf/circle';
-import WebMercatorViewport from 'viewport-mercator-project';
 
 import {
   EditableGeoJsonLayer,
-  EditableGeoJsonLayer_EDIT_MODE_POC as EditableGeoJsonLayerEditModePoc,
+  EditableGeoJsonLayerEditModePoc,
   SelectionLayer,
+  CompositeMode,
+  DrawLineStringMode,
+  ModifyMode,
   CompositeModeHandler,
   ModifyHandler,
   ElevationHandler,
@@ -35,14 +37,18 @@ import {
   ToolboxCheckbox
 } from './toolbox';
 
-// TODO: once we refactor EditableGeoJsonLayer to use new EditMode interface, this can go away
+// TODO edit-modes: once we refactor EditableGeoJsonLayer to use new EditMode interface, this can go away
 let EditableGeoJsonLayerImpl = EditableGeoJsonLayer;
+let COMPOSITE_MODE;
 if (
   window.location &&
   window.location.search &&
   window.location.search.indexOf('useEditModePoc') !== -1
 ) {
   EditableGeoJsonLayerImpl = EditableGeoJsonLayerEditModePoc;
+  COMPOSITE_MODE = new CompositeMode([new DrawLineStringMode(), new ModifyMode()]);
+} else {
+  COMPOSITE_MODE = new CompositeModeHandler([new DrawLineStringHandler(), new ModifyHandler()]);
 }
 
 const styles = {
@@ -111,10 +117,7 @@ const EMPTY_FEATURE_COLLECTION = {
 
 const modeHandlers = Object.assign(
   {
-    'drawLineString+modify': new CompositeModeHandler([
-      new DrawLineStringHandler(),
-      new ModifyHandler()
-    ])
+    'drawLineString+modify': COMPOSITE_MODE
   },
   EditableGeoJsonLayerImpl.defaultProps.modeHandlers
 );
@@ -139,7 +142,7 @@ const FEATURE_COLORS = [
   'CCDFE5'
 ].map(hex2rgb);
 
-// TODO: delete once fully on EditMode implementation and just use handle.sourceFeature.feature...
+// TODO edit-modes:  delete once fully on EditMode implementation and just use handle.sourceFeature.feature...
 // Unwrap the edit handle object from either layer implementation
 function getEditHandleTypeFromEitherLayer(handleOrFeature) {
   return handleOrFeature.sourceFeature
@@ -686,6 +689,44 @@ export default class Example extends Component<
 
   customizeLayers(layers: Object[]) {}
 
+  onEdit = ({ updatedData, editType, editContext }) => {
+    let updatedSelectedFeatureIndexes = this.state.selectedFeatureIndexes;
+    if (!['movePosition', 'extruding', 'rotating', 'translating', 'scaling'].includes(editType)) {
+      // Don't log edits that happen as the pointer moves since they're really chatty
+      const updatedDataInfo = featuresToInfoString(updatedData);
+      // eslint-disable-next-line
+      console.log('onEdit', editType, editContext, updatedDataInfo);
+    }
+    if (editType === 'removePosition' && !this.state.pointsRemovable) {
+      // This is a simple example of custom handling of edits
+      // reject the edit
+      return;
+    }
+    if (editType === 'addFeature' && this.state.mode !== 'duplicate') {
+      const { featureIndexes } = editContext;
+      // Add the new feature to the selection
+      updatedSelectedFeatureIndexes = [...this.state.selectedFeatureIndexes, ...featureIndexes];
+    }
+    this.setState({
+      testFeatures: updatedData,
+      selectedFeatureIndexes: updatedSelectedFeatureIndexes
+    });
+  };
+
+  getFillColor = (feature, isSelected) => {
+    const index = this.state.testFeatures.features.indexOf(feature);
+    return isSelected
+      ? this._getDeckColorForFeature(index, 1.0, 0.5)
+      : this._getDeckColorForFeature(index, 0.5, 0.5);
+  };
+
+  getLineColor = (feature, isSelected) => {
+    const index = this.state.testFeatures.features.indexOf(feature);
+    return isSelected
+      ? this._getDeckColorForFeature(index, 1.0, 1.0)
+      : this._getDeckColorForFeature(index, 0.5, 1.0);
+  };
+
   render() {
     const { testFeatures, selectedFeatureIndexes, mode } = this.state;
     let { modeConfig } = this.state;
@@ -699,12 +740,15 @@ export default class Example extends Component<
     if (mode === 'elevation') {
       modeConfig = {
         ...modeConfig,
-        viewport: new WebMercatorViewport(viewport),
+        viewport,
         calculateElevationChange: opts =>
           ElevationHandler.calculateElevationChangeWithViewport(viewport, opts)
       };
     } else if (mode === 'modify') {
-      modeConfig = { ...modeConfig, viewport: new WebMercatorViewport(viewport) };
+      modeConfig = {
+        ...modeConfig,
+        viewport
+      };
     } else if (mode === 'translate' && modeConfig && modeConfig.enableSnapping) {
       // Snapping can be accomplished to features that aren't rendered in the same layer
       modeConfig = {
@@ -764,34 +808,7 @@ export default class Example extends Component<
       autoHighlight: false,
 
       // Editing callbacks
-      onEdit: ({ updatedData, editType, featureIndexes, editContext }) => {
-        let updatedSelectedFeatureIndexes = this.state.selectedFeatureIndexes;
-        if (
-          !['movePosition', 'extruding', 'rotating', 'translating', 'scaling'].includes(editType)
-        ) {
-          const updatedDataInfo = updatedData.features.map(
-            feature => `${feature.geometry.type}(${getPositionCount(feature.geometry)})`
-          );
-          // Don't log edits that happen as the pointer moves since they're really chatty
-          // eslint-disable-next-line
-          console.log('onEdit', editType, editContext, JSON.stringify(updatedDataInfo));
-        }
-        if (editType === 'removePosition' && !this.state.pointsRemovable) {
-          // This is a simple example of custom handling of edits
-          // reject the edit
-          return;
-        }
-        if (editType === 'addFeature' && mode !== 'duplicate') {
-          // TODO: once we refactor EditableGeoJsonLayer to use new EditMode interface, this check can go away
-          featureIndexes = featureIndexes || editContext.featureIndexes;
-          // Add the new feature to the selection
-          updatedSelectedFeatureIndexes = [...this.state.selectedFeatureIndexes, ...featureIndexes];
-        }
-        this.setState({
-          testFeatures: updatedData,
-          selectedFeatureIndexes: updatedSelectedFeatureIndexes
-        });
-      },
+      onEdit: this.onEdit,
 
       editHandleType: this.state.editHandleType,
 
@@ -820,29 +837,19 @@ export default class Example extends Component<
       // Specify the same GeoJsonLayer props
       lineWidthMinPixels: 2,
       pointRadiusMinPixels: 5,
-      getLineDashArray: () => [0, 0],
+      // getLineDashArray: () => [0, 0],
 
       // Accessors receive an isSelected argument
-      getFillColor: (feature, isSelected) => {
-        const index = testFeatures.features.indexOf(feature);
-        return isSelected
-          ? this._getDeckColorForFeature(index, 1.0, 0.5)
-          : this._getDeckColorForFeature(index, 0.5, 0.5);
-      },
-      getLineColor: (feature, isSelected) => {
-        const index = testFeatures.features.indexOf(feature);
-        return isSelected
-          ? this._getDeckColorForFeature(index, 1.0, 1.0)
-          : this._getDeckColorForFeature(index, 0.5, 1.0);
-      },
+      getFillColor: this.getFillColor,
+      getLineColor: this.getLineColor,
 
       // Can customize editing points props
       getEditHandlePointColor: getEditHandleColor,
       editHandlePointRadiusScale: 2,
 
       // customize tentative feature style
-      getTentativeLineDashArray: () => [7, 4],
-      getTentativeLineColor: () => [0x8f, 0x8f, 0x8f, 0xff],
+      // getTentativeLineDashArray: () => [7, 4],
+      // getTentativeLineColor: () => [0x8f, 0x8f, 0x8f, 0xff],
 
       _subLayerProps,
 
@@ -906,8 +913,15 @@ export default class Example extends Component<
   }
 }
 
+function featuresToInfoString(featureCollection: any): string {
+  const info = featureCollection.features.map(
+    feature => `${feature.geometry.type}(${getPositionCount(feature.geometry)})`
+  );
+
+  return JSON.stringify(info);
+}
+
 function getPositionCount(geometry): number {
-  // const getSum = (total: number, num: number) => total + num;
   const flatMap = (f, arr) => arr.reduce((x, y) => [...x, ...f(y)], []);
 
   const { type, coordinates } = geometry;
@@ -921,9 +935,7 @@ function getPositionCount(geometry): number {
     case 'MultiLineString':
       return flatMap(x => x, coordinates).length;
     case 'MultiPolygon':
-      // return coordinates.reduce(getSum, 0);
       return flatMap(x => flatMap(y => y, x), coordinates).length;
-    // return coordinates.reduce((acc, x) => acc.concat([x]), []).reduce(getSum, 0);
     default:
       throw Error(`Unknown geometry type: ${type}`);
   }

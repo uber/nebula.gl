@@ -5,6 +5,7 @@ import type { PointerMoveEvent } from '../event-types.js';
 import type { EditAction } from './mode-handler.js';
 import { TwoClickPolygonHandler } from './two-click-polygon-handler.js';
 
+// TODO edit-modes: delete handlers once EditMode fully implemented
 export class DrawRectangleHandler extends TwoClickPolygonHandler {
   handlePointerMove(event: PointerMoveEvent): { editAction: ?EditAction, cancelMapPan: boolean } {
     const result = { editAction: null, cancelMapPan: false };

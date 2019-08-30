@@ -9,6 +9,7 @@ import type { PointerMoveEvent, StartDraggingEvent, StopDraggingEvent } from '..
 import type { EditAction } from './mode-handler.js';
 import { ModeHandler } from './mode-handler.js';
 
+// TODO edit-modes: delete handlers once EditMode fully implemented
 export class TranslateHandler extends ModeHandler {
   _geometryBeforeTranslate: ?FeatureCollection;
   _isTranslatable: boolean;

@@ -185,6 +185,8 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
 
   _clearEditingState = memorize(({ mode }) => {
     this.setState({
+      selectedFeatureIndex: null,
+
       hovered: null,
 
       pointerDownPicks: null,
@@ -208,6 +210,12 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
       propsFeatureIndex: this.props.selectedFeatureIndex,
       stateFeatureIndex: this.state.selectedFeatureIndex
     });
+  };
+
+  _getSelectedFeature = (featureIndex: number) => {
+    const features = this.getFeatures();
+    featureIndex = isNumeric(featureIndex) ? featureIndex : this._getSelectedFeatureIndex();
+    return features[featureIndex];
   };
 
   _onSelect = (selected: SelectAction) => {
@@ -244,14 +252,16 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
         this._onUpdate(editAction);
         if (mode === MODES.DRAW_PATH) {
           const featureIndex = updatedData.features.length - 1;
-
+          const selectedFeature = this._getSelectedFeature(featureIndex);
           this._onSelect({
+            selectedFeature,
             selectedFeatureIndex: featureIndex,
             screenCoords: pointerDownScreenCoords,
             mapCoords: pointerDownMapCoords
           });
         } else {
           this._onSelect({
+            selectedFeature: null,
             selectedFeatureIndex: null,
             screenCoords: pointerDownScreenCoords,
             mapCoords: pointerDownMapCoords
@@ -295,13 +305,15 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
 
   _onClick = (event: BaseEvent) => {
     const { mode } = this.props;
-
     if (mode === MODES.SELECT || mode === MODES.EDITING) {
       const { mapCoords, screenCoords } = event;
       const pickedObject = event.picks && event.picks[0] && event.picks[0].object;
       if (pickedObject && isNumeric(pickedObject.featureIndex)) {
+        const selectedFeatureIndex = pickedObject.featureIndex;
+        const selectedFeature = this._getSelectedFeature(selectedFeatureIndex);
         this._onSelect({
-          selectedFeatureIndex: pickedObject.featureIndex,
+          selectedFeature,
+          selectedFeatureIndex,
           selectedEditHandleIndex:
             pickedObject.type === ELEMENT_TYPE.EDIT_HANDLE ? pickedObject.index : null,
           mapCoords,
@@ -309,6 +321,7 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
         });
       } else if (isNumeric(this._getSelectedFeatureIndex())) {
         this._onSelect({
+          selectedFeature: null,
           selectedFeatureIndex: null,
           selectedEditHandleIndex: null,
           mapCoords,

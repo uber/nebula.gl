@@ -79,6 +79,7 @@ export type EditorState = {
 export type BaseEvent = ClickEvent;
 
 export type SelectAction = {
+  selectedFeature: ?Feature,
   selectedFeatureIndex?: ?number,
   selectedEditHandleIndex?: ?number,
   screenCoords: ?ScreenCoordinates,

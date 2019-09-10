@@ -5,8 +5,8 @@ import { ImmutableFeatureCollection } from '@nebula.gl/edit-modes';
 
 import type { Feature, Position, EditAction } from '@nebula.gl/edit-modes';
 import type { MjolnirEvent } from 'mjolnir.js';
-import type { BaseEvent, EditorProps, EditorState, Mode, SelectAction } from './types';
-import memorize from './memorize';
+import type { BaseEvent, EditorProps, EditorState, SelectAction } from './types';
+import memoize from './memoize';
 
 import { DRAWING_MODE, EDIT_TYPE, ELEMENT_TYPE, MODES } from './constants';
 import { getScreenCoords, isNumeric, parseEventElement } from './edit-modes/utils';
@@ -33,11 +33,7 @@ const MODE_TO_HANDLER = Object.freeze({
   [MODES.DRAW_POLYGON]: DrawPolygonMode
 });
 
-const getMemorizedFeatureIndex = memorize(({ propsFeatureIndex, stateFeatureIndex }) => {
-  return isNumeric(propsFeatureIndex) ? propsFeatureIndex : stateFeatureIndex;
-});
-
-const getMemorizedFeatureCollection = memorize(({ propsFeatures, stateFeatures }: any) => {
+const getMemorizedFeatureCollection = memoize(({ propsFeatures, stateFeatures }: any) => {
   const features = propsFeatures || stateFeatures;
   // Any changes in ImmutableFeatureCollection will create a new object
   if (features instanceof ImmutableFeatureCollection) {
@@ -110,8 +106,15 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
     };
   }
 
+  componentDidUpdate(prevProps: EditorProps) {
+    if (prevProps.mode !== this.props.mode) {
+      this._clearEditingState();
+      this._setupModeHandler();
+    }
+  }
+
   componentWillUnmount() {
-    this._manageEvents();
+    this._degregisterEvents();
   }
 
   _events: any;
@@ -171,19 +174,30 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
   }
 
   /* MEMORIZERS */
-  _setupMemorizedModeHandler = memorize(({ mode }) => {
-    this._manageEvents(mode);
+  _getFeatureCollection = () => {
+    return getMemorizedFeatureCollection({
+      propsFeatures: this.props.features,
+      stateFeatures: this.state.featureCollection
+    });
+  };
+
+  _setupModeHandler = () => {
+    const mode = this.props.mode;
 
     if (!mode || mode === MODES.READ_ONLY) {
+      this._degregisterEvents();
       this._modeHandler = null;
       return;
     }
 
+    this._registerEvents();
+
     const HandlerClass = MODE_TO_HANDLER[mode];
     this._modeHandler = HandlerClass ? new HandlerClass() : null;
-  });
+  };
 
-  _clearEditingState = memorize(({ mode }) => {
+  /* EDITING OPERATIONS */
+  _clearEditingState = () => {
     this.setState({
       selectedFeatureIndex: null,
 
@@ -196,23 +210,15 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
       isDragging: false,
       didDrag: false
     });
-  });
-
-  _getFeatureCollection = () => {
-    return getMemorizedFeatureCollection({
-      propsFeatures: this.props.features,
-      stateFeatures: this.state.featureCollection
-    });
   };
 
   _getSelectedFeatureIndex = () => {
-    return getMemorizedFeatureIndex({
-      propsFeatureIndex: this.props.selectedFeatureIndex,
-      stateFeatureIndex: this.state.selectedFeatureIndex
-    });
+    return isNumeric(this.props.selectedFeatureIndex)
+      ? this.props.selectedFeatureIndex
+      : this.state.selectedFeatureIndex;
   };
 
-  _getSelectedFeature = (featureIndex: number) => {
+  _getSelectedFeature = (featureIndex: ?number) => {
     const features = this.getFeatures();
     featureIndex = isNumeric(featureIndex) ? featureIndex : this._getSelectedFeatureIndex();
     return features[featureIndex];
@@ -279,19 +285,31 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
   };
 
   /* EVENTS */
-  _manageEvents = (mode: ?Mode) => {
+  _degregisterEvents = () => {
+    const eventManager = this._context && this._context.eventManager;
+    if (!this._events || !eventManager) {
+      return;
+    }
+
+    if (this._eventsRegistered) {
+      eventManager.off(this._events);
+      this._eventsRegistered = false;
+    }
+  };
+
+  _registerEvents = () => {
     const ref = this._containerRef;
     const eventManager = this._context && this._context.eventManager;
     if (!this._events || !ref || !eventManager) {
       return;
     }
 
-    if (!mode || mode === MODES.READ_ONLY) {
-      eventManager.off(this._events, ref);
+    if (this._eventsRegistered) {
       return;
     }
 
     eventManager.on(this._events, ref);
+    this._eventsRegistered = true;
   };
 
   _onEvent = (handler: Function, evt: MjolnirEvent, stopPropagation: boolean) => {
@@ -464,10 +482,6 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
   }
 
   render(child: any) {
-    const mode = this.props.mode;
-    this._setupMemorizedModeHandler({ mode });
-    this._clearEditingState({ mode });
-
     return (
       <MapContext.Consumer>
         {context => {

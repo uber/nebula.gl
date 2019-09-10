@@ -182,12 +182,7 @@ export class ImmutableFeatureCollection {
   }
 
   addFeature(feature: Feature): ImmutableFeatureCollection {
-    const updatedFeatureCollection = {
-      ...this.featureCollection,
-      features: [...this.featureCollection.features, feature]
-    };
-
-    return new ImmutableFeatureCollection(updatedFeatureCollection);
+    return this.addFeatures([feature]);
   }
 
   addFeatures(features: Feature[]): ImmutableFeatureCollection {
@@ -200,18 +195,7 @@ export class ImmutableFeatureCollection {
   }
 
   deleteFeature(featureIndex: number) {
-    if (featureIndex < 0 || featureIndex >= this.featureCollection.features.length) {
-      return this;
-    }
-    const features = [...this.featureCollection.features];
-    features.splice(featureIndex, 1);
-
-    const updatedFeatureCollection = {
-      ...this.featureCollection,
-      features
-    };
-
-    return new ImmutableFeatureCollection(updatedFeatureCollection);
+    return this.deleteFeatures([featureIndex]);
   }
 
   deleteFeatures(featureIndexes: number[]) {

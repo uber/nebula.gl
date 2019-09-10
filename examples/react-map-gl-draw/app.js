@@ -77,9 +77,7 @@ export default class App extends Component {
         <Editor
           ref={_ => (this._editorRef = _)}
           clickRadius={12}
-          onSelect={selected =>
-            this.setState({ selectedFeatureIndex: selected && selected.selectedFeatureIndex })
-          }
+          onSelect={selected => this.setState({ selectedFeatureIndex: selected ? 0 : null })}
           mode={selectedMode}
         />
         {this._renderToolbar()}

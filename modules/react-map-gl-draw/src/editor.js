@@ -72,7 +72,8 @@ export default class Editor extends ModeHandler {
   };
 
   _getFeatureRenderState = (index: number, renderState: ?RenderState) => {
-    const { selectedFeatureIndex, hovered } = this.state;
+    const { hovered } = this.state;
+    const selectedFeatureIndex = this._getSelectedFeatureIndex();
     if (renderState) {
       return renderState;
     }
@@ -392,7 +393,7 @@ export default class Editor extends ModeHandler {
 
   _renderPath = (feature: Feature, index: number, path: string) => {
     const { getFeatureStyle, clickRadius } = this.props;
-    const { selectedFeatureIndex } = this.state;
+    const selectedFeatureIndex = this._getSelectedFeatureIndex();
     const selected = index === selectedFeatureIndex;
     const renderState = this._getFeatureRenderState(index);
     const style = getFeatureStyle({ feature, state: renderState });
@@ -431,7 +432,7 @@ export default class Editor extends ModeHandler {
 
   _renderPolygon = (feature: Feature, index: number, path: string) => {
     const { getFeatureStyle } = this.props;
-    const { selectedFeatureIndex } = this.state;
+    const selectedFeatureIndex = this._getSelectedFeatureIndex();
     const selected = index === selectedFeatureIndex;
 
     const renderState = this._getFeatureRenderState(index);

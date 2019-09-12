@@ -246,7 +246,6 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
   _onEdit = (editAction: EditAction) => {
     const { mode } = this.props;
     const { editType, updatedData } = editAction;
-    const { pointerDownMapCoords, pointerDownScreenCoords } = this.state;
 
     switch (editType) {
       case EDIT_TYPE.MOVE_POSITION:
@@ -257,20 +256,15 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
       case EDIT_TYPE.ADD_FEATURE:
         this._onUpdate(editAction);
         if (mode === MODES.DRAW_PATH) {
+          const context = (editAction.editContext && editAction.editContext[0]) || {};
+          const { screenCoords, mapCoords } = context;
           const featureIndex = updatedData.features.length - 1;
           const selectedFeature = this._getSelectedFeature(featureIndex);
           this._onSelect({
             selectedFeature,
             selectedFeatureIndex: featureIndex,
-            screenCoords: pointerDownScreenCoords,
-            mapCoords: pointerDownMapCoords
-          });
-        } else {
-          this._onSelect({
-            selectedFeature: null,
-            selectedFeatureIndex: null,
-            screenCoords: pointerDownScreenCoords,
-            mapCoords: pointerDownMapCoords
+            screenCoords,
+            mapCoords
           });
         }
         break;
@@ -337,7 +331,7 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
           mapCoords,
           screenCoords
         });
-      } else if (isNumeric(this._getSelectedFeatureIndex())) {
+      } else {
         this._onSelect({
           selectedFeature: null,
           selectedFeatureIndex: null,

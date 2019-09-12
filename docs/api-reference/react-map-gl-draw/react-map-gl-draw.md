@@ -16,9 +16,10 @@
 - `selectedFeatureIndex` (String, Optional) - Index of the selected feature. `EditorModes` assigns a unique id to each feature which is stored in `feature.properties.id`.
 - `clickRadius` (Number, Optional) - Radius to detect features around a hovered or clicked point. Default value is `0`
 
-- `onSelect` (Function, Optional) - callback when a feature or an editHandle is selected. Receives an object containing the following parameters
-  - `selectedFeatureIndex`: selected feature index.
-  - `editHandleIndex`: selected editHandle index.
+- `onSelect` (Function, Optional) - callback when clicking a position under `SELECT` and `EDITTING` mode. Receives an object containing the following parameters
+  - `selectedFeature`: selected feature. `null` if clicked an empty space.
+  - `selectedFeatureIndex`: selected feature index.`null` if clicked an empty space.
+  - `editHandleIndex`: selected editHandle index. `null` if clicked an empty space.
   - `screenCoords`: screen coordinates of the clicked position.
   - `mapCoords`: map coordinates of the clicked position.
   
@@ -128,8 +129,6 @@ class App extends Component {
       // editor
       selectedMode: EditorModes.READ_ONLY
     };
-    this._mapRef = null;
-    this._editorRef = null;
   }
 
   _switchMode = evt => {

@@ -16,9 +16,10 @@
 - `selectedFeatureIndex` (String, Optional) - Index of the selected feature. `EditorModes` assigns a unique id to each feature which is stored in `feature.properties.id`.
 - `clickRadius` (Number, Optional) - Radius to detect features around a hovered or clicked point. Default value is `0`
 
-- `onSelect` (Function, Optional) - callback when a feature or an editHandle is selected. Receives an object containing the following parameters
-  - `selectedFeatureIndex`: selected feature index.
-  - `editHandleIndex`: selected editHandle index.
+- `onSelect` (Function, Optional) - callback when clicking a position under `SELECT` and `EDITTING` mode. Receives an object containing the following parameters
+  - `selectedFeature`: selected feature. `null` if clicked an empty space.
+  - `selectedFeatureIndex`: selected feature index.`-1` if clicked an empty space.
+  - `editHandleIndex`: selected editHandle index. `-1` if clicked an empty space.
   - `screenCoords`: screen coordinates of the clicked position.
   - `mapCoords`: map coordinates of the clicked position.
   
@@ -120,17 +121,12 @@ const DEFAULT_VIEWPORT = {
 };
 
 class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      // map
-      viewport: DEFAULT_VIEWPORT,
-      // editor
-      selectedMode: EditorModes.READ_ONLY
-    };
-    this._mapRef = null;
-    this._editorRef = null;
-  }
+  state = {
+    // map
+    viewport: DEFAULT_VIEWPORT,
+    // editor
+    selectedMode: EditorModes.READ_ONLY
+  };
 
   _switchMode = evt => {
     const selectedMode = evt.target.id;
@@ -155,14 +151,12 @@ class App extends Component {
     return (
       <MapGL
         {...viewport}
-        ref={_ => (this._mapRef = _)}
         width="100%"
         height="100%"
         mapStyle={'mapbox://styles/mapbox/light-v9'}
         onViewportChange={this.setState({ viewport })}
       >
         <Editor
-          ref={_ => (this._editorRef = _)}
           clickRadius={12}
           mode={selectedMode}
         />

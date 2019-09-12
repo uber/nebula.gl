@@ -121,15 +121,12 @@ const DEFAULT_VIEWPORT = {
 };
 
 class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      // map
-      viewport: DEFAULT_VIEWPORT,
-      // editor
-      selectedMode: EditorModes.READ_ONLY
-    };
-  }
+  state = {
+    // map
+    viewport: DEFAULT_VIEWPORT,
+    // editor
+    selectedMode: EditorModes.READ_ONLY
+  };
 
   _switchMode = evt => {
     const selectedMode = evt.target.id;
@@ -154,14 +151,12 @@ class App extends Component {
     return (
       <MapGL
         {...viewport}
-        ref={_ => (this._mapRef = _)}
         width="100%"
         height="100%"
         mapStyle={'mapbox://styles/mapbox/light-v9'}
         onViewportChange={this.setState({ viewport })}
       >
         <Editor
-          ref={_ => (this._editorRef = _)}
           clickRadius={12}
           mode={selectedMode}
         />

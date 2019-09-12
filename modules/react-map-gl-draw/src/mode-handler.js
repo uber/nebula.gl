@@ -33,26 +33,6 @@ const MODE_TO_HANDLER = Object.freeze({
   [MODES.DRAW_POLYGON]: DrawPolygonMode
 });
 
-const getMemorizedFeatureCollection = memoize(({ propsFeatures, stateFeatures }: any) => {
-  const features = propsFeatures || stateFeatures;
-  // Any changes in ImmutableFeatureCollection will create a new object
-  if (features instanceof ImmutableFeatureCollection) {
-    return features;
-  }
-
-  if (features && features.type === 'FeatureCollection') {
-    return new ImmutableFeatureCollection({
-      type: 'FeatureCollection',
-      features: features.features
-    });
-  }
-
-  return new ImmutableFeatureCollection({
-    type: 'FeatureCollection',
-    features: features || []
-  });
-});
-
 const defaultProps = {
   mode: MODES.READ_ONLY,
   features: null,
@@ -174,8 +154,28 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
   }
 
   /* MEMORIZERS */
+  _getMemorizedFeatureCollection = memoize(({ propsFeatures, stateFeatures }: any) => {
+    const features = propsFeatures || stateFeatures;
+    // Any changes in ImmutableFeatureCollection will create a new object
+    if (features instanceof ImmutableFeatureCollection) {
+      return features;
+    }
+
+    if (features && features.type === 'FeatureCollection') {
+      return new ImmutableFeatureCollection({
+        type: 'FeatureCollection',
+        features: features.features
+      });
+    }
+
+    return new ImmutableFeatureCollection({
+      type: 'FeatureCollection',
+      features: features || []
+    });
+  });
+
   _getFeatureCollection = () => {
-    return getMemorizedFeatureCollection({
+    return this._getMemorizedFeatureCollection({
       propsFeatures: this.props.features,
       stateFeatures: this.state.featureCollection
     });
@@ -263,6 +263,7 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
           this._onSelect({
             selectedFeature,
             selectedFeatureIndex: featureIndex,
+            selectedEditHandleIndex: null,
             screenCoords,
             mapCoords
           });

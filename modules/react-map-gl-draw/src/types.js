@@ -52,10 +52,10 @@ export type EditorProps = {
   features: ?(Feature[]),
   selectedFeatureIndex: ?number,
   clickRadius: number,
-  getFeatureShape: Function | string,
-  getEditHandleShape: Function | string,
-  getEditHandleStyle: Function,
-  getFeatureStyle: Function,
+  featureShape: Function | string,
+  editHandleShape: Function | any,
+  editHandleStyle: Function | any,
+  featureStyle: Function | string,
   onUpdate: Function,
   onSelect: Function
 };

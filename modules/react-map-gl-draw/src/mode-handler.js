@@ -18,10 +18,6 @@ import {
   DrawRectangleMode,
   DrawPolygonMode
 } from './edit-modes';
-import {
-  getEditHandleStyle as defaultGetEditHandleStyle,
-  getFeatureStyle as defaultGetFeatureStyle
-} from './style';
 
 const MODE_TO_HANDLER = Object.freeze({
   [MODES.READ_ONLY]: null,
@@ -36,11 +32,6 @@ const MODE_TO_HANDLER = Object.freeze({
 const defaultProps = {
   mode: MODES.READ_ONLY,
   features: null,
-  clickRadius: 0,
-  getEditHandleStyle: defaultGetEditHandleStyle,
-  getFeatureStyle: defaultGetFeatureStyle,
-  getFeatureShape: 'circle',
-  getEditHandleShape: 'rect',
   onSelect: null,
   onUpdate: null
 };

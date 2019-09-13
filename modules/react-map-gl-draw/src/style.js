@@ -41,7 +41,7 @@ const DEFAULT_STYLE = {
   fillOpacity: 0.1
 };
 
-export function getFeatureStyle({ feature, state }) {
+export function featureStyle({ feature, state }) {
   const renderType = feature.properties.renderType;
   let style = null;
 
@@ -90,7 +90,7 @@ export function getFeatureStyle({ feature, state }) {
   return style;
 }
 
-export function getEditHandleStyle({ feature, shape, index, state }) {
+export function editHandleStyle({ feature, shape, index, state }) {
   let style = {};
   switch (state) {
     case RENDER_STATE.SELECTED:

@@ -18,8 +18,8 @@
 
 - `onSelect` (Function, Optional) - callback when clicking a position under `SELECT` and `EDITTING` mode. Receives an object containing the following parameters
   - `selectedFeature`: selected feature. `null` if clicked an empty space.
-  - `selectedFeatureIndex`: selected feature index.`-1` if clicked an empty space.
-  - `editHandleIndex`: selected editHandle index. `-1` if clicked an empty space.
+  - `selectedFeatureIndex`: selected feature index.`null` if clicked an empty space.
+  - `editHandleIndex`: selected editHandle index. `null` if clicked an empty space.
   - `screenCoords`: screen coordinates of the clicked position.
   - `mapCoords`: map coordinates of the clicked position.
   
@@ -43,10 +43,10 @@
 }
 ```
 
-### Styling related Options
+### Styling related options
 - `featureStyle` (Function, Optional) : Object - A function to style a feature, function parameters are 
   - `feature`: feature to style.
-  - `state`: one of `SELECTED`, `HOVERED`, `INACTIVE`, `UNCOMMITTED`.
+  - `state`: one of `SELECTED`, `HOVERED`, `INACTIVE`, `UNCOMMITTED`, `CLOSING`.
   - `shape`: shape resolved from `getFeautureShape`.
   
 Returns is a map of [style objects](https://reactjs.org/docs/dom-elements.html#style) passed to SVG `path` elements.
@@ -54,7 +54,7 @@ Returns is a map of [style objects](https://reactjs.org/docs/dom-elements.html#s
 - `editHandleStyle` (Function, Optional) : Object - A function to style an `editHandle, function parameters are 
   - `feature`: feature to style.
   - `index`: index of the editHandle vertex in the feature.
-  - `state`: one of `SELECTED`, `HOVERED`, `INACTIVE`, `UNCOMMITTED`.
+  - `state`: one of `SELECTED`, `HOVERED`, `INACTIVE`, `UNCOMMITTED`, `CLOSING`.
   - `shape`: shape resolved from `editHandleShape`.
   
 Returns is a map of [style objects](https://reactjs.org/docs/dom-elements.html#style) passed to SVG `circle` or `rect` elements.
@@ -62,7 +62,7 @@ Returns is a map of [style objects](https://reactjs.org/docs/dom-elements.html#s
 - `editHandleShape` (String|Function, Optional): if is a string, should be one of `rect` or `circle`. If is a function, will receive the following parameters
   - `feature`: feature to style.
   - `index`: index of the editHandle vertex in the feature.
-  - `state`: one of `SELECTED`, `HOVERED`, `INACTIVE`, `UNCOMMITTED`.
+  - `state`: one of `SELECTED`, `HOVERED`, `INACTIVE`, `UNCOMMITTED`, `CLOSING`.
 
 ## Explanations
 - `Feature`: any drawn shape, one of point, line, polygon or rectangle.
@@ -73,10 +73,11 @@ Returns is a map of [style objects](https://reactjs.org/docs/dom-elements.html#s
 - `SELECTED`: being clicked or dragged. 
 - `HOVERED`: hovered over by the mouse pointer.
 - `UNCOMMITTED`: in the middle of drawing, not yet added to the feature being edited.
+- `CLOSING`: closing a polygon. 
 
 ### Styling based on `state`:
 
-![img](https://raw.githubusercontent.com/uber-common/deck.gl-data/master/nebula.gl/edit-handle.png)
+![img](https://raw.githubusercontent.com/uber-common/deck.gl-data/master/nebula.gl/react-map-gl-draw.png)
 
 As shown in the above image, for the feature currently being edited, 
 - `featureStyle({feature, state: SELECTED})` will be applied to the committed parts of the feature. (Green strokes)

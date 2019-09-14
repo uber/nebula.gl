@@ -5,15 +5,15 @@
 ## Options 
 - `mode` (String, Optional)
   - `EditorModes.READ_ONLY` - Not interactive. This is the default mode.
-  - `EditorModes.SELECT_FEATURE` - Lets you select, delete, and drag features.
-  - `EditorModes.EDIT_VERTEX` - Lets you select, delete, and drag vertices; and drag features.
+  - `EditorModes.SELECT` - Lets you select, delete, and drag features.
+  - `EditorModes.EDITTING` - Lets you select, delete, and drag vertices; and drag features.
   - `EditorModes.DRAW_PATH` - Lets you draw a GeoJson `LineString` feature.
   - `EditorModes.DRAW_POLYGON` - Lets you draw a GeoJson `Polygon` feature.
   - `EditorModes.DRAW_POINT` - Lets you draw a GeoJson `Point` feature.
   - `EditorModes.DRAW_RECTANGLE` - Lets you draw a `Rectangle` (represented as GeoJson `Polygon` feature).
 
 - `features` (Feature[], Optional) - List of features in GeoJson format.
-- `selectedFeatureIndex` (String, Optional) - Index of the selected feature. `EditorModes` assigns a unique id to each feature which is stored in `feature.properties.id`.
+- `selectedFeatureIndex` (String, Optional) - Index of the selected feature.
 - `clickRadius` (Number, Optional) - Radius to detect features around a hovered or clicked point. Default value is `0`
 
 - `onSelect` (Function, Optional) - callback when clicking a position under `SELECT` and `EDITTING` mode. Receives an object containing the following parameters

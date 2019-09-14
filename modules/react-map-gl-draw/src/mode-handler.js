@@ -11,7 +11,7 @@ import memoize from './memoize';
 import { DRAWING_MODE, EDIT_TYPE, ELEMENT_TYPE, MODES } from './constants';
 import { getScreenCoords, isNumeric, parseEventElement } from './edit-modes/utils';
 import {
-  BaseMode,
+  SelectMode,
   EditingMode,
   DrawPointMode,
   DrawLineStringMode,
@@ -21,7 +21,7 @@ import {
 
 const MODE_TO_HANDLER = Object.freeze({
   [MODES.READ_ONLY]: null,
-  [MODES.SELECT]: BaseMode,
+  [MODES.SELECT]: SelectMode,
   [MODES.EDITING]: EditingMode,
   [MODES.DRAW_POINT]: DrawPointMode,
   [MODES.DRAW_PATH]: DrawLineStringMode,

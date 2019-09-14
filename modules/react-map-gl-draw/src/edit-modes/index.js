@@ -1,3 +1,4 @@
+export { default as SelectMode } from './select-mode';
 export { default as EditingMode } from './editing-mode';
 export { default as BaseMode } from './base-mode';
 export { default as DrawPointMode } from './draw-point-mode';

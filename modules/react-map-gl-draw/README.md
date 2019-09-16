@@ -5,15 +5,15 @@
 ## Options 
 - `mode` (String, Optional)
   - `EditorModes.READ_ONLY` - Not interactive. This is the default mode.
-  - `EditorModes.SELECT_FEATURE` - Lets you select, delete, and drag features.
-  - `EditorModes.EDIT_VERTEX` - Lets you select, delete, and drag vertices; and drag features.
+  - `EditorModes.SELECT` - Lets you select, delete, and drag features.
+  - `EditorModes.EDITTING` - Lets you select, delete, and drag vertices; and drag features.
   - `EditorModes.DRAW_PATH` - Lets you draw a GeoJson `LineString` feature.
   - `EditorModes.DRAW_POLYGON` - Lets you draw a GeoJson `Polygon` feature.
   - `EditorModes.DRAW_POINT` - Lets you draw a GeoJson `Point` feature.
   - `EditorModes.DRAW_RECTANGLE` - Lets you draw a `Rectangle` (represented as GeoJson `Polygon` feature).
 
-- `features` (Feature[], Optional) - List of features in GeoJson format.
-- `selectedFeatureIndex` (String, Optional) - Index of the selected feature. `EditorModes` assigns a unique id to each feature which is stored in `feature.properties.id`.
+- `features` (Feature[], Optional) - List of features in GeoJson format. If `features` are provided from users, then `react-map-gl-draw` respect the users' input, and therefore ignore any internal `features`. But if `features` are not provided, then `react-map-gl-draw` manages `features` internally, and users can access and manipulate the features by calling `getFeatures`, `addFeatures`, and `deleteFeatures`.
+- `selectedFeatureIndex` (String, Optional) - Index of the selected feature.
 - `clickRadius` (Number, Optional) - Radius to detect features around a hovered or clicked point. Default value is `0`
 
 - `onSelect` (Function, Optional) - callback when clicking a position under `SELECT` and `EDITTING` mode. Receives an object containing the following parameters
@@ -44,14 +44,19 @@
 ```
 
 ### Styling related options
-- `featureStyle` (Function, Optional) : Object - A function to style a feature, function parameters are 
+- `featureStyle` (Object|Function, Optional) : Object - Either a [style objects](https://reactjs.org/docs/dom-elements.html#style) or a function to style a feature, function parameters are 
   - `feature`: feature to style.
+  - `index`: index of the feature.
   - `state`: one of `SELECTED`, `HOVERED`, `INACTIVE`, `UNCOMMITTED`, `CLOSING`.
-  - `shape`: shape resolved from `getFeautureShape`.
   
 Returns is a map of [style objects](https://reactjs.org/docs/dom-elements.html#style) passed to SVG `path` elements.
 
-- `editHandleStyle` (Function, Optional) : Object - A function to style an `editHandle, function parameters are 
+- `featureShape` (String|Function, Optional): if is a string, should be one of `rect` or `circle`. If is a function, will receive the following parameters
+  - `feature`: feature to style.
+  - `index`: index of the feature.
+  - `state`: one of `SELECTED`, `HOVERED`, `INACTIVE`, `UNCOMMITTED`, `CLOSING`.
+
+- `editHandleStyle` (Object|Function, Optional) : Object - Either a [style objects](https://reactjs.org/docs/dom-elements.html#style) or a function to style an `editHandle, function parameters are 
   - `feature`: feature to style.
   - `index`: index of the editHandle vertex in the feature.
   - `state`: one of `SELECTED`, `HOVERED`, `INACTIVE`, `UNCOMMITTED`, `CLOSING`.
@@ -87,7 +92,7 @@ As shown in the above image, for the feature currently being edited,
 
 ## Methods
 
-##### `features` 
+##### `getFeatures` 
 
 - Return a list of finished GeoJson features.
 

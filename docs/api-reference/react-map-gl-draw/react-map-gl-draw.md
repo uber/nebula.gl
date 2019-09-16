@@ -12,7 +12,7 @@
   - `EditorModes.DRAW_POINT` - Lets you draw a GeoJson `Point` feature.
   - `EditorModes.DRAW_RECTANGLE` - Lets you draw a `Rectangle` (represented as GeoJson `Polygon` feature).
 
-- `features` (Feature[], Optional) - List of features in GeoJson format.
+- `features` (Feature[], Optional) - List of features in GeoJson format. If `features` are provided from users, then `react-map-gl-draw` respect the users' input, and therefore ignore any internal `features`. But if `features` are not provided, then `react-map-gl-draw` manages `features` internally, and users can access and manipulate the features by calling `getFeatures`, `addFeatures`, and `deleteFeatures`.
 - `selectedFeatureIndex` (String, Optional) - Index of the selected feature.
 - `clickRadius` (Number, Optional) - Radius to detect features around a hovered or clicked point. Default value is `0`
 
@@ -92,7 +92,7 @@ As shown in the above image, for the feature currently being edited,
 
 ## Methods
 
-##### `features` 
+##### `getFeatures` 
 
 - Return a list of finished GeoJson features.
 

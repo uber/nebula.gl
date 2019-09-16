@@ -11,12 +11,11 @@ import type {
   ScreenCoordinates
 } from '@nebula.gl/edit-modes';
 
-import { RENDER_STATE, RENDER_TYPE, MODES, GEOJSON_TYPE } from './constants';
+import { RENDER_STATE, MODES, GEOJSON_TYPE } from './constants';
 
 export type Id = string | number;
 
 export type Mode = $Keys<typeof MODES>;
-export type RenderType = $Values<typeof RENDER_TYPE>;
 export type RenderState = $Values<typeof RENDER_STATE>;
 export type GeoJsonType = $Values<typeof GEOJSON_TYPE>;
 
@@ -50,12 +49,12 @@ export type EditorProps = {
   mode: Mode,
   style: ?Object,
   features: ?(Feature[]),
-  selectedFeatureId: ?Id,
+  selectedFeatureIndex: ?number,
   clickRadius: number,
-  getFeatureShape: Function | string,
-  getEditHandleShape: Function | string,
-  getEditHandleStyle: Function,
-  getFeatureStyle: Function,
+  featureShape: Function | string,
+  editHandleShape: Function | string,
+  editHandleStyle: Function | any,
+  featureStyle: Function | any,
   onUpdate: Function,
   onSelect: Function
 };
@@ -64,8 +63,6 @@ export type EditorState = {
   featureCollection: ?ImmutableFeatureCollection,
 
   selectedFeatureIndex: ?number,
-  // TODO deprecate selectedFeatureId
-  selectedFeatureId: ?Id,
 
   hovered: ?Pick,
   lastPointerMoveEvent: PointerMoveEvent,
@@ -79,3 +76,11 @@ export type EditorState = {
 };
 
 export type BaseEvent = ClickEvent;
+
+export type SelectAction = {
+  selectedFeature: ?Feature,
+  selectedFeatureIndex?: ?number,
+  selectedEditHandleIndex?: ?number,
+  screenCoords: ?ScreenCoordinates,
+  mapCoords: ?Position
+};

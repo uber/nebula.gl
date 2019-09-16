@@ -9,15 +9,6 @@ const RECT_STYLE = {
   width: 12
 };
 
-const CLOSING_RECT_STYLE = {
-  stroke: '#7ac943',
-  strokeWidth: 2,
-  x: -10,
-  y: -10,
-  height: 20,
-  width: 20
-};
-
 const CIRCLE_RADIUS = 8;
 
 const SELECTED_STYLE = {
@@ -50,7 +41,7 @@ const DEFAULT_STYLE = {
   fillOpacity: 0.1
 };
 
-export function getFeatureStyle({ feature, state }) {
+export function featureStyle({ feature, state }) {
   const renderType = feature.properties.renderType;
   let style = null;
 
@@ -99,9 +90,7 @@ export function getFeatureStyle({ feature, state }) {
   return style;
 }
 
-export function getEditHandleStyle({ feature, index, state }) {
-  const renderType = feature.properties.renderType;
-
+export function editHandleStyle({ feature, shape, index, state }) {
   let style = {};
   switch (state) {
     case RENDER_STATE.SELECTED:
@@ -125,19 +114,12 @@ export function getEditHandleStyle({ feature, index, state }) {
       style = { ...DEFAULT_STYLE };
   }
 
-  switch (renderType) {
-    case RENDER_TYPE.POINT:
+  switch (shape) {
+    case 'circle':
       style.r = CIRCLE_RADIUS;
       break;
-
-    case RENDER_TYPE.LINE_STRING:
-    case RENDER_TYPE.POLYGON:
-    case RENDER_TYPE.RECTANGLE:
-      if (state === RENDER_STATE.CLOSING) {
-        style = { ...style, ...CLOSING_RECT_STYLE };
-      } else {
-        style = { ...style, ...RECT_STYLE };
-      }
+    case 'rect':
+      style = { ...style, ...RECT_STYLE };
       break;
     default:
   }

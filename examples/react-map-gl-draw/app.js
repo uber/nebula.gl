@@ -1,4 +1,3 @@
-/* global window */
 import React, { Component } from 'react';
 import { render } from 'react-dom';
 import MapGL from 'react-map-gl';
@@ -9,65 +8,36 @@ import Toolbar from './toolbar';
 // eslint-disable-next-line no-process-env, no-undef
 const MAP_STYLE = process.env.MapStyle || 'mapbox://styles/mapbox/light-v9';
 
+const DEFAULT_VIEWPORT = {
+  width: 800,
+  height: 600,
+  longitude: -122.45,
+  latitude: 37.78,
+  zoom: 14
+};
+
 export default class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      viewport: {
-        width: 800,
-        height: 600,
-        longitude: -122.45,
-        latitude: 37.78,
-        zoom: 14
-      },
+      // map
+      viewport: DEFAULT_VIEWPORT,
+      // editor
       selectedMode: EditorModes.READ_ONLY,
       features: [],
-      selectedFeatureId: null
+      selectedFeatureIndex: null
     };
     this._mapRef = null;
+    this._editorRef = null;
   }
-
-  componentDidMount() {
-    window.addEventListener('keydown', this._onKeydown);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this._onKeydown);
-  }
-
-  _onKeydown = evt => {
-    if (evt.keyCode === 27) {
-      // esc key
-      this.setState({ selectedFeatureId: null });
-    }
-  };
-
-  _updateViewport = viewport => {
-    this.setState({ viewport });
-  };
-
-  _onSelect = ({ selectedFeatureId }) => {
-    this.setState({ selectedFeatureId });
-  };
 
   _onDelete = () => {
-    const { selectedFeatureId } = this.state;
-    if (selectedFeatureId === null || selectedFeatureId === undefined) {
+    const { selectedFeatureIndex } = this.state;
+    if (selectedFeatureIndex === null || selectedFeatureIndex === undefined) {
       return;
     }
 
-    const selectedIndex = this.state.features.findIndex(f => f.properties.id === selectedFeatureId);
-    if (selectedIndex >= 0) {
-      const newFeatures = [...this.state.features];
-      newFeatures.splice(selectedIndex, 1);
-      this.setState({ features: newFeatures, selectedFeatureId: null });
-    }
-  };
-
-  _onUpdate = features => {
-    this.setState({
-      features
-    });
+    this._editorRef.deleteFeatures(selectedFeatureIndex);
   };
 
   _switchMode = evt => {
@@ -76,10 +46,11 @@ export default class App extends Component {
       selectedMode = null;
     }
 
-    this.setState({
-      selectedMode,
-      selectedFeatureId: null
-    });
+    this.setState({ selectedMode });
+  };
+
+  _updateViewport = viewport => {
+    this.setState({ viewport });
   };
 
   _renderToolbar = () => {
@@ -92,12 +63,8 @@ export default class App extends Component {
     );
   };
 
-  _getEditHandleShape = ({ feature }) => {
-    return feature.properties.renderType === 'Point' ? 'circle' : 'rect';
-  };
-
   render() {
-    const { viewport, selectedMode, selectedFeatureId, features } = this.state;
+    const { viewport, selectedMode } = this.state;
     return (
       <MapGL
         {...viewport}
@@ -108,13 +75,12 @@ export default class App extends Component {
         onViewportChange={this._updateViewport}
       >
         <Editor
+          ref={_ => (this._editorRef = _)}
           clickRadius={12}
+          onSelect={selected => {
+            this.setState({ selectedFeatureIndex: selected && selected.selectedFeatureIndex });
+          }}
           mode={selectedMode}
-          features={features}
-          selectedFeatureId={selectedFeatureId}
-          onSelect={this._onSelect}
-          onUpdate={this._onUpdate}
-          getEditHandleShape={this._getEditHandleShape}
         />
         {this._renderToolbar()}
       </MapGL>

@@ -9,7 +9,23 @@ import { RENDER_STATE, RENDER_TYPE, GEOJSON_TYPE, GUIDE_TYPE, ELEMENT_TYPE } fro
 import ModeHandler from './mode-handler';
 import { getFeatureCoordinates } from './edit-modes/utils';
 
+import {
+  editHandleStyle as defaultEditHandleStyle,
+  featureStyle as defaultFeatureStyle
+} from './style';
+
+const defaultProps = {
+  ...ModeHandler.defaultProps,
+  clickRadius: 0,
+  featureShape: 'circle',
+  editHandleShape: 'rect',
+  editHandleStyle: defaultEditHandleStyle,
+  featureStyle: defaultFeatureStyle
+};
+
 export default class Editor extends ModeHandler {
+  static defaultProps = defaultProps;
+
   /* HELPERS */
   _getPathInScreenCoords(coordinates: any, type: GeoJsonType) {
     if (coordinates.length === 0) {
@@ -54,15 +70,26 @@ export default class Editor extends ModeHandler {
       return RENDER_STATE.SELECTED;
     }
 
-    if (hovered && hovered.type === ELEMENT_TYPE.EDIT_HANDLE && hovered.index === editHandleIndex) {
-      return RENDER_STATE.HOVERED;
+    if (hovered && hovered.type === ELEMENT_TYPE.EDIT_HANDLE) {
+      if (hovered.index === editHandleIndex) {
+        return RENDER_STATE.HOVERED;
+      }
+
+      // cursor hovered on first vertex when drawing polygon
+      if (
+        hovered.index === 0 &&
+        editHandle.properties.guideType === GUIDE_TYPE.CURSOR_EDIT_HANDLE
+      ) {
+        return RENDER_STATE.CLOSING;
+      }
     }
 
     return RENDER_STATE.INACTIVE;
   };
 
   _getFeatureRenderState = (index: number, renderState: ?RenderState) => {
-    const { selectedFeatureIndex, hovered } = this.state;
+    const { hovered } = this.state;
+    const selectedFeatureIndex = this._getSelectedFeatureIndex();
     if (renderState) {
       return renderState;
     }
@@ -78,6 +105,10 @@ export default class Editor extends ModeHandler {
     return RENDER_STATE.INACTIVE;
   };
 
+  _getStyleProp = (styleProp: any, params: any) => {
+    return typeof styleProp === 'function' ? styleProp(params) : styleProp;
+  };
+
   /* RENDER */
   /* eslint-disable max-params */
   _renderEditHandle = (editHandle: Feature, feature: Feature) => {
@@ -91,22 +122,22 @@ export default class Editor extends ModeHandler {
     const {
       properties: { featureIndex, positionIndexes }
     } = editHandle;
-    const { clickRadius, getEditHandleShape, getEditHandleStyle } = this.props;
+    const { clickRadius, editHandleShape, editHandleStyle } = this.props;
 
     const index = positionIndexes[0];
 
-    const shape =
-      typeof getEditHandleShape === 'function'
-        ? getEditHandleShape({
-            feature: feature || editHandle,
-            index,
-            featureIndex
-          })
-        : getEditHandleShape;
-
-    let style = getEditHandleStyle({
+    const shape = this._getStyleProp(editHandleShape, {
       feature: feature || editHandle,
       index,
+      featureIndex,
+      state: this._getEditHandleState(editHandle)
+    });
+
+    let style = this._getStyleProp(editHandleStyle, {
+      feature: feature || editHandle,
+      index,
+      featureIndex,
+      shape,
       state: this._getEditHandleState(editHandle)
     });
 
@@ -114,6 +145,7 @@ export default class Editor extends ModeHandler {
     if (editHandle.properties.guideType === GUIDE_TYPE.CURSOR_EDIT_HANDLE) {
       style = {
         ...style,
+        // disable pointer events for cursor
         pointerEvents: 'none'
       };
     }
@@ -233,7 +265,7 @@ export default class Editor extends ModeHandler {
   };
 
   _renderTentativeFeature = (feature: Feature, cursorEditHandle: Feature) => {
-    const { getFeatureStyle } = this.props;
+    const { featureStyle } = this.props;
     const {
       geometry: { coordinates },
       properties: { renderType }
@@ -246,7 +278,11 @@ export default class Editor extends ModeHandler {
     // >= 2 coordinates
     const firstCoords = coordinates[0];
     const lastCoords = coordinates[coordinates.length - 1];
-    const uncommittedStyle = getFeatureStyle({ feature, state: RENDER_STATE.UNCOMMITTED });
+    const uncommittedStyle = this._getStyleProp(featureStyle, {
+      feature,
+      index: null,
+      state: RENDER_STATE.UNCOMMITTED
+    });
 
     let committedPath;
     let uncommittedPath;
@@ -256,7 +292,11 @@ export default class Editor extends ModeHandler {
     switch (renderType) {
       case RENDER_TYPE.LINE_STRING:
       case RENDER_TYPE.POLYGON:
-        const committedStyle = getFeatureStyle({ feature, state: RENDER_STATE.SELECTED });
+        const committedStyle = this._getStyleProp(featureStyle, {
+          feature,
+          state: RENDER_STATE.SELECTED
+        });
+
         if (cursorEditHandle) {
           const cursorCoords = coordinates[coordinates.length - 2];
           committedPath = this._renderSegments(
@@ -275,7 +315,12 @@ export default class Editor extends ModeHandler {
         }
 
         if (renderType === RENDER_TYPE.POLYGON) {
-          const closingStyle = getFeatureStyle({ feature, state: RENDER_STATE.CLOSING });
+          const closingStyle = this._getStyleProp(featureStyle, {
+            feature,
+            index: null,
+            state: RENDER_STATE.CLOSING
+          });
+
           closingPath = this._renderSegment(
             'tentative-closing',
             coordinates.length - 1,
@@ -320,12 +365,9 @@ export default class Editor extends ModeHandler {
 
   _renderPoint = (feature: Feature, index: number, path: string) => {
     const renderState = this._getFeatureRenderState(index);
-    const { getFeatureStyle, getFeatureShape, clickRadius } = this.props;
-    const style = getFeatureStyle({ feature, state: renderState });
-    const shape =
-      typeof getFeatureShape === 'function'
-        ? getFeatureShape({ feature, state: renderState })
-        : getFeatureShape;
+    const { featureStyle, featureShape, clickRadius } = this.props;
+    const shape = this._getStyleProp(featureShape, { feature, index, state: renderState });
+    const style = this._getStyleProp(featureStyle, { feature, index, state: renderState });
 
     const elemKey = `feature.${index}`;
     if (shape === 'rect') {
@@ -380,11 +422,11 @@ export default class Editor extends ModeHandler {
   };
 
   _renderPath = (feature: Feature, index: number, path: string) => {
-    const { getFeatureStyle, clickRadius } = this.props;
-    const { selectedFeatureIndex } = this.state;
+    const { featureStyle, clickRadius } = this.props;
+    const selectedFeatureIndex = this._getSelectedFeatureIndex();
     const selected = index === selectedFeatureIndex;
     const renderState = this._getFeatureRenderState(index);
-    const style = getFeatureStyle({ feature, state: renderState });
+    const style = this._getStyleProp(featureStyle, { feature, index, state: renderState });
 
     const elemKey = `feature.${index}`;
     if (selected) {
@@ -419,12 +461,12 @@ export default class Editor extends ModeHandler {
   };
 
   _renderPolygon = (feature: Feature, index: number, path: string) => {
-    const { getFeatureStyle } = this.props;
-    const { selectedFeatureIndex } = this.state;
+    const { featureStyle } = this.props;
+    const selectedFeatureIndex = this._getSelectedFeatureIndex();
     const selected = index === selectedFeatureIndex;
 
     const renderState = this._getFeatureRenderState(index);
-    const style = getFeatureStyle({ feature, state: renderState });
+    const style = this._getStyleProp(featureStyle, { feature, index, state: renderState });
 
     const elemKey = `feature.${index}`;
     if (selected) {

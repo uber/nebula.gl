@@ -51,10 +51,14 @@ export default class EditingMode extends BaseMode {
       props.onEdit({
         editType: EDIT_TYPE.ADD_POSITION,
         updatedData,
-        editContext: {
-          positionIndexes,
-          position: insertMapCoords
-        }
+        editContext: [
+          {
+            featureIndex,
+            editHandleIndex: insertIndex,
+            screenCoords: props.viewport && props.viewport.project(insertMapCoords),
+            mapCoords: insertMapCoords
+          }
+        ]
       });
     }
   };

@@ -28,10 +28,14 @@ export default class DrawLineStringMode extends BaseMode {
       props.onEdit({
         editType: EDIT_TYPE.ADD_POSITION,
         updatedData,
-        editContext: {
-          positionIndexes,
-          position: event.mapCoords
-        }
+        editContext: [
+          {
+            featureIndex: selectedFeatureIndex,
+            editHandleIndex: positionIndexes[0],
+            screenCoords: event.screenCoords,
+            mapCoords: event.mapCoords
+          }
+        ]
       });
 
       // commit tentativeFeature to featureCollection

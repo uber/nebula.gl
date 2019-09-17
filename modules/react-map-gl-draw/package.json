@@ -6,34 +6,34 @@
   "author": "Xintong Xia <xintong@uber.com>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/uber/nebula.gl"
+    "url": "https://github.com/uber/nebula.gl/tree/master/modules/react-map-gl-draw"
   },
   "keywords": [
     "svg",
     "visualization",
     "editing"
   ],
-  "main": "dist/index.js",
-  "module": "dist-es6/index.js",
+  "main": "dist/es5/index.js",
+  "module": "dist/esm/index.js",
+  "esnext": "dist/es6/index.js",
   "files": [
+    "src",
     "dist",
-    "dist-es6",
-    "src"
+    "README.md"
   ],
   "scripts": {
-    "build-clean": "rm -fr dist dist-es6 && mkdir -p dist dist-es6",
-    "build-es6": "rm -fr dist-es6 && BABEL_ENV=es6 babel src --config-file ../../babel.config.js --out-dir dist-es6 --source-maps inline",
-    "build-es5": "rm -fr dist && BABEL_ENV=es5 babel src --config-file ../../babel.config.js --out-dir dist --source-maps inline",
-    "build": "yarn build-clean && yarn build-es6 && yarn build-es5",
-    "flow": "(cd ../.. && yarn flow)",
-    "lint": "(cd ../.. && yarn lint)",
-    "prepublish": "yarn build",
-    "publish-prod": "yarn build && yarn test && yarn test-dist && npm publish",
-    "publish-beta": "yarn build && yarn test && yarn test-dist && npm publish --tag beta",
-    "test": "yarn lint && yarn build && yarn flow && yarn jest"
+    "clean": "ocular-clean",
+    "build": "ocular-clean && ocular-build",
+    "lint": "ocular-lint",
+    "cover": "ocular-test cover",
+    "publish-prod": "ocular-publish prod",
+    "publish-beta": "ocular-publish beta",
+    "test": "flow check && ocular-test",
+    "test-fast": "flow check && ocular-test fast",
+    "metrics": "ocular-metrics"
   },
   "dependencies": {
-    "@nebula.gl/edit-modes": "0.15.0",
+    "@nebula.gl/edit-modes": "^0.15.0",
     "@turf/helpers": "^6.1.4",
     "mjolnir.js": "^2.2.1",
     "prop-types": "^15.7.2",
@@ -41,7 +41,11 @@
     "viewport-mercator-project": "^6.1.0"
   },
   "devDependencies": {
-    "react-map-gl": "^5.0.2"
+    "@babel/plugin-proposal-class-properties": "^7.4.4",
+    "@babel/preset-flow": "^7.0.0",
+    "@babel/preset-react": "^7.0.0",
+    "react-map-gl": "^5.0.2",
+    "ocular-dev-tools": "^0.0.29"
   },
   "peerDependencies": {
     "react": "^16.x",

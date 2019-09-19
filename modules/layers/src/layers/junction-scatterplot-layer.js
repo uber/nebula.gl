@@ -21,10 +21,10 @@ export default class JunctionScatterplotLayer extends CompositeLayer {
         ...this.props,
         id: `${id}-full`,
         data: this.props.data,
-        getColor: getStrokeColor,
+        getLineColor: getStrokeColor,
         updateTriggers: {
           ...updateTriggers,
-          getColor: updateTriggers.getStrokeColor
+          getStrokeColor: updateTriggers.getStrokeColor
         }
       }),
       // the inner part
@@ -32,12 +32,12 @@ export default class JunctionScatterplotLayer extends CompositeLayer {
         ...this.props,
         id: `${id}-inner`,
         data: this.props.data,
-        getColor: getFillColor,
+        getFillColor,
         getRadius: getInnerRadius,
         pickable: false,
         updateTriggers: {
           ...updateTriggers,
-          getColor: updateTriggers.getFillColor,
+          getFillColor: updateTriggers.getFillColor,
           getRadius: updateTriggers.getInnerRadius
         }
       })

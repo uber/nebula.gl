@@ -21,27 +21,10 @@ export type { Color, Style } from './types';
 
 // Moved to @nebula.gl/layers
 export { EditableGeoJsonLayer } from '@nebula.gl/layers';
-export { EditableGeoJsonLayerEditModePoc } from '@nebula.gl/layers';
 export { SelectionLayer } from '@nebula.gl/layers';
 export { ElevatedEditHandleLayer } from '@nebula.gl/layers';
 export { PathOutlineLayer } from '@nebula.gl/layers';
 export { PathMarkerLayer } from '@nebula.gl/layers';
-
-// TODO edit-modes: delete handlers once EditMode fully implemented
-export { ModeHandler } from '@nebula.gl/layers';
-export { CompositeModeHandler } from '@nebula.gl/layers';
-export { ViewHandler } from '@nebula.gl/layers';
-export { ModifyHandler } from '@nebula.gl/layers';
-export { DrawPointHandler } from '@nebula.gl/layers';
-export { DrawLineStringHandler } from '@nebula.gl/layers';
-export { DrawPolygonHandler } from '@nebula.gl/layers';
-export { DrawRectangleHandler } from '@nebula.gl/layers';
-export { DrawRectangleUsingThreePointsHandler } from '@nebula.gl/layers';
-export { DrawCircleFromCenterHandler } from '@nebula.gl/layers';
-export { DrawCircleByBoundingBoxHandler } from '@nebula.gl/layers';
-export { DrawEllipseByBoundingBoxHandler } from '@nebula.gl/layers';
-export { DrawEllipseUsingThreePointsHandler } from '@nebula.gl/layers';
-export { ElevationHandler } from '@nebula.gl/layers';
 
 export { EditMode } from '@nebula.gl/edit-modes';
 

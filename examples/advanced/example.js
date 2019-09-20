@@ -11,7 +11,6 @@ import circle from '@turf/circle';
 
 import {
   EditableGeoJsonLayer,
-  EditableGeoJsonLayerEditModePoc,
   SelectionLayer,
   CompositeMode,
   DrawLineStringMode,
@@ -37,19 +36,7 @@ import {
   ToolboxCheckbox
 } from './toolbox';
 
-// TODO edit-modes: once we refactor EditableGeoJsonLayer to use new EditMode interface, this can go away
-let EditableGeoJsonLayerImpl = EditableGeoJsonLayer;
-let COMPOSITE_MODE;
-if (
-  window.location &&
-  window.location.search &&
-  window.location.search.indexOf('useEditModePoc') !== -1
-) {
-  EditableGeoJsonLayerImpl = EditableGeoJsonLayerEditModePoc;
-  COMPOSITE_MODE = new CompositeMode([new DrawLineStringMode(), new ModifyMode()]);
-} else {
-  COMPOSITE_MODE = new CompositeModeHandler([new DrawLineStringHandler(), new ModifyHandler()]);
-}
+const COMPOSITE_MODE = new CompositeMode([new DrawLineStringMode(), new ModifyMode()]);
 
 const styles = {
   mapContainer: {
@@ -119,7 +106,7 @@ const modeHandlers = Object.assign(
   {
     'drawLineString+modify': COMPOSITE_MODE
   },
-  EditableGeoJsonLayerImpl.defaultProps.modeHandlers
+  EditableGeoJsonLayer.defaultProps.modeHandlers
 );
 
 function hex2rgb(hex: string) {
@@ -783,28 +770,19 @@ export default class Example extends Component<
     // Demonstrate how to override sub layer properties
     let _subLayerProps = null;
     if (this.state.editHandleType === 'elevated') {
-      if (EditableGeoJsonLayerImpl === EditableGeoJsonLayerEditModePoc) {
-        _subLayerProps = {
-          guides: {
-            _subLayerProps: {
-              points: {
-                type: ElevatedEditHandleLayer,
-                getFillColor: [0, 255, 0]
-              }
+      _subLayerProps = {
+        guides: {
+          _subLayerProps: {
+            points: {
+              type: ElevatedEditHandleLayer,
+              getFillColor: [0, 255, 0]
             }
           }
-        };
-      } else {
-        _subLayerProps = {
-          editHandles: {
-            type: ElevatedEditHandleLayer,
-            getFillColor: [0, 255, 0]
-          }
-        };
-      }
+        }
+      };
     }
 
-    const editableGeoJsonLayer = new EditableGeoJsonLayerImpl({
+    const editableGeoJsonLayer = new EditableGeoJsonLayer({
       id: 'geojson',
       data: testFeatures,
       selectedFeatureIndexes,

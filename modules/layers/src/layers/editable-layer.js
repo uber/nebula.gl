@@ -8,7 +8,7 @@ import type {
   StopDraggingEvent,
   PointerMoveEvent,
   DoubleClickEvent
-} from '../event-types.js';
+} from '@nebula.gl/edit-modes';
 
 // Minimum number of pixels the pointer must move from the original pointer down to be considered dragging
 const MINIMUM_POINTER_MOVE_THRESHOLD_PIXELS = 7;
@@ -47,7 +47,7 @@ export default class EditableLayer extends CompositeLayer {
         // Screen coordinates where the pointer went down
         pointerDownScreenCoords: null,
         // Ground coordinates where the pointer went down
-        pointerDownGroundCoords: null,
+        pointerDownMapCoords: null,
         // Is the pointer dragging (pointer down + moved at least MINIMUM_POINTER_MOVE_THRESHOLD_PIXELS)
         isDragging: false
       }
@@ -114,16 +114,16 @@ export default class EditableLayer extends CompositeLayer {
 
   _onDoubleClick(event: Object) {
     const screenCoords = this.getScreenCoords(event);
-    const groundCoords = this.getGroundCoords(screenCoords);
+    const mapCoords = this.getMapCoords(screenCoords);
     this.onDoubleClick({
-      groundCoords,
+      mapCoords,
       sourceEvent: event
     });
   }
 
   _onPointerDown(event: Object) {
     const screenCoords = this.getScreenCoords(event);
-    const groundCoords = this.getGroundCoords(screenCoords);
+    const mapCoords = this.getMapCoords(screenCoords);
 
     const picks = this.context.deck.pickMultipleObjects({
       x: screenCoords[0],
@@ -137,7 +137,7 @@ export default class EditableLayer extends CompositeLayer {
       _editableLayerState: {
         ...this.state._editableLayerState,
         pointerDownScreenCoords: screenCoords,
-        pointerDownGroundCoords: groundCoords,
+        pointerDownMapCoords: mapCoords,
         pointerDownPicks: picks,
         isDragging: false
       }
@@ -146,12 +146,12 @@ export default class EditableLayer extends CompositeLayer {
 
   _onPointerMove(event: Object) {
     const screenCoords = this.getScreenCoords(event);
-    const groundCoords = this.getGroundCoords(screenCoords);
+    const mapCoords = this.getMapCoords(screenCoords);
 
     const {
       pointerDownPicks,
       pointerDownScreenCoords,
-      pointerDownGroundCoords
+      pointerDownMapCoords
     } = this.state._editableLayerState;
 
     let { isDragging } = this.state._editableLayerState;
@@ -168,13 +168,14 @@ export default class EditableLayer extends CompositeLayer {
         this.onStartDragging({
           picks: pointerDownPicks,
           screenCoords,
-          groundCoords,
+          mapCoords,
           pointerDownScreenCoords,
-          pointerDownGroundCoords,
+          pointerDownMapCoords,
           sourceEvent: event
         });
 
         startedDragging = true;
+
         isDragging = true;
         this.setState({
           _editableLayerState: {
@@ -196,12 +197,12 @@ export default class EditableLayer extends CompositeLayer {
 
       this.onPointerMove({
         screenCoords,
-        groundCoords,
+        mapCoords,
         picks,
         isDragging,
         pointerDownPicks,
         pointerDownScreenCoords,
-        pointerDownGroundCoords,
+        pointerDownMapCoords,
         sourceEvent: event
       });
     }
@@ -209,12 +210,12 @@ export default class EditableLayer extends CompositeLayer {
 
   _onPointerUp(event: Object) {
     const screenCoords = this.getScreenCoords(event);
-    const groundCoords = this.getGroundCoords(screenCoords);
+    const mapCoords = this.getMapCoords(screenCoords);
 
     const {
       pointerDownPicks,
       pointerDownScreenCoords,
-      pointerDownGroundCoords,
+      pointerDownMapCoords,
       isDragging
     } = this.state._editableLayerState;
 
@@ -227,16 +228,16 @@ export default class EditableLayer extends CompositeLayer {
       this.onStopDragging({
         picks: pointerDownPicks,
         screenCoords,
-        groundCoords,
+        mapCoords,
         pointerDownScreenCoords,
-        pointerDownGroundCoords,
+        pointerDownMapCoords,
         sourceEvent: event
       });
     } else if (!this.movedEnoughForDrag(pointerDownScreenCoords, screenCoords)) {
       this.onLayerClick({
         picks: pointerDownPicks,
         screenCoords,
-        groundCoords,
+        mapCoords,
         sourceEvent: event
       });
     }
@@ -245,7 +246,7 @@ export default class EditableLayer extends CompositeLayer {
       _editableLayerState: {
         ...this.state._editableLayerState,
         pointerDownScreenCoords: null,
-        pointerDownGroundCoords: null,
+        pointerDownMapCoords: null,
         pointerDownPicks: null,
         isDragging: false
       }
@@ -259,7 +260,7 @@ export default class EditableLayer extends CompositeLayer {
     ];
   }
 
-  getGroundCoords(screenCoords: number[]) {
+  getMapCoords(screenCoords: number[]) {
     return this.context.viewport.unproject([screenCoords[0], screenCoords[1]]);
   }
 

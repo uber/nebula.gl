@@ -7,7 +7,7 @@ _All notable changes to this project will be documented in this file. This proje
 <!--
 ## Version TBD
 
-### Breaking changes between `EditableGeoJsonLayer` and `EditableGeoJsonLayerEditModePoc`
+### Breaking changes for `EditableGeoJsonLayer`
 
 * `featureIndexes` is now nested under `editContext.featureIndexes` in parameter passed to `onEdit` callback
 * `editHandleType` no longer supports passing a function/constructor. Use `_subLayerProps` instead.

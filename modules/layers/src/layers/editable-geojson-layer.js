@@ -1,39 +1,40 @@
 // @flow
 /* eslint-env browser */
 
-// TODO edit-modes: consolidate EditableGeoJsonLayer and EditableGeoJsonLayerEditModePoc
-
 import { GeoJsonLayer, ScatterplotLayer, IconLayer } from '@deck.gl/layers';
-import { type Position } from '@nebula.gl/edit-modes';
-import { ModeHandler } from '../mode-handlers/mode-handler.js';
-import { ViewHandler } from '../mode-handlers/view-handler.js';
-import { ModifyHandler } from '../mode-handlers/modify-handler.js';
-import { ElevationHandler } from '../mode-handlers/elevation-handler.js';
-import { SnappableHandler } from '../mode-handlers/snappable-handler.js';
-import { TranslateHandler } from '../mode-handlers/translate-handler.js';
-import { DuplicateHandler } from '../mode-handlers/duplicate-handler';
-import { RotateHandler } from '../mode-handlers/rotate-handler.js';
-import { ScaleHandler } from '../mode-handlers/scale-handler.js';
-import { DrawPointHandler } from '../mode-handlers/draw-point-handler.js';
-import { DrawLineStringHandler } from '../mode-handlers/draw-line-string-handler.js';
-import { DrawPolygonHandler } from '../mode-handlers/draw-polygon-handler.js';
-import { Draw90DegreePolygonHandler } from '../mode-handlers/draw-90degree-polygon-handler.js';
-import { DrawRectangleHandler } from '../mode-handlers/draw-rectangle-handler.js';
-import { SplitPolygonHandler } from '../mode-handlers/split-polygon-handler.js';
-import { DrawRectangleUsingThreePointsHandler } from '../mode-handlers/draw-rectangle-using-three-points-handler.js';
-import { DrawCircleFromCenterHandler } from '../mode-handlers/draw-circle-from-center-handler.js';
-import { DrawCircleByBoundingBoxHandler } from '../mode-handlers/draw-circle-by-bounding-box-handler.js';
-import { DrawEllipseByBoundingBoxHandler } from '../mode-handlers/draw-ellipse-by-bounding-box-handler.js';
-import { DrawEllipseUsingThreePointsHandler } from '../mode-handlers/draw-ellipse-using-three-points-handler.js';
 
-import type { EditAction } from '../mode-handlers/mode-handler.js';
+import {
+  ViewMode,
+  ModifyMode,
+  TranslateMode,
+  ScaleMode,
+  RotateMode,
+  DuplicateMode,
+  SplitPolygonMode,
+  ExtrudeMode,
+  ElevationMode,
+  DrawPointMode,
+  DrawLineStringMode,
+  DrawPolygonMode,
+  DrawRectangleMode,
+  DrawCircleFromCenterMode,
+  DrawCircleByBoundingBoxMode,
+  DrawEllipseByBoundingBoxMode,
+  DrawRectangleUsingThreePointsMode,
+  DrawEllipseUsingThreePointsMode,
+  Draw90DegreePolygonMode,
+  SnappableMode
+} from '@nebula.gl/edit-modes';
+
 import type {
+  EditAction,
   ClickEvent,
   StartDraggingEvent,
   StopDraggingEvent,
-  PointerMoveEvent
-} from '../event-types.js';
-import { ExtrudeHandler } from '../mode-handlers/extrude-handler.js';
+  PointerMoveEvent,
+  GeoJsonEditMode,
+  FeatureCollection
+} from '@nebula.gl/edit-modes';
 import EditableLayer from './editable-layer.js';
 
 const DEFAULT_LINE_COLOR = [0x0, 0x0, 0x0, 0xff];
@@ -47,8 +48,25 @@ const DEFAULT_EDITING_EXISTING_POINT_RADIUS = 5;
 const DEFAULT_EDITING_INTERMEDIATE_POINT_RADIUS = 3;
 const DEFAULT_EDITING_SNAP_POINT_RADIUS = 7;
 
+const DEFAULT_EDIT_MODE = new ViewMode();
+
+function guideAccessor(accessor) {
+  return guideMaybeWrapped => accessor(unwrapGuide(guideMaybeWrapped));
+}
+
+// The object handed to us from deck.gl is different depending on the version of deck.gl used, unwrap as necessary
+function unwrapGuide(guideMaybeWrapped) {
+  if (guideMaybeWrapped.__source) {
+    return guideMaybeWrapped.__source.object;
+  } else if (guideMaybeWrapped.sourceFeature) {
+    return guideMaybeWrapped.sourceFeature.feature;
+  }
+  // It is not wrapped, return as is
+  return guideMaybeWrapped;
+}
+
 function getEditHandleColor(handle) {
-  switch (handle.type) {
+  switch (handle.properties.editHandleType) {
     case 'existing':
       return DEFAULT_EDITING_EXISTING_POINT_COLOR;
     case 'snap':
@@ -60,7 +78,7 @@ function getEditHandleColor(handle) {
 }
 
 function getEditHandleRadius(handle) {
-  switch (handle.type) {
+  switch (handle.properties.editHandleType) {
     case 'existing':
       return DEFAULT_EDITING_EXISTING_POINT_RADIUS;
     case 'snap':
@@ -86,7 +104,7 @@ const defaultProps = {
   lineWidthScale: 1,
   lineWidthMinPixels: 1,
   lineWidthMaxPixels: Number.MAX_SAFE_INTEGER,
-  lineWidthUnits: 'meters',
+  lineWidthUnits: 'pixels',
   lineJointRounded: false,
   lineMiterLimit: 4,
   pointRadiusScale: 1,
@@ -99,19 +117,17 @@ const defaultProps = {
     isSelected ? DEFAULT_SELECTED_FILL_COLOR : DEFAULT_FILL_COLOR,
   getRadius: f =>
     (f && f.properties && f.properties.radius) || (f && f.properties && f.properties.size) || 1,
-  getLineWidth: f => (f && f.properties && f.properties.lineWidth) || 1,
+  getLineWidth: f => (f && f.properties && f.properties.lineWidth) || 3,
   getLineDashArray: (feature, isSelected, mode) =>
     isSelected && mode !== 'view' ? [7, 4] : [0, 0],
 
   // Tentative feature rendering
   getTentativeLineDashArray: (f, mode) => [7, 4],
-  getTentativeLineColor: (f, mode) => DEFAULT_SELECTED_LINE_COLOR,
-  getTentativeFillColor: (f, mode) => DEFAULT_SELECTED_FILL_COLOR,
-  getTentativeLineWidth: (f, mode) => (f && f.properties && f.properties.lineWidth) || 1,
+  getTentativeLineColor: f => DEFAULT_SELECTED_LINE_COLOR,
+  getTentativeFillColor: f => DEFAULT_SELECTED_FILL_COLOR,
+  getTentativeLineWidth: f => (f && f.properties && f.properties.lineWidth) || 3,
 
   editHandleType: 'point',
-  editHandleParameters: {},
-  editHandleLayerProps: {},
 
   // point handles
   editHandlePointRadiusScale: 1,
@@ -126,7 +142,7 @@ const defaultProps = {
   editHandleIconAtlas: null,
   editHandleIconMapping: null,
   editHandleIconSizeScale: 1,
-  getEditHandleIcon: handle => handle.type,
+  getEditHandleIcon: handle => handle.properties.editHandleType,
   getEditHandleIconSize: 10,
   getEditHandleIconColor: getEditHandleColor,
   getEditHandleIconAngle: 0,
@@ -136,32 +152,36 @@ const defaultProps = {
 
   // Mode handlers
   modeHandlers: {
-    view: new ViewHandler(),
-    modify: new ModifyHandler(),
-    elevation: new ElevationHandler(),
-    extrude: new ExtrudeHandler(),
-    rotate: new RotateHandler(),
-    translate: new SnappableHandler(new TranslateHandler()),
-    duplicate: new DuplicateHandler(),
-    scale: new ScaleHandler(),
-    drawPoint: new DrawPointHandler(),
-    drawLineString: new DrawLineStringHandler(),
-    drawPolygon: new DrawPolygonHandler(),
-    draw90DegreePolygon: new Draw90DegreePolygonHandler(),
-    split: new SplitPolygonHandler(),
-    drawRectangle: new DrawRectangleHandler(),
-    drawRectangleUsing3Points: new DrawRectangleUsingThreePointsHandler(),
-    drawCircleFromCenter: new DrawCircleFromCenterHandler(),
-    drawCircleByBoundingBox: new DrawCircleByBoundingBoxHandler(),
-    drawEllipseByBoundingBox: new DrawEllipseByBoundingBoxHandler(),
-    drawEllipseUsing3Points: new DrawEllipseUsingThreePointsHandler()
+    view: new ViewMode(),
+
+    // Alter modes
+    modify: new ModifyMode(),
+    translate: new SnappableMode(new TranslateMode()),
+    scale: new ScaleMode(),
+    rotate: new RotateMode(),
+    duplicate: new DuplicateMode(),
+    split: new SplitPolygonMode(),
+    extrude: new ExtrudeMode(),
+    elevation: new ElevationMode(),
+
+    // Draw modes
+    drawPoint: new DrawPointMode(),
+    drawLineString: new DrawLineStringMode(),
+    drawPolygon: new DrawPolygonMode(),
+    drawRectangle: new DrawRectangleMode(),
+    drawCircleFromCenter: new DrawCircleFromCenterMode(),
+    drawCircleByBoundingBox: new DrawCircleByBoundingBoxMode(),
+    drawEllipseByBoundingBox: new DrawEllipseByBoundingBoxMode(),
+    drawRectangleUsing3Points: new DrawRectangleUsingThreePointsMode(),
+    drawEllipseUsing3Points: new DrawEllipseUsingThreePointsMode(),
+    draw90DegreePolygon: new Draw90DegreePolygonMode()
   }
 };
 
 type Props = {
   mode: string,
-  modeHandlers: { [mode: string]: ModeHandler },
-  onEdit: EditAction => void,
+  modeHandlers: { [mode: string]: GeoJsonEditMode },
+  onEdit: (EditAction<FeatureCollection>) => void,
   // TODO: type the rest
   [string]: any
 };
@@ -223,8 +243,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
     let layers: any = [new GeoJsonLayer(subLayerProps)];
 
-    layers = layers.concat(this.createTentativeLayers());
-    layers = layers.concat(this.createEditHandleLayers());
+    layers = layers.concat(this.createGuidesLayers());
 
     return layers;
   }
@@ -238,12 +257,14 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     });
   }
 
-  // TODO: figure out how to properly update state from an outside event handler
-  shouldUpdateState({ props, oldProps, context, oldContext, changeFlags }: Object) {
-    if (changeFlags.stateChanged) {
-      return true;
-    }
-    return true;
+  // TODO: is this the best way to properly update state from an outside event handler?
+  shouldUpdateState(opts: any) {
+    // console.log(
+    //   'shouldUpdateState',
+    //   opts.changeFlags.propsOrDataChanged,
+    //   opts.changeFlags.stateChanged
+    // );
+    return super.shouldUpdateState(opts) || opts.changeFlags.stateChanged;
   }
 
   updateState({
@@ -257,7 +278,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }) {
     super.updateState({ props, changeFlags });
 
-    let modeHandler: ModeHandler = this.state.modeHandler;
+    let modeHandler: GeoJsonEditMode = this.state.modeHandler;
     if (changeFlags.propsOrDataChanged) {
       if (props.modeHandlers !== oldProps.modeHandlers || props.mode !== oldProps.mode) {
         modeHandler = props.modeHandlers[props.mode];
@@ -265,22 +286,13 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         if (!modeHandler) {
           console.warn(`No handler configured for mode ${props.mode}`); // eslint-disable-line no-console,no-undef
           // Use default mode handler
-          modeHandler = new ModeHandler();
+          modeHandler = DEFAULT_EDIT_MODE;
         }
 
         if (modeHandler !== this.state.modeHandler) {
-          this.setState({ modeHandler });
+          this.setState({ modeHandler, cursor: null });
         }
-
-        modeHandler.setFeatureCollection(props.data);
-      } else if (changeFlags.dataChanged) {
-        modeHandler.setFeatureCollection(props.data);
       }
-
-      modeHandler.setModeConfig(props.modeConfig);
-      modeHandler.setSelectedFeatureIndexes(props.selectedFeatureIndexes);
-      this.updateTentativeFeature();
-      this.updateEditHandles();
     }
 
     let selectedFeatures = [];
@@ -290,6 +302,22 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
 
     this.setState({ selectedFeatures });
+  }
+
+  getModeProps(props: Props) {
+    return {
+      modeConfig: props.modeConfig,
+      data: props.data,
+      selectedIndexes: props.selectedFeatureIndexes,
+      lastPointerMoveEvent: this.state.lastPointerMoveEvent,
+      cursor: this.state.cursor,
+      onEdit: (editAction: EditAction<FeatureCollection>) => {
+        props.onEdit(editAction);
+      },
+      onUpdateCursor: (cursor: ?string) => {
+        this.setState({ cursor });
+      }
+    };
   }
 
   selectionAwareAccessor(accessor: any) {
@@ -311,180 +339,99 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }
 
   getPickingInfo({ info, sourceLayer }: Object) {
-    if (sourceLayer.id.endsWith('editHandles')) {
+    if (sourceLayer.id.endsWith('guides')) {
       // If user is picking an editing handle, add additional data to the info
-      info.isEditingHandle = true;
+      info.isGuide = true;
     }
 
     return info;
   }
 
-  createEditHandleLayers() {
-    if (!this.state.editHandles.length) {
+  createGuidesLayers() {
+    const mode = this.props.modeHandlers[this.props.mode] || DEFAULT_EDIT_MODE;
+    const guides: FeatureCollection = mode.getGuides(this.getModeProps(this.props));
+
+    if (!guides || !guides.features.length) {
       return [];
     }
 
-    const sharedProps = {
-      id: 'editHandles',
-      data: this.state.editHandles,
-      fp64: this.props.fp64,
-
-      parameters: this.props.editHandleParameters,
-      ...this.props.editHandleLayerProps
-    };
-
-    let layer;
-
-    switch (this.props.editHandleType) {
-      case 'icon':
-        const EditHandleIconLayer = this.getSubLayerClass('editHandles', IconLayer);
-
-        layer = new EditHandleIconLayer(
-          this.getSubLayerProps({
-            ...sharedProps,
-            iconAtlas: this.props.editHandleIconAtlas,
-            iconMapping: this.props.editHandleIconMapping,
-            sizeScale: this.props.editHandleIconSizeScale,
-            getIcon: this.props.getEditHandleIcon,
-            getSize: this.props.getEditHandleIconSize,
-            getColor: this.props.getEditHandleIconColor,
-            getAngle: this.props.getEditHandleIconAngle,
-
-            getPosition: d => d.position
-          })
-        );
-        break;
-
-      case 'point':
-      default:
-        const EditHandlePointLayer = this.getSubLayerClass('editHandles', ScatterplotLayer);
-
-        layer = new EditHandlePointLayer(
-          this.getSubLayerProps({
-            ...sharedProps,
-
-            // Proxy editing point props
-            radiusScale: this.props.editHandlePointRadiusScale,
-            outline: this.props.editHandlePointOutline,
-            strokeWidth: this.props.editHandlePointStrokeWidth,
-            radiusMinPixels: this.props.editHandlePointRadiusMinPixels,
-            radiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
-            getRadius: this.props.getEditHandlePointRadius,
-            getColor: this.props.getEditHandlePointColor
-          })
-        );
-        break;
-    }
-
-    return [layer];
-  }
-
-  createTentativeLayers() {
-    if (!this.state.tentativeFeature) {
-      return [];
+    let pointLayerProps;
+    if (this.props.editHandleType === 'icon') {
+      pointLayerProps = {
+        type: IconLayer,
+        iconAtlas: this.props.editHandleIconAtlas,
+        iconMapping: this.props.editHandleIconMapping,
+        sizeScale: this.props.editHandleIconSizeScale,
+        getIcon: guideAccessor(this.props.getEditHandleIcon),
+        getSize: guideAccessor(this.props.getEditHandleIconSize),
+        getColor: guideAccessor(this.props.getEditHandleIconColor),
+        getAngle: guideAccessor(this.props.getEditHandleIconAngle)
+      };
+    } else {
+      pointLayerProps = {
+        type: ScatterplotLayer,
+        radiusScale: this.props.editHandlePointRadiusScale,
+        stroked: this.props.editHandlePointOutline,
+        getLineWidth: this.props.editHandlePointStrokeWidth,
+        radiusMinPixels: this.props.editHandlePointRadiusMinPixels,
+        radiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
+        getRadius: guideAccessor(this.props.getEditHandlePointRadius),
+        getFillColor: guideAccessor(this.props.getEditHandlePointColor),
+        getlineColor: guideAccessor(this.props.getEditHandlePointColor)
+      };
     }
 
     const layer = new GeoJsonLayer(
       this.getSubLayerProps({
-        id: 'tentative',
-        data: this.state.tentativeFeature,
+        id: `guides`,
+        data: guides,
         fp64: this.props.fp64,
-        pickable: false,
-        stroked: true,
-        autoHighlight: false,
+        _subLayerProps: {
+          points: pointLayerProps
+        },
         lineWidthScale: this.props.lineWidthScale,
         lineWidthMinPixels: this.props.lineWidthMinPixels,
         lineWidthMaxPixels: this.props.lineWidthMaxPixels,
         lineWidthUnits: this.props.lineWidthUnits,
         lineJointRounded: this.props.lineJointRounded,
         lineMiterLimit: this.props.lineMiterLimit,
-        pointRadiusScale: this.props.editHandlePointRadiusScale,
-        outline: this.props.editHandlePointOutline,
-        strokeWidth: this.props.editHandlePointStrokeWidth,
-        pointRadiusMinPixels: this.props.editHandlePointRadiusMinPixels,
-        pointRadiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
-        getRadius: this.props.getEditHandlePointRadius,
-        getLineColor: feature => this.props.getTentativeLineColor(feature, this.props.mode),
-        getLineWidth: feature => this.props.getTentativeLineWidth(feature, this.props.mode),
-        getFillColor: feature => this.props.getTentativeFillColor(feature, this.props.mode),
-        getLineDashArray: feature =>
-          this.props.getTentativeLineDashArray(
-            feature,
-            this.state.selectedFeatures[0],
-            this.props.mode
-          )
+        getLineColor: guideAccessor(this.props.getTentativeLineColor),
+        getLineWidth: guideAccessor(this.props.getTentativeLineWidth),
+        getFillColor: guideAccessor(this.props.getTentativeFillColor),
+        getLineDashArray: guideAccessor(this.props.getTentativeLineDashArray)
       })
     );
 
     return [layer];
   }
 
-  updateTentativeFeature() {
-    const tentativeFeature = this.state.modeHandler.getTentativeFeature();
-    if (tentativeFeature !== this.state.tentativeFeature) {
-      this.setState({ tentativeFeature });
-      this.setLayerNeedsUpdate();
-    }
-  }
-
-  updateEditHandles(picks?: Array<Object>, groundCoords?: Position) {
-    const editHandles = this.state.modeHandler.getEditHandles(picks, groundCoords);
-    if (editHandles !== this.state.editHandles) {
-      this.setState({ editHandles });
-      this.setLayerNeedsUpdate();
-    }
-  }
-
   onLayerClick(event: ClickEvent) {
-    const editAction = this.state.modeHandler.handleClick(event);
-    this.updateTentativeFeature();
-    this.updateEditHandles();
-
-    if (editAction) {
-      this.props.onEdit(editAction);
-    }
+    this.getActiveModeHandler().handleClick(event, this.getModeProps(this.props));
   }
 
   onStartDragging(event: StartDraggingEvent) {
-    const editAction = this.state.modeHandler.handleStartDragging(event);
-    this.updateTentativeFeature();
-    this.updateEditHandles();
-
-    if (editAction) {
-      this.props.onEdit(editAction);
-    }
+    this.getActiveModeHandler().handleStartDragging(event, this.getModeProps(this.props));
   }
 
   onStopDragging(event: StopDraggingEvent) {
-    const editAction = this.state.modeHandler.handleStopDragging(event);
-    this.updateTentativeFeature();
-    this.updateEditHandles();
-
-    if (editAction) {
-      this.props.onEdit(editAction);
-    }
+    this.getActiveModeHandler().handleStopDragging(event, this.getModeProps(this.props));
   }
 
   onPointerMove(event: PointerMoveEvent) {
-    const { groundCoords, picks, sourceEvent } = event;
-
-    const { editAction, cancelMapPan } = this.state.modeHandler.handlePointerMove(event);
-    this.updateTentativeFeature();
-    this.updateEditHandles(picks, groundCoords);
-
-    if (cancelMapPan) {
-      // TODO: find a less hacky way to prevent map panning
-      // Stop propagation to prevent map panning while dragging an edit handle
-      sourceEvent.stopPropagation();
-    }
-
-    if (editAction) {
-      this.props.onEdit(editAction);
-    }
+    this.setState({ lastPointerMoveEvent: event });
+    this.getActiveModeHandler().handlePointerMove(event, this.getModeProps(this.props));
   }
 
   getCursor({ isDragging }: { isDragging: boolean }) {
-    return this.state.modeHandler.getCursor({ isDragging });
+    let { cursor } = this.state;
+    if (!cursor) {
+      cursor = isDragging ? 'grabbing' : 'grab';
+    }
+    return cursor;
+  }
+
+  getActiveModeHandler(): GeoJsonEditMode {
+    return this.state.modeHandler;
   }
 }
 

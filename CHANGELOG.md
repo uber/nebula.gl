@@ -10,6 +10,13 @@ _All notable changes to this project will be documented in this file. This proje
 ### Breaking changes for `EditableGeoJsonLayer`
 
 * `featureIndexes` is now nested under `editContext.featureIndexes` in parameter passed to `onEdit` callback
+* Edit handle type is now under `properties.editHandleType` instead of `type` for edit handle styling accessors:
+  * getEditHandlePointColor
+  * getEditHandlePointRadius
+  * getEditHandleIcon
+  * getEditHandleIconSize
+  * getEditHandleIconColor
+  * getEditHandleIconAngle
 * `editHandleType` no longer supports passing a function/constructor. Use `_subLayerProps` instead.
 * `editHandleParameters` removed. Use `_subLayerProps` instead.
 * `editHandleLayerProps` removed. Use `_subLayerProps` instead.

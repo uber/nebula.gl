@@ -142,12 +142,18 @@ const FEATURE_COLORS = [
   'CCDFE5'
 ].map(hex2rgb);
 
-// TODO edit-modes:  delete once fully on EditMode implementation and just use handle.sourceFeature.feature...
+// TODO edit-modes:  delete once fully on EditMode implementation and just use handle.properties.editHandleType...
 // Unwrap the edit handle object from either layer implementation
 function getEditHandleTypeFromEitherLayer(handleOrFeature) {
-  return handleOrFeature.sourceFeature
-    ? handleOrFeature.sourceFeature.feature.properties.editHandleType
-    : handleOrFeature.type;
+  if (handleOrFeature.__source) {
+    return handleOrFeature.__source.object.properties.editHandleType;
+  } else if (handleOrFeature.sourceFeature) {
+    return handleOrFeature.sourceFeature.feature.properties.editHandleType;
+  } else if (handleOrFeature.properties) {
+    return handleOrFeature.properties.editHandleType;
+  }
+
+  return handleOrFeature.type;
 }
 
 function getEditHandleColor(handle: {}) {
@@ -835,7 +841,7 @@ export default class Example extends Component<
       getEditHandleIconColor: getEditHandleColor,
 
       // Specify the same GeoJsonLayer props
-      lineWidthMinPixels: 2,
+      // lineWidthMinPixels: 2,
       pointRadiusMinPixels: 5,
       // getLineDashArray: () => [0, 0],
 

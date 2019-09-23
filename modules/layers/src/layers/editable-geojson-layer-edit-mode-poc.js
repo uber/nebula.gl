@@ -50,8 +50,23 @@ const DEFAULT_EDITING_SNAP_POINT_RADIUS = 7;
 
 const DEFAULT_EDIT_MODE = new ViewMode();
 
+function guideAccessor(accessor) {
+  return guideMaybeWrapped => accessor(unwrapGuide(guideMaybeWrapped));
+}
+
+// The object handed to us from deck.gl is different depending on the version of deck.gl used, unwrap as necessary
+function unwrapGuide(guideMaybeWrapped) {
+  if (guideMaybeWrapped.__source) {
+    return guideMaybeWrapped.__source.object;
+  } else if (guideMaybeWrapped.sourceFeature) {
+    return guideMaybeWrapped.sourceFeature.feature;
+  }
+  // It is not wrapped, return as is
+  return guideMaybeWrapped;
+}
+
 function getEditHandleColor(handle) {
-  switch (handle.sourceFeature.feature.properties.editHandleType) {
+  switch (handle.properties.editHandleType) {
     case 'existing':
       return DEFAULT_EDITING_EXISTING_POINT_COLOR;
     case 'snap':
@@ -63,7 +78,7 @@ function getEditHandleColor(handle) {
 }
 
 function getEditHandleRadius(handle) {
-  switch (handle.sourceFeature.feature.properties.editHandleType) {
+  switch (handle.properties.editHandleType) {
     case 'existing':
       return DEFAULT_EDITING_EXISTING_POINT_RADIUS;
     case 'snap':
@@ -89,7 +104,7 @@ const defaultProps = {
   lineWidthScale: 1,
   lineWidthMinPixels: 1,
   lineWidthMaxPixels: Number.MAX_SAFE_INTEGER,
-  lineWidthUnits: 'meters',
+  lineWidthUnits: 'pixels',
   lineJointRounded: false,
   lineMiterLimit: 4,
   pointRadiusScale: 1,
@@ -102,15 +117,15 @@ const defaultProps = {
     isSelected ? DEFAULT_SELECTED_FILL_COLOR : DEFAULT_FILL_COLOR,
   getRadius: f =>
     (f && f.properties && f.properties.radius) || (f && f.properties && f.properties.size) || 1,
-  getLineWidth: f => (f && f.properties && f.properties.lineWidth) || 1,
+  getLineWidth: f => (f && f.properties && f.properties.lineWidth) || 3,
   getLineDashArray: (feature, isSelected, mode) =>
     isSelected && mode !== 'view' ? [7, 4] : [0, 0],
 
   // Tentative feature rendering
   getTentativeLineDashArray: (f, mode) => [7, 4],
-  getTentativeLineColor: (f, mode) => DEFAULT_SELECTED_LINE_COLOR,
-  getTentativeFillColor: (f, mode) => DEFAULT_SELECTED_FILL_COLOR,
-  getTentativeLineWidth: (f, mode) => (f && f.properties && f.properties.lineWidth) || 1,
+  getTentativeLineColor: f => DEFAULT_SELECTED_LINE_COLOR,
+  getTentativeFillColor: f => DEFAULT_SELECTED_FILL_COLOR,
+  getTentativeLineWidth: f => (f && f.properties && f.properties.lineWidth) || 3,
 
   editHandleType: 'point',
 
@@ -127,7 +142,7 @@ const defaultProps = {
   editHandleIconAtlas: null,
   editHandleIconMapping: null,
   editHandleIconSizeScale: 1,
-  getEditHandleIcon: handle => handle.sourceFeature.feature.properties.editHandleType,
+  getEditHandleIcon: handle => handle.properties.editHandleType,
   getEditHandleIconSize: 10,
   getEditHandleIconColor: getEditHandleColor,
   getEditHandleIconAngle: 0,
@@ -347,10 +362,10 @@ export default class EditableGeoJsonLayerEditModePoc extends EditableLayer {
         iconAtlas: this.props.editHandleIconAtlas,
         iconMapping: this.props.editHandleIconMapping,
         sizeScale: this.props.editHandleIconSizeScale,
-        getIcon: this.props.getEditHandleIcon,
-        getSize: this.props.getEditHandleIconSize,
-        getColor: this.props.getEditHandleIconColor,
-        getAngle: this.props.getEditHandleIconAngle
+        getIcon: guideAccessor(this.props.getEditHandleIcon),
+        getSize: guideAccessor(this.props.getEditHandleIconSize),
+        getColor: guideAccessor(this.props.getEditHandleIconColor),
+        getAngle: guideAccessor(this.props.getEditHandleIconAngle)
       };
     } else {
       pointLayerProps = {
@@ -360,9 +375,9 @@ export default class EditableGeoJsonLayerEditModePoc extends EditableLayer {
         getLineWidth: this.props.editHandlePointStrokeWidth,
         radiusMinPixels: this.props.editHandlePointRadiusMinPixels,
         radiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
-        getRadius: this.props.getEditHandlePointRadius,
-        getFillColor: this.props.getEditHandlePointColor,
-        getlineColor: this.props.getEditHandlePointColor
+        getRadius: guideAccessor(this.props.getEditHandlePointRadius),
+        getFillColor: guideAccessor(this.props.getEditHandlePointColor),
+        getlineColor: guideAccessor(this.props.getEditHandlePointColor)
       };
     }
 
@@ -380,10 +395,10 @@ export default class EditableGeoJsonLayerEditModePoc extends EditableLayer {
         lineWidthUnits: this.props.lineWidthUnits,
         lineJointRounded: this.props.lineJointRounded,
         lineMiterLimit: this.props.lineMiterLimit,
-        getLineColor: this.props.getTentativeLineColor,
-        getLineWidth: this.props.getTentativeLineWidth,
-        getFillColor: this.props.getTentativeFillColor,
-        getLineDashArray: this.props.getTentativeLineDashArray
+        getLineColor: guideAccessor(this.props.getTentativeLineColor),
+        getLineWidth: guideAccessor(this.props.getTentativeLineWidth),
+        getFillColor: guideAccessor(this.props.getTentativeFillColor),
+        getLineDashArray: guideAccessor(this.props.getTentativeLineDashArray)
       })
     );
 

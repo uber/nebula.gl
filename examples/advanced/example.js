@@ -12,13 +12,28 @@ import circle from '@turf/circle';
 import {
   EditableGeoJsonLayer,
   SelectionLayer,
-  CompositeMode,
-  DrawLineStringMode,
+  type EditMode,
   ModifyMode,
-  CompositeModeHandler,
-  ModifyHandler,
-  ElevationHandler,
-  DrawLineStringHandler,
+  TranslateMode,
+  ScaleMode,
+  RotateMode,
+  DuplicateMode,
+  SplitPolygonMode,
+  ExtrudeMode,
+  ElevationMode,
+  DrawPointMode,
+  DrawLineStringMode,
+  DrawPolygonMode,
+  DrawRectangleMode,
+  DrawCircleByBoundingBoxMode,
+  DrawCircleFromCenterMode,
+  DrawEllipseByBoundingBoxMode,
+  DrawEllipseUsingThreePointsMode,
+  DrawRectangleUsingThreePointsMode,
+  Draw90DegreePolygonMode,
+  ViewMode,
+  CompositeMode,
+  SnappableMode,
   ElevatedEditHandleLayer,
   SELECTION_TYPE
 } from 'nebula.gl';
@@ -60,54 +75,59 @@ const initialViewport = {
 };
 
 const ALL_MODES = [
-  { category: 'View', modes: ['view'] },
+  {
+    category: 'View',
+    modes: [{ label: 'View', mode: ViewMode }]
+  },
   {
     category: 'Alter',
-    modes: ['modify', 'elevation', 'translate', 'rotate', 'scale', 'duplicate', 'extrude', 'split']
+    modes: [
+      { label: 'Modify', mode: ModifyMode },
+      { label: 'Elevation', mode: ElevationMode },
+      { label: 'Translate', mode: new SnappableMode(new TranslateMode()) },
+      { label: 'Rotate', mode: RotateMode },
+      { label: 'Scale', mode: ScaleMode },
+      { label: 'Duplicate', mode: DuplicateMode },
+      { label: 'Extrude', mode: ExtrudeMode },
+      { label: 'Split', mode: SplitPolygonMode }
+    ]
   },
   {
     category: 'Draw',
     modes: [
-      'drawPoint',
-      'drawLineString',
-      'drawPolygon',
-      'draw90DegreePolygon',
-      'drawRectangle',
-      'drawRectangleUsing3Points',
-      'drawCircleFromCenter',
-      'drawCircleByBoundingBox',
-      'drawEllipseByBoundingBox',
-      'drawEllipseUsing3Points'
+      { label: 'Draw Point', mode: DrawPointMode },
+      { label: 'Draw LineString', mode: DrawLineStringMode },
+      { label: 'Draw Polygon', mode: DrawPolygonMode },
+      { label: 'Draw 90° Polygon', mode: Draw90DegreePolygonMode },
+      { label: 'Draw Rectangle', mode: DrawRectangleMode },
+      { label: 'Draw Rectangle Using 3 Points', mode: DrawRectangleUsingThreePointsMode },
+      { label: 'Draw Circle From Center', mode: DrawCircleFromCenterMode },
+      { label: 'Draw Circle By Diameter', mode: DrawCircleByBoundingBoxMode },
+      { label: 'Draw Ellipse By Bounding Box', mode: DrawEllipseByBoundingBoxMode },
+      { label: 'Draw Ellipse Using 3 Points', mode: DrawEllipseUsingThreePointsMode }
     ]
   },
   {
     category: 'Composite',
-    modes: ['drawLineString+modify']
+    modes: [{ label: 'Draw LineString + Modify', mode: COMPOSITE_MODE }]
   }
 ];
 
 const POLYGON_DRAWING_MODES = [
-  'drawPolygon',
-  'draw90DegreePolygon',
-  'drawRectangle',
-  'drawRectangleUsing3Points',
-  'drawCircleFromCenter',
-  'drawCircleByBoundingBox',
-  'drawEllipseByBoundingBox',
-  'drawEllipseUsing3Points'
+  DrawPolygonMode,
+  Draw90DegreePolygonMode,
+  DrawRectangleMode,
+  DrawRectangleUsingThreePointsMode,
+  DrawCircleFromCenterMode,
+  DrawCircleByBoundingBoxMode,
+  DrawEllipseByBoundingBoxMode,
+  DrawEllipseUsingThreePointsMode
 ];
 
 const EMPTY_FEATURE_COLLECTION = {
   type: 'FeatureCollection',
   features: []
 };
-
-const modeHandlers = Object.assign(
-  {
-    'drawLineString+modify': COMPOSITE_MODE
-  },
-  EditableGeoJsonLayer.defaultProps.modeHandlers
-);
 
 function hex2rgb(hex: string) {
   const value = parseInt(hex, 16);
@@ -160,7 +180,7 @@ export default class Example extends Component<
   {
     viewport: Object,
     testFeatures: any,
-    mode: string,
+    mode: EditMode | Class<EditMode>,
     modeConfig: any,
     pointsRemovable: boolean,
     selectedFeatureIndexes: number[],
@@ -180,7 +200,7 @@ export default class Example extends Component<
     this.state = {
       viewport: initialViewport,
       testFeatures: EMPTY_FEATURE_COLLECTION,
-      mode: 'drawPolygon',
+      mode: DrawPolygonMode,
       modeConfig: null,
       pointsRemovable: true,
       selectedFeatureIndexes: [],
@@ -208,7 +228,7 @@ export default class Example extends Component<
   _onLayerClick = (info: any) => {
     console.log('onLayerClick', info); // eslint-disable-line
 
-    if (this.state.mode !== 'view' || this.state.selectionTool) {
+    if (this.state.mode !== ViewMode || this.state.selectionTool) {
       // don't change selection while editing
       return;
     }
@@ -508,16 +528,16 @@ export default class Example extends Component<
     if (POLYGON_DRAWING_MODES.indexOf(this.state.mode) > -1) {
       controls.push(this._renderBooleanOperationControls());
     }
-    if (this.state.mode === 'drawLineString') {
+    if (this.state.mode === DrawLineStringMode) {
       controls.push(this._renderDrawLineStringModeControls());
     }
-    if (this.state.mode === 'modify') {
+    if (this.state.mode === ModifyMode) {
       controls.push(this._renderModifyModeControls());
     }
-    if (this.state.mode === 'split') {
+    if (this.state.mode === SplitPolygonMode) {
       controls.push(this._renderSplitModeControls());
     }
-    if (this.state.mode === 'translate') {
+    if (this.state.mode === TranslateMode) {
       controls.push(this._renderSnappingControls());
     }
 
@@ -530,15 +550,15 @@ export default class Example extends Component<
         {ALL_MODES.map(category => (
           <ToolboxRow key={category.category}>
             <ToolboxTitle>{category.category} Modes</ToolboxTitle>
-            {category.modes.map(mode => (
+            {category.modes.map(({ mode, label }) => (
               <ToolboxButton
-                key={mode}
+                key={label}
                 selected={this.state.mode === mode}
                 onClick={() => {
                   this.setState({ mode, modeConfig: {}, selectionTool: null });
                 }}
               >
-                {mode}
+                {label}
               </ToolboxButton>
             ))}
           </ToolboxRow>
@@ -735,7 +755,7 @@ export default class Example extends Component<
         ...modeConfig,
         viewport,
         calculateElevationChange: opts =>
-          ElevationHandler.calculateElevationChangeWithViewport(viewport, opts)
+          ElevationMode.calculateElevationChangeWithViewport(viewport, opts)
       };
     } else if (mode === 'modify') {
       modeConfig = {
@@ -786,7 +806,6 @@ export default class Example extends Component<
       id: 'geojson',
       data: testFeatures,
       selectedFeatureIndexes,
-      modeHandlers,
       mode,
       modeConfig,
       autoHighlight: false,

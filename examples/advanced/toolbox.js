@@ -43,7 +43,6 @@ export const ToolboxButton = styled.button`
   color: #f0f0f0;
   background: ${buttonBackground};
   text-align: left;
-  text-transform: capitalize;
   font-size: 16px;
   outline: none;
   height: 44px;

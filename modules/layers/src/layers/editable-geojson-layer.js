@@ -49,7 +49,7 @@ const DEFAULT_EDITING_EXISTING_POINT_RADIUS = 5;
 const DEFAULT_EDITING_INTERMEDIATE_POINT_RADIUS = 3;
 const DEFAULT_EDITING_SNAP_POINT_RADIUS = 7;
 
-const DEFAULT_EDIT_MODE = ViewMode;
+const DEFAULT_EDIT_MODE = DrawPolygonMode;
 
 function guideAccessor(accessor) {
   if (!accessor) {
@@ -98,7 +98,7 @@ function getEditHandleRadius(handle) {
 }
 
 const defaultProps = {
-  mode: ModifyMode,
+  mode: DrawPolygonMode,
 
   // Edit and interaction events
   onEdit: () => {},

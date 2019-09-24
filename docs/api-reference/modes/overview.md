@@ -1,18 +1,14 @@
-# Mode Handlers
+# nebula.gl Editing Modes
 
-`ModeHandler`s provide a way of handling user interactions in order to manipulate GeoJSON features and geometries.
+`EditMode`s provide a way of handling user interactions in order to manipulate GeoJSON features and geometries.
 
-The following are the built-in, and default `ModeHandler`s provided by nebula.gl:
+The following are the built-in `EditMode`s provided by nebula.gl:
 
-## [ViewHandler](https://github.com/uber/nebula.gl/blob/master/modules/layers/src/mode-handlers/view-handler.js)
-
-* Mode name: `view`
+## [ViewMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/view-mode.js)
 
 No edits are possible, but selection is still possible.
 
-## [ModifyHandler](https://github.com/uber/nebula.gl/blob/master/modules/layers/src/mode-handlers/modify-handler.js)
-
-* Mode name: `modify`
+## [ModifyMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/modify-mode.js)
 
 User can move existing points, add intermediate points along lines, and remove points.
 
@@ -24,47 +20,33 @@ User can move existing points, add intermediate points along lines, and remove p
 
 * `position` (Array): An array containing the ground coordinates (i.e. [lng, lat]) of the edited position
 
-## [ExtrudeHandler](https://github.com/uber/nebula.gl/blob/master/modules/layers/src/mode-handlers/extrude-handler.js)
-
-* Mode name: `extrude`
+## [ExtrudeMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/extrude-mode.js)
 
 User can move edge. Click and drag from anywhere between 2 points in edge.
 
-## [ScaleHandler](https://github.com/uber/nebula.gl/blob/master/modules/layers/src/mode-handlers/scale-handler.js)
-
-* Mode name: `scale`
+## [ScaleMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/scale-mode.js)
 
 User can scale a feature about its centroid by clicking and dragging (inward or outward) the selected geometry. This mode supports multiple selections.
 
-## [RotateHandler](https://github.com/uber/nebula.gl/blob/master/modules/layers/src/mode-handlers/rotate-handler.js)
-
-* Mode name: `rotate`
+## [RotateMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/rotate-mode.js)
 
 User can rotate a feature about its centroid by clicking and dragging the selected geometry. This mode supports multiple selections.
 
-## [TranslateHandler](https://github.com/uber/nebula.gl/blob/master/modules/layers/src/mode-handlers/translate-handler.js)
-
-* Mode name: `translate`
+## [TranslateMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/translate-mode.js)
 
 The user can move a feature by selecting one or more features and dragging anywhere within the screen.
 _Additionally, the user can initiate snapping by clicking and dragging the selected feature's vertex handles. If the vertex handle is close enough to another feature's vertex, the two features will snap together._
 
-## [DuplicateHandler](https://github.com/uber/nebula.gl/blob/master/modules/layers/src/mode-handlers/duplicate-handler.js)
-
-* Mode name: `duplicate`
+## [DuplicateMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/duplicate-mode.js)
 
 User can duplicate and translate a feature by clicking selected feature and dragging anywhere on the screen.
-This mode is extends TranslateHandler. This mode supports multiple selections.
+This mode is extends TranslateMode. This mode supports multiple selections.
 
-## [DrawPointHandler](https://github.com/uber/nebula.gl/blob/master/modules/layers/src/mode-handlers/draw-point-handler.js)
-
-* Mode name: `drawPoint`
+## [DrawPointMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/draw-point-mode.js)
 
 User can draw a new `Point` feature by clicking where the point is to be.
 
-## [DrawLineStringHandler](https://github.com/uber/nebula.gl/blob/master/modules/layers/src/mode-handlers/draw-line-string-handler.js)
-
-* Mode name: `drawLineString`
+## [DrawLineStringMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/draw-line-string-mode.js)
 
 User can draw a new `LineString` feature by clicking positions to add.
 
@@ -89,9 +71,7 @@ The following options can be provided in the `modeConfig` object:
 
 * `position` (Array): An array containing the ground coordinates (i.e. [lng, lat]) of the added position
 
-## [DrawPolygonHandler](https://github.com/uber/nebula.gl/blob/master/modules/layers/src/mode-handlers/draw-polygon-handler.js)
-
-* Mode name: `drawPolygon`
+## [DrawPolygonMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/draw-polygon-mode.js)
 
 User can draw a new `Polygon` feature by clicking positions to add then closing the polygon (or double-clicking).
 
@@ -103,27 +83,19 @@ User can draw a new `Polygon` feature by clicking positions to add then closing 
 
 * `position` (Array): An array containing the ground coordinates (i.e. [lng, lat]) of the added position
 
-## [Draw90DegreePolygonHandler](https://github.com/uber/nebula.gl/blob/master/modules/layers/src/mode-handlers/draw-90degree-polygon-handler.js)
-
-* Mode name: `draw90DegreePolygon`
+## [Draw90DegreePolygonMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/draw-90degree-polygon-mode.js)
 
 User can draw a new `Polygon` feature with 90 degree corners (right angle) by clicking positions to add then closing the polygon (or double-clicking). After clicking the 2 points, the draw mode guides/allows to have right angle polygon.
 
-## [DrawRectangleHandler](https://github.com/uber/nebula.gl/blob/master/modules/layers/src/mode-handlers/draw-rectangle-handler.js)
-
-* Mode name: `drawRectangle`
+## [DrawRectangleMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/draw-rectangle-mode.js)
 
 User can draw a new rectangular `Polygon` feature by clicking two opposing corners of the rectangle.
 
-## [DrawRectangleUsingThreePointsHandler](https://github.com/uber/nebula.gl/blob/master/modules/layers/src/mode-handlers/draw-rectangle-using-three-points-handler.js)
-
-* Mode name: `drawRectangleUsing3Points`
+## [DrawRectangleUsingThreePointsMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/draw-rectangle-using-three-points-mode.js)
 
 User can draw a new rectangular `Polygon` feature by clicking three corners of the rectangle.
 
-## [DrawCircleFromCenterHandler](https://github.com/uber/nebula.gl/blob/master/modules/layers/src/mode-handlers/draw-circle-from-center-handler.js)
-
-* Mode name: `drawCircleFromCenter`
+## [DrawCircleFromCenterMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/draw-circle-from-center-mode.js)
 
 User can draw a new circular `Polygon` feature by clicking the center then along the ring.
 
@@ -134,9 +106,7 @@ The following options can be provided in the `modeConfig` object:
 * `steps` (optional):  `x <number>`
   * If steps: `x` means the circle will be drawn using `x` number of points.
 
-## [DrawCircleByBoundingBoxHandler](https://github.com/uber/nebula.gl/blob/master/modules/layers/src/mode-handlers/draw-circle-by-bounding-box-handler.js)
-
-* Mode name: `drawCircleByBoundingBox`
+## [DrawCircleByBoundingBoxMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/draw-circle-by-bounding-box-mode.js)
 
 User can draw a new circular `Polygon` feature by clicking the two corners of bounding box.
 
@@ -147,21 +117,15 @@ The following options can be provided in the `modeConfig` object:
 * `steps` (optional):  `x <number>`
   * If steps: `x` means the circle will be drawn using `x` number of points.
 
-## [DrawEllipseByBoundingBoxHandler](https://github.com/uber/nebula.gl/blob/master/modules/layers/src/mode-handlers/draw-ellipse-by-bounding-box-handler.js)
-
-* Mode name: `drawEllipseByBoundingBox`
+## [DrawEllipseByBoundingBoxMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/draw-ellipse-by-bounding-box-mode.js)
 
 User can draw a new ellipse shape `Polygon` feature by clicking two corners of bounding box.
 
-## [DrawEllipseUsingThreePointsHandler](https://github.com/uber/nebula.gl/blob/master/modules/layers/src/mode-handlers/draw-ellipse-using-three-points-handler.js)
-
-* Mode name: `drawEllipseUsing3Points`
+## [DrawEllipseUsingThreePointsMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/draw-ellipse-using-three-points-mode.js)
 
 User can draw a new ellipse shape `Polygon` feature by clicking center and two corners of the ellipse.
 
-## [SplitPolygonHandler](https://github.com/uber/nebula.gl/blob/master/modules/layers/src/mode-handlers/split-polygon-handler.js)
-
-* Mode name: `split`
+## [SplitPolygonMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/split-polygon-mode.js)
 
 User can split a polygon by drawing a new `LineString` feature on top of the polygon.
 
@@ -169,9 +133,7 @@ User can split a polygon by drawing a new `LineString` feature on top of the pol
 
 * If the clicked position is inside the polygon, it will not split the polygon
 
-## [ElevationHandler](https://github.com/uber/nebula.gl/blob/master/modules/layers/src/mode-handlers/elevation-handler.js)
-
-* Mode name: `elevation`
+## [ElevationMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/elevation-mode.js)
 
 User can move a point up and down.
 
@@ -195,7 +157,7 @@ The following options can be provided in the `modeConfig` object:
 ```javascript
 if (mode === 'elevation') {
   modeConfig.calculateElevationChange = (opts) =>
-    ElevationHandler.calculateElevationChangeWithViewport(viewport, opts);
+    ElevationMode.calculateElevationChangeWithViewport(viewport, opts);
 }
 ```
 
@@ -210,28 +172,20 @@ For all polygon drawing modes, the following options can be provided in the `mod
   * If `difference`, the drawn `Polygon` is subtracted from the selected geometry
   * If `intersection`, the drawn `Polygon` is intersected with the selected geometry
 
-## Composite Mode Handler
+## Composite Mode
 
-Use `CompositeModeHandler` to combine multiple handlers.
+Use `CompositeMode` to combine multiple modes.
 _Not all combinations are guaranteed to work._
 
 ### Constructor
 
-`new CompositeModeHandler(handlers, options = {})`
+`new CompositeMode(modes, options = {})`
 
-* `handlers`: `Array<ModeHandler>` Handlers you want to combine. **Order is very important.**
+* `modes`: `Array<EditMode>` Modes you want to combine. **Order is very important.**
 * `options` (optional): Options to be added later.
 
 ### Example
 
 ```
-const modeHandlers = Object.assign(
-  {
-    'drawLineString+modify': new CompositeModeHandler([
-      new DrawLineStringHandler(),
-      new ModifyHandler()
-    ])
-  },
-  EditableGeoJsonLayer.defaultProps.modeHandlers
-);
+new CompositeMode([new DrawLineStringMode(), new ModifyMode()])
 ```

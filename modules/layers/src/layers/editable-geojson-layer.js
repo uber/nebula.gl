@@ -44,13 +44,17 @@ const DEFAULT_SELECTED_FILL_COLOR = [0x90, 0x90, 0x90, 0x90];
 const DEFAULT_EDITING_EXISTING_POINT_COLOR = [0xc0, 0x0, 0x0, 0xff];
 const DEFAULT_EDITING_INTERMEDIATE_POINT_COLOR = [0x0, 0x0, 0x0, 0x80];
 const DEFAULT_EDITING_SNAP_POINT_COLOR = [0x7c, 0x00, 0xc0, 0xff];
+const DEFAULT_EDITING_POINT_OUTLINE_COLOR = [0xff, 0xff, 0xff, 0xff];
 const DEFAULT_EDITING_EXISTING_POINT_RADIUS = 5;
 const DEFAULT_EDITING_INTERMEDIATE_POINT_RADIUS = 3;
 const DEFAULT_EDITING_SNAP_POINT_RADIUS = 7;
 
-const DEFAULT_EDIT_MODE = new ViewMode();
+const DEFAULT_EDIT_MODE = ViewMode;
 
 function guideAccessor(accessor) {
+  if (!accessor) {
+    return accessor;
+  }
   return guideMaybeWrapped => accessor(unwrapGuide(guideMaybeWrapped));
 }
 
@@ -77,6 +81,10 @@ function getEditHandleColor(handle) {
   }
 }
 
+function getEditHandleOutlineColor(handle) {
+  return DEFAULT_EDITING_POINT_OUTLINE_COLOR;
+}
+
 function getEditHandleRadius(handle) {
   switch (handle.properties.editHandleType) {
     case 'existing':
@@ -90,7 +98,7 @@ function getEditHandleRadius(handle) {
 }
 
 const defaultProps = {
-  mode: 'modify',
+  mode: ModifyMode,
 
   // Edit and interaction events
   onEdit: () => {},
@@ -136,6 +144,7 @@ const defaultProps = {
   editHandlePointRadiusMinPixels: 4,
   editHandlePointRadiusMaxPixels: 8,
   getEditHandlePointColor: getEditHandleColor,
+  getEditHandlePointOutlineColor: getEditHandleOutlineColor,
   getEditHandlePointRadius: getEditHandleRadius,
 
   // icon handles
@@ -148,46 +157,46 @@ const defaultProps = {
   getEditHandleIconAngle: 0,
 
   // misc
-  billboard: true,
+  billboard: true
+};
 
-  // Mode handlers
-  modeHandlers: {
-    view: new ViewMode(),
+// Mapping of mode name to mode class (for legacy purposes)
+const modeNameMapping = {
+  view: ViewMode,
 
-    // Alter modes
-    modify: new ModifyMode(),
-    translate: new SnappableMode(new TranslateMode()),
-    scale: new ScaleMode(),
-    rotate: new RotateMode(),
-    duplicate: new DuplicateMode(),
-    split: new SplitPolygonMode(),
-    extrude: new ExtrudeMode(),
-    elevation: new ElevationMode(),
+  // Alter modes
+  modify: ModifyMode,
+  translate: new SnappableMode(new TranslateMode()),
 
-    // Draw modes
-    drawPoint: new DrawPointMode(),
-    drawLineString: new DrawLineStringMode(),
-    drawPolygon: new DrawPolygonMode(),
-    drawRectangle: new DrawRectangleMode(),
-    drawCircleFromCenter: new DrawCircleFromCenterMode(),
-    drawCircleByBoundingBox: new DrawCircleByBoundingBoxMode(),
-    drawEllipseByBoundingBox: new DrawEllipseByBoundingBoxMode(),
-    drawRectangleUsing3Points: new DrawRectangleUsingThreePointsMode(),
-    drawEllipseUsing3Points: new DrawEllipseUsingThreePointsMode(),
-    draw90DegreePolygon: new Draw90DegreePolygonMode()
-  }
+  scale: ScaleMode,
+  rotate: RotateMode,
+  duplicate: DuplicateMode,
+  split: SplitPolygonMode,
+  extrude: ExtrudeMode,
+  elevation: ElevationMode,
+
+  // Draw modes
+  drawPoint: DrawPointMode,
+  drawLineString: DrawLineStringMode,
+  drawPolygon: DrawPolygonMode,
+  drawRectangle: DrawRectangleMode,
+  drawCircleFromCenter: DrawCircleFromCenterMode,
+  drawCircleByBoundingBox: DrawCircleByBoundingBoxMode,
+  drawEllipseByBoundingBox: DrawEllipseByBoundingBoxMode,
+  drawRectangleUsing3Points: DrawRectangleUsingThreePointsMode,
+  drawEllipseUsing3Points: DrawEllipseUsingThreePointsMode,
+  draw90DegreePolygon: Draw90DegreePolygonMode
 };
 
 type Props = {
-  mode: string,
-  modeHandlers: { [mode: string]: GeoJsonEditMode },
+  mode: string | GeoJsonEditMode | Class<GeoJsonEditMode>,
   onEdit: (EditAction<FeatureCollection>) => void,
   // TODO: type the rest
   [string]: any
 };
 
 // type State = {
-//   modeHandler: EditableFeatureCollection,
+//   mode: GeoJsonEditMode,
 //   tentativeFeature: ?Feature,
 //   editHandles: any[],
 //   selectedFeatures: Feature[]
@@ -278,19 +287,29 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }) {
     super.updateState({ props, changeFlags });
 
-    let modeHandler: GeoJsonEditMode = this.state.modeHandler;
+    let mode = this.state.mode;
     if (changeFlags.propsOrDataChanged) {
-      if (props.modeHandlers !== oldProps.modeHandlers || props.mode !== oldProps.mode) {
-        modeHandler = props.modeHandlers[props.mode];
-
-        if (!modeHandler) {
-          console.warn(`No handler configured for mode ${props.mode}`); // eslint-disable-line no-console,no-undef
-          // Use default mode handler
-          modeHandler = DEFAULT_EDIT_MODE;
+      if (props.mode !== oldProps.mode) {
+        if (typeof props.mode === 'string') {
+          // Lookup the mode based on its name (for legacy purposes)
+          mode = modeNameMapping[props.mode];
+        } else {
+          mode = props.mode;
         }
 
-        if (modeHandler !== this.state.modeHandler) {
-          this.setState({ modeHandler, cursor: null });
+        if (typeof mode === 'function') {
+          const ModeConstructor = mode;
+          mode = new ModeConstructor();
+        }
+
+        if (!mode) {
+          console.warn(`No mode configured for ${String(props.mode)}`); // eslint-disable-line no-console,no-undef
+          // Use default mode
+          mode = DEFAULT_EDIT_MODE;
+        }
+
+        if (mode !== this.state.mode) {
+          this.setState({ mode, cursor: null });
         }
       }
     }
@@ -348,7 +367,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }
 
   createGuidesLayers() {
-    const mode = this.props.modeHandlers[this.props.mode] || DEFAULT_EDIT_MODE;
+    const mode = this.getActiveMode();
     const guides: FeatureCollection = mode.getGuides(this.getModeProps(this.props));
 
     if (!guides || !guides.features.length) {
@@ -377,7 +396,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         radiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
         getRadius: guideAccessor(this.props.getEditHandlePointRadius),
         getFillColor: guideAccessor(this.props.getEditHandlePointColor),
-        getLineColor: [0xff, 0xff, 0xff, 0xff] // guideAccessor(this.props.getEditHandlePointColor)
+        getLineColor: guideAccessor(this.props.getEditHandlePointOutlineColor)
       };
     }
 
@@ -406,20 +425,20 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }
 
   onLayerClick(event: ClickEvent) {
-    this.getActiveModeHandler().handleClick(event, this.getModeProps(this.props));
+    this.getActiveMode().handleClick(event, this.getModeProps(this.props));
   }
 
   onStartDragging(event: StartDraggingEvent) {
-    this.getActiveModeHandler().handleStartDragging(event, this.getModeProps(this.props));
+    this.getActiveMode().handleStartDragging(event, this.getModeProps(this.props));
   }
 
   onStopDragging(event: StopDraggingEvent) {
-    this.getActiveModeHandler().handleStopDragging(event, this.getModeProps(this.props));
+    this.getActiveMode().handleStopDragging(event, this.getModeProps(this.props));
   }
 
   onPointerMove(event: PointerMoveEvent) {
     this.setState({ lastPointerMoveEvent: event });
-    this.getActiveModeHandler().handlePointerMove(event, this.getModeProps(this.props));
+    this.getActiveMode().handlePointerMove(event, this.getModeProps(this.props));
   }
 
   getCursor({ isDragging }: { isDragging: boolean }) {
@@ -430,8 +449,8 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     return cursor;
   }
 
-  getActiveModeHandler(): GeoJsonEditMode {
-    return this.state.modeHandler;
+  getActiveMode(): GeoJsonEditMode {
+    return this.state.mode;
   }
 }
 

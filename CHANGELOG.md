@@ -7,18 +7,27 @@ _All notable changes to this project will be documented in this file. This proje
 <!--
 ## Version TBD
 
-### Breaking changes between `EditableGeoJsonLayer` and `EditableGeoJsonLayerEditModePoc`
+### Breaking changes for `EditableGeoJsonLayer`
 
 * `featureIndexes` is now nested under `editContext.featureIndexes` in parameter passed to `onEdit` callback
+* Edit handle type is now under `properties.editHandleType` instead of `type` for edit handle styling accessors:
+  * getEditHandlePointColor
+  * getEditHandlePointRadius
+  * getEditHandleIcon
+  * getEditHandleIconSize
+  * getEditHandleIconColor
+  * getEditHandleIconAngle
+* _Deprecated:_ The `mode` prop is intended to take a constructor or instance rather than a string.
+  * `import {DrawPolygonMode} from 'nebula.gl'; new EditableGeoJsonLayer({mode: DrawPolygonMode})`
 * `editHandleType` no longer supports passing a function/constructor. Use `_subLayerProps` instead.
 * `editHandleParameters` removed. Use `_subLayerProps` instead.
 * `editHandleLayerProps` removed. Use `_subLayerProps` instead.
 
-### Breaking changes between `ModeHandler` and `BaseGeoJsonEditMode`
+### Breaking changes between `ModeHandler` and `GeoJsonEditMode`
 
 If you built a custom `ModeHandler`, note the following breaking changes:
 
-  * Extend `BaseGeoJsonEditMode` instead of `ModeHandler`
+  * Extend `GeoJsonEditMode` instead of `ModeHandler`
   * Each function now takes a `props` parameter with the state, so use `props` rather than `this.get...()` (e.g. `this.getFeatureCollection()`, `this.getModeConfig()`, etc).
   * `handleClick`
     * Call `props.onEdit` instead of returning an `EditAction`

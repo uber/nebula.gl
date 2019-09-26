@@ -4,7 +4,7 @@ The Editable GeoJSON layer accepts a [GeoJSON](http://geojson.org) `FeatureColle
 
 ```js
 import DeckGL from 'deck.gl';
-import { EditableGeoJsonLayer } from 'nebula.gl';
+import { EditableGeoJsonLayer, DrawPolygonMode } from 'nebula.gl';
 
 const myFeatureCollection = {
   type: 'FeatureCollection',
@@ -13,10 +13,10 @@ const myFeatureCollection = {
   ]
 };
 
+const selectedFeatureIndexes = [];
+
 class App extends React.Component {
   state = {
-    mode: 'modify',
-    selectedFeatureIndexes: [0],
     data: myFeatureCollection
   };
 
@@ -24,8 +24,8 @@ class App extends React.Component {
     const layer = new EditableGeoJsonLayer({
       id: 'geojson-layer',
       data: this.state.data,
-      mode: this.state.mode,
-      selectedFeatureIndexes: this.state.selectedFeatureIndexes,
+      mode: DrawPolygonMode,
+      selectedFeatureIndexes,
 
       onEdit: ({ updatedData }) => {
         this.setState({
@@ -59,42 +59,24 @@ A [GeoJSON](http://geojson.org) `FeatureCollection` object. The following types 
 
 _Note: passing a single `Feature` is not supported. However, you can pass a `FeatureCollection` containing a single `Feature` and pass `selectedFeatureIndexes: [0]` to achieve the same result._
 
-#### `mode` (String, optional)
+#### `mode` (Function|Object, optional)
 
-* Default: `modify`
+* Default: `DrawPolygonMode`
 
-The `mode` property dictates which `ModeHandler` from the `modeHandlers` prop will be used to handle user interaction events (e.g. pointer events) in order to accomplish edits. See [mode handlers overview](../mode-handlers/overview.md) for a description of the built-in modes.
+The `mode` property defines the mode used to handle user interaction events (e.g. pointer events) in order to accomplish edits. This can either be a constructor for an `EditMode` or an instance of `EditMode`.
+
+There are a extensive number of modes that come out-of-the-box with nebula.gl. See [modes overview](../modes/overview.md).
 
 #### `modeConfig` (Object, optional)
 
 * Default: `null`
 
-An arbitrary object used to further configure the current `ModeHandler`.
+An arbitrary object used to further configure the current mode.
 
 Snapping-related `modeConfig` properties:
 
 * `enableSnapping` (Boolean, optional) - Enables snapping for modes that support snapping such as translate mode.
 * `additionalSnapTargets` (Object[], optional) - An array of GeoJSON Features that can be snapped to. This property only needs to be specified if you want to snap to features in other deck.gl layers. All features in this `EditableGeoJsonLayer` will be snap targets.
-
-#### `modeHandlers` (Object, optional)
-
-* Default: see [mode handlers overview](../mode-handlers/overview.md)
-
-A object containing a mapping of mode name (string) to an instance of a `ModeHandler`.
-
-##### Example
-
-For example, you can use this to provide your own custom `ModeHandler`:
-
-```javascript
-{
-  //...
-  modeHandlers: {
-    ...EditableGeoJsonLayer.defaultProps.modeHandlers,
-    myCustomMode: new MyCustomModeHandler()
-  }
-}
-```
 
 #### `selectedFeatureIndexes` (Array, optional)
 
@@ -107,6 +89,8 @@ The `selectedFeatureIndexes` property distinguishes which features to treat as s
 * Selection of a feature causes style accessors to render a different style, defined in function such as `getLineColor` and `getFillColor`.
 
 * Selected features in mode `modify` will render edit handles. Only one feature may be selected while in mode `drawLineString` or `drawPolygon` to draw a feature.
+
+_Note: make sure to pass in the same array instance on each render if you are not changing selection. Otherwise, nebula.gl may clear state on every render (e.g. may clear a drawing in progress if the viewport changes)._
 
 #### `onEdit` (Function, optional)
 
@@ -154,7 +138,7 @@ The `onEdit` event is the core event provided by this layer and must be handled 
 
 * `featureIndexes` (Array&lt;number&gt;): The indexes of the edited/added features.
 
-* `editContext` (Object): `null` or an object containing additional context about the edit. This is populated by the active mode handler, see [mode handlers overview](../mode-handlers/overview.md).
+* `editContext` (Object): `null` or an object containing additional context about the edit. This is populated by the active mode, see [modes overview](../modes/overview.md).
 
 ##### Example
 

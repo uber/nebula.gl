@@ -106,16 +106,19 @@ As shown in the above image, for the feature currently being edited,
 
 ## Code Example
 ```js
-import React, { Component } from 'react';
-import MapGL from 'react-map-gl';
-import { Editor, EditorModes } from 'react-map-gl-draw';
+import React, { Component } from "react";
+import ReactDOM from "react-dom";
+import MapGL from "react-map-gl";
+import { Editor, EditorModes } from "react-map-gl-draw";
+
+import "./styles.css";
 
 const MODES = [
-  { id: EditorModes.EDITING, text: 'Select and Edit Feature'},
-  { id: EditorModes.DRAW_POINT, text: 'Draw Point'},
-  { id: EditorModes.DRAW_PATH, text: 'Draw Polyline'},
-  { id: EditorModes.DRAW_POLYGON, text: 'Draw Polygon'},
-  { id: EditorModes.DRAW_RECTANGLE, text: 'Draw Rectangle'}
+  { id: EditorModes.EDITING, text: "Select and Edit Feature" },
+  { id: EditorModes.DRAW_POINT, text: "Draw Point" },
+  { id: EditorModes.DRAW_PATH, text: "Draw Polyline" },
+  { id: EditorModes.DRAW_POLYGON, text: "Draw Polygon" },
+  { id: EditorModes.DRAW_RECTANGLE, text: "Draw Rectangle" }
 ];
 
 const DEFAULT_VIEWPORT = {
@@ -135,18 +138,27 @@ class App extends Component {
   };
 
   _switchMode = evt => {
-    const selectedMode = evt.target.id;
+    const selectedMode = evt.target.value;
     this.setState({
-     selectedMode: selectedMode === this.state.selectedMode ? null : selectedMode
+      selectedMode:
+        selectedMode === this.state.selectedMode ? null : selectedMode
     });
   };
 
   _renderToolbar = () => {
     return (
-      <div style={{position: absolute, top: 0, right: 0, maxWidth: '320px'}}>
+      <div
+        style={{ position: "absolute", top: 0, right: 0, maxWidth: "320px" }}
+      >
         <select onChange={this._switchMode}>
-          <option value="">--Please choose a mode--</option>
-          {MODES.map(mode => <option value={mode.id}>{mode.text}</option>)}
+          <option key="empty" value="">
+            --Please choose a mode--
+          </option>
+          {MODES.map(mode => (
+            <option key={mode.id} value={mode.id}>
+              {mode.text}
+            </option>
+          ))}
         </select>
       </div>
     );
@@ -159,16 +171,16 @@ class App extends Component {
         {...viewport}
         width="100%"
         height="100%"
-        mapStyle={'mapbox://styles/mapbox/light-v9'}
-        onViewportChange={this.setState({ viewport })}
+        mapStyle="mapbox://styles/mapbox/light-v9"
+        mapboxApiAccessToken="<your-mapbox-token>"
       >
-        <Editor
-          clickRadius={12}
-          mode={selectedMode}
-        />
+        <Editor clickRadius={12} mode={selectedMode} />
         {this._renderToolbar()}
       </MapGL>
     );
   }
 }
+
+const rootElement = document.getElementById("root");
+ReactDOM.render(<App />, rootElement);
 ```

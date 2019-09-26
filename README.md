@@ -63,9 +63,8 @@ yarn add nebula.gl
 [EditableGeoJsonLayer](/docs/api-reference/layers/editable-geojson-layer.md) is implemented as a [deck.gl](https://deck.gl) layer. It provides the ability to view and edit multiple types of geometry formatted as [GeoJSON](https://tools.ietf.org/html/rfc7946) (an open standard format for geometry) including polygons, lines, and points.
 
 ```js
-import React from 'react';
 import DeckGL from 'deck.gl';
-import { EditableGeoJsonLayer } from 'nebula.gl';
+import { EditableGeoJsonLayer, DrawPolygonMode } from 'nebula.gl';
 
 const myFeatureCollection = {
   type: 'FeatureCollection',
@@ -74,10 +73,10 @@ const myFeatureCollection = {
   ]
 };
 
+const selectedFeatureIndexes = [];
+
 class App extends React.Component {
   state = {
-    mode: 'drawPolygon',
-    selectedFeatureIndexes: [],
     data: myFeatureCollection
   };
 
@@ -85,8 +84,8 @@ class App extends React.Component {
     const layer = new EditableGeoJsonLayer({
       id: 'geojson-layer',
       data: this.state.data,
-      mode: this.state.mode,
-      selectedFeatureIndexes: this.state.selectedFeatureIndexes,
+      mode: DrawPolygonMode,
+      selectedFeatureIndexes,
 
       onEdit: ({ updatedData }) => {
         this.setState({
@@ -99,3 +98,5 @@ class App extends React.Component {
   }
 }
 ```
+
+[CodeSandbox](https://codesandbox.io/s/admiring-shape-4dkyt)

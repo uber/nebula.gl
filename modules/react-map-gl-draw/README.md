@@ -106,19 +106,17 @@ As shown in the above image, for the feature currently being edited,
 
 ## Code Example
 ```js
-import React, { Component } from "react";
-import ReactDOM from "react-dom";
-import MapGL from "react-map-gl";
-import { Editor, EditorModes } from "react-map-gl-draw";
-
-import "./styles.css";
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
+import MapGL from 'react-map-gl';
+import { Editor, EditorModes } from 'react-map-gl-draw';
 
 const MODES = [
-  { id: EditorModes.EDITING, text: "Select and Edit Feature" },
-  { id: EditorModes.DRAW_POINT, text: "Draw Point" },
-  { id: EditorModes.DRAW_PATH, text: "Draw Polyline" },
-  { id: EditorModes.DRAW_POLYGON, text: "Draw Polygon" },
-  { id: EditorModes.DRAW_RECTANGLE, text: "Draw Rectangle" }
+  { id: EditorModes.EDITING, text: 'Select and Edit Feature' },
+  { id: EditorModes.DRAW_POINT, text: 'Draw Point' },
+  { id: EditorModes.DRAW_PATH, text: 'Draw Polyline' },
+  { id: EditorModes.DRAW_POLYGON, text: 'Draw Polygon' },
+  { id: EditorModes.DRAW_RECTANGLE, text: 'Draw Rectangle' }
 ];
 
 const DEFAULT_VIEWPORT = {
@@ -148,7 +146,7 @@ class App extends Component {
   _renderToolbar = () => {
     return (
       <div
-        style={{ position: "absolute", top: 0, right: 0, maxWidth: "320px" }}
+        style={{ position: 'absolute', top: 0, right: 0, maxWidth: '320px' }}
       >
         <select onChange={this._switchMode}>
           <option key="empty" value="">
@@ -181,6 +179,6 @@ class App extends Component {
   }
 }
 
-const rootElement = document.getElementById("root");
+const rootElement = document.getElementById('root');
 ReactDOM.render(<App />, rootElement);
 ```

@@ -5,7 +5,7 @@ _All notable changes to this project will be documented in this file. This proje
 <!-- INSERT HERE -->
 
 <!--
-## Version TBD
+### Version TBD
 
 ### Breaking changes for `EditableGeoJsonLayer`
 
@@ -49,6 +49,23 @@ If you built a custom `ModeHandler`, note the following breaking changes:
   * `groundCoords` renamed to `mapCoords` in event objects
 
 -->
+
+## [0.15.0](https://github.com/uber/nebula.gl/compare/v0.14.7...v0.15.0) - 2019-09-25
+
+### Changes
+
+* Improve react-map-gl-draw API (#270)
+* Port ModeHandlers over to edit-modes module (#222)
+* Upgrade jest and istanbul (#267)
+* Fix react-map-gl-draw selectedFeature and event register (#265)
+* bump viewport-mercator-project (#264)
+* refactor react-map-gl-draw part 1 - break down mode handlers (#253)
+* Export ViewHandler (#261)
+* Simplify EditMode interface to be more stateless (#258)
+* Fix clickRadius and insert a point to line segment (#260)
+* Bump js-yaml from 3.12.0 to 3.13.1 in /examples/sf (#259)
+* Modified the Travis configuration file to enable automated FOSSA scans. (#219)
+* Simplify onPan propagation check (#256)
 
 ## [0.14.7](https://github.com/uber/nebula.gl/compare/v0.14.4...v0.14.7) - 2019-07-12
 

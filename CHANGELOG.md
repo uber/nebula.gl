@@ -4,19 +4,25 @@ _All notable changes to this project will be documented in this file. This proje
 
 <!-- INSERT HERE -->
 
-<!--
-### Version TBD
+## [0.16.0](https://github.com/uber/nebula.gl/compare/v0.15.0...v0.16.0) - 2019-09-25
+
+### Changes
+
+* You can now style edit handles with an outline (which is now also the default) by supplying `getEditHandlePointOutlineColor`
+* Swap EditableGeoJsonLayer to use edit-modes module (#283)
+* Unwrap guide object when using `_sublayerProps` (#284)
+* Remove deprecated usage. #281 (#282)
 
 ### Breaking changes for `EditableGeoJsonLayer`
 
 * `featureIndexes` is now nested under `editContext.featureIndexes` in parameter passed to `onEdit` callback
 * Edit handle type is now under `properties.editHandleType` instead of `type` for edit handle styling accessors:
-  * getEditHandlePointColor
-  * getEditHandlePointRadius
-  * getEditHandleIcon
-  * getEditHandleIconSize
-  * getEditHandleIconColor
-  * getEditHandleIconAngle
+  * `getEditHandlePointColor`
+  * `getEditHandlePointRadius`
+  * `getEditHandleIcon`
+  * `getEditHandleIconSize`
+  * `getEditHandleIconColor`
+  * `getEditHandleIconAngle`
 * _Deprecated:_ The `mode` prop is intended to take a constructor or instance rather than a string.
   * `import {DrawPolygonMode} from 'nebula.gl'; new EditableGeoJsonLayer({mode: DrawPolygonMode})`
 * `editHandleType` no longer supports passing a function/constructor. Use `_subLayerProps` instead.
@@ -27,30 +33,28 @@ _All notable changes to this project will be documented in this file. This proje
 
 If you built a custom `ModeHandler`, note the following breaking changes:
 
-  * Extend `GeoJsonEditMode` instead of `ModeHandler`
-  * Each function now takes a `props` parameter with the state, so use `props` rather than `this.get...()` (e.g. `this.getFeatureCollection()`, `this.getModeConfig()`, etc).
-  * `handleClick`
-    * Call `props.onEdit` instead of returning an `EditAction`
-  * `handlePointerMove`
-    * Call `props.onEdit` instead of returning an `EditAction`
-    * Call `event.sourceEvent.stopPropagation()` instead of returning `{cancelMapPan: true}`
-  * `handleStartDragging`
-    * Call `props.onEdit` instead of returning an `EditAction`
-  * `handleStopDragging`
-    * Call `props.onEdit` instead of returning an `EditAction`
-  * Guides
-    * Edit handles and tentative features are now encompassed as "guides"
-    * Guides are formatted as GeoJSON FeatureCollection
-    * Override `getGuides` instead of `getEditHandles`
-    * Format edit handles as GeoJSON Features instead of custom objects
-    * Override `getGuides` instead of calling `this._setTentativeFeature()`
-  * `getCursor`
-    * Instead of defining a `getCursor` function, call `props.onUpdateCursor`
-  * `groundCoords` renamed to `mapCoords` in event objects
+* Extend `GeoJsonEditMode` instead of `ModeHandler`
+* Each function now takes a `props` parameter with the state, so use `props` rather than `this.get...()` (e.g. `this.getFeatureCollection()`, `this.getModeConfig()`, etc).
+* `handleClick`
+  * Call `props.onEdit` instead of returning an `EditAction`
+* `handlePointerMove`
+  * Call `props.onEdit` instead of returning an `EditAction`
+  * Call `event.sourceEvent.stopPropagation()` instead of returning `{cancelMapPan: true}`
+* `handleStartDragging`
+  * Call `props.onEdit` instead of returning an `EditAction`
+* `handleStopDragging`
+  * Call `props.onEdit` instead of returning an `EditAction`
+* Guides
+  * Edit handles and tentative features are now encompassed as "guides"
+  * Guides are formatted as GeoJSON FeatureCollection
+  * Override `getGuides` instead of `getEditHandles`
+  * Format edit handles as GeoJSON Features instead of custom objects
+  * Override `getGuides` instead of calling `this._setTentativeFeature()`
+* `getCursor`
+  * Instead of defining a `getCursor` function, call `props.onUpdateCursor`
+* `groundCoords` renamed to `mapCoords` in event objects
 
--->
-
-## [0.15.0](https://github.com/uber/nebula.gl/compare/v0.14.7...v0.15.0) - 2019-09-25
+## [0.15.0](https://github.com/uber/nebula.gl/compare/v0.14.7...v0.15.0) - 2019-09-16
 
 ### Changes
 

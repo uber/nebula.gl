@@ -199,7 +199,7 @@ export default class Example extends Component<
 
     this.state = {
       viewport: initialViewport,
-      testFeatures: EMPTY_FEATURE_COLLECTION,
+      testFeatures: sampleGeoJson,
       mode: DrawPolygonMode,
       modeConfig: null,
       pointsRemovable: true,

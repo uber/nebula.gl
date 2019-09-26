@@ -537,7 +537,7 @@ export default class Example extends Component<
     if (this.state.mode === SplitPolygonMode) {
       controls.push(this._renderSplitModeControls());
     }
-    if (this.state.mode === TranslateMode) {
+    if (this.state.mode instanceof SnappableMode) {
       controls.push(this._renderSnappingControls());
     }
 
@@ -647,13 +647,15 @@ export default class Example extends Component<
             </ToolboxButton>
             <ToolboxButton
               onClick={() =>
-                this.setState({ mode: 'view', selectionTool: SELECTION_TYPE.RECTANGLE })
+                this.setState({ mode: ViewMode, selectionTool: SELECTION_TYPE.RECTANGLE })
               }
             >
               Rect Select
             </ToolboxButton>
             <ToolboxButton
-              onClick={() => this.setState({ mode: 'view', selectionTool: SELECTION_TYPE.POLYGON })}
+              onClick={() =>
+                this.setState({ mode: ViewMode, selectionTool: SELECTION_TYPE.POLYGON })
+              }
             >
               Lasso Select
             </ToolboxButton>
@@ -715,7 +717,7 @@ export default class Example extends Component<
       // reject the edit
       return;
     }
-    if (editType === 'addFeature' && this.state.mode !== 'duplicate') {
+    if (editType === 'addFeature' && this.state.mode !== DuplicateMode) {
       const { featureIndexes } = editContext;
       // Add the new feature to the selection
       updatedSelectedFeatureIndexes = [...this.state.selectedFeatureIndexes, ...featureIndexes];
@@ -750,19 +752,19 @@ export default class Example extends Component<
       width: window.innerWidth
     };
 
-    if (mode === 'elevation') {
+    if (mode === ElevationMode) {
       modeConfig = {
         ...modeConfig,
         viewport,
         calculateElevationChange: opts =>
           ElevationMode.calculateElevationChangeWithViewport(viewport, opts)
       };
-    } else if (mode === 'modify') {
+    } else if (mode === ModifyMode) {
       modeConfig = {
         ...modeConfig,
         viewport
       };
-    } else if (mode === 'translate' && modeConfig && modeConfig.enableSnapping) {
+    } else if (mode instanceof SnappableMode && modeConfig && modeConfig.enableSnapping) {
       // Snapping can be accomplished to features that aren't rendered in the same layer
       modeConfig = {
         ...modeConfig,

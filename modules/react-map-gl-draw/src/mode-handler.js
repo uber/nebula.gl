@@ -77,6 +77,10 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
     };
   }
 
+  componentDidMount() {
+    this._setupModeHandler();
+  }
+
   componentDidUpdate(prevProps: EditorProps) {
     if (prevProps.mode !== this.props.mode) {
       this._clearEditingState();

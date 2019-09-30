@@ -204,9 +204,10 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
   };
 
   _getSelectedFeatureIndex = () => {
-    return isNumeric(this.props.selectedFeatureIndex)
-      ? this.props.selectedFeatureIndex
-      : this.state.selectedFeatureIndex;
+    if ('selectedFeatureIndex' in this.props) {
+      return this.props.selectedFeatureIndex;
+    }
+    return this.state.selectedFeatureIndex;
   };
 
   _getSelectedFeature = (featureIndex: ?number) => {

@@ -27,7 +27,6 @@ export default class App extends Component {
       features: [],
       selectedFeatureIndex: null
     };
-    this._mapRef = null;
     this._editorRef = null;
   }
 
@@ -68,7 +67,6 @@ export default class App extends Component {
     return (
       <MapGL
         {...viewport}
-        ref={_ => (this._mapRef = _)}
         width="100%"
         height="100%"
         mapStyle={MAP_STYLE}

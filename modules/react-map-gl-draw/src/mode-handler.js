@@ -77,6 +77,10 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
     };
   }
 
+  componentDidMount() {
+    this._setupModeHandler();
+  }
+
   componentDidUpdate(prevProps: EditorProps) {
     if (prevProps.mode !== this.props.mode) {
       this._clearEditingState();
@@ -204,9 +208,10 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
   };
 
   _getSelectedFeatureIndex = () => {
-    return isNumeric(this.props.selectedFeatureIndex)
-      ? this.props.selectedFeatureIndex
-      : this.state.selectedFeatureIndex;
+    if ('selectedFeatureIndex' in this.props) {
+      return this.props.selectedFeatureIndex;
+    }
+    return this.state.selectedFeatureIndex;
   };
 
   _getSelectedFeature = (featureIndex: ?number) => {

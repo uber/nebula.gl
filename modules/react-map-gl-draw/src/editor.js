@@ -537,7 +537,7 @@ export default class Editor extends ModeHandler {
   };
 
   _renderEditor = () => {
-    const viewport = (this._context && this._context.viewport) || {};
+    const viewport = this.props.viewport || {};
     const { style } = this.props;
     const { width, height } = viewport;
 

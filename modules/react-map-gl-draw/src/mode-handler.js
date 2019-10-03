@@ -95,7 +95,6 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
   _events: any;
   _eventsRegistered: boolean;
   _modeHandler: any;
-  _context: ?MapContext;
   _containerRef: ?HTMLElement;
 
   getFeatures = () => {
@@ -137,7 +136,7 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
 
     const { lastPointerMoveEvent } = this.state;
     const selectedFeatureIndex = this._getSelectedFeatureIndex();
-    const viewport = this._context && this._context.viewport;
+    const viewport = this.props.viewport;
 
     return {
       data: featureCollection,
@@ -277,7 +276,7 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
 
   /* EVENTS */
   _degregisterEvents = () => {
-    const eventManager = this._context && this._context.eventManager;
+    const eventManager = this.props.eventManager;
     if (!this._events || !eventManager) {
       return;
     }
@@ -290,7 +289,7 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
 
   _registerEvents = () => {
     const ref = this._containerRef;
-    const eventManager = this._context && this._context.eventManager;
+    const eventManager = this.props.eventManager;
     if (!this._events || !ref || !eventManager) {
       return;
     }
@@ -299,6 +298,7 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
       return;
     }
 
+    eventManager.element = ref;
     eventManager.on(this._events, ref);
     this._eventsRegistered = true;
   };
@@ -432,12 +432,12 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
 
   /* HELPERS */
   project = (pt: Position) => {
-    const viewport = this._context && this._context.viewport;
+    const viewport = this.props.viewport;
     return viewport && viewport.project(pt);
   };
 
   unproject = (pt: Position) => {
-    const viewport = this._context && this._context.viewport;
+    const viewport = this.props.viewport;
     return viewport && viewport.unproject(pt);
   };
 
@@ -473,20 +473,7 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
   }
 
   render(child: any) {
-    return (
-      <MapContext.Consumer>
-        {context => {
-          this._context = context;
-          const viewport = context && context.viewport;
-
-          if (!viewport || viewport.height <= 0 || viewport.width <= 0) {
-            return null;
-          }
-
-          return child;
-        }}
-      </MapContext.Consumer>
-    );
+    return child;
   }
 }
 

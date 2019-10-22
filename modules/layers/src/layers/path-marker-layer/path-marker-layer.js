@@ -1,7 +1,7 @@
 import { CompositeLayer, COORDINATE_SYSTEM } from '@deck.gl/core';
 import { ScatterplotLayer } from '@deck.gl/layers';
+import { SimpleMeshLayer } from '@deck.gl/mesh-layers';
 import PathOutlineLayer from '../path-outline-layer/path-outline-layer';
-import MeshLayer from '../mesh-layer/mesh-layer';
 import Arrow2DGeometry from './arrow-2d-geometry';
 
 import createPathMarkers from './create-path-markers';
@@ -12,7 +12,7 @@ const ARROW_HEAD_SIZE = 0.2;
 const ARROW_TAIL_WIDTH = 0.05;
 // const ARROW_CENTER_ADJUST = -0.8;
 
-const DEFAULT_MARKER_LAYER = MeshLayer;
+const DEFAULT_MARKER_LAYER = SimpleMeshLayer;
 
 const DEFAULT_MARKER_LAYER_PROPS = {
   mesh: new Arrow2DGeometry({ headSize: ARROW_HEAD_SIZE, tailWidth: ARROW_TAIL_WIDTH })
@@ -127,6 +127,8 @@ export default class PathMarkerLayer extends CompositeLayer {
           Object.assign({}, this.props.markerLayerProps, {
             id: 'markers',
             data: this.state.markers,
+            getOrientation: x => [0, -x.angle, 0],
+            getColor: x => x.color,
             sizeScale: this.props.sizeScale,
             fp64: this.props.fp64,
             pickable: false,

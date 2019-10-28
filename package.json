@@ -53,6 +53,7 @@
     "@babel/register": "^7.0.0",
     "@deck.gl/core": "^7.2.6",
     "@deck.gl/layers": "^7.2.6",
+    "@deck.gl/mesh-layers": "^7.2.6",
     "@deck.gl/react": "^7.2.6",
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^9.0.0",

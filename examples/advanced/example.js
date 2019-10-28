@@ -35,6 +35,7 @@ import {
   CompositeMode,
   SnappableMode,
   ElevatedEditHandleLayer,
+  PathMarkerLayer,
   SELECTION_TYPE
 } from 'nebula.gl';
 
@@ -187,6 +188,7 @@ export default class Example extends Component<
     editHandleType: string,
     selectionTool: ?string,
     showGeoJson: boolean,
+    pathMarkerLayer: boolean,
     featureMenu: ?{
       index: number,
       x: number,
@@ -207,6 +209,7 @@ export default class Example extends Component<
       editHandleType: 'point',
       selectionTool: null,
       showGeoJson: false,
+      pathMarkerLayer: false,
       featureMenu: null
     };
   }
@@ -633,6 +636,20 @@ export default class Example extends Component<
               Use ElevatedEditHandleLayer
             </ToolboxCheckbox>
           </ToolboxControl>
+
+          <ToolboxControl>
+            <ToolboxCheckbox
+              type="checkbox"
+              checked={this.state.pathMarkerLayer}
+              onChange={() =>
+                this.setState({
+                  pathMarkerLayer: !this.state.pathMarkerLayer
+                })
+              }
+            >
+              Use PathMarkerLayer
+            </ToolboxCheckbox>
+          </ToolboxControl>
         </ToolboxRow>
 
         <ToolboxRow>
@@ -802,6 +819,20 @@ export default class Example extends Component<
           }
         }
       };
+    }
+
+    if (this.state.pathMarkerLayer) {
+      _subLayerProps = Object.assign(_subLayerProps || {}, {
+        geojson: {
+          _subLayerProps: {
+            'line-strings': {
+              type: PathMarkerLayer,
+              getMarkerColor: x => [255, 255, 255, 255],
+              sizeScale: 1500
+            }
+          }
+        }
+      });
     }
 
     const editableGeoJsonLayer = new EditableGeoJsonLayer({

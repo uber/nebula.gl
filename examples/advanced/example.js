@@ -81,19 +81,6 @@ const ALL_MODES = [
     modes: [{ label: 'View', mode: ViewMode }]
   },
   {
-    category: 'Alter',
-    modes: [
-      { label: 'Modify', mode: ModifyMode },
-      { label: 'Elevation', mode: ElevationMode },
-      { label: 'Translate', mode: new SnappableMode(new TranslateMode()) },
-      { label: 'Rotate', mode: RotateMode },
-      { label: 'Scale', mode: ScaleMode },
-      { label: 'Duplicate', mode: DuplicateMode },
-      { label: 'Extrude', mode: ExtrudeMode },
-      { label: 'Split', mode: SplitPolygonMode }
-    ]
-  },
-  {
     category: 'Draw',
     modes: [
       { label: 'Draw Point', mode: DrawPointMode },
@@ -106,6 +93,19 @@ const ALL_MODES = [
       { label: 'Draw Circle By Diameter', mode: DrawCircleByBoundingBoxMode },
       { label: 'Draw Ellipse By Bounding Box', mode: DrawEllipseByBoundingBoxMode },
       { label: 'Draw Ellipse Using 3 Points', mode: DrawEllipseUsingThreePointsMode }
+    ]
+  },
+  {
+    category: 'Alter',
+    modes: [
+      { label: 'Modify', mode: ModifyMode },
+      { label: 'Elevation', mode: ElevationMode },
+      { label: 'Translate', mode: new SnappableMode(new TranslateMode()) },
+      { label: 'Rotate', mode: RotateMode },
+      { label: 'Scale', mode: ScaleMode },
+      { label: 'Duplicate', mode: DuplicateMode },
+      { label: 'Extrude', mode: ExtrudeMode },
+      { label: 'Split', mode: SplitPolygonMode }
     ]
   },
   {

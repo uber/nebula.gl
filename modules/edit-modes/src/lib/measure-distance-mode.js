@@ -24,6 +24,7 @@ export class MeasureDistanceMode extends BaseGeoJsonEditMode {
     this.endingPoint = {
       type: 'Feature',
       properties: {
+        guideType: 'editHandle',
         editHandleType: 'existing'
       },
       geometry: {
@@ -33,11 +34,11 @@ export class MeasureDistanceMode extends BaseGeoJsonEditMode {
     };
   }
 
-  _getTooltips = memoize((modeConfig: any, startingPoint, endingPoint) => {
+  _getTooltips = memoize((modeConfig, startingPoint, endingPoint) => {
     let tooltips = DEFAULT_TOOLTIPS;
 
     if (startingPoint && endingPoint) {
-      const { formatTooltip, turfOptions } = modeConfig;
+      const { formatTooltip, turfOptions } = modeConfig || {};
       const units = (turfOptions && turfOptions.units) || 'kilometers';
 
       const distance = turfDistance(startingPoint, endingPoint, turfOptions);
@@ -67,6 +68,7 @@ export class MeasureDistanceMode extends BaseGeoJsonEditMode {
       this.startingPoint = {
         type: 'Feature',
         properties: {
+          guideType: 'editHandle',
           editHandleType: 'existing'
         },
         geometry: {

@@ -248,11 +248,11 @@ Edit handle objects can be represented by either points or icons. `editHandlePoi
 
 #### `editHandlePointOutline` (Boolean, optional)
 
-* Default: `false`
+* Default: `true`
 
 #### `editHandlePointStrokeWidth` (Number, optional)
 
-* Default: `1`
+* Default: `2`
 
 #### `editHandlePointRadiusMinPixels` (Number, optional)
 

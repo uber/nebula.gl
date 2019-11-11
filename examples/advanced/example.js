@@ -31,6 +31,7 @@ import {
   DrawEllipseUsingThreePointsMode,
   DrawRectangleUsingThreePointsMode,
   Draw90DegreePolygonMode,
+  MeasureDistanceMode,
   ViewMode,
   CompositeMode,
   SnappableMode,
@@ -78,7 +79,10 @@ const initialViewport = {
 const ALL_MODES = [
   {
     category: 'View',
-    modes: [{ label: 'View', mode: ViewMode }]
+    modes: [
+      { label: 'View', mode: ViewMode },
+      { label: 'Measure Distance', mode: MeasureDistanceMode }
+    ]
   },
   {
     category: 'Draw',
@@ -525,6 +529,32 @@ export default class Example extends Component<
     );
   }
 
+  _renderMeasureDistanceControls() {
+    return (
+      <ToolboxRow key="measure-distance">
+        <ToolboxTitle>Units</ToolboxTitle>
+        <ToolboxControl>
+          <select
+            value={
+              (this.state.modeConfig &&
+                this.state.modeConfig.turfOptions &&
+                this.state.modeConfig.turfOptions.units) ||
+              'kilometers'
+            }
+            onChange={event =>
+              this.setState({ modeConfig: { turfOptions: { units: event.target.value } } })
+            }
+          >
+            <option value="kilometers">kilometers</option>
+            <option value="miles">miles</option>
+            <option value="degrees">degrees</option>
+            <option value="radians">radians</option>
+          </select>
+        </ToolboxControl>
+      </ToolboxRow>
+    );
+  }
+
   _renderModeConfigControls() {
     const controls = [];
 
@@ -542,6 +572,9 @@ export default class Example extends Component<
     }
     if (this.state.mode instanceof SnappableMode) {
       controls.push(this._renderSnappingControls());
+    }
+    if (this.state.mode === MeasureDistanceMode) {
+      controls.push(this._renderMeasureDistanceControls());
     }
 
     return controls;
@@ -807,9 +840,14 @@ export default class Example extends Component<
     }
 
     // Demonstrate how to override sub layer properties
-    let _subLayerProps = null;
+    let _subLayerProps = {
+      tooltips: {
+        getColor: [255, 255, 255, 255]
+      }
+    };
+
     if (this.state.editHandleType === 'elevated') {
-      _subLayerProps = {
+      _subLayerProps = Object.assign(_subLayerProps, {
         guides: {
           _subLayerProps: {
             points: {
@@ -818,11 +856,11 @@ export default class Example extends Component<
             }
           }
         }
-      };
+      });
     }
 
     if (this.state.pathMarkerLayer) {
-      _subLayerProps = Object.assign(_subLayerProps || {}, {
+      _subLayerProps = Object.assign(_subLayerProps, {
         geojson: {
           _subLayerProps: {
             'line-strings': {

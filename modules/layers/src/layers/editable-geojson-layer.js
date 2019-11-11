@@ -1,7 +1,7 @@
 // @flow
 /* eslint-env browser */
 
-import { GeoJsonLayer, ScatterplotLayer, IconLayer } from '@deck.gl/layers';
+import { GeoJsonLayer, ScatterplotLayer, IconLayer, TextLayer } from '@deck.gl/layers';
 
 import {
   ViewMode,
@@ -252,7 +252,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
     let layers: any = [new GeoJsonLayer(subLayerProps)];
 
-    layers = layers.concat(this.createGuidesLayers());
+    layers = layers.concat(this.createGuidesLayers(), this.createTooltipsLayers());
 
     return layers;
   }
@@ -422,6 +422,20 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         getLineWidth: guideAccessor(this.props.getTentativeLineWidth),
         getFillColor: guideAccessor(this.props.getTentativeFillColor),
         getLineDashArray: guideAccessor(this.props.getTentativeLineDashArray)
+      })
+    );
+
+    return [layer];
+  }
+
+  createTooltipsLayers() {
+    const mode = this.getActiveMode();
+    const tooltips = mode.getTooltips(this.getModeProps(this.props));
+
+    const layer = new TextLayer(
+      this.getSubLayerProps({
+        id: `tooltips`,
+        data: tooltips
       })
     );
 

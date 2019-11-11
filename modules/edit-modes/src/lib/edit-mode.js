@@ -6,6 +6,7 @@ import type {
   PointerMoveEvent,
   StartDraggingEvent,
   StopDraggingEvent,
+  Tooltip,
   ModeProps
 } from '../types.js';
 
@@ -24,4 +25,7 @@ export interface EditMode<TData, TGuides> {
 
   // Return features that can be used as a guide for editing the data
   getGuides(props: ModeProps<TData>): TGuides;
+
+  // Return tooltips
+  getTooltips(props: ModeProps<TData>): Tooltip[];
 }

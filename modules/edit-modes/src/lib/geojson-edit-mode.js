@@ -11,6 +11,7 @@ import type {
   StartDraggingEvent,
   StopDraggingEvent,
   Pick,
+  Tooltip,
   ModeProps
 } from '../types.js';
 import type {
@@ -39,6 +40,7 @@ export type EditHandle = {
 export type GeoJsonEditAction = EditAction<FeatureCollection>;
 
 const DEFAULT_EDIT_HANDLES: EditHandle[] = [];
+const DEFAULT_TOOLTIPS: Tooltip[] = [];
 
 // Main interface for `EditMode`s that edit GeoJSON
 export type GeoJsonEditMode = EditMode<FeatureCollection, FeatureCollection>;
@@ -73,6 +75,10 @@ export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, FeatureC
       type: 'FeatureCollection',
       features: [...tentativeFeatures, ...editHandleFeatures]
     };
+  }
+
+  getTooltips(props: ModeProps<FeatureCollection>): Tooltip[] {
+    return DEFAULT_TOOLTIPS;
   }
 
   getSelectedFeature(props: ModeProps<FeatureCollection>): ?Feature {

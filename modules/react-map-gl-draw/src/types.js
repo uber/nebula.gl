@@ -42,10 +42,10 @@ export type ModeProps<TData> = {
   onEdit: (editAction: EditAction<TData>) => void,
 
   // Callback used to update cursor
-  onUpdateCursor: (cursor: ?string) => void
+  onUpdateCursor: (cursor: ?string) => void,
 
   // Whether features are draggable in the mode
-  featuresDraggable: ?boolean,
+  featuresDraggable: ?boolean
 };
 
 export type EditorProps = {

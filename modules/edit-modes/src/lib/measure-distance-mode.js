@@ -38,7 +38,7 @@ export class MeasureDistanceMode extends BaseGeoJsonEditMode {
     let tooltips = DEFAULT_TOOLTIPS;
 
     if (startingPoint && endingPoint) {
-      const { formatTooltip, turfOptions } = modeConfig || {};
+      const { formatTooltip, turfOptions, measurementCallback } = modeConfig || {};
       const units = (turfOptions && turfOptions.units) || 'kilometers';
 
       const distance = turfDistance(startingPoint, endingPoint, turfOptions);
@@ -50,6 +50,10 @@ export class MeasureDistanceMode extends BaseGeoJsonEditMode {
       if (!formatTooltip) {
         // By default, round to 2 decimal places and append units
         text = `${parseFloat(distance).toFixed(2)} ${units}`;
+      }
+
+      if (measurementCallback) {
+        measurementCallback(distance);
       }
 
       tooltips = [

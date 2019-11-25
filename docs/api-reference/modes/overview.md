@@ -149,6 +149,10 @@ The following options can be provided in the `modeConfig` object:
   * Function to format tooltip text (argument is the numeric distance)
   * Default: `(distance) => parseFloat(distance).toFixed(2) + units`
 
+* `measurementCallback` (Function, optional)
+  * Function to call as measurements are calculated
+  * Default: `undefined`
+
 ## [ElevationMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/elevation-mode.js)
 
 User can move a point up and down.

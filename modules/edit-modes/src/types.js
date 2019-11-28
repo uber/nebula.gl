@@ -74,6 +74,11 @@ export type PointerMoveEvent = {
   sourceEvent: any
 };
 
+export type Tooltip = {
+  position: Position,
+  text: string
+};
+
 export type ModeProps<TData> = {
   // The data being edited, this can be an array or an object
   data: TData,

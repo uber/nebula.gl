@@ -124,6 +124,8 @@ module.exports = {
 
   ADDITIONAL_LINKS: [{ name: 'GeoJSON Editor', href: '/geojson-editor', index: 0 }],
 
+  LINK_TO_GET_STARTED: '/docs',
+
   THEME_OVERRIDES: [
     {
       key: 'none',

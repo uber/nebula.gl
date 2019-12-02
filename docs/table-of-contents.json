@@ -5,13 +5,13 @@
       "title": "Overview",
       "entries": [
         {
-          "entry": "docs/README.md"
+          "entry": "docs/README"
         },
         {
-          "entry": "docs/roadmap.md"
+          "entry": "docs/roadmap"
         },
         {
-          "entry": "docs/faq.md"
+          "entry": "docs/faq"
         }
       ]
     },
@@ -19,13 +19,13 @@
       "title": "Get Started",
       "entries": [
         {
-          "entry": "docs/get-started/installing.md"
+          "entry": "docs/get-started/installing"
         },
         {
-          "entry": "docs/get-started/basic-usage.md"
+          "entry": "docs/get-started/basic-usage"
         },
         {
-          "entry": "docs/get-started/html-overlays.md"
+          "entry": "docs/get-started/html-overlays"
         }
       ]
     },
@@ -41,22 +41,27 @@
       "title": "API Reference (Layers)",
       "entries": [
         {
-          "entry": "docs/api-reference/layers/editable-geojson-layer.md"
+          "entry": "docs/api-reference/layers/editable-geojson-layer"
         },
         {
-          "entry": "docs/api-reference/layers/selection-layer.md"
+          "entry": "docs/api-reference/layers/selection-layer"
         },
         {
-          "entry": "docs/api-reference/mode-handlers/overview.md"
+          "entry": "docs/api-reference/layers/path-marker-layer"
         },
         {
-          "entry": "docs/api-reference/layers/path-marker-layer.md"
+          "entry": "docs/api-reference/layers/mesh-layer"
         },
         {
-          "entry": "docs/api-reference/layers/mesh-layer.md"
-        },
+          "entry": "docs/api-reference/layers/outline"
+        }
+      ]
+    },
+    {
+      "title": "API Reference (Modes)",
+      "entries": [
         {
-          "entry": "docs/api-reference/layers/outline.md"
+          "entry": "docs/api-reference/modes/overview"
         }
       ]
     },
@@ -64,13 +69,13 @@
       "title": "API Reference (Overlays)",
       "entries": [
         {
-          "entry": "docs/api-reference/overlays/html-overlay.md"
+          "entry": "docs/api-reference/overlays/html-overlay"
         },
         {
-          "entry": "docs/api-reference/overlays/html-cluster-overlay.md"
+          "entry": "docs/api-reference/overlays/html-cluster-overlay"
         },
         {
-          "entry": "docs/api-reference/overlays/html-overlay-item.md"
+          "entry": "docs/api-reference/overlays/html-overlay-item"
         }
       ]
     },
@@ -78,7 +83,7 @@
       "title": "API Reference (Map GL Draw)",
       "entries": [
         {
-          "entry": "docs/api-reference/react-map-gl-draw/react-map-gl-draw.md"
+          "entry": "docs/api-reference/react-map-gl-draw/react-map-gl-draw"
         }
       ]
     }

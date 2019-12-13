@@ -49,9 +49,9 @@ for (const dependency in DEPENDENCIES) {
 
 module.exports = {
   // Adjusts amount of debug information from ocular-gatsby
-  logLevel: 3,
+  logLevel: 4,
 
-  DOC_FOLDER: `${__dirname}/../docs/`,
+  DOC_FOLDERS: [`${__dirname}/../docs/`],
   ROOT_FOLDER: `${__dirname}/../`,
   DIR_NAME: `${__dirname}`,
 
@@ -72,7 +72,7 @@ module.exports = {
 
   // For showing star counts and contributors.
   // Should be like btoa('YourUsername:YourKey') and should be readonly.
-  GITHUB_KEY: null,
+  GITHUB_KEY: 'NO-KEY',
 
   HOME_PATH: '/',
 
@@ -102,23 +102,34 @@ module.exports = {
   PROJECTS: [
     {
       name: 'deck.gl',
+      title: 'deck.gl',
       url: 'https://deck.gl'
     },
     {
       name: 'luma.gl',
+      title: 'luma.gl',
       url: 'https://luma.gl'
     },
     {
       name: 'react-map-gl',
+      title: 'react-map-gl',
       url: 'https://uber.github.io/react-map-gl'
     },
     {
       name: 'react-vis',
+      title: 'react-vis',
       url: 'https://uber.github.io/react-vis'
     }
   ],
 
   ADDITIONAL_LINKS: [{ name: 'GeoJSON Editor', href: '/geojson-editor', index: 0 }],
+
+  THEME_OVERRIDES: [
+    {
+      key: 'none',
+      value: 'none'
+    }
+  ],
 
   EXAMPLES: [
     // {

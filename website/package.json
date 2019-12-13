@@ -14,8 +14,7 @@
     "build": "yarn clean-examples && gatsby build",
     "serve": "gatsby serve",
     "deploy": "NODE_DEBUG=gh-pages gh-pages -d public",
-    "clean-examples": "find ../examples -name node_modules -exec rm -r {} \\;",
-    "postinstall": "cp node_modules/ocular-gatsby/src/components/site-query.jsx src/components/"
+    "clean-examples": "find ../examples -name node_modules -exec rm -r {} \\;"
   },
   "dependencies": {
     "@deck.gl/core": "^7.0.2",

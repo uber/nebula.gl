@@ -11,10 +11,11 @@
     "start": "yarn clean-examples && yarn clean && yarn develop",
     "clean": "rm -rf ./.cache ./public",
     "develop": "gatsby develop --port=8001",
-    "build": "yarn clean-examples && gatsby build",
+    "build": "yarn clean-examples && yarn fix-mjs-bug && gatsby build",
     "serve": "gatsby serve",
     "deploy": "NODE_DEBUG=gh-pages gh-pages -d public",
-    "clean-examples": "find ../examples -name node_modules -exec rm -r {} \\;"
+    "clean-examples": "find ../examples -name node_modules -exec rm -r {} \\;",
+    "fix-mjs-bug": "find ../node_modules -name '*.mjs' | xargs rm"
   },
   "dependencies": {
     "@deck.gl/core": "^7.0.2",

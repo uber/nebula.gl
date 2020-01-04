@@ -69,3 +69,7 @@ export default class HtmlOverlay<Props> extends Component<
     return <div style={style}>{renderItems}</div>;
   }
 }
+
+// This is needed for Deck.gl 8.0+
+// $FlowFixMe
+HtmlOverlay.deckGLViewProps = true;

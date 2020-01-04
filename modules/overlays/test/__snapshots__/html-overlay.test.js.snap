@@ -72,16 +72,17 @@ exports[`HtmlOverlay is able to handle no children 1`] = `
 exports[`test HtmlOverlay map center 1`] = `
 <div
   id="deckgl-wrapper"
->
-  <canvas
-    id="deckgl-overlay"
-    style={
-      Object {
-        "left": 0,
-        "position": "absolute",
-        "top": 0,
-      }
+  style={
+    Object {
+      "height": "100%",
+      "left": 0,
+      "position": "absolute",
+      "top": 0,
+      "width": "100%",
+      "zIndex": 0,
     }
-  />
+  }
+>
+  <canvas />
 </div>
 `;

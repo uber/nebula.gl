@@ -43,7 +43,7 @@ export { DrawPointMode } from '@nebula.gl/edit-modes';
 export { DrawLineStringMode } from '@nebula.gl/edit-modes';
 export { DrawPolygonMode } from '@nebula.gl/edit-modes';
 export { DrawRectangleMode } from '@nebula.gl/edit-modes';
-export { DrawCircleByBoundingBoxMode } from '@nebula.gl/edit-modes';
+export { DrawCircleByDiameterMode } from '@nebula.gl/edit-modes';
 export { DrawCircleFromCenterMode } from '@nebula.gl/edit-modes';
 export { DrawEllipseByBoundingBoxMode } from '@nebula.gl/edit-modes';
 export { DrawEllipseUsingThreePointsMode } from '@nebula.gl/edit-modes';

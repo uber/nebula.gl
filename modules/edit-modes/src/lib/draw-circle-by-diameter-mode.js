@@ -7,7 +7,7 @@ import type { FeatureCollection } from '../geojson-types.js';
 import { getIntermediatePosition, type GeoJsonEditAction } from './geojson-edit-mode.js';
 import { TwoClickPolygonMode } from './two-click-polygon-mode.js';
 
-export class DrawCircleByBoundingBoxMode extends TwoClickPolygonMode {
+export class DrawCircleByDiameterMode extends TwoClickPolygonMode {
   handlePointerMoveAdapter(
     event: PointerMoveEvent,
     props: ModeProps<FeatureCollection>

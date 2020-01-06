@@ -106,9 +106,9 @@ The following options can be provided in the `modeConfig` object:
 * `steps` (optional):  `x <number>`
   * If steps: `x` means the circle will be drawn using `x` number of points.
 
-## [DrawCircleByBoundingBoxMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/draw-circle-by-bounding-box-mode.js)
+## [DrawCircleByDiameterMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/draw-circle-by-diameter-mode.js)
 
-User can draw a new circular `Polygon` feature by clicking the two corners of bounding box.
+User can draw a new circular `Polygon` feature by clicking the two ends of its diameter.
 
 ### ModeConfig
 

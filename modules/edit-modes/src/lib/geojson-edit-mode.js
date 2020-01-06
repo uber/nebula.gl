@@ -117,6 +117,13 @@ export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, FeatureC
     this._clickSequence = [];
   }
 
+  getTentativeGuide(props: ModeProps<FeatureCollection>): ?Feature {
+    const guides = this.getGuides(props);
+
+    return guides.features.find(f => f.properties && f.properties.guideType === 'tentative');
+  }
+
+  // TODO edit-modes: delete me once mode handlers do getEditHandles lazily
   getTentativeFeature(): ?Feature {
     return this._tentativeFeature;
   }
@@ -132,6 +139,7 @@ export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, FeatureC
     this._tentativeFeature = tentativeFeature;
   }
 
+  // TODO edit-modes: delete once we delete getCursorAdapter
   _refreshCursor(props: ModeProps<FeatureCollection>): void {
     const currentCursor = props.cursor;
     const updatedCursor = this.getCursorAdapter(props);

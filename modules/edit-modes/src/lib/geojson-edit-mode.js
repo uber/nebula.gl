@@ -109,6 +109,10 @@ export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, FeatureC
     return this._clickSequence;
   }
 
+  addClickSequence({ mapCoords }: ClickEvent): void {
+    this._clickSequence.push(mapCoords);
+  }
+
   resetClickSequence(): void {
     this._clickSequence = [];
   }

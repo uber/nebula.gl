@@ -77,12 +77,7 @@ export class ExtrudeMode extends ModifyMode {
     }
   }
 
-  handleStartDraggingAdapter(
-    event: StartDraggingEvent,
-    props: ModeProps<FeatureCollection>
-  ): ?GeoJsonEditAction {
-    let editAction: ?GeoJsonEditAction = null;
-
+  handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollection>) {
     const selectedFeatureIndexes = props.selectedIndexes;
 
     const editHandle = getPickedEditHandle(event.picks);
@@ -131,7 +126,7 @@ export class ExtrudeMode extends ModifyMode {
           this.isPointAdded = true;
         }
 
-        editAction = {
+        props.onEdit({
           updatedData: updatedData.getObject(),
           editType: 'startExtruding',
           editContext: {
@@ -139,19 +134,12 @@ export class ExtrudeMode extends ModifyMode {
             positionIndexes: editHandle.positionIndexes,
             position: p1
           }
-        };
+        });
       }
     }
-
-    return editAction;
   }
 
-  handleStopDraggingAdapter(
-    event: StopDraggingEvent,
-    props: ModeProps<FeatureCollection>
-  ): ?GeoJsonEditAction {
-    let editAction: ?GeoJsonEditAction = null;
-
+  handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollection>) {
     const selectedFeatureIndexes = props.selectedIndexes;
     const editHandle = getPickedEditHandle(event.picks);
     if (selectedFeatureIndexes.length && editHandle) {
@@ -188,7 +176,7 @@ export class ExtrudeMode extends ModifyMode {
           .replacePosition(editHandle.featureIndex, positionIndexes, p3)
           .getObject();
 
-        editAction = {
+        props.onEdit({
           updatedData,
           editType: 'extruded',
           editContext: {
@@ -196,12 +184,10 @@ export class ExtrudeMode extends ModifyMode {
             positionIndexes: editHandle.positionIndexes,
             position: p3
           }
-        };
+        });
       }
     }
     this.isPointAdded = false;
-
-    return editAction;
   }
 
   coordinatesSize(

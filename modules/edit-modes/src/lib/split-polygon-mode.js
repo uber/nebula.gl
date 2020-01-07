@@ -115,6 +115,9 @@ export class SplitPolygonMode extends BaseGeoJsonEditMode {
 
     this._setTentativeFeature({
       type: 'Feature',
+      properties: {
+        guideType: 'tentative'
+      },
       geometry: {
         type: 'LineString',
         coordinates: [...clickSequence, this.calculateMapCoords(clickSequence, mapCoords, props)]

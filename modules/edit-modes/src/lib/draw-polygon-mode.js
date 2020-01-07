@@ -126,6 +126,9 @@ export class DrawPolygonMode extends BaseGeoJsonEditMode {
       // Draw a LineString connecting all the clicked points with the hovered point
       this._setTentativeFeature({
         type: 'Feature',
+        properties: {
+          guideType: 'tentative'
+        },
         geometry: {
           type: 'LineString',
           coordinates: [...clickSequence, mapCoords]
@@ -135,6 +138,9 @@ export class DrawPolygonMode extends BaseGeoJsonEditMode {
       // Draw a Polygon connecting all the clicked points with the hovered point
       this._setTentativeFeature({
         type: 'Feature',
+        properties: {
+          guideType: 'tentative'
+        },
         geometry: {
           type: 'Polygon',
           coordinates: [[...clickSequence, mapCoords, clickSequence[0]]]

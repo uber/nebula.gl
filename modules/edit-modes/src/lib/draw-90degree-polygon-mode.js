@@ -73,6 +73,9 @@ export class Draw90DegreePolygonMode extends BaseGeoJsonEditMode {
       // Draw a LineString connecting all the clicked points with the hovered point
       this._setTentativeFeature({
         type: 'Feature',
+        properties: {
+          guideType: 'tentative'
+        },
         geometry: {
           type: 'LineString',
           coordinates: [...clickSequence, p3]
@@ -82,6 +85,9 @@ export class Draw90DegreePolygonMode extends BaseGeoJsonEditMode {
       // Draw a Polygon connecting all the clicked points with the hovered point
       this._setTentativeFeature({
         type: 'Feature',
+        properties: {
+          guideType: 'tentative'
+        },
         geometry: {
           type: 'Polygon',
           coordinates: [[...clickSequence, p3, clickSequence[0]]]

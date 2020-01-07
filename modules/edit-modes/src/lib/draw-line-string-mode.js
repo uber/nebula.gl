@@ -97,7 +97,9 @@ export class DrawLineStringMode extends BaseGeoJsonEditMode {
     if (startPosition) {
       this._setTentativeFeature({
         type: 'Feature',
-        properties: {},
+        properties: {
+          guideType: 'tentative'
+        },
         geometry: {
           type: 'LineString',
           coordinates: [startPosition, mapCoords]

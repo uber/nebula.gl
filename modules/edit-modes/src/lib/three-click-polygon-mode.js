@@ -1,6 +1,6 @@
 // @flow
 
-import type { ClickEvent, PointerMoveEvent, ModeProps } from '../types.js';
+import type { ClickEvent, PointerMoveEvent, ModeProps, GuideFeatureCollection } from '../types.js';
 import type { Position, Polygon, FeatureOf, FeatureCollection } from '../geojson-types.js';
 import { BaseGeoJsonEditMode } from './geojson-edit-mode.js';
 
@@ -24,11 +24,11 @@ export class ThreeClickPolygonMode extends BaseGeoJsonEditMode {
     }
   }
 
-  getGuides(props: ModeProps<FeatureCollection>): FeatureCollection {
+  getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
     const { lastPointerMoveEvent, modeConfig } = props;
     const clickSequence = this.getClickSequence();
 
-    const guides = {
+    const guides: GuideFeatureCollection = {
       type: 'FeatureCollection',
       features: []
     };
@@ -59,10 +59,13 @@ export class ThreeClickPolygonMode extends BaseGeoJsonEditMode {
         modeConfig
       );
       if (polygon) {
-        polygon.properties = polygon.properties || {};
-        polygon.properties.guideType = 'tentative';
-
-        guides.features.push(polygon);
+        guides.features.push({
+          type: 'Feature',
+          properties: {
+            guideType: 'tentative'
+          },
+          geometry: polygon.geometry
+        });
       }
     }
 

@@ -1,6 +1,6 @@
 // @flow
 
-import type { Position } from './geojson-types.js';
+import type { Position, Point, Geometry, FeatureWithProps } from './geojson-types.js';
 
 export type ScreenCoordinates = [number, number];
 
@@ -77,6 +77,33 @@ export type PointerMoveEvent = {
 export type Tooltip = {
   position: Position,
   text: string
+};
+
+export type EditHandleType = 'existing' | 'intermediate' | 'snap';
+
+export type EditHandleFeature = FeatureWithProps<
+  Point,
+  {
+    guideType: 'editHandle',
+    editHandleType: EditHandleType,
+    featureIndex?: number,
+    positionIndexes: number[]
+  }
+>;
+
+export type TentativeFeature = FeatureWithProps<
+  Geometry,
+  {
+    guideType: 'tentative'
+  }
+>;
+
+export type GuideFeature = EditHandleFeature | TentativeFeature;
+
+export type GuideFeatureCollection = {
+  type: 'FeatureCollection',
+  features: $ReadOnly<GuideFeature>[],
+  properties?: {}
 };
 
 export type ModeProps<TData> = {

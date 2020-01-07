@@ -1,12 +1,13 @@
 // @flow
 
-import type { FeatureCollection, Feature, Position } from '../geojson-types.js';
+import type { FeatureCollection, Position } from '../geojson-types.js';
 import type {
   ModeProps,
   ClickEvent,
   PointerMoveEvent,
   StartDraggingEvent,
-  StopDraggingEvent
+  StopDraggingEvent,
+  TentativeFeature
 } from '../types.js';
 import { BaseGeoJsonEditMode, type EditHandle } from './geojson-edit-mode.js';
 
@@ -49,7 +50,7 @@ export class CompositeMode extends BaseGeoJsonEditMode {
     return this._coalesce(handler => handler.handleStopDragging(event, props));
   }
 
-  getTentativeFeature(): ?Feature {
+  getTentativeFeature(): ?TentativeFeature {
     return this._coalesce(handler => handler.getTentativeFeature());
   }
 

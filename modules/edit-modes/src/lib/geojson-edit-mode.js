@@ -12,7 +12,11 @@ import type {
   StopDraggingEvent,
   Pick,
   Tooltip,
-  ModeProps
+  ModeProps,
+  GuideFeatureCollection,
+  TentativeFeature,
+  EditHandleFeature,
+  EditHandleType
 } from '../types.js';
 import type {
   FeatureCollection,
@@ -26,8 +30,6 @@ import type {
 import { EditMode } from './edit-mode.js';
 
 import { ImmutableFeatureCollection } from './immutable-feature-collection.js';
-
-export type EditHandleType = 'existing' | 'intermediate' | 'snap';
 
 // TODO edit-modes: - Change this to just be a GoeJSON instead
 export type EditHandle = {
@@ -45,19 +47,19 @@ const DEFAULT_TOOLTIPS: Tooltip[] = [];
 // Main interface for `EditMode`s that edit GeoJSON
 export type GeoJsonEditMode = EditMode<FeatureCollection, FeatureCollection>;
 
-export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, FeatureCollection> {
+export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, GuideFeatureCollection> {
   _clickSequence: Position[] = [];
-  _tentativeFeature: ?Feature;
+  _tentativeFeature: ?TentativeFeature;
 
-  getGuides(props: ModeProps<FeatureCollection>): FeatureCollection {
+  getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
     const { lastPointerMoveEvent } = props;
     const picks = lastPointerMoveEvent && lastPointerMoveEvent.picks;
     const mapCoords = lastPointerMoveEvent && lastPointerMoveEvent.mapCoords;
     const editHandles = this.getEditHandlesAdapter(picks, mapCoords, props);
 
     const tentativeFeature = this.getTentativeFeature();
-    const tentativeFeatures: Feature[] = tentativeFeature ? [tentativeFeature] : [];
-    const editHandleFeatures: FeatureOf<Point>[] = editHandles.map(handle => ({
+    const tentativeFeatures: TentativeFeature[] = tentativeFeature ? [tentativeFeature] : [];
+    const editHandleFeatures: EditHandleFeature[] = editHandles.map(handle => ({
       type: 'Feature',
       properties: {
         guideType: 'editHandle',
@@ -117,19 +119,20 @@ export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, FeatureC
     this._clickSequence = [];
   }
 
-  getTentativeGuide(props: ModeProps<FeatureCollection>): ?Feature {
+  getTentativeGuide(props: ModeProps<FeatureCollection>): ?TentativeFeature {
     const guides = this.getGuides(props);
 
+    // $FlowFixMe
     return guides.features.find(f => f.properties && f.properties.guideType === 'tentative');
   }
 
   // TODO edit-modes: delete me once mode handlers do getEditHandles lazily
-  getTentativeFeature(): ?Feature {
+  getTentativeFeature(): ?TentativeFeature {
     return this._tentativeFeature;
   }
 
   // TODO edit-modes: delete me once mode handlers do getEditHandles lazily
-  _setTentativeFeature(tentativeFeature: ?Feature): void {
+  _setTentativeFeature(tentativeFeature: ?TentativeFeature): void {
     if (tentativeFeature) {
       tentativeFeature.properties = {
         ...(tentativeFeature.properties || {}),
@@ -403,6 +406,7 @@ export function getIntermediatePosition(position1: Position, position2: Position
   return intermediatePosition;
 }
 
+// TODO edit-modes: - Remove this
 export function getEditHandlesForGeometry(
   geometry: Geometry,
   featureIndex: number,

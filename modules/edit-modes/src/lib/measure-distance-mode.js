@@ -8,7 +8,9 @@ import type {
   StartDraggingEvent,
   StopDraggingEvent,
   Tooltip,
-  ModeProps
+  ModeProps,
+  GuideFeatureCollection,
+  EditHandleFeature
 } from '../types.js';
 import type { FeatureCollection, Position } from '../geojson-types.js';
 import { BaseGeoJsonEditMode } from './geojson-edit-mode.js';
@@ -16,8 +18,8 @@ import { BaseGeoJsonEditMode } from './geojson-edit-mode.js';
 const DEFAULT_TOOLTIPS = [];
 
 export class MeasureDistanceMode extends BaseGeoJsonEditMode {
-  startingPoint = null;
-  endingPoint = null;
+  startingPoint: ?$ReadOnly<EditHandleFeature> = null;
+  endingPoint: ?$ReadOnly<EditHandleFeature> = null;
   endingPointLocked = false;
 
   _setEndingPoint(mapCoords: Position) {
@@ -25,7 +27,8 @@ export class MeasureDistanceMode extends BaseGeoJsonEditMode {
       type: 'Feature',
       properties: {
         guideType: 'editHandle',
-        editHandleType: 'existing'
+        editHandleType: 'existing',
+        positionIndexes: []
       },
       geometry: {
         type: 'Point',
@@ -73,7 +76,8 @@ export class MeasureDistanceMode extends BaseGeoJsonEditMode {
         type: 'Feature',
         properties: {
           guideType: 'editHandle',
-          editHandleType: 'existing'
+          editHandleType: 'existing',
+          positionIndexes: []
         },
         geometry: {
           type: 'Point',
@@ -104,8 +108,10 @@ export class MeasureDistanceMode extends BaseGeoJsonEditMode {
   handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollection>): void {}
 
   // Return features that can be used as a guide for editing the data
-  getGuides(props: ModeProps<FeatureCollection>): FeatureCollection {
-    const features = [];
+  getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
+    const guides: GuideFeatureCollection = { type: 'FeatureCollection', features: [] };
+    const { features } = guides;
+
     if (this.startingPoint) {
       features.push(this.startingPoint);
     }
@@ -125,7 +131,7 @@ export class MeasureDistanceMode extends BaseGeoJsonEditMode {
         }
       });
     }
-    return { type: 'FeatureCollection', features };
+    return guides;
   }
 
   getTooltips(props: ModeProps<FeatureCollection>): Tooltip[] {

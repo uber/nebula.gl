@@ -298,7 +298,6 @@ export function createFeatureCollectionProps(
     selectedIndexes: [],
     lastPointerMoveEvent: createPointerMoveEvent(),
     modeConfig: null,
-    cursor: null,
     onEdit: jest.fn(),
     onUpdateCursor: jest.fn(),
     ...overrides

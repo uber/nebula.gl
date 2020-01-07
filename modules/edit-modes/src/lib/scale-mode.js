@@ -17,71 +17,54 @@ export class ScaleMode extends BaseGeoJsonEditMode {
   _isScalable: boolean;
   _geometryBeingScaled: ?FeatureCollection;
 
-  handlePointerMoveAdapter(
-    event: PointerMoveEvent,
-    props: ModeProps<FeatureCollection>
-  ): { editAction: ?GeoJsonEditAction, cancelMapPan: boolean } {
-    let editAction: ?GeoJsonEditAction = null;
-
+  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>) {
     this._isScalable =
       Boolean(this._geometryBeingScaled) || this.isSelectionPicked(event.picks, props);
 
+    this.updateCursor(props);
+
     if (!this._isScalable || !event.pointerDownMapCoords) {
       // Nothing to do
-      return { editAction: null, cancelMapPan: false };
+      return;
     }
 
     if (event.isDragging && this._geometryBeingScaled) {
       // Scale the geometry
-      editAction = this.getScaleAction(
-        event.pointerDownMapCoords,
-        event.mapCoords,
-        'scaling',
-        props
+      props.onEdit(
+        this.getScaleAction(event.pointerDownMapCoords, event.mapCoords, 'scaling', props)
       );
     }
 
-    return { editAction, cancelMapPan: true };
+    // TODO: is there a less hacky way to prevent map panning?
+    // cancel map panning
+    event.sourceEvent.stopPropagation();
   }
 
-  handleStartDraggingAdapter(
-    event: StartDraggingEvent,
-    props: ModeProps<FeatureCollection>
-  ): ?GeoJsonEditAction {
+  handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollection>) {
     if (!this._isScalable) {
-      return null;
+      return;
     }
 
     this._geometryBeingScaled = this.getSelectedFeaturesAsFeatureCollection(props);
-    return null;
   }
 
-  handleStopDraggingAdapter(
-    event: StopDraggingEvent,
-    props: ModeProps<FeatureCollection>
-  ): ?GeoJsonEditAction {
-    let editAction: ?GeoJsonEditAction = null;
-
+  handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollection>) {
     if (this._geometryBeingScaled) {
       // Scale the geometry
-      editAction = this.getScaleAction(
-        event.pointerDownMapCoords,
-        event.mapCoords,
-        'scaled',
-        props
+      props.onEdit(
+        this.getScaleAction(event.pointerDownMapCoords, event.mapCoords, 'scaled', props)
       );
       this._geometryBeingScaled = null;
     }
-
-    return editAction;
   }
 
-  getCursorAdapter(): ?string {
+  updateCursor(props: ModeProps<FeatureCollection>) {
     if (this._isScalable) {
       // TODO: look at doing SVG cursors to get a better "scale" cursor
-      return 'move';
+      props.onUpdateCursor('move');
+    } else {
+      props.onUpdateCursor(null);
     }
-    return null;
   }
 
   getScaleAction(

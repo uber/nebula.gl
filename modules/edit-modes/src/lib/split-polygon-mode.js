@@ -12,7 +12,7 @@ import turfPolygonToLine from '@turf/polygon-to-line';
 import nearestPointOnLine from '@turf/nearest-point-on-line';
 import { generatePointsParallelToLinePoints } from '../utils.js';
 import type { FeatureCollection } from '../geojson-types.js';
-import type { ClickEvent, PointerMoveEvent, ModeProps } from '../types.js';
+import type { ClickEvent, PointerMoveEvent, ModeProps, GuideFeatureCollection } from '../types.js';
 import { BaseGeoJsonEditMode, type GeoJsonEditAction } from './geojson-edit-mode.js';
 import { ImmutableFeatureCollection } from './immutable-feature-collection.js';
 
@@ -62,6 +62,19 @@ export class SplitPolygonMode extends BaseGeoJsonEditMode {
     const nearestPt = nearestPointOnLine(lineString([lastPoint, approximatePoint]), mapCoords)
       .geometry.coordinates;
     return nearestPt;
+  }
+
+  getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
+    const guides: GuideFeatureCollection = {
+      type: 'FeatureCollection',
+      features: []
+    };
+
+    const tentativeFeature = this.getTentativeFeature();
+    if (tentativeFeature) {
+      guides.features.push(tentativeFeature);
+    }
+    return guides;
   }
 
   handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>) {

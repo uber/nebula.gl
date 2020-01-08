@@ -141,7 +141,7 @@ export class ExtrudeMode extends ModifyMode {
 
   handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollection>) {
     const selectedFeatureIndexes = props.selectedIndexes;
-    const editHandle = getPickedEditHandle(event.picks);
+    const editHandle = getPickedEditHandle(event.pointerDownPicks);
     if (selectedFeatureIndexes.length && editHandle) {
       const size = this.coordinatesSize(
         editHandle.positionIndexes,

@@ -231,10 +231,19 @@ export default class EditableLayer extends CompositeLayer {
     }
 
     if (isDragging) {
+      const picks = this.context.deck.pickMultipleObjects({
+        x: screenCoords[0],
+        y: screenCoords[1],
+        layerIds: [this.props.id],
+        radius: this.props.pickingRadius,
+        depth: this.props.pickingDepth
+      });
+
       this.onStopDragging({
-        picks: pointerDownPicks,
+        picks,
         screenCoords,
         mapCoords,
+        pointerDownPicks,
         pointerDownScreenCoords,
         pointerDownMapCoords,
         sourceEvent: event

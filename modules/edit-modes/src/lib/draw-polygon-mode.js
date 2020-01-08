@@ -89,7 +89,6 @@ export class DrawPolygonMode extends BaseGeoJsonEditMode {
       };
 
       this.resetClickSequence();
-      this._setTentativeFeature(null);
 
       const editAction = this.getAddFeatureOrBooleanPolygonAction(polygonToAdd, props);
       if (editAction) {
@@ -113,39 +112,6 @@ export class DrawPolygonMode extends BaseGeoJsonEditMode {
   }
 
   handlePointerMove({ mapCoords }: PointerMoveEvent, props: ModeProps<FeatureCollection>) {
-    const clickSequence = this.getClickSequence();
-
     props.onUpdateCursor('cell');
-
-    if (clickSequence.length === 0) {
-      // nothing to do yet
-      return;
-    }
-
-    if (clickSequence.length < 3) {
-      // Draw a LineString connecting all the clicked points with the hovered point
-      this._setTentativeFeature({
-        type: 'Feature',
-        properties: {
-          guideType: 'tentative'
-        },
-        geometry: {
-          type: 'LineString',
-          coordinates: [...clickSequence, mapCoords]
-        }
-      });
-    } else {
-      // Draw a Polygon connecting all the clicked points with the hovered point
-      this._setTentativeFeature({
-        type: 'Feature',
-        properties: {
-          guideType: 'tentative'
-        },
-        geometry: {
-          type: 'Polygon',
-          coordinates: [[...clickSequence, mapCoords, clickSequence[0]]]
-        }
-      });
-    }
   }
 }

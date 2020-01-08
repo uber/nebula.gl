@@ -83,7 +83,7 @@ export type EditHandleFeature = FeatureWithProps<
   {
     guideType: 'editHandle',
     editHandleType: EditHandleType,
-    featureIndex?: number,
+    featureIndex: number,
     positionIndexes: number[]
   }
 >;

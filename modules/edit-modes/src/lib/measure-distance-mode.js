@@ -28,6 +28,7 @@ export class MeasureDistanceMode extends BaseGeoJsonEditMode {
       properties: {
         guideType: 'editHandle',
         editHandleType: 'existing',
+        featureIndex: -1,
         positionIndexes: []
       },
       geometry: {
@@ -77,6 +78,7 @@ export class MeasureDistanceMode extends BaseGeoJsonEditMode {
         properties: {
           guideType: 'editHandle',
           editHandleType: 'existing',
+          featureIndex: -1,
           positionIndexes: []
         },
         geometry: {

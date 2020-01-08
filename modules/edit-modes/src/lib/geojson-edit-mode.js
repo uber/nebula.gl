@@ -15,7 +15,6 @@ import type {
   ModeProps,
   GuideFeatureCollection,
   TentativeFeature,
-  EditHandleFeature,
   EditHandleType
 } from '../types.js';
 import type {
@@ -41,7 +40,10 @@ export type EditHandle = {
 
 export type GeoJsonEditAction = EditAction<FeatureCollection>;
 
-const DEFAULT_EDIT_HANDLES: EditHandle[] = [];
+const DEFAULT_GUIDES: GuideFeatureCollection = {
+  type: 'FeatureCollection',
+  features: []
+};
 const DEFAULT_TOOLTIPS: Tooltip[] = [];
 
 // Main interface for `EditMode`s that edit GeoJSON
@@ -52,31 +54,7 @@ export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, GuideFea
   _tentativeFeature: ?TentativeFeature;
 
   getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
-    const { lastPointerMoveEvent } = props;
-    const picks = lastPointerMoveEvent && lastPointerMoveEvent.picks;
-    const mapCoords = lastPointerMoveEvent && lastPointerMoveEvent.mapCoords;
-    const editHandles = this.getEditHandlesAdapter(picks, mapCoords, props);
-
-    const tentativeFeature = this.getTentativeFeature();
-    const tentativeFeatures: TentativeFeature[] = tentativeFeature ? [tentativeFeature] : [];
-    const editHandleFeatures: EditHandleFeature[] = editHandles.map(handle => ({
-      type: 'Feature',
-      properties: {
-        guideType: 'editHandle',
-        editHandleType: handle.type,
-        featureIndex: handle.featureIndex,
-        positionIndexes: handle.positionIndexes
-      },
-      geometry: {
-        type: 'Point',
-        coordinates: handle.position
-      }
-    }));
-
-    return {
-      type: 'FeatureCollection',
-      features: [...tentativeFeatures, ...editHandleFeatures]
-    };
+    return DEFAULT_GUIDES;
   }
 
   getTooltips(props: ModeProps<FeatureCollection>): Tooltip[] {
@@ -140,33 +118,6 @@ export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, GuideFea
       };
     }
     this._tentativeFeature = tentativeFeature;
-  }
-
-  // TODO edit-modes: delete once we delete getCursorAdapter
-  _refreshCursor(props: ModeProps<FeatureCollection>): void {
-    const currentCursor = props.cursor;
-    const updatedCursor = this.getCursorAdapter(props);
-
-    if (currentCursor !== updatedCursor) {
-      props.onUpdateCursor(updatedCursor);
-    }
-  }
-
-  /**
-   * Returns a flat array of positions for the given feature along with their indexes into the feature's geometry's coordinates.
-   *
-   * @param featureIndex The index of the feature to get edit handles
-   */
-  getEditHandlesAdapter(
-    picks: ?Array<Object>,
-    mapCoords: ?Position,
-    props: ModeProps<FeatureCollection>
-  ): EditHandle[] {
-    return DEFAULT_EDIT_HANDLES;
-  }
-
-  getCursorAdapter(props: ModeProps<FeatureCollection>): ?string {
-    return null;
   }
 
   isSelectionPicked(picks: Pick[], props: ModeProps<FeatureCollection>): boolean {
@@ -287,72 +238,13 @@ export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, GuideFea
     return this.getAddFeatureAction(geometry, props.data);
   }
 
-  handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>): void {
-    const editAction = this.handleClickAdapter(event, props);
+  handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>): void {}
 
-    if (editAction) {
-      props.onEdit(editAction);
-    }
-  }
+  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>): void {}
 
-  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>): void {
-    const { editAction, cancelMapPan } = this.handlePointerMoveAdapter(event, props);
+  handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollection>): void {}
 
-    if (cancelMapPan) {
-      // TODO: is there a less hacky way to prevent map panning?
-      // Stop propagation to prevent map panning while dragging an edit handle
-      event.sourceEvent.stopPropagation();
-    }
-
-    this._refreshCursor(props);
-    if (editAction) {
-      props.onEdit(editAction);
-    }
-  }
-
-  handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollection>): void {
-    const editAction = this.handleStartDraggingAdapter(event, props);
-
-    if (editAction) {
-      props.onEdit(editAction);
-    }
-  }
-
-  handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollection>): void {
-    const editAction = this.handleStopDraggingAdapter(event, props);
-
-    if (editAction) {
-      props.onEdit(editAction);
-    }
-  }
-
-  // TODO edit-modes: delete these adapters once all ModeHandler implementations don't use them
-  handleClickAdapter(event: ClickEvent, props: ModeProps<FeatureCollection>): ?GeoJsonEditAction {
-    this._clickSequence.push(event.mapCoords);
-
-    return null;
-  }
-
-  handlePointerMoveAdapter(
-    event: PointerMoveEvent,
-    props: ModeProps<FeatureCollection>
-  ): { editAction: ?GeoJsonEditAction, cancelMapPan: boolean } {
-    return { editAction: null, cancelMapPan: false };
-  }
-
-  handleStartDraggingAdapter(
-    event: StartDraggingEvent,
-    props: ModeProps<FeatureCollection>
-  ): ?GeoJsonEditAction {
-    return null;
-  }
-
-  handleStopDraggingAdapter(
-    event: StopDraggingEvent,
-    props: ModeProps<FeatureCollection>
-  ): ?GeoJsonEditAction {
-    return null;
-  }
+  handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollection>): void {}
 }
 
 export function getPickedEditHandle(picks: ?(any[])): ?EditHandle {

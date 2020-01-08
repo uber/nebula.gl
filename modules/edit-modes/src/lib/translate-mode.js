@@ -18,70 +18,68 @@ export class TranslateMode extends BaseGeoJsonEditMode {
   _geometryBeforeTranslate: ?FeatureCollection;
   _isTranslatable: boolean;
 
-  handlePointerMoveAdapter(
-    event: PointerMoveEvent,
-    props: ModeProps<FeatureCollection>
-  ): { editAction: ?GeoJsonEditAction, cancelMapPan: boolean } {
-    let editAction: ?GeoJsonEditAction = null;
-
+  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>) {
     this._isTranslatable =
       Boolean(this._geometryBeforeTranslate) || this.isSelectionPicked(event.picks, props);
 
+    this.updateCursor(props);
+
     if (!this._isTranslatable || !event.pointerDownMapCoords) {
       // Nothing to do
-      return { editAction: null, cancelMapPan: false };
+      return;
     }
 
     if (event.isDragging && this._geometryBeforeTranslate) {
       // Translate the geometry
-      editAction = this.getTranslateAction(
+      const editAction = this.getTranslateAction(
         event.pointerDownMapCoords,
         event.mapCoords,
         'translating',
         props
       );
+
+      if (editAction) {
+        props.onEdit(editAction);
+      }
     }
 
-    return { editAction, cancelMapPan: true };
+    // TODO: is there a less hacky way to prevent map panning?
+    // cancel map panning
+    event.sourceEvent.stopPropagation();
   }
 
-  handleStartDraggingAdapter(
-    event: StartDraggingEvent,
-    props: ModeProps<FeatureCollection>
-  ): ?GeoJsonEditAction {
+  handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollection>) {
     if (!this._isTranslatable) {
-      return null;
+      return;
     }
 
     this._geometryBeforeTranslate = this.getSelectedFeaturesAsFeatureCollection(props);
-    return null;
   }
 
-  handleStopDraggingAdapter(
-    event: StopDraggingEvent,
-    props: ModeProps<FeatureCollection>
-  ): ?GeoJsonEditAction {
-    let editAction: ?GeoJsonEditAction = null;
-
+  handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollection>) {
     if (this._geometryBeforeTranslate) {
       // Translate the geometry
-      editAction = this.getTranslateAction(
+      const editAction = this.getTranslateAction(
         event.pointerDownMapCoords,
         event.mapCoords,
         'translated',
         props
       );
+
+      if (editAction) {
+        props.onEdit(editAction);
+      }
+
       this._geometryBeforeTranslate = null;
     }
-
-    return editAction;
   }
 
-  getCursorAdapter(): ?string {
+  updateCursor(props: ModeProps<FeatureCollection>) {
     if (this._isTranslatable) {
-      return 'move';
+      props.onUpdateCursor('move');
+    } else {
+      props.onUpdateCursor(null);
     }
-    return null;
   }
 
   getTranslateAction(

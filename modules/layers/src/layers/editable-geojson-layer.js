@@ -73,7 +73,7 @@ function getEditHandleColor(handle) {
   switch (handle.properties.editHandleType) {
     case 'existing':
       return DEFAULT_EDITING_EXISTING_POINT_COLOR;
-    case 'snap':
+    case 'snap-source':
       return DEFAULT_EDITING_SNAP_POINT_COLOR;
     case 'intermediate':
     default:

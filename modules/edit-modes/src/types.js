@@ -76,7 +76,7 @@ export type Tooltip = {
   text: string
 };
 
-export type EditHandleType = 'existing' | 'intermediate' | 'snap';
+export type EditHandleType = 'existing' | 'intermediate' | 'snap-source' | 'snap-target';
 
 export type EditHandleFeature = FeatureWithProps<
   Point,

@@ -64,24 +64,18 @@ export class SplitPolygonMode extends BaseGeoJsonEditMode {
     return nearestPt;
   }
 
-  handleClickAdapter(event: ClickEvent, props: ModeProps<FeatureCollection>): ?GeoJsonEditAction {
-    super.handleClickAdapter(
-      {
-        ...event,
-        mapCoords: this.calculateMapCoords(this.getClickSequence(), event.mapCoords, props)
-      },
-      props
-    );
-    const editAction: ?GeoJsonEditAction = null;
+  handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>) {
+    const clickSequence = this.getClickSequence();
+    clickSequence.push(this.calculateMapCoords(this.getClickSequence(), event.mapCoords, props));
+
     const tentativeFeature = this.getTentativeFeature();
     const selectedGeometry = this.getSelectedGeometry(props);
-    const clickSequence = this.getClickSequence();
 
     if (!selectedGeometry) {
       // eslint-disable-next-line no-console,no-undef
       console.warn('A polygon must be selected for splitting');
       this._setTentativeFeature(null);
-      return editAction;
+      return;
     }
     const pt = {
       type: 'Point',
@@ -93,24 +87,23 @@ export class SplitPolygonMode extends BaseGeoJsonEditMode {
       const isLineInterectingWithPolygon = lineIntersect(tentativeFeature, selectedGeometry);
       if (isLineInterectingWithPolygon.features.length === 0) {
         this._setTentativeFeature(null);
-        return editAction;
+        return;
       }
-      return this.splitPolygon(props);
-    }
 
-    return editAction;
+      const editAction = this.splitPolygon(props);
+
+      if (editAction) {
+        props.onEdit(editAction);
+      }
+    }
   }
 
-  handlePointerMoveAdapter(
-    { mapCoords }: PointerMoveEvent,
-    props: ModeProps<FeatureCollection>
-  ): { editAction: ?GeoJsonEditAction, cancelMapPan: boolean } {
+  handlePointerMove({ mapCoords }: PointerMoveEvent, props: ModeProps<FeatureCollection>) {
     const clickSequence = this.getClickSequence();
-    const result = { editAction: null, cancelMapPan: false };
 
     if (clickSequence.length === 0) {
       // nothing to do yet
-      return result;
+      return;
     }
 
     this._setTentativeFeature({
@@ -123,8 +116,6 @@ export class SplitPolygonMode extends BaseGeoJsonEditMode {
         coordinates: [...clickSequence, this.calculateMapCoords(clickSequence, mapCoords, props)]
       }
     });
-
-    return result;
   }
 
   splitPolygon(props: ModeProps<FeatureCollection>) {

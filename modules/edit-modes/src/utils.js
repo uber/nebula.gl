@@ -5,7 +5,7 @@ import bearing from '@turf/bearing';
 import pointToLineDistance from '@turf/point-to-line-distance';
 import { point } from '@turf/helpers';
 import WebMercatorViewport from 'viewport-mercator-project';
-import type { Viewport, EditHandleFeature, EditHandleType } from './types.js';
+import type { Viewport, Pick, EditHandleFeature, EditHandleType } from './types.js';
 import type {
   Geometry,
   Position,
@@ -175,6 +175,22 @@ export function nearestPointOnProjectedLine(
       index: index - 1
     }
   };
+}
+
+export function getPickedEditHandle(picks: ?(Pick[])): ?EditHandleFeature {
+  const handles = getPickedEditHandles(picks);
+  return handles.length ? handles[0] : null;
+}
+
+export function getPickedEditHandles(picks: ?(Pick[])): EditHandleFeature[] {
+  const handles =
+    (picks &&
+      picks
+        .filter(pick => pick.isGuide && pick.object.properties.guideType === 'editHandle')
+        .map(pick => pick.object)) ||
+    [];
+
+  return handles;
 }
 
 export function getEditHandlesForGeometry(

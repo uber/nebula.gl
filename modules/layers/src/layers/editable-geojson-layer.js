@@ -118,7 +118,6 @@ const defaultProps = {
   pointRadiusScale: 1,
   pointRadiusMinPixels: 2,
   pointRadiusMaxPixels: Number.MAX_SAFE_INTEGER,
-  lineDashJustified: false,
   getLineColor: (feature, isSelected, mode) =>
     isSelected ? DEFAULT_SELECTED_LINE_COLOR : DEFAULT_LINE_COLOR,
   getFillColor: (feature, isSelected, mode) =>
@@ -126,11 +125,8 @@ const defaultProps = {
   getRadius: f =>
     (f && f.properties && f.properties.radius) || (f && f.properties && f.properties.size) || 1,
   getLineWidth: f => (f && f.properties && f.properties.lineWidth) || 3,
-  getLineDashArray: (feature, isSelected, mode) =>
-    isSelected && mode !== 'view' ? [7, 4] : [0, 0],
 
   // Tentative feature rendering
-  getTentativeLineDashArray: (f, mode) => [7, 4],
   getTentativeLineColor: f => DEFAULT_SELECTED_LINE_COLOR,
   getTentativeFillColor: f => DEFAULT_SELECTED_FILL_COLOR,
   getTentativeLineWidth: f => (f && f.properties && f.properties.lineWidth) || 3,
@@ -225,12 +221,10 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       pointRadiusScale: this.props.pointRadiusScale,
       pointRadiusMinPixels: this.props.pointRadiusMinPixels,
       pointRadiusMaxPixels: this.props.pointRadiusMaxPixels,
-      lineDashJustified: this.props.lineDashJustified,
       getLineColor: this.selectionAwareAccessor(this.props.getLineColor),
       getFillColor: this.selectionAwareAccessor(this.props.getFillColor),
       getRadius: this.selectionAwareAccessor(this.props.getRadius),
       getLineWidth: this.selectionAwareAccessor(this.props.getLineWidth),
-      getLineDashArray: this.selectionAwareAccessor(this.props.getLineDashArray),
 
       _subLayerProps: {
         'line-strings': {
@@ -245,8 +239,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         getLineColor: [this.props.selectedFeatureIndexes, this.props.mode],
         getFillColor: [this.props.selectedFeatureIndexes, this.props.mode],
         getRadius: [this.props.selectedFeatureIndexes, this.props.mode],
-        getLineWidth: [this.props.selectedFeatureIndexes, this.props.mode],
-        getLineDashArray: [this.props.selectedFeatureIndexes, this.props.mode]
+        getLineWidth: [this.props.selectedFeatureIndexes, this.props.mode]
       }
     });
 
@@ -420,8 +413,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         lineMiterLimit: this.props.lineMiterLimit,
         getLineColor: guideAccessor(this.props.getTentativeLineColor),
         getLineWidth: guideAccessor(this.props.getTentativeLineWidth),
-        getFillColor: guideAccessor(this.props.getTentativeFillColor),
-        getLineDashArray: guideAccessor(this.props.getTentativeLineDashArray)
+        getFillColor: guideAccessor(this.props.getTentativeFillColor)
       })
     );
 

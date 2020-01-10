@@ -951,7 +951,6 @@ export default class Example extends Component<
 
           getTentativeFillColor: () => [255, 0, 255, 100],
           getTentativeLineColor: () => [0, 0, 255, 255],
-          getTentativeLineDashArray: () => [0, 0],
           lineWidthMinPixels: 3
         })
       );

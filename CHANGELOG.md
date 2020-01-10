@@ -4,13 +4,26 @@ _All notable changes to this project will be documented in this file. This proje
 
 <!-- INSERT HERE -->
 
+<!--
+## <<NEXT RELEASE>>
+
+### Breaking changes
+
+*  DrawCircleByBoundingBoxMode renamed to DrawCircleByDiameterMode (#314)
+*  The following props of `EditableGeoJsonLayer` are no longer proxied by nebula.gl, instead use deck.gl's [_subLayerProps](https://deck.gl/#/documentation/deckgl-api-reference/layers/composite-layer?section=_sublayerprops-object-experimental):
+  * `getLineDashArray`
+  * `lineDashJustified`
+  * `getTentativeLineDashArray`
+
+-->
+
 ## [0.16.0](https://github.com/uber/nebula.gl/compare/v0.15.0...v0.16.0) - 2019-09-25
 
 ### Changes
 
 * You can now style edit handles with an outline (which is now also the default) by supplying `getEditHandlePointOutlineColor`
 * Swap EditableGeoJsonLayer to use edit-modes module (#283)
-* Unwrap guide object when using `_sublayerProps` (#284)
+* Unwrap guide object when using `_subLayerProps` (#284)
 * Remove deprecated usage. #281 (#282)
 
 ### Breaking changes for `EditableGeoJsonLayer`

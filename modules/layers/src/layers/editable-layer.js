@@ -65,20 +65,23 @@ export default class EditableLayer extends CompositeLayer {
   }
 
   _removePointerHandlers() {
+    // https://github.com/uber/deck.gl/pull/4013
+    const element = this.context.deck.props.parent || this.context.gl.canvas;
+
     if (this.state._editableLayerState.pointerHandlers) {
-      this.context.gl.canvas.removeEventListener(
+      element.removeEventListener(
         'pointermove',
         this.state._editableLayerState.pointerHandlers.onPointerMove
       );
-      this.context.gl.canvas.removeEventListener(
+      element.removeEventListener(
         'pointerdown',
         this.state._editableLayerState.pointerHandlers.onPointerDown
       );
-      this.context.gl.canvas.removeEventListener(
+      element.removeEventListener(
         'pointerup',
         this.state._editableLayerState.pointerHandlers.onPointerUp
       );
-      this.context.gl.canvas.removeEventListener(
+      element.removeEventListener(
         'dblclick',
         this.state._editableLayerState.pointerHandlers.onDoubleClick
       );
@@ -87,6 +90,9 @@ export default class EditableLayer extends CompositeLayer {
   }
 
   _addPointerHandlers() {
+    // https://github.com/uber/deck.gl/pull/4013
+    const element = this.context.deck.props.parent || this.context.gl.canvas;
+
     this.state._editableLayerState.pointerHandlers = {
       onPointerMove: this._onPointerMove.bind(this),
       onPointerDown: this._onPointerDown.bind(this),
@@ -94,25 +100,25 @@ export default class EditableLayer extends CompositeLayer {
       onDoubleClick: this._onDoubleClick.bind(this)
     };
 
-    this.context.gl.canvas.addEventListener(
+    element.addEventListener(
       'pointermove',
       this.state._editableLayerState.pointerHandlers.onPointerMove
     );
-    this.context.gl.canvas.addEventListener(
+    element.addEventListener(
       'pointerdown',
       this.state._editableLayerState.pointerHandlers.onPointerDown
     );
-    this.context.gl.canvas.addEventListener(
+    element.addEventListener(
       'pointerup',
       this.state._editableLayerState.pointerHandlers.onPointerUp
     );
-    this.context.gl.canvas.addEventListener(
+    element.addEventListener(
       'dblclick',
       this.state._editableLayerState.pointerHandlers.onDoubleClick
     );
   }
 
-  _onDoubleClick(event: Object) {
+  _onDoubleClick(event: any) {
     const screenCoords = this.getScreenCoords(event);
     const mapCoords = this.getMapCoords(screenCoords);
     this.onDoubleClick({
@@ -121,7 +127,7 @@ export default class EditableLayer extends CompositeLayer {
     });
   }
 
-  _onPointerDown(event: Object) {
+  _onPointerDown(event: any) {
     const screenCoords = this.getScreenCoords(event);
     const mapCoords = this.getMapCoords(screenCoords);
 
@@ -144,7 +150,7 @@ export default class EditableLayer extends CompositeLayer {
     });
   }
 
-  _onPointerMove(event: Object) {
+  _onPointerMove(event: any) {
     const screenCoords = this.getScreenCoords(event);
     const mapCoords = this.getMapCoords(screenCoords);
 
@@ -208,7 +214,7 @@ export default class EditableLayer extends CompositeLayer {
     }
   }
 
-  _onPointerUp(event: Object) {
+  _onPointerUp(event: any) {
     const screenCoords = this.getScreenCoords(event);
     const mapCoords = this.getMapCoords(screenCoords);
 
@@ -253,7 +259,7 @@ export default class EditableLayer extends CompositeLayer {
     });
   }
 
-  getScreenCoords(pointerEvent: Object) {
+  getScreenCoords(pointerEvent: any) {
     return [
       pointerEvent.clientX - this.context.gl.canvas.getBoundingClientRect().x,
       pointerEvent.clientY - this.context.gl.canvas.getBoundingClientRect().y

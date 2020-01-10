@@ -4,8 +4,18 @@ _All notable changes to this project will be documented in this file. This proje
 
 <!-- INSERT HERE -->
 
-<!--
-## <<NEXT RELEASE>>
+## [0.17.0](https://github.com/uber/nebula.gl/compare/v0.16.0...v0.17.0) - 2020-01-10
+
+### Changes
+
+* Fix deck 8 (#317)
+* Rename DrawCircleByBoundingBoxMode to DrawCircleByDiameterMode (#314)
+* upgrade deckgl to 8.0 using upgrade script
+* update ocular-gatsby
+* Measure distance mode + tooltips (#299)
+* Use deck.gl mesh layer, update example to use it (#296)
+* Fix register events and respect selectedFeatureIndex passed from… (#287)
+* Update readme example
 
 ### Breaking changes
 
@@ -14,8 +24,6 @@ _All notable changes to this project will be documented in this file. This proje
   * `getLineDashArray`
   * `lineDashJustified`
   * `getTentativeLineDashArray`
-
--->
 
 ## [0.16.0](https://github.com/uber/nebula.gl/compare/v0.15.0...v0.16.0) - 2019-09-25
 

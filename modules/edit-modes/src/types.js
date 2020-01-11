@@ -49,7 +49,7 @@ export type DoubleClickEvent = {
 // Represents an event that occurs when the pointer goes down and the cursor starts moving
 export type StartDraggingEvent = {
   ...BasePointerEvent,
-  pointerDownPicks: ?(Pick[]),
+  pointerDownPicks?: ?(Pick[]),
   pointerDownScreenCoords: ScreenCoordinates,
   pointerDownMapCoords: Position
 };
@@ -57,7 +57,7 @@ export type StartDraggingEvent = {
 // Represents an event that occurs after the pointer goes down, moves some, then the pointer goes back up
 export type StopDraggingEvent = {
   ...BasePointerEvent,
-  pointerDownPicks: ?(Pick[]),
+  pointerDownPicks?: ?(Pick[]),
   pointerDownScreenCoords: ScreenCoordinates,
   pointerDownMapCoords: Position
 };
@@ -66,9 +66,9 @@ export type StopDraggingEvent = {
 export type PointerMoveEvent = {
   ...BasePointerEvent,
   isDragging: boolean,
-  pointerDownPicks: ?(Pick[]),
-  pointerDownScreenCoords: ?ScreenCoordinates,
-  pointerDownMapCoords: ?Position
+  pointerDownPicks?: ?(Pick[]),
+  pointerDownScreenCoords?: ?ScreenCoordinates,
+  pointerDownMapCoords?: ?Position
 };
 
 export type Tooltip = {

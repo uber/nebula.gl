@@ -758,3 +758,23 @@ Object {
 }
 `;
 
+exports[`getGuides() includes an intermediate edit handle 1`] = `
+Object {
+  "geometry": Object {
+    "coordinates": Array [
+      -122.43850292231143,
+      37.777692666558565,
+    ],
+    "type": "Point",
+  },
+  "properties": Object {
+    "editHandleType": "intermediate",
+    "featureIndex": 0,
+    "guideType": "editHandle",
+    "positionIndexes": Array [
+      2,
+    ],
+  },
+  "type": "Feature",
+}
+`;

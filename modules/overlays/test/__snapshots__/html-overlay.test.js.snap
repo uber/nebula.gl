@@ -83,6 +83,13 @@ exports[`test HtmlOverlay map center 1`] = `
     }
   }
 >
-  <canvas />
+  <canvas
+    style={
+      Object {
+        "left": 0,
+        "top": 0,
+      }
+    }
+  />
 </div>
 `;

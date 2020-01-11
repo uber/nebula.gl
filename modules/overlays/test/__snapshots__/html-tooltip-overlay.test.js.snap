@@ -14,6 +14,13 @@ exports[`test HtmlTooltipOverlay no items shown 1`] = `
     }
   }
 >
-  <canvas />
+  <canvas
+    style={
+      Object {
+        "left": 0,
+        "top": 0,
+      }
+    }
+  />
 </div>
 `;

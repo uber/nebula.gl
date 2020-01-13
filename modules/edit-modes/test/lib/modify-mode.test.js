@@ -74,7 +74,7 @@ beforeEach(() => {
   };
 });
 
-describe('getEditHandlesAdapter()', () => {
+describe('getGuides()', () => {
   it('gets edit handles for Point', () => {
     const mode = new ModifyMode();
     const props = createFeatureCollectionProps({
@@ -85,10 +85,9 @@ describe('getEditHandlesAdapter()', () => {
       selectedIndexes: [0]
     });
 
-    const actual = mode.getEditHandlesAdapter(null, null, props);
+    const guides = mode.getGuides(props);
 
-    const expected = [{ featureIndex: 0, position: [1, 2], positionIndexes: [], type: 'existing' }];
-    expect(actual).toEqual(expected);
+    expect(guides).toMatchSnapshot();
   });
 
   it('gets edit handles for LineString', () => {
@@ -101,14 +100,9 @@ describe('getEditHandlesAdapter()', () => {
       selectedIndexes: [0]
     });
 
-    const actual = mode.getEditHandlesAdapter(null, null, props);
+    const guides = mode.getGuides(props);
 
-    const expected = [
-      { featureIndex: 0, position: [1, 2], positionIndexes: [0], type: 'existing' },
-      { featureIndex: 0, position: [2, 3], positionIndexes: [1], type: 'existing' },
-      { featureIndex: 0, position: [3, 4], positionIndexes: [2], type: 'existing' }
-    ];
-    expect(actual).toEqual(expected);
+    expect(guides).toMatchSnapshot();
   });
 
   it('gets edit handles for Polygon', () => {
@@ -121,19 +115,9 @@ describe('getEditHandlesAdapter()', () => {
       selectedIndexes: [0]
     });
 
-    const actual = mode.getEditHandlesAdapter(null, null, props);
+    const guides = mode.getGuides(props);
 
-    const expected = [
-      { featureIndex: 0, position: [-1, -1], positionIndexes: [0, 0], type: 'existing' },
-      { featureIndex: 0, position: [1, -1], positionIndexes: [0, 1], type: 'existing' },
-      { featureIndex: 0, position: [1, 1], positionIndexes: [0, 2], type: 'existing' },
-      { featureIndex: 0, position: [-1, 1], positionIndexes: [0, 3], type: 'existing' },
-      { featureIndex: 0, position: [-0.5, -0.5], positionIndexes: [1, 0], type: 'existing' },
-      { featureIndex: 0, position: [-0.5, 0.5], positionIndexes: [1, 1], type: 'existing' },
-      { featureIndex: 0, position: [0.5, 0.5], positionIndexes: [1, 2], type: 'existing' },
-      { featureIndex: 0, position: [0.5, -0.5], positionIndexes: [1, 3], type: 'existing' }
-    ];
-    expect(actual).toEqual(expected);
+    expect(guides).toMatchSnapshot();
   });
 
   it('gets edit handles for MultiPoint', () => {
@@ -146,13 +130,9 @@ describe('getEditHandlesAdapter()', () => {
       selectedIndexes: [0]
     });
 
-    const actual = mode.getEditHandlesAdapter(null, null, props);
+    const guides = mode.getGuides(props);
 
-    const expected = [
-      { featureIndex: 0, position: [1, 2], positionIndexes: [0], type: 'existing' },
-      { featureIndex: 0, position: [3, 4], positionIndexes: [1], type: 'existing' }
-    ];
-    expect(actual).toEqual(expected);
+    expect(guides).toMatchSnapshot();
   });
 
   it('gets edit handles for MultiLineString', () => {
@@ -165,17 +145,9 @@ describe('getEditHandlesAdapter()', () => {
       selectedIndexes: [0]
     });
 
-    const actual = mode.getEditHandlesAdapter(null, null, props);
+    const guides = mode.getGuides(props);
 
-    const expected = [
-      { featureIndex: 0, position: [1, 2], positionIndexes: [0, 0], type: 'existing' },
-      { featureIndex: 0, position: [2, 3], positionIndexes: [0, 1], type: 'existing' },
-      { featureIndex: 0, position: [3, 4], positionIndexes: [0, 2], type: 'existing' },
-      { featureIndex: 0, position: [5, 6], positionIndexes: [1, 0], type: 'existing' },
-      { featureIndex: 0, position: [6, 7], positionIndexes: [1, 1], type: 'existing' },
-      { featureIndex: 0, position: [7, 8], positionIndexes: [1, 2], type: 'existing' }
-    ];
-    expect(actual).toEqual(expected);
+    expect(guides).toMatchSnapshot();
   });
 
   it('gets edit handles for MultiPolygon', () => {
@@ -188,23 +160,9 @@ describe('getEditHandlesAdapter()', () => {
       selectedIndexes: [0]
     });
 
-    const actual = mode.getEditHandlesAdapter(null, null, props);
+    const guides = mode.getGuides(props);
 
-    const expected = [
-      { featureIndex: 0, position: [-1, -1], positionIndexes: [0, 0, 0], type: 'existing' },
-      { featureIndex: 0, position: [1, -1], positionIndexes: [0, 0, 1], type: 'existing' },
-      { featureIndex: 0, position: [1, 1], positionIndexes: [0, 0, 2], type: 'existing' },
-      { featureIndex: 0, position: [-1, 1], positionIndexes: [0, 0, 3], type: 'existing' },
-      { featureIndex: 0, position: [-0.5, -0.5], positionIndexes: [0, 1, 0], type: 'existing' },
-      { featureIndex: 0, position: [-0.5, 0.5], positionIndexes: [0, 1, 1], type: 'existing' },
-      { featureIndex: 0, position: [0.5, 0.5], positionIndexes: [0, 1, 2], type: 'existing' },
-      { featureIndex: 0, position: [0.5, -0.5], positionIndexes: [0, 1, 3], type: 'existing' },
-      { featureIndex: 0, position: [2, -1], positionIndexes: [1, 0, 0], type: 'existing' },
-      { featureIndex: 0, position: [4, -1], positionIndexes: [1, 0, 1], type: 'existing' },
-      { featureIndex: 0, position: [4, 1], positionIndexes: [1, 0, 2], type: 'existing' },
-      { featureIndex: 0, position: [2, 1], positionIndexes: [1, 0, 3], type: 'existing' }
-    ];
-    expect(actual).toEqual(expected);
+    expect(guides).toMatchSnapshot();
   });
 
   it('gets edit handles for all selected features in collection', () => {
@@ -217,16 +175,9 @@ describe('getEditHandlesAdapter()', () => {
       selectedIndexes: [0, 2]
     });
 
-    const actual = mode.getEditHandlesAdapter(null, null, props);
+    const guides = mode.getGuides(props);
 
-    const expected = [
-      { featureIndex: 0, position: [1, 2], positionIndexes: [0], type: 'existing' },
-      { featureIndex: 0, position: [2, 3], positionIndexes: [1], type: 'existing' },
-      { featureIndex: 0, position: [3, 4], positionIndexes: [2], type: 'existing' },
-      { featureIndex: 2, position: [1, 2], positionIndexes: [0], type: 'existing' },
-      { featureIndex: 2, position: [3, 4], positionIndexes: [1], type: 'existing' }
-    ];
-    expect(actual).toEqual(expected);
+    expect(guides).toMatchSnapshot();
   });
 
   const lineString = {
@@ -255,10 +206,11 @@ describe('getEditHandlesAdapter()', () => {
   };
   const pick = {
     object: lineString,
+    isGuide: false,
     index: 0
   };
 
-  const groundCoords = [-122.43862233312133, 37.77767798407437];
+  const mapCoords = [-122.43862233312133, 37.77767798407437];
 
   it('includes an intermediate edit handle', () => {
     const mode = new ModifyMode();
@@ -267,20 +219,24 @@ describe('getEditHandlesAdapter()', () => {
         type: 'FeatureCollection',
         features: [lineString]
       },
-      selectedIndexes: [0]
+      selectedIndexes: [0],
+      lastPointerMoveEvent: {
+        picks: [pick],
+        mapCoords,
+        screenCoords: [42, 42],
+        isDragging: false,
+        sourceEvent: null
+      }
     });
 
-    const actual = mode.getEditHandlesAdapter([pick], groundCoords, props);
+    const guides = mode.getGuides(props);
 
-    const intermediate = actual.find(editHandle => editHandle.type === 'intermediate');
-    expect(JSON.stringify(intermediate)).toBe(
-      JSON.stringify({
-        position: [-122.43850292231143, 37.777692666558565],
-        positionIndexes: [2],
-        featureIndex: 0,
-        type: 'intermediate'
-      })
+    const intermediate = guides.features.find(
+      ({ properties }) =>
+        properties.guideType === 'editHandle' && properties.editHandleType === 'intermediate'
     );
+
+    expect(intermediate).toMatchSnapshot();
   });
 
   it('does not add intermeidate edit handle when no picks provided', () => {
@@ -293,41 +249,12 @@ describe('getEditHandlesAdapter()', () => {
       selectedIndexes: [0]
     });
 
-    const actual = mode.getEditHandlesAdapter(undefined, groundCoords, props);
+    const guides = mode.getGuides(props);
 
-    const intermediate = actual.find(editHandle => editHandle.type === 'intermediate');
-    expect(intermediate).toBeUndefined();
-  });
-
-  it('does not add intermeidate edit handle when empty picks array provided', () => {
-    const mode = new ModifyMode();
-    const props = createFeatureCollectionProps({
-      data: {
-        type: 'FeatureCollection',
-        features: [lineString]
-      },
-      selectedIndexes: [0]
-    });
-
-    const actual = mode.getEditHandlesAdapter([], groundCoords, props);
-
-    const intermediate = actual.find(editHandle => editHandle.type === 'intermediate');
-    expect(intermediate).toBeUndefined();
-  });
-
-  it('does not add intermeidate edit handle when no ground coords provided', () => {
-    const mode = new ModifyMode();
-    const props = createFeatureCollectionProps({
-      data: {
-        type: 'FeatureCollection',
-        features: [lineString]
-      },
-      selectedIndexes: [0]
-    });
-
-    const actual = mode.getEditHandlesAdapter([pick], null, props);
-
-    const intermediate = actual.find(editHandle => editHandle.type === 'intermediate');
+    const intermediate = guides.features.find(
+      ({ properties }) =>
+        properties.guideType === 'editHandle' && properties.editHandleType === 'intermediate'
+    );
     expect(intermediate).toBeUndefined();
   });
 
@@ -338,25 +265,32 @@ describe('getEditHandlesAdapter()', () => {
         type: 'FeatureCollection',
         features: [lineString]
       },
-      selectedIndexes: [0]
+      selectedIndexes: [0],
+      lastPointerMoveEvent: {
+        picks: [
+          pick,
+          {
+            isGuide: true,
+            index: 42,
+            object: {
+              properties: { guideType: 'editHandle', editHandleType: 'existing', featureIndex: 0 },
+              geometry: { coordinates: [] }
+            }
+          }
+        ],
+        mapCoords,
+        screenCoords: [42, 42],
+        isDragging: false,
+        sourceEvent: null
+      }
     });
 
-    const actual = mode.getEditHandlesAdapter(
-      [
-        pick,
-        {
-          isGuide: true,
-          object: {
-            properties: { guideType: 'editHandle', editHandleType: 'existing', featureIndex: 0 },
-            geometry: { coordinates: [] }
-          }
-        }
-      ],
-      groundCoords,
-      props
-    );
+    const guides = mode.getGuides(props);
 
-    const intermediate = actual.find(editHandle => editHandle.type === 'intermediate');
+    const intermediate = guides.features.find(
+      ({ properties }) =>
+        properties.guideType === 'editHandle' && properties.editHandleType === 'intermediate'
+    );
     expect(intermediate).toBeUndefined();
   });
 
@@ -369,9 +303,12 @@ describe('getEditHandlesAdapter()', () => {
       }
     });
 
-    const actual = mode.getEditHandlesAdapter([pick], groundCoords, props);
+    const guides = mode.getGuides(props);
 
-    const intermediate = actual.find(editHandle => editHandle.type === 'intermediate');
+    const intermediate = guides.features.find(
+      ({ properties }) =>
+        properties.guideType === 'editHandle' && properties.editHandleType === 'intermediate'
+    );
     expect(intermediate).toBeUndefined();
   });
 
@@ -382,10 +319,26 @@ describe('getEditHandlesAdapter()', () => {
         type: 'FeatureCollection',
         features: [point]
       },
-      selectedIndexes: [0]
+      selectedIndexes: [0],
+      lastPointerMoveEvent: {
+        picks: [
+          {
+            isGuide: false,
+            index: 0,
+            object: point
+          }
+        ],
+        mapCoords,
+        screenCoords: [42, 42],
+        isDragging: false,
+        sourceEvent: null
+      }
     });
-    const actual = mode.getEditHandlesAdapter([{ object: point, index: 0 }], groundCoords, props);
-    const intermediate = actual.find(editHandle => editHandle.type === 'intermediate');
+    const guides = mode.getGuides(props);
+    const intermediate = guides.features.find(
+      ({ properties }) =>
+        properties.guideType === 'editHandle' && properties.editHandleType === 'intermediate'
+    );
     expect(intermediate).toBeUndefined();
   });
 });

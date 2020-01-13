@@ -1,6 +1,6 @@
 // @flow
 
-import type { Position } from './geojson-types.js';
+import type { Position, Point, Geometry, FeatureWithProps } from './geojson-types.js';
 
 export type ScreenCoordinates = [number, number];
 
@@ -28,12 +28,16 @@ export type Viewport = {
   pitch?: number
 };
 
-// Represents a click event
-export type ClickEvent = {
+export type BasePointerEvent = {|
   picks: Pick[],
   screenCoords: ScreenCoordinates,
   mapCoords: Position,
   sourceEvent: any
+|};
+
+// Represents a click event
+export type ClickEvent = {
+  ...BasePointerEvent
 };
 
 // Represents a double-click event
@@ -44,39 +48,59 @@ export type DoubleClickEvent = {
 
 // Represents an event that occurs when the pointer goes down and the cursor starts moving
 export type StartDraggingEvent = {
-  picks: Pick[],
-  screenCoords: ScreenCoordinates,
-  mapCoords: Position,
+  ...BasePointerEvent,
+  pointerDownPicks?: ?(Pick[]),
   pointerDownScreenCoords: ScreenCoordinates,
-  pointerDownMapCoords: Position,
-  sourceEvent: any
+  pointerDownMapCoords: Position
 };
 
 // Represents an event that occurs after the pointer goes down, moves some, then the pointer goes back up
 export type StopDraggingEvent = {
-  picks: Pick[],
-  screenCoords: ScreenCoordinates,
-  mapCoords: Position,
+  ...BasePointerEvent,
+  pointerDownPicks?: ?(Pick[]),
   pointerDownScreenCoords: ScreenCoordinates,
-  pointerDownMapCoords: Position,
-  sourceEvent: any
+  pointerDownMapCoords: Position
 };
 
 // Represents an event that occurs every time the pointer moves
 export type PointerMoveEvent = {
-  screenCoords: ScreenCoordinates,
-  mapCoords: Position,
-  picks: Pick[],
+  ...BasePointerEvent,
   isDragging: boolean,
-  pointerDownPicks: ?(Pick[]),
-  pointerDownScreenCoords: ?ScreenCoordinates,
-  pointerDownMapCoords: ?Position,
-  sourceEvent: any
+  pointerDownPicks?: ?(Pick[]),
+  pointerDownScreenCoords?: ?ScreenCoordinates,
+  pointerDownMapCoords?: ?Position
 };
 
 export type Tooltip = {
   position: Position,
   text: string
+};
+
+export type EditHandleType = 'existing' | 'intermediate' | 'snap-source' | 'snap-target';
+
+export type EditHandleFeature = FeatureWithProps<
+  Point,
+  {
+    guideType: 'editHandle',
+    editHandleType: EditHandleType,
+    featureIndex: number,
+    positionIndexes: number[]
+  }
+>;
+
+export type TentativeFeature = FeatureWithProps<
+  Geometry,
+  {
+    guideType: 'tentative'
+  }
+>;
+
+export type GuideFeature = EditHandleFeature | TentativeFeature;
+
+export type GuideFeatureCollection = {
+  type: 'FeatureCollection',
+  features: $ReadOnly<GuideFeature>[],
+  properties?: {}
 };
 
 export type ModeProps<TData> = {

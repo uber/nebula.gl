@@ -12,7 +12,13 @@ import turfPolygonToLine from '@turf/polygon-to-line';
 import nearestPointOnLine from '@turf/nearest-point-on-line';
 import { generatePointsParallelToLinePoints } from '../utils.js';
 import type { FeatureCollection } from '../geojson-types.js';
-import type { ClickEvent, PointerMoveEvent, ModeProps } from '../types.js';
+import type {
+  ClickEvent,
+  PointerMoveEvent,
+  ModeProps,
+  GuideFeatureCollection,
+  TentativeFeature
+} from '../types.js';
 import { BaseGeoJsonEditMode, type GeoJsonEditAction } from './geojson-edit-mode.js';
 import { ImmutableFeatureCollection } from './immutable-feature-collection.js';
 
@@ -64,25 +70,55 @@ export class SplitPolygonMode extends BaseGeoJsonEditMode {
     return nearestPt;
   }
 
-  handleClickAdapter(event: ClickEvent, props: ModeProps<FeatureCollection>): ?GeoJsonEditAction {
-    super.handleClickAdapter(
-      {
-        ...event,
-        mapCoords: this.calculateMapCoords(this.getClickSequence(), event.mapCoords, props)
-      },
-      props
-    );
-    const editAction: ?GeoJsonEditAction = null;
-    const tentativeFeature = this.getTentativeFeature();
-    const selectedGeometry = this.getSelectedGeometry(props);
+  getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
     const clickSequence = this.getClickSequence();
+
+    const guides: GuideFeatureCollection = {
+      type: 'FeatureCollection',
+      features: []
+    };
+
+    if (clickSequence.length === 0 || !props.lastPointerMoveEvent) {
+      // nothing to do yet
+      return guides;
+    }
+
+    const { mapCoords } = props.lastPointerMoveEvent;
+
+    guides.features.push({
+      type: 'Feature',
+      properties: {
+        guideType: 'tentative'
+      },
+      geometry: {
+        type: 'LineString',
+        coordinates: [...clickSequence, this.calculateMapCoords(clickSequence, mapCoords, props)]
+      }
+    });
+
+    return guides;
+  }
+
+  handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>) {
+    const tentativeFeature = this.getTentativeGuide(props);
+
+    const selectedGeometry = this.getSelectedGeometry(props);
 
     if (!selectedGeometry) {
       // eslint-disable-next-line no-console,no-undef
       console.warn('A polygon must be selected for splitting');
-      this._setTentativeFeature(null);
-      return editAction;
+      return;
     }
+
+    const clickSequence = this.getClickSequence();
+    if (tentativeFeature && tentativeFeature.geometry.type === 'LineString') {
+      clickSequence.push(
+        tentativeFeature.geometry.coordinates[tentativeFeature.geometry.coordinates.length - 1]
+      );
+    } else {
+      this.addClickSequence(event);
+    }
+
     const pt = {
       type: 'Point',
       coordinates: clickSequence[clickSequence.length - 1]
@@ -92,41 +128,23 @@ export class SplitPolygonMode extends BaseGeoJsonEditMode {
       this.resetClickSequence();
       const isLineInterectingWithPolygon = lineIntersect(tentativeFeature, selectedGeometry);
       if (isLineInterectingWithPolygon.features.length === 0) {
-        this._setTentativeFeature(null);
-        return editAction;
+        return;
       }
-      return this.splitPolygon(props);
-    }
 
-    return editAction;
+      const editAction = this.splitPolygon(tentativeFeature, props);
+
+      if (editAction) {
+        props.onEdit(editAction);
+      }
+    }
   }
 
-  handlePointerMoveAdapter(
-    { mapCoords }: PointerMoveEvent,
-    props: ModeProps<FeatureCollection>
-  ): { editAction: ?GeoJsonEditAction, cancelMapPan: boolean } {
-    const clickSequence = this.getClickSequence();
-    const result = { editAction: null, cancelMapPan: false };
-
-    if (clickSequence.length === 0) {
-      // nothing to do yet
-      return result;
-    }
-
-    this._setTentativeFeature({
-      type: 'Feature',
-      geometry: {
-        type: 'LineString',
-        coordinates: [...clickSequence, this.calculateMapCoords(clickSequence, mapCoords, props)]
-      }
-    });
-
-    return result;
+  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>) {
+    props.onUpdateCursor('cell');
   }
 
-  splitPolygon(props: ModeProps<FeatureCollection>) {
+  splitPolygon(tentativeFeature: TentativeFeature, props: ModeProps<FeatureCollection>) {
     const selectedGeometry = this.getSelectedGeometry(props);
-    const tentativeFeature = this.getTentativeFeature();
     const featureIndex = props.selectedIndexes[0];
     const modeConfig = props.modeConfig || {};
 
@@ -139,7 +157,6 @@ export class SplitPolygonMode extends BaseGeoJsonEditMode {
 
     const buffer = turfBuffer(tentativeFeature, gap, { units });
     const updatedGeometry = turfDifference(selectedGeometry, buffer);
-    this._setTentativeFeature(null);
     if (!updatedGeometry) {
       // eslint-disable-next-line no-console,no-undef
       console.warn('Canceling edit. Split Polygon erased');

@@ -4,61 +4,29 @@ import destination from '@turf/destination';
 import bearing from '@turf/bearing';
 import lineIntersect from '@turf/line-intersect';
 import turfDistance from '@turf/distance';
-import { point, lineString } from '@turf/helpers';
-import { generatePointsParallelToLinePoints } from '../utils';
-import type { ClickEvent, PointerMoveEvent, ModeProps } from '../types.js';
-import type { Polygon, Position, FeatureCollection } from '../geojson-types.js';
+import { point, lineString as turfLineString } from '@turf/helpers';
 import {
-  BaseGeoJsonEditMode,
+  generatePointsParallelToLinePoints,
   getPickedEditHandle,
-  getEditHandlesForGeometry,
-  type GeoJsonEditAction,
-  type EditHandle
-} from './geojson-edit-mode.js';
+  getEditHandlesForGeometry
+} from '../utils';
+import type { ClickEvent, PointerMoveEvent, ModeProps, GuideFeatureCollection } from '../types.js';
+import type { Polygon, LineString, Position, FeatureCollection } from '../geojson-types.js';
+import { BaseGeoJsonEditMode } from './geojson-edit-mode.js';
 
 export class Draw90DegreePolygonMode extends BaseGeoJsonEditMode {
-  getEditHandlesAdapter(
-    picks: ?Array<Object>,
-    mapCoords: ?Position,
-    props: ModeProps<FeatureCollection>
-  ): EditHandle[] {
-    let handles = super.getEditHandlesAdapter(picks, mapCoords, props);
+  getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
+    const guides: GuideFeatureCollection = {
+      type: 'FeatureCollection',
+      features: []
+    };
 
-    const tentativeFeature = this.getTentativeFeature();
-    if (tentativeFeature) {
-      handles = handles.concat(getEditHandlesForGeometry(tentativeFeature.geometry, -1));
-      // Slice off the handles that are are next to the pointer
-      if (tentativeFeature && tentativeFeature.geometry.type === 'LineString') {
-        // Remove the last existing handle
-        handles = handles.slice(0, -1);
-      } else if (tentativeFeature && tentativeFeature.geometry.type === 'Polygon') {
-        // Remove the last existing handle
-        handles = handles.slice(0, -1);
-      }
-    }
-
-    return handles;
-  }
-
-  handlePointerMoveAdapter({
-    mapCoords
-  }: PointerMoveEvent): { editAction: ?GeoJsonEditAction, cancelMapPan: boolean } {
     const clickSequence = this.getClickSequence();
-    const result = { editAction: null, cancelMapPan: false };
 
-    if (clickSequence.length === 0) {
-      // nothing to do yet
-      return result;
+    if (clickSequence.length === 0 || !props.lastPointerMoveEvent) {
+      return guides;
     }
-
-    const tentativeFeature = this.getTentativeFeature();
-    if (tentativeFeature && tentativeFeature.geometry.type === 'Polygon') {
-      clickSequence[clickSequence.length - 1] =
-        tentativeFeature.geometry.coordinates[0][clickSequence.length - 1];
-    } else if (tentativeFeature && tentativeFeature.geometry.type === 'LineString') {
-      clickSequence[clickSequence.length - 1] =
-        tentativeFeature.geometry.coordinates[clickSequence.length - 1];
-    }
+    const { mapCoords } = props.lastPointerMoveEvent;
 
     let p3;
     if (clickSequence.length === 1) {
@@ -69,46 +37,80 @@ export class Draw90DegreePolygonMode extends BaseGeoJsonEditMode {
       [p3] = generatePointsParallelToLinePoints(p1, p2, mapCoords);
     }
 
+    let tentativeFeature;
+
     if (clickSequence.length < 3) {
       // Draw a LineString connecting all the clicked points with the hovered point
-      this._setTentativeFeature({
+      tentativeFeature = {
         type: 'Feature',
+        properties: {
+          guideType: 'tentative'
+        },
         geometry: {
           type: 'LineString',
           coordinates: [...clickSequence, p3]
         }
-      });
+      };
     } else {
       // Draw a Polygon connecting all the clicked points with the hovered point
-      this._setTentativeFeature({
+      tentativeFeature = {
         type: 'Feature',
+        properties: {
+          guideType: 'tentative'
+        },
         geometry: {
           type: 'Polygon',
           coordinates: [[...clickSequence, p3, clickSequence[0]]]
         }
-      });
+      };
     }
 
-    return result;
+    guides.features.push(tentativeFeature);
+
+    guides.features = guides.features.concat(
+      getEditHandlesForGeometry(tentativeFeature.geometry, -1)
+    );
+
+    // Slice off the handles that are are next to the pointer
+    guides.features = guides.features.slice(0, -1);
+
+    return guides;
   }
 
-  handleClickAdapter(event: ClickEvent, props: ModeProps<FeatureCollection>): ?GeoJsonEditAction {
-    super.handleClickAdapter(event, props);
+  handlePointerMove({ mapCoords }: PointerMoveEvent, props: ModeProps<FeatureCollection>) {
+    props.onUpdateCursor('cell');
+  }
 
+  handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>) {
     const { picks } = event;
-    const tentativeFeature = this.getTentativeFeature();
+    const tentativeFeature = this.getTentativeGuide(props);
+    this.addClickSequence(event);
+    const clickSequence = this.getClickSequence();
 
-    let editAction: ?GeoJsonEditAction = null;
-    const clickedEditHandle = getPickedEditHandle(picks);
+    if (!tentativeFeature) {
+      // nothing else to do
+      return;
+    }
 
-    if (tentativeFeature && tentativeFeature.geometry.type === 'Polygon') {
+    if (clickSequence.length === 3 && tentativeFeature.geometry.type === 'LineString') {
+      const lineString: LineString = tentativeFeature.geometry;
+
+      // Tweak the clicked position to be the snapped 90 degree point along the polygon
+      clickSequence[clickSequence.length - 1] =
+        lineString.coordinates[lineString.coordinates.length - 1];
+    } else if (clickSequence.length > 3 && tentativeFeature.geometry.type === 'Polygon') {
       const polygon: Polygon = tentativeFeature.geometry;
+
+      // Tweak the clicked position to be the snapped 90 degree point along the polygon
+      clickSequence[clickSequence.length - 1] =
+        polygon.coordinates[0][polygon.coordinates[0].length - 2];
+
+      const clickedEditHandle = getPickedEditHandle(picks);
 
       if (
         clickedEditHandle &&
-        clickedEditHandle.featureIndex === -1 &&
-        (clickedEditHandle.positionIndexes[1] === 0 ||
-          clickedEditHandle.positionIndexes[1] === polygon.coordinates[0].length - 3)
+        (clickedEditHandle.properties.positionIndexes[1] === 0 ||
+          clickedEditHandle.properties.positionIndexes[1] === polygon.coordinates[0].length - 3)
       ) {
         // They clicked the first or last point (or double-clicked), so complete the polygon
         const polygonToAdd: Polygon = {
@@ -117,8 +119,11 @@ export class Draw90DegreePolygonMode extends BaseGeoJsonEditMode {
         };
 
         this.resetClickSequence();
-        this._setTentativeFeature(null);
-        editAction = this.getAddFeatureOrBooleanPolygonAction(polygonToAdd, props);
+
+        const editAction = this.getAddFeatureOrBooleanPolygonAction(polygonToAdd, props);
+        if (editAction) {
+          props.onEdit(editAction);
+        }
       }
     }
 
@@ -133,9 +138,7 @@ export class Draw90DegreePolygonMode extends BaseGeoJsonEditMode {
       pointerDownMapCoords: null,
       sourceEvent: null
     };
-    this.handlePointerMoveAdapter(fakePointerMoveEvent);
-
-    return editAction;
+    this.handlePointerMove(fakePointerMoveEvent, props);
   }
 
   finalizedCoordinates(coords: Position[]) {
@@ -180,12 +183,12 @@ export class Draw90DegreePolygonMode extends BaseGeoJsonEditMode {
       // Draw imaginary right angle lines for both first and last points in lineString
       // If there is intersection point for any 2 lines, will be the 90 degree point.
       [0, 1, 2].forEach(indexFirst => {
-        const line1 = lineString([
+        const line1 = turfLineString([
           p1,
           destination(p1, distance, angles.first[indexFirst]).geometry.coordinates
         ]);
         [0, 1, 2].forEach(indexSecond => {
-          const line2 = lineString([
+          const line2 = turfLineString([
             p3,
             destination(p3, distance, angles.second[indexSecond]).geometry.coordinates
           ]);
@@ -198,9 +201,5 @@ export class Draw90DegreePolygonMode extends BaseGeoJsonEditMode {
       });
     }
     return pt;
-  }
-
-  getCursorAdapter() {
-    return 'cell';
   }
 }

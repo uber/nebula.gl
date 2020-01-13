@@ -172,7 +172,7 @@ function getEditHandleColor(handle: {}) {
   switch (getEditHandleTypeFromEitherLayer(handle)) {
     case 'existing':
       return [0xff, 0x80, 0x00, 0xff];
-    case 'snap':
+    case 'snap-source':
       return [0xc0, 0x80, 0xf0, 0xff];
     case 'intermediate':
     default:

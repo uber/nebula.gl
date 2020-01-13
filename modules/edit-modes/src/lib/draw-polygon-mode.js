@@ -1,74 +1,99 @@
 // @flow
 
-import type { ClickEvent, PointerMoveEvent, ModeProps } from '../types.js';
-import type { Polygon, Position, FeatureCollection } from '../geojson-types.js';
-import type { GeoJsonEditAction, EditHandle } from './geojson-edit-mode.js';
-import {
-  BaseGeoJsonEditMode,
-  getPickedEditHandle,
-  getEditHandlesForGeometry
-} from './geojson-edit-mode.js';
+import type { ClickEvent, PointerMoveEvent, ModeProps, GuideFeatureCollection } from '../types.js';
+import type { Polygon, FeatureCollection } from '../geojson-types.js';
+import { getPickedEditHandle } from '../utils.js';
+import { BaseGeoJsonEditMode } from './geojson-edit-mode.js';
 
 export class DrawPolygonMode extends BaseGeoJsonEditMode {
-  getEditHandlesAdapter(
-    picks: ?Array<Object>,
-    mapCoords: ?Position,
-    props: ModeProps<FeatureCollection>
-  ): EditHandle[] {
-    let handles = super.getEditHandlesAdapter(picks, mapCoords, props);
+  getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
+    const { lastPointerMoveEvent } = props;
+    const clickSequence = this.getClickSequence();
 
-    const tentativeFeature = this.getTentativeFeature();
-    if (tentativeFeature) {
-      handles = handles.concat(getEditHandlesForGeometry(tentativeFeature.geometry, -1));
-      // Slice off the handles that are are next to the pointer
-      if (tentativeFeature && tentativeFeature.geometry.type === 'LineString') {
-        // Remove the last existing handle
-        handles = handles.slice(0, -1);
-      } else if (tentativeFeature && tentativeFeature.geometry.type === 'Polygon') {
-        // Remove the last existing handle
-        handles = handles.slice(0, -1);
-      }
+    const lastCoords = lastPointerMoveEvent ? [lastPointerMoveEvent.mapCoords] : [];
+
+    const guides = {
+      type: 'FeatureCollection',
+      features: []
+    };
+
+    let tentativeFeature;
+    if (clickSequence.length === 1 || clickSequence.length === 2) {
+      tentativeFeature = {
+        type: 'Feature',
+        properties: {
+          guideType: 'tentative'
+        },
+        geometry: {
+          type: 'LineString',
+          coordinates: [...clickSequence, ...lastCoords]
+        }
+      };
+    } else if (clickSequence.length > 2) {
+      tentativeFeature = {
+        type: 'Feature',
+        properties: {
+          guideType: 'tentative'
+        },
+        geometry: {
+          type: 'Polygon',
+          coordinates: [[...clickSequence, ...lastCoords, clickSequence[0]]]
+        }
+      };
     }
 
-    return handles;
+    if (tentativeFeature) {
+      guides.features.push(tentativeFeature);
+    }
+
+    const editHandles = clickSequence.map((clickedCoord, index) => ({
+      type: 'Feature',
+      properties: {
+        guideType: 'editHandle',
+        editHandleType: 'existing',
+        featureIndex: -1,
+        positionIndexes: [index]
+      },
+      geometry: {
+        type: 'Point',
+        coordinates: clickedCoord
+      }
+    }));
+
+    guides.features.push(...editHandles);
+
+    return guides;
   }
 
-  handleClickAdapter(event: ClickEvent, props: ModeProps<FeatureCollection>): ?GeoJsonEditAction {
-    super.handleClickAdapter(event, props);
-
+  handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>) {
     const { picks } = event;
-    const tentativeFeature = this.getTentativeFeature();
-
-    let editAction: ?GeoJsonEditAction = null;
     const clickedEditHandle = getPickedEditHandle(picks);
 
-    if (clickedEditHandle) {
-      // User clicked an edit handle.
-      // Remove it from the click sequence, so it isn't added as a new point.
-      const clickSequence = this.getClickSequence();
-      clickSequence.splice(clickSequence.length - 1, 1);
+    if (!clickedEditHandle) {
+      // Don't add another point right next to an existing one
+      this.addClickSequence(event);
     }
+    const clickSequence = this.getClickSequence();
 
-    if (tentativeFeature && tentativeFeature.geometry.type === 'Polygon') {
-      const polygon: Polygon = tentativeFeature.geometry;
+    if (
+      clickSequence.length > 2 &&
+      clickedEditHandle &&
+      (clickedEditHandle.properties.positionIndexes[0] === 0 ||
+        clickedEditHandle.properties.positionIndexes[0] === clickSequence.length - 1)
+    ) {
+      // They clicked the first or last point (or double-clicked), so complete the polygon
 
-      if (
-        clickedEditHandle &&
-        clickedEditHandle.featureIndex === -1 &&
-        (clickedEditHandle.positionIndexes[1] === 0 ||
-          clickedEditHandle.positionIndexes[1] === polygon.coordinates[0].length - 3)
-      ) {
-        // They clicked the first or last point (or double-clicked), so complete the polygon
+      // Remove the hovered position
+      const polygonToAdd: Polygon = {
+        type: 'Polygon',
+        coordinates: [[...clickSequence, clickSequence[0]]]
+      };
 
-        // Remove the hovered position
-        const polygonToAdd: Polygon = {
-          type: 'Polygon',
-          coordinates: [[...polygon.coordinates[0].slice(0, -2), polygon.coordinates[0][0]]]
-        };
+      this.resetClickSequence();
 
-        this.resetClickSequence();
-        this._setTentativeFeature(null);
-        editAction = this.getAddFeatureOrBooleanPolygonAction(polygonToAdd, props);
+      const editAction = this.getAddFeatureOrBooleanPolygonAction(polygonToAdd, props);
+      if (editAction) {
+        props.onEdit(editAction);
       }
     }
 
@@ -84,47 +109,10 @@ export class DrawPolygonMode extends BaseGeoJsonEditMode {
       sourceEvent: null
     };
 
-    this.handlePointerMoveAdapter(fakePointerMoveEvent, props);
-
-    return editAction;
+    this.handlePointerMove(fakePointerMoveEvent, props);
   }
 
-  handlePointerMoveAdapter(
-    { mapCoords }: PointerMoveEvent,
-    props: ModeProps<FeatureCollection>
-  ): { editAction: ?GeoJsonEditAction, cancelMapPan: boolean } {
-    const clickSequence = this.getClickSequence();
-    const result = { editAction: null, cancelMapPan: false };
-
-    if (clickSequence.length === 0) {
-      // nothing to do yet
-      return result;
-    }
-
-    if (clickSequence.length < 3) {
-      // Draw a LineString connecting all the clicked points with the hovered point
-      this._setTentativeFeature({
-        type: 'Feature',
-        geometry: {
-          type: 'LineString',
-          coordinates: [...clickSequence, mapCoords]
-        }
-      });
-    } else {
-      // Draw a Polygon connecting all the clicked points with the hovered point
-      this._setTentativeFeature({
-        type: 'Feature',
-        geometry: {
-          type: 'Polygon',
-          coordinates: [[...clickSequence, mapCoords, clickSequence[0]]]
-        }
-      });
-    }
-
-    return result;
-  }
-
-  getCursorAdapter() {
-    return 'cell';
+  handlePointerMove({ mapCoords }: PointerMoveEvent, props: ModeProps<FeatureCollection>) {
+    props.onUpdateCursor('cell');
   }
 }

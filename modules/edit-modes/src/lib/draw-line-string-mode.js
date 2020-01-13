@@ -1,28 +1,26 @@
 // @flow
 
 import type { Position, LineString, FeatureCollection } from '../geojson-types.js';
-import type { ClickEvent, PointerMoveEvent, ModeProps } from '../types.js';
-import { BaseGeoJsonEditMode, type GeoJsonEditAction } from './geojson-edit-mode.js';
+import type { ClickEvent, PointerMoveEvent, ModeProps, GuideFeatureCollection } from '../types.js';
+import { BaseGeoJsonEditMode } from './geojson-edit-mode.js';
 import { ImmutableFeatureCollection } from './immutable-feature-collection.js';
 
 export class DrawLineStringMode extends BaseGeoJsonEditMode {
-  handleClickAdapter(event: ClickEvent, props: ModeProps<FeatureCollection>): ?GeoJsonEditAction {
-    super.handleClickAdapter(event, props);
-
-    let editAction: ?GeoJsonEditAction = null;
+  handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>) {
     const selectedFeatureIndexes = props.selectedIndexes;
     const selectedGeometry = this.getSelectedGeometry(props);
-    const tentativeFeature = this.getTentativeFeature();
-    const clickSequence = this.getClickSequence();
 
     if (
       selectedFeatureIndexes.length > 1 ||
       (selectedGeometry && selectedGeometry.type !== 'LineString')
     ) {
       console.warn(`drawLineString mode only supported for single LineString selection`); // eslint-disable-line
-      this.resetClickSequence();
-      return null;
+      return;
     }
+
+    this.addClickSequence(event);
+    const tentativeFeature = this.getTentativeGuide(props);
+    const clickSequence = this.getClickSequence();
 
     if (selectedGeometry && selectedGeometry.type === 'LineString') {
       // Extend the LineString
@@ -39,7 +37,7 @@ export class DrawLineStringMode extends BaseGeoJsonEditMode {
         .addPosition(featureIndex, positionIndexes, event.mapCoords)
         .getObject();
 
-      editAction = {
+      props.onEdit({
         updatedData,
         editType: 'addPosition',
         editContext: {
@@ -47,28 +45,26 @@ export class DrawLineStringMode extends BaseGeoJsonEditMode {
           positionIndexes,
           position: event.mapCoords
         }
-      };
+      });
 
       this.resetClickSequence();
     } else if (clickSequence.length === 2 && tentativeFeature) {
       // Add a new LineString
-      const geometry: any = tentativeFeature.geometry;
-      editAction = this.getAddFeatureAction(geometry, props.data);
+      const { geometry } = tentativeFeature;
+      props.onEdit(this.getAddFeatureAction(geometry, props.data));
 
       this.resetClickSequence();
     }
-
-    return editAction;
   }
 
-  handlePointerMoveAdapter(
-    event: PointerMoveEvent,
-    props: ModeProps<FeatureCollection>
-  ): { editAction: ?GeoJsonEditAction, cancelMapPan: boolean } {
-    const result = { editAction: null, cancelMapPan: false };
+  getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
+    const guides = {
+      type: 'FeatureCollection',
+      features: []
+    };
 
     const clickSequence = this.getClickSequence();
-    const mapCoords = event.mapCoords;
+    const mapCoords = props.lastPointerMoveEvent && props.lastPointerMoveEvent.mapCoords;
 
     let startPosition: ?Position = null;
     const selectedFeatureIndexes = props.selectedIndexes;
@@ -79,7 +75,7 @@ export class DrawLineStringMode extends BaseGeoJsonEditMode {
       (selectedGeometry && selectedGeometry.type !== 'LineString')
     ) {
       // unsupported
-      return result;
+      return guides;
     }
 
     if (selectedGeometry && selectedGeometry.type === 'LineString') {
@@ -90,14 +86,16 @@ export class DrawLineStringMode extends BaseGeoJsonEditMode {
       if (modeConfig && modeConfig.drawAtFront) {
         startPosition = selectedGeometry.coordinates[0];
       }
-    } else if (clickSequence.length === 1) {
+    } else if (clickSequence.length > 0) {
       startPosition = clickSequence[0];
     }
 
     if (startPosition) {
-      this._setTentativeFeature({
+      guides.features.push({
         type: 'Feature',
-        properties: {},
+        properties: {
+          guideType: 'tentative'
+        },
         geometry: {
           type: 'LineString',
           coordinates: [startPosition, mapCoords]
@@ -105,10 +103,10 @@ export class DrawLineStringMode extends BaseGeoJsonEditMode {
       });
     }
 
-    return result;
+    return guides;
   }
 
-  getCursorAdapter() {
-    return 'cell';
+  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>) {
+    props.onUpdateCursor('cell');
   }
 }

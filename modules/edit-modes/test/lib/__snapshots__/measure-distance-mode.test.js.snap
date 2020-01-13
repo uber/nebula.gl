@@ -13,7 +13,9 @@ Object {
       },
       "properties": Object {
         "editHandleType": "existing",
+        "featureIndex": -1,
         "guideType": "editHandle",
+        "positionIndexes": Array [],
       },
       "type": "Feature",
     },
@@ -27,7 +29,9 @@ Object {
       },
       "properties": Object {
         "editHandleType": "existing",
+        "featureIndex": -1,
         "guideType": "editHandle",
+        "positionIndexes": Array [],
       },
       "type": "Feature",
     },
@@ -80,7 +84,9 @@ Object {
       },
       "properties": Object {
         "editHandleType": "existing",
+        "featureIndex": -1,
         "guideType": "editHandle",
+        "positionIndexes": Array [],
       },
       "type": "Feature",
     },
@@ -114,7 +120,9 @@ Object {
       },
       "properties": Object {
         "editHandleType": "existing",
+        "featureIndex": -1,
         "guideType": "editHandle",
+        "positionIndexes": Array [],
       },
       "type": "Feature",
     },
@@ -128,7 +136,9 @@ Object {
       },
       "properties": Object {
         "editHandleType": "existing",
+        "featureIndex": -1,
         "guideType": "editHandle",
+        "positionIndexes": Array [],
       },
       "type": "Feature",
     },

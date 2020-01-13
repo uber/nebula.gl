@@ -701,10 +701,10 @@
     debug "^3.1.0"
     lodash.once "^4.1.1"
 
-"@deck.gl/core@^8.0.3":
-  version "8.0.3"
-  resolved "https://registry.yarnpkg.com/@deck.gl/core/-/core-8.0.3.tgz#6e7e4617b4bc8f44fcd5764f32d71abff2b773f5"
-  integrity sha512-XNeun2Z24cjbZm0NE5hmzNtJ41v1rkQ6VeIDc5eaWUtzA/khmBYeBO4x0OzTkuQo7jAZ9jbxp8/2pPO3+RmOCA==
+"@deck.gl/core@^8.0.5":
+  version "8.0.5"
+  resolved "https://registry.yarnpkg.com/@deck.gl/core/-/core-8.0.5.tgz#3c191c994172d253879a64417ba037d570bc8071"
+  integrity sha512-xAQhNPhR9FuQZx0zK1DEJ+pK6LH97OcABhwniCyU4tzReRW8KqnJILMrmrcrooY4lLw5KaPhZXnzUrILMrEmow==
   dependencies:
     "@loaders.gl/core" "^2.0.0"
     "@loaders.gl/images" "^2.0.0"
@@ -715,26 +715,26 @@
     mjolnir.js "^2.1.2"
     probe.gl "^3.2.0"
 
-"@deck.gl/layers@^8.0.3":
-  version "8.0.3"
-  resolved "https://registry.yarnpkg.com/@deck.gl/layers/-/layers-8.0.3.tgz#8917fb6b8acaf137a3a3b209bdb48991e01eb84c"
-  integrity sha512-hICrAjhhIKASigUnJ9gtyZg1Qn8NUTx0SguYf4kbfRbtVGkmRufTf2CB0Ljcu6bxEXPjdRq4plKiVn5bz1QoGg==
+"@deck.gl/layers@^8.0.5":
+  version "8.0.5"
+  resolved "https://registry.yarnpkg.com/@deck.gl/layers/-/layers-8.0.5.tgz#d49f4379536c3fa4974b4083a5b01d840844c883"
+  integrity sha512-uUY7OH8wD4Y29YbXrOuhPK+bdUDEACMrTcv1ECPsdsexwJeT0sqnXcMxllspMAA4fDF0fffZHL8Q+ll135Otug==
   dependencies:
     "@loaders.gl/images" "^2.0.0"
     "@mapbox/tiny-sdf" "^1.1.0"
     earcut "^2.0.6"
 
-"@deck.gl/mesh-layers@^8.0.3":
-  version "8.0.3"
-  resolved "https://registry.yarnpkg.com/@deck.gl/mesh-layers/-/mesh-layers-8.0.3.tgz#e400b011a1e82170647ba36e5cbbc2218bf50c03"
-  integrity sha512-5MWLkAwN2KW6O5viUGAnATVmp7leZiVKgtnVFMuLxzRdsvdwhQYlI7hI2y2BSR9pdxe2V1Fhdst1ZStdvDi33Q==
+"@deck.gl/mesh-layers@^8.0.5":
+  version "8.0.5"
+  resolved "https://registry.yarnpkg.com/@deck.gl/mesh-layers/-/mesh-layers-8.0.5.tgz#d491f919fd2cc5ca07bda7eaf51e0e45b787132d"
+  integrity sha512-nJ//ilPVDxQ2d71TWEDOQZQJWWjxqnnW+yrDCnPhdF8x+hyhLFwsSQIWRGkYX/bolX7MeDOK2bcj6BjmZTA5Bg==
   dependencies:
     "@luma.gl/experimental" "^8.0.1"
 
-"@deck.gl/react@^8.0.3":
-  version "8.0.3"
-  resolved "https://registry.yarnpkg.com/@deck.gl/react/-/react-8.0.3.tgz#b173060cc2c16bbcd669b037d0785d56892d0e9f"
-  integrity sha512-9FLIub6oCMOEBSKcxEDsZN8asJRI3SoVF+vBfXNBBtsMFU2aPyhDY9ZxPgsLhgxhZAK3QlXPXVQL3M1pR6A5nA==
+"@deck.gl/react@^8.0.5":
+  version "8.0.5"
+  resolved "https://registry.yarnpkg.com/@deck.gl/react/-/react-8.0.5.tgz#92065a1bed892ef2dbcdb0346f71f89d0345879b"
+  integrity sha512-aKczC7iyXual11Q+Ocn4zH+EDKS8V0gTvz2iZqb2YwNeJfKNl6Ldydh3GD5lDugQzhyKYRmTwgVh81bSC0IGmg==
   dependencies:
     prop-types "^15.6.0"
 

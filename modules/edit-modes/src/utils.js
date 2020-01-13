@@ -5,8 +5,15 @@ import bearing from '@turf/bearing';
 import pointToLineDistance from '@turf/point-to-line-distance';
 import { point } from '@turf/helpers';
 import WebMercatorViewport from 'viewport-mercator-project';
-import type { Viewport } from './types.js';
-import type { Position, Point, LineString, FeatureOf, FeatureWithProps } from './geojson-types.js';
+import type { Viewport, Pick, EditHandleFeature, EditHandleType } from './types.js';
+import type {
+  Geometry,
+  Position,
+  Point,
+  LineString,
+  FeatureOf,
+  FeatureWithProps
+} from './geojson-types.js';
 
 export type NearestPointType = FeatureWithProps<Point, { dist: number, index: number }>;
 
@@ -168,4 +175,134 @@ export function nearestPointOnProjectedLine(
       index: index - 1
     }
   };
+}
+
+export function getPickedEditHandle(picks: ?(Pick[])): ?EditHandleFeature {
+  const handles = getPickedEditHandles(picks);
+  return handles.length ? handles[0] : null;
+}
+
+export function getNonGuidePicks(picks: Pick[]): Pick[] {
+  return picks && picks.filter(pick => !pick.isGuide);
+}
+
+export function getPickedExistingEditHandle(picks: ?(Pick[])): ?EditHandleFeature {
+  const handles = getPickedEditHandles(picks);
+  return handles.find(
+    ({ properties }) => properties.featureIndex >= 0 && properties.editHandleType === 'existing'
+  );
+}
+
+export function getPickedIntermediateEditHandle(picks: ?(Pick[])): ?EditHandleFeature {
+  const handles = getPickedEditHandles(picks);
+  return handles.find(
+    ({ properties }) => properties.featureIndex >= 0 && properties.editHandleType === 'intermediate'
+  );
+}
+
+export function getPickedEditHandles(picks: ?(Pick[])): EditHandleFeature[] {
+  const handles =
+    (picks &&
+      picks
+        .filter(pick => pick.isGuide && pick.object.properties.guideType === 'editHandle')
+        .map(pick => pick.object)) ||
+    [];
+
+  return handles;
+}
+
+export function getEditHandlesForGeometry(
+  geometry: Geometry,
+  featureIndex: number,
+  editHandleType: EditHandleType = 'existing'
+): EditHandleFeature[] {
+  let handles: EditHandleFeature[] = [];
+
+  switch (geometry.type) {
+    case 'Point':
+      // positions are not nested
+      handles = [
+        {
+          type: 'Feature',
+          properties: {
+            guideType: 'editHandle',
+            editHandleType,
+            positionIndexes: [],
+            featureIndex
+          },
+          geometry: {
+            type: 'Point',
+            coordinates: geometry.coordinates
+          }
+        }
+      ];
+      break;
+    case 'MultiPoint':
+    case 'LineString':
+      // positions are nested 1 level
+      handles = handles.concat(
+        getEditHandlesForCoordinates(geometry.coordinates, [], featureIndex, editHandleType)
+      );
+      break;
+    case 'Polygon':
+    case 'MultiLineString':
+      // positions are nested 2 levels
+      for (let a = 0; a < geometry.coordinates.length; a++) {
+        handles = handles.concat(
+          getEditHandlesForCoordinates(geometry.coordinates[a], [a], featureIndex, editHandleType)
+        );
+        if (geometry.type === 'Polygon') {
+          // Don't repeat the first/last handle for Polygons
+          handles = handles.slice(0, -1);
+        }
+      }
+      break;
+    case 'MultiPolygon':
+      // positions are nested 3 levels
+      for (let a = 0; a < geometry.coordinates.length; a++) {
+        for (let b = 0; b < geometry.coordinates[a].length; b++) {
+          handles = handles.concat(
+            getEditHandlesForCoordinates(
+              geometry.coordinates[a][b],
+              [a, b],
+              featureIndex,
+              editHandleType
+            )
+          );
+          // Don't repeat the first/last handle for Polygons
+          handles = handles.slice(0, -1);
+        }
+      }
+      break;
+    default:
+      throw Error(`Unhandled geometry type: ${geometry.type}`);
+  }
+
+  return handles;
+}
+
+function getEditHandlesForCoordinates(
+  coordinates: any[],
+  positionIndexPrefix: number[],
+  featureIndex: number,
+  editHandleType: EditHandleType = 'existing'
+): EditHandleFeature[] {
+  const editHandles = [];
+  for (let i = 0; i < coordinates.length; i++) {
+    const position = coordinates[i];
+    editHandles.push({
+      type: 'Feature',
+      properties: {
+        guideType: 'editHandle',
+        positionIndexes: [...positionIndexPrefix, i],
+        featureIndex,
+        editHandleType
+      },
+      geometry: {
+        type: 'Point',
+        coordinates: position
+      }
+    });
+  }
+  return editHandles;
 }

@@ -107,14 +107,11 @@ export class Draw90DegreePolygonMode extends BaseGeoJsonEditMode {
 
       const clickedEditHandle = getPickedEditHandle(picks);
 
-      console.log('clickedEditHandle', clickedEditHandle);
       if (
         clickedEditHandle &&
         (clickedEditHandle.properties.positionIndexes[1] === 0 ||
           clickedEditHandle.properties.positionIndexes[1] === polygon.coordinates[0].length - 3)
       ) {
-        console.log('finished polygon');
-
         // They clicked the first or last point (or double-clicked), so complete the polygon
         const polygonToAdd: Polygon = {
           type: 'Polygon',

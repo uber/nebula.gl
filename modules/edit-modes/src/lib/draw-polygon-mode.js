@@ -2,7 +2,8 @@
 
 import type { ClickEvent, PointerMoveEvent, ModeProps, GuideFeatureCollection } from '../types.js';
 import type { Polygon, FeatureCollection } from '../geojson-types.js';
-import { BaseGeoJsonEditMode, getPickedEditHandle } from './geojson-edit-mode.js';
+import { getPickedEditHandle } from '../utils.js';
+import { BaseGeoJsonEditMode } from './geojson-edit-mode.js';
 
 export class DrawPolygonMode extends BaseGeoJsonEditMode {
   getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
@@ -77,8 +78,8 @@ export class DrawPolygonMode extends BaseGeoJsonEditMode {
     if (
       clickSequence.length > 2 &&
       clickedEditHandle &&
-      (clickedEditHandle.positionIndexes[0] === 0 ||
-        clickedEditHandle.positionIndexes[0] === clickSequence.length - 1)
+      (clickedEditHandle.properties.positionIndexes[0] === 0 ||
+        clickedEditHandle.properties.positionIndexes[0] === clickSequence.length - 1)
     ) {
       // They clicked the first or last point (or double-clicked), so complete the polygon
 

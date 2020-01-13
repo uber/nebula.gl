@@ -6,6 +6,10 @@ import {
   recursivelyTraverseNestedArrays,
   nearestPointOnProjectedLine,
   getEditHandlesForGeometry,
+  getPickedEditHandles,
+  getPickedEditHandle,
+  getPickedExistingEditHandle,
+  getPickedIntermediateEditHandle,
   type NearestPointType
 } from '../utils.js';
 import type { LineString, Point, FeatureCollection, FeatureOf } from '../geojson-types.js';
@@ -18,14 +22,7 @@ import type {
   Viewport,
   GuideFeatureCollection
 } from '../types.js';
-import {
-  BaseGeoJsonEditMode,
-  getPickedEditHandle,
-  getPickedEditHandles,
-  getPickedExistingEditHandle,
-  getPickedIntermediateEditHandle,
-  type GeoJsonEditAction
-} from './geojson-edit-mode.js';
+import { BaseGeoJsonEditMode, type GeoJsonEditAction } from './geojson-edit-mode.js';
 import { ImmutableFeatureCollection } from './immutable-feature-collection.js';
 
 export class ModifyMode extends BaseGeoJsonEditMode {
@@ -136,10 +133,12 @@ export class ModifyMode extends BaseGeoJsonEditMode {
     const pickedIntermediateHandle = getPickedIntermediateEditHandle(event.picks);
 
     if (pickedExistingHandle) {
+      const { featureIndex, positionIndexes } = pickedExistingHandle.properties;
+
       let updatedData;
       try {
         updatedData = new ImmutableFeatureCollection(props.data)
-          .removePosition(pickedExistingHandle.featureIndex, pickedExistingHandle.positionIndexes)
+          .removePosition(featureIndex, positionIndexes)
           .getObject();
       } catch (ignored) {
         // This happens if user attempts to remove the last point
@@ -150,19 +149,17 @@ export class ModifyMode extends BaseGeoJsonEditMode {
           updatedData,
           editType: 'removePosition',
           editContext: {
-            featureIndexes: [pickedExistingHandle.featureIndex],
-            positionIndexes: pickedExistingHandle.positionIndexes,
-            position: pickedExistingHandle.position
+            featureIndexes: [featureIndex],
+            positionIndexes,
+            position: pickedExistingHandle.geometry.coordinates
           }
         });
       }
     } else if (pickedIntermediateHandle) {
+      const { featureIndex, positionIndexes } = pickedIntermediateHandle.properties;
+
       const updatedData = new ImmutableFeatureCollection(props.data)
-        .addPosition(
-          pickedIntermediateHandle.featureIndex,
-          pickedIntermediateHandle.positionIndexes,
-          pickedIntermediateHandle.position
-        )
+        .addPosition(featureIndex, positionIndexes, pickedIntermediateHandle.geometry.coordinates)
         .getObject();
 
       if (updatedData) {
@@ -170,9 +167,9 @@ export class ModifyMode extends BaseGeoJsonEditMode {
           updatedData,
           editType: 'addPosition',
           editContext: {
-            featureIndexes: [pickedIntermediateHandle.featureIndex],
-            positionIndexes: pickedIntermediateHandle.positionIndexes,
-            position: pickedIntermediateHandle.position
+            featureIndexes: [featureIndex],
+            positionIndexes,
+            position: pickedIntermediateHandle.geometry.coordinates
           }
         });
       }
@@ -185,16 +182,22 @@ export class ModifyMode extends BaseGeoJsonEditMode {
     const editHandle = getPickedEditHandle(event.pointerDownPicks);
 
     if (event.isDragging && editHandle) {
+      const editHandleProperties = editHandle.properties;
+
       const updatedData = new ImmutableFeatureCollection(props.data)
-        .replacePosition(editHandle.featureIndex, editHandle.positionIndexes, event.mapCoords)
+        .replacePosition(
+          editHandleProperties.featureIndex,
+          editHandleProperties.positionIndexes,
+          event.mapCoords
+        )
         .getObject();
 
       editAction = {
         updatedData,
         editType: 'movePosition',
         editContext: {
-          featureIndexes: [editHandle.featureIndex],
-          positionIndexes: editHandle.positionIndexes,
+          featureIndexes: [editHandleProperties.featureIndex],
+          positionIndexes: editHandleProperties.positionIndexes,
           position: event.mapCoords
         }
       };
@@ -217,16 +220,22 @@ export class ModifyMode extends BaseGeoJsonEditMode {
 
     const editHandle = getPickedIntermediateEditHandle(event.picks);
     if (selectedFeatureIndexes.length && editHandle) {
+      const editHandleProperties = editHandle.properties;
+
       const updatedData = new ImmutableFeatureCollection(props.data)
-        .addPosition(editHandle.featureIndex, editHandle.positionIndexes, event.mapCoords)
+        .addPosition(
+          editHandleProperties.featureIndex,
+          editHandleProperties.positionIndexes,
+          event.mapCoords
+        )
         .getObject();
 
       props.onEdit({
         updatedData,
         editType: 'addPosition',
         editContext: {
-          featureIndexes: [editHandle.featureIndex],
-          positionIndexes: editHandle.positionIndexes,
+          featureIndexes: [editHandleProperties.featureIndex],
+          positionIndexes: editHandleProperties.positionIndexes,
           position: event.mapCoords
         }
       });
@@ -237,16 +246,22 @@ export class ModifyMode extends BaseGeoJsonEditMode {
     const selectedFeatureIndexes = props.selectedIndexes;
     const editHandle = getPickedEditHandle(event.picks);
     if (selectedFeatureIndexes.length && editHandle) {
+      const editHandleProperties = editHandle.properties;
+
       const updatedData = new ImmutableFeatureCollection(props.data)
-        .replacePosition(editHandle.featureIndex, editHandle.positionIndexes, event.mapCoords)
+        .replacePosition(
+          editHandleProperties.featureIndex,
+          editHandleProperties.positionIndexes,
+          event.mapCoords
+        )
         .getObject();
 
       props.onEdit({
         updatedData,
         editType: 'finishMovePosition',
         editContext: {
-          featureIndexes: [editHandle.featureIndex],
-          positionIndexes: editHandle.positionIndexes,
+          featureIndexes: [editHandleProperties.featureIndex],
+          positionIndexes: editHandleProperties.positionIndexes,
           position: event.mapCoords
         }
       });

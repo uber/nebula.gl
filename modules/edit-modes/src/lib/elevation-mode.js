@@ -1,7 +1,7 @@
 // @flow
 import type { ModeProps, PointerMoveEvent, StopDraggingEvent } from '../types.js';
 import type { Position, FeatureCollection } from '../geojson-types.js';
-import { getPickedEditHandle } from './geojson-edit-mode.js';
+import { getPickedEditHandle } from '../utils.js';
 import { ModifyMode } from './modify-mode.js';
 
 function defaultCalculateElevationChange({
@@ -49,13 +49,13 @@ export class ElevationMode extends ModifyMode {
 
   handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>) {
     const editHandle = getPickedEditHandle(event.pointerDownPicks);
-    const position = editHandle ? editHandle.position : event.mapCoords;
+    const position = editHandle ? editHandle.geometry.coordinates : event.mapCoords;
     super.handlePointerMove(this.makeElevatedEvent(event, position, props), props);
   }
 
   handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollection>) {
     const editHandle = getPickedEditHandle(event.picks);
-    const position = editHandle ? editHandle.position : event.mapCoords;
+    const position = editHandle ? editHandle.geometry.coordinates : event.mapCoords;
     super.handleStopDragging(this.makeElevatedEvent(event, position, props), props);
   }
 

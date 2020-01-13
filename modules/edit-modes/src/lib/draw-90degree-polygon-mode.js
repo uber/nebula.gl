@@ -5,10 +5,14 @@ import bearing from '@turf/bearing';
 import lineIntersect from '@turf/line-intersect';
 import turfDistance from '@turf/distance';
 import { point, lineString as turfLineString } from '@turf/helpers';
-import { generatePointsParallelToLinePoints, getEditHandlesForGeometry } from '../utils';
+import {
+  generatePointsParallelToLinePoints,
+  getPickedEditHandle,
+  getEditHandlesForGeometry
+} from '../utils';
 import type { ClickEvent, PointerMoveEvent, ModeProps, GuideFeatureCollection } from '../types.js';
 import type { Polygon, LineString, Position, FeatureCollection } from '../geojson-types.js';
-import { BaseGeoJsonEditMode, getPickedEditHandle } from './geojson-edit-mode.js';
+import { BaseGeoJsonEditMode } from './geojson-edit-mode.js';
 
 export class Draw90DegreePolygonMode extends BaseGeoJsonEditMode {
   getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
@@ -106,8 +110,8 @@ export class Draw90DegreePolygonMode extends BaseGeoJsonEditMode {
       console.log('clickedEditHandle', clickedEditHandle);
       if (
         clickedEditHandle &&
-        (clickedEditHandle.positionIndexes[1] === 0 ||
-          clickedEditHandle.positionIndexes[1] === polygon.coordinates[0].length - 3)
+        (clickedEditHandle.properties.positionIndexes[1] === 0 ||
+          clickedEditHandle.properties.positionIndexes[1] === polygon.coordinates[0].length - 3)
       ) {
         console.log('finished polygon');
 

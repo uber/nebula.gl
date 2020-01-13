@@ -17,17 +17,9 @@ import type {
   TentativeFeature,
   EditHandleType
 } from '../types.js';
-import type {
-  FeatureCollection,
-  Feature,
-  FeatureOf,
-  Point,
-  Polygon,
-  Geometry,
-  Position
-} from '../geojson-types.js';
+import type { FeatureCollection, Feature, Polygon, Geometry, Position } from '../geojson-types.js';
+import { getPickedEditHandles, getNonGuidePicks } from '../utils.js';
 import { EditMode } from './edit-mode.js';
-
 import { ImmutableFeatureCollection } from './immutable-feature-collection.js';
 
 // TODO edit-modes: - Change this to just be a GoeJSON instead
@@ -106,7 +98,9 @@ export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, GuideFea
   isSelectionPicked(picks: Pick[], props: ModeProps<FeatureCollection>): boolean {
     if (!picks.length) return false;
     const pickedFeatures = getNonGuidePicks(picks).map(({ index }) => index);
-    const pickedHandles = getPickedEditHandles(picks).map(handle => handle.featureIndex);
+    const pickedHandles = getPickedEditHandles(picks).map(
+      ({ properties }) => properties.featureIndex
+    );
     const pickedIndexes = new Set([...pickedFeatures, ...pickedHandles]);
     return props.selectedIndexes.some(index => pickedIndexes.has(index));
   }
@@ -230,136 +224,10 @@ export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, GuideFea
   handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollection>): void {}
 }
 
-export function getPickedEditHandle(picks: ?(any[])): ?EditHandle {
-  const handles = getPickedEditHandles(picks);
-  return handles.length ? handles[0] : null;
-}
-
-export function getNonGuidePicks(picks: any[]): any[] {
-  return picks && picks.filter(pick => !pick.isGuide);
-}
-
-// TODO edit-modes: refactor to just return `info.object`
-export function getPickedEditHandles(picks: ?(any[])): EditHandle[] {
-  const handles =
-    (picks &&
-      picks
-        .filter(pick => pick.isGuide && pick.object.properties.guideType === 'editHandle')
-        .map(pick => pick.object)) ||
-    [];
-
-  return handles.map(handle => {
-    const feature: FeatureOf<Point> = handle;
-    const { geometry } = feature;
-
-    // $FlowFixMe
-    const properties: { [string]: any } = feature.properties;
-    return {
-      type: properties.editHandleType,
-      position: geometry.coordinates,
-      positionIndexes: properties.positionIndexes,
-      featureIndex: properties.featureIndex
-    };
-  });
-}
-
-export function getPickedExistingEditHandle(picks: ?(any[])): ?EditHandle {
-  const handles = getPickedEditHandles(picks);
-  return handles.find(h => h.featureIndex >= 0 && h.type === 'existing');
-}
-
-export function getPickedIntermediateEditHandle(picks: ?(any[])): ?EditHandle {
-  const handles = getPickedEditHandles(picks);
-  return handles.find(h => h.featureIndex >= 0 && h.type === 'intermediate');
-}
-
 export function getIntermediatePosition(position1: Position, position2: Position): Position {
   const intermediatePosition = [
     (position1[0] + position2[0]) / 2.0,
     (position1[1] + position2[1]) / 2.0
   ];
   return intermediatePosition;
-}
-
-// TODO edit-modes: - Remove this
-export function getEditHandlesForGeometry(
-  geometry: Geometry,
-  featureIndex: number,
-  editHandleType: EditHandleType = 'existing'
-) {
-  let handles: EditHandle[] = [];
-
-  switch (geometry.type) {
-    case 'Point':
-      // positions are not nested
-      handles = [
-        {
-          position: geometry.coordinates,
-          positionIndexes: [],
-          featureIndex,
-          type: editHandleType
-        }
-      ];
-      break;
-    case 'MultiPoint':
-    case 'LineString':
-      // positions are nested 1 level
-      handles = handles.concat(
-        getEditHandlesForCoordinates(geometry.coordinates, [], featureIndex, editHandleType)
-      );
-      break;
-    case 'Polygon':
-    case 'MultiLineString':
-      // positions are nested 2 levels
-      for (let a = 0; a < geometry.coordinates.length; a++) {
-        handles = handles.concat(
-          getEditHandlesForCoordinates(geometry.coordinates[a], [a], featureIndex, editHandleType)
-        );
-        if (geometry.type === 'Polygon') {
-          // Don't repeat the first/last handle for Polygons
-          handles = handles.slice(0, -1);
-        }
-      }
-      break;
-    case 'MultiPolygon':
-      // positions are nested 3 levels
-      for (let a = 0; a < geometry.coordinates.length; a++) {
-        for (let b = 0; b < geometry.coordinates[a].length; b++) {
-          handles = handles.concat(
-            getEditHandlesForCoordinates(
-              geometry.coordinates[a][b],
-              [a, b],
-              featureIndex,
-              editHandleType
-            )
-          );
-          // Don't repeat the first/last handle for Polygons
-          handles = handles.slice(0, -1);
-        }
-      }
-      break;
-    default:
-      throw Error(`Unhandled geometry type: ${geometry.type}`);
-  }
-
-  return handles;
-}
-
-function getEditHandlesForCoordinates(
-  coordinates: any[],
-  positionIndexPrefix: number[],
-  featureIndex: number,
-  editHandleType: EditHandleType = 'existing'
-): EditHandle[] {
-  const editHandles = [];
-  for (let i = 0; i < coordinates.length; i++) {
-    const position = coordinates[i];
-    editHandles.push({
-      position,
-      positionIndexes: [...positionIndexPrefix, i],
-      featureIndex,
-      type: editHandleType
-    });
-  }
-  return editHandles;
 }

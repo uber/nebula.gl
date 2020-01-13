@@ -182,6 +182,24 @@ export function getPickedEditHandle(picks: ?(Pick[])): ?EditHandleFeature {
   return handles.length ? handles[0] : null;
 }
 
+export function getNonGuidePicks(picks: Pick[]): Pick[] {
+  return picks && picks.filter(pick => !pick.isGuide);
+}
+
+export function getPickedExistingEditHandle(picks: ?(Pick[])): ?EditHandleFeature {
+  const handles = getPickedEditHandles(picks);
+  return handles.find(
+    ({ properties }) => properties.featureIndex >= 0 && properties.editHandleType === 'existing'
+  );
+}
+
+export function getPickedIntermediateEditHandle(picks: ?(Pick[])): ?EditHandleFeature {
+  const handles = getPickedEditHandles(picks);
+  return handles.find(
+    ({ properties }) => properties.featureIndex >= 0 && properties.editHandleType === 'intermediate'
+  );
+}
+
 export function getPickedEditHandles(picks: ?(Pick[])): EditHandleFeature[] {
   const handles =
     (picks &&

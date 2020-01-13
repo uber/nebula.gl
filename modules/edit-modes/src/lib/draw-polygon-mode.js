@@ -106,6 +106,7 @@ export class DrawPolygonMode extends BaseGeoJsonEditMode {
       pointerDownPicks: null,
       pointerDownScreenCoords: null,
       pointerDownMapCoords: null,
+      cancelPan: () => {},
       sourceEvent: null
     };
 

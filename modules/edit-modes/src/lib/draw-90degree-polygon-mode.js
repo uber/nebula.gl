@@ -136,6 +136,7 @@ export class Draw90DegreePolygonMode extends BaseGeoJsonEditMode {
       pointerDownPicks: null,
       pointerDownScreenCoords: null,
       pointerDownMapCoords: null,
+      cancelPan: () => {},
       sourceEvent: null
     };
     this.handlePointerMove(fakePointerMoveEvent, props);

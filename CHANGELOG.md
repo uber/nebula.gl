@@ -4,6 +4,10 @@ _All notable changes to this project will be documented in this file. This proje
 
 <!-- INSERT HERE -->
 
+<!-- NEXT VERSION
+* Call `event.cancelPan()` instead of `event.sourceEvent.stopPropagation()` in custom edit modes
+-->
+
 ## [0.17.0](https://github.com/uber/nebula.gl/compare/v0.16.0...v0.17.0) - 2020-01-10
 
 ### Changes
@@ -19,8 +23,8 @@ _All notable changes to this project will be documented in this file. This proje
 
 ### Breaking changes
 
-*  DrawCircleByBoundingBoxMode renamed to DrawCircleByDiameterMode (#314)
-*  The following props of `EditableGeoJsonLayer` are no longer proxied by nebula.gl, instead use deck.gl's [_subLayerProps](https://deck.gl/#/documentation/deckgl-api-reference/layers/composite-layer?section=_sublayerprops-object-experimental):
+* DrawCircleByBoundingBoxMode renamed to DrawCircleByDiameterMode (#314)
+* The following props of `EditableGeoJsonLayer` are no longer proxied by nebula.gl (instead use deck.gl's [_subLayerProps](https://deck.gl/#/documentation/deckgl-api-reference/layers/composite-layer?section=_sublayerprops-object-experimental)):
   * `getLineDashArray`
   * `lineDashJustified`
   * `getTentativeLineDashArray`

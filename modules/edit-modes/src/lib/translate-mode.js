@@ -43,9 +43,8 @@ export class TranslateMode extends BaseGeoJsonEditMode {
       }
     }
 
-    // TODO: is there a less hacky way to prevent map panning?
     // cancel map panning
-    event.sourceEvent.stopPropagation();
+    event.cancelPan();
   }
 
   handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollection>) {

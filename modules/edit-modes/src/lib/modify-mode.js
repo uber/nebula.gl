@@ -211,7 +211,7 @@ export class ModifyMode extends BaseGeoJsonEditMode {
     // Cancel map panning if pointer went down on an edit handle
     const cancelMapPan = Boolean(editHandle);
     if (cancelMapPan) {
-      event.sourceEvent.stopPropagation();
+      event.cancelPan();
     }
   }
 

@@ -284,6 +284,7 @@ export function createPointerMoveEvent(mapCoords: Position, picks: Pick[] = []):
     pointerDownPicks: null,
     pointerDownScreenCoords: null,
     pointerDownMapCoords: null,
+    cancelPan: jest.fn(),
     sourceEvent: null
   };
 }

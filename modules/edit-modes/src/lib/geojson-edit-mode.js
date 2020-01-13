@@ -14,21 +14,12 @@ import type {
   Tooltip,
   ModeProps,
   GuideFeatureCollection,
-  TentativeFeature,
-  EditHandleType
+  TentativeFeature
 } from '../types.js';
 import type { FeatureCollection, Feature, Polygon, Geometry, Position } from '../geojson-types.js';
 import { getPickedEditHandles, getNonGuidePicks } from '../utils.js';
 import { EditMode } from './edit-mode.js';
 import { ImmutableFeatureCollection } from './immutable-feature-collection.js';
-
-// TODO edit-modes: - Change this to just be a GoeJSON instead
-export type EditHandle = {
-  position: Position,
-  positionIndexes: number[],
-  featureIndex: number,
-  type: EditHandleType
-};
 
 export type GeoJsonEditAction = EditAction<FeatureCollection>;
 

@@ -4,13 +4,13 @@
     "start-local": "webpack-dev-server --env.local --progress --hot --open"
   },
   "dependencies": {
-    "@deck.gl/core": "^8.0.3",
-    "@deck.gl/layers": "^8.0.3",
-    "@deck.gl/react": "^8.0.3",
-    "@deck.gl/mesh-layers": "^8.0.3",
+    "@deck.gl/core": "^8.0.6",
+    "@deck.gl/layers": "^8.0.6",
+    "@deck.gl/mesh-layers": "^8.0.6",
+    "@deck.gl/react": "^8.0.6",
     "react": "^16.0.0",
     "react-dom": "^16.4.2",
-    "react-map-gl": "^3.3.4",
+    "react-map-gl": "^5.2.1",
     "styled-components": "^4.3.2"
   },
   "devDependencies": {

@@ -51,7 +51,6 @@ export type GeoJsonEditMode = EditMode<FeatureCollection, FeatureCollection>;
 
 export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, GuideFeatureCollection> {
   _clickSequence: Position[] = [];
-  _tentativeFeature: ?TentativeFeature;
 
   getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
     return DEFAULT_GUIDES;
@@ -102,22 +101,6 @@ export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, GuideFea
 
     // $FlowFixMe
     return guides.features.find(f => f.properties && f.properties.guideType === 'tentative');
-  }
-
-  // TODO edit-modes: delete me once mode handlers do getEditHandles lazily
-  getTentativeFeature(): ?TentativeFeature {
-    return this._tentativeFeature;
-  }
-
-  // TODO edit-modes: delete me once mode handlers do getEditHandles lazily
-  _setTentativeFeature(tentativeFeature: ?TentativeFeature): void {
-    if (tentativeFeature) {
-      tentativeFeature.properties = {
-        ...(tentativeFeature.properties || {}),
-        guideType: 'tentative'
-      };
-    }
-    this._tentativeFeature = tentativeFeature;
   }
 
   isSelectionPicked(picks: Pick[], props: ModeProps<FeatureCollection>): boolean {

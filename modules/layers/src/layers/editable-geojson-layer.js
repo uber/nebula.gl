@@ -52,7 +52,7 @@ const DEFAULT_EDITING_SNAP_POINT_RADIUS = 7;
 const DEFAULT_EDIT_MODE = DrawPolygonMode;
 
 function guideAccessor(accessor) {
-  if (!accessor) {
+  if (!accessor || typeof accessor !== 'function') {
     return accessor;
   }
   return guideMaybeWrapped => accessor(unwrapGuide(guideMaybeWrapped));

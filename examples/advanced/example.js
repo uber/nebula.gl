@@ -902,6 +902,20 @@ export default class Example extends Component<
           width: 58,
           height: 58,
           mask: false
+        },
+        'snap-source': {
+          x: 58,
+          y: 0,
+          width: 58,
+          height: 58,
+          mask: false
+        },
+        'snap-target': {
+          x: 0,
+          y: 0,
+          width: 58,
+          height: 58,
+          mask: false
         }
       },
       getEditHandleIcon: d => getEditHandleTypeFromEitherLayer(d),

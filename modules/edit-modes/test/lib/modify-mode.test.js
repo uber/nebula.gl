@@ -224,7 +224,6 @@ describe('getGuides()', () => {
         picks: [pick],
         mapCoords,
         screenCoords: [42, 42],
-        isDragging: false,
         cancelPan: jest.fn(),
         sourceEvent: null
       }
@@ -281,7 +280,6 @@ describe('getGuides()', () => {
         ],
         mapCoords,
         screenCoords: [42, 42],
-        isDragging: false,
         cancelPan: jest.fn(),
         sourceEvent: null
       }
@@ -332,7 +330,6 @@ describe('getGuides()', () => {
         ],
         mapCoords,
         screenCoords: [42, 42],
-        isDragging: false,
         cancelPan: jest.fn(),
         sourceEvent: null
       }

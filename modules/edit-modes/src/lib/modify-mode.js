@@ -19,10 +19,11 @@ import type {
   PointerMoveEvent,
   StartDraggingEvent,
   StopDraggingEvent,
+  DraggingEvent,
   Viewport,
   GuideFeatureCollection
 } from '../types.js';
-import { BaseGeoJsonEditMode, type GeoJsonEditAction } from './geojson-edit-mode.js';
+import { BaseGeoJsonEditMode } from './geojson-edit-mode.js';
 import { ImmutableFeatureCollection } from './immutable-feature-collection.js';
 
 export class ModifyMode extends BaseGeoJsonEditMode {
@@ -176,12 +177,13 @@ export class ModifyMode extends BaseGeoJsonEditMode {
     }
   }
 
-  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>): void {
-    let editAction: ?GeoJsonEditAction = null;
-
+  handleDragging(event: DraggingEvent, props: ModeProps<FeatureCollection>): void {
     const editHandle = getPickedEditHandle(event.pointerDownPicks);
 
-    if (event.isDragging && editHandle) {
+    if (editHandle) {
+      // Cancel map panning if pointer went down on an edit handle
+      event.cancelPan();
+
       const editHandleProperties = editHandle.properties;
 
       const updatedData = new ImmutableFeatureCollection(props.data)
@@ -192,7 +194,7 @@ export class ModifyMode extends BaseGeoJsonEditMode {
         )
         .getObject();
 
-      editAction = {
+      props.onEdit({
         updatedData,
         editType: 'movePosition',
         editContext: {
@@ -200,19 +202,13 @@ export class ModifyMode extends BaseGeoJsonEditMode {
           positionIndexes: editHandleProperties.positionIndexes,
           position: event.mapCoords
         }
-      };
-
-      props.onEdit(editAction);
+      });
     }
+  }
 
+  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>): void {
     const cursor = this.getCursor(event);
     props.onUpdateCursor(cursor);
-
-    // Cancel map panning if pointer went down on an edit handle
-    const cancelMapPan = Boolean(editHandle);
-    if (cancelMapPan) {
-      event.cancelPan();
-    }
   }
 
   handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollection>) {

@@ -6,6 +6,7 @@ import type {
   PointerMoveEvent,
   StartDraggingEvent,
   StopDraggingEvent,
+  DraggingEvent,
   Tooltip,
   ModeProps
 } from '../types.js';
@@ -22,6 +23,9 @@ export interface EditMode<TData, TGuides> {
 
   // Called when the pointer went down on something rendered by this layer, the pointer moved, and now the pointer is up
   handleStopDragging(event: StopDraggingEvent, props: ModeProps<TData>): void;
+
+  // Called when the pointer went down and is moving, regardless of whether something was picked
+  handleDragging(event: DraggingEvent, props: ModeProps<TData>): void;
 
   // Return features that can be used as a guide for editing the data
   getGuides(props: ModeProps<TData>): TGuides;

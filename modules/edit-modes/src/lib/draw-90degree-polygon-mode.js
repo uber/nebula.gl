@@ -132,7 +132,6 @@ export class Draw90DegreePolygonMode extends BaseGeoJsonEditMode {
       screenCoords: [-1, -1],
       mapCoords: event.mapCoords,
       picks: [],
-      isDragging: false,
       pointerDownPicks: null,
       pointerDownScreenCoords: null,
       pointerDownMapCoords: null,

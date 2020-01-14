@@ -10,6 +10,7 @@ import type {
   PointerMoveEvent,
   StartDraggingEvent,
   StopDraggingEvent,
+  DraggingEvent,
   Pick,
   Tooltip,
   ModeProps,
@@ -207,12 +208,10 @@ export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, GuideFea
   }
 
   handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>): void {}
-
   handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>): void {}
-
   handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollection>): void {}
-
   handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollection>): void {}
+  handleDragging(event: DraggingEvent, props: ModeProps<FeatureCollection>): void {}
 }
 
 export function getIntermediatePosition(position1: Position, position2: Position): Position {

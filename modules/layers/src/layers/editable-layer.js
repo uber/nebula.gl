@@ -6,12 +6,10 @@ import type {
   ClickEvent,
   StartDraggingEvent,
   StopDraggingEvent,
+  DraggingEvent,
   PointerMoveEvent,
   DoubleClickEvent
 } from '../../../edit-modes/src/index.js';
-
-// Minimum number of pixels the pointer must move from the original pointer down to be considered dragging
-const MINIMUM_POINTER_MOVE_THRESHOLD_PIXELS = 7;
 
 export default class EditableLayer extends CompositeLayer {
   // Overridable interaction event handlers
@@ -31,6 +29,10 @@ export default class EditableLayer extends CompositeLayer {
     // default implementation - do nothing
   }
 
+  onDragging(event: DraggingEvent) {
+    // default implementation - do nothing
+  }
+
   onPointerMove(event: PointerMoveEvent) {
     // default implementation - do nothing
   }
@@ -38,26 +40,6 @@ export default class EditableLayer extends CompositeLayer {
   // TODO: implement onCancelDragging (e.g. drag off screen)
 
   initializeState() {
-    // const { eventManager } = this.context.deck;
-    // eventManager.on(
-    //   'panstart',
-    //   event => {
-    //     console.log('panstart');
-    //     // event.stopImmediatePropagation();
-    //   },
-    //   { priority: 100 }
-    // );
-    // eventManager.on(
-    //   'panmove',
-    //   event => {
-    //     console.log('panmove');
-    //     // event.stopImmediatePropagation();
-    //   },
-    //   { priority: 100 }
-    // );
-    // // eventManager.on('pointermove', () => console.log('pointermove'));
-    // eventManager.on('panend', () => console.log('panend'));
-
     this.setState({
       _editableLayerState: {
         // Picked objects at the time the pointer went down
@@ -65,9 +47,7 @@ export default class EditableLayer extends CompositeLayer {
         // Screen coordinates where the pointer went down
         pointerDownScreenCoords: null,
         // Ground coordinates where the pointer went down
-        pointerDownMapCoords: null,
-        // Is the pointer dragging (pointer down + moved at least MINIMUM_POINTER_MOVE_THRESHOLD_PIXELS)
-        isDragging: false
+        pointerDownMapCoords: null
       }
     });
 
@@ -77,27 +57,26 @@ export default class EditableLayer extends CompositeLayer {
   _addPointerHandlers() {
     const { eventManager } = this.context.deck;
 
-    eventManager.on('anyclick', this._onAnyClick.bind(this));
-    // eventManager.on('pointermove', this._onPointerMove.bind(this), {
-    //   // give nebula a higher priority so that it can stop propagation to deck.gl's map panning handlers
-    //   priority: 100
-    // });
-    eventManager.on('panstart', this._onPanStart.bind(this), {
+    eventManager.on('anyclick', event => this._forwardEventToCurrentLayer('_onAnyClick', event));
+    eventManager.on('pointermove', this._onPointerMove.bind(this));
+    eventManager.on('panstart', event => this._forwardEventToCurrentLayer('_onPanStart', event), {
       // give nebula a higher priority so that it can stop propagation to deck.gl's map panning handlers
       priority: 100
     });
-    eventManager.on('panmove', this._onPanMove.bind(this), {
+    eventManager.on('panmove', event => this._forwardEventToCurrentLayer('_onPanMove', event), {
       // give nebula a higher priority so that it can stop propagation to deck.gl's map panning handlers
       priority: 100
     });
-    eventManager.on('panend', this._onPanEnd.bind(this), {
-      // give nebula a higher priority so that it can stop propagation to deck.gl's map panning handlers
-      priority: 100
-    });
-    eventManager.on('dblclick', this._onDoubleClick.bind(this), {
-      // give nebula a higher priority so that it can stop propagation to deck.gl's map panning handlers
-      priority: 100
-    });
+    eventManager.on('panend', event => this._forwardEventToCurrentLayer('_onPanEnd', event));
+    eventManager.on('dblclick', event => this._forwardEventToCurrentLayer('_onDoubleClick', event));
+  }
+
+  // A new layer instance is created on every render, so forward the event to the current layer
+  // This means that the first layer instance will stick around to be the event listener, but will forward to the
+  // latest layer instance.
+  _forwardEventToCurrentLayer(funcName: string, event: any) {
+    const func = this.getCurrentLayer()[funcName].bind(this.getCurrentLayer());
+    func(event);
   }
 
   _onAnyClick({ srcEvent }: any) {
@@ -139,8 +118,7 @@ export default class EditableLayer extends CompositeLayer {
         ...this.state._editableLayerState,
         pointerDownScreenCoords: screenCoords,
         pointerDownMapCoords: mapCoords,
-        pointerDownPicks: picks,
-        isDragging: true
+        pointerDownPicks: picks
       }
     });
 
@@ -166,15 +144,12 @@ export default class EditableLayer extends CompositeLayer {
       pointerDownMapCoords
     } = this.state._editableLayerState;
 
-    const { isDragging } = this.state._editableLayerState;
-
     const picks = this.getPicks(screenCoords);
 
-    this.onPointerMove({
+    this.onDragging({
       screenCoords,
       mapCoords,
       picks,
-      isDragging,
       pointerDownPicks,
       pointerDownScreenCoords,
       pointerDownMapCoords,
@@ -215,9 +190,32 @@ export default class EditableLayer extends CompositeLayer {
         ...this.state._editableLayerState,
         pointerDownScreenCoords: null,
         pointerDownMapCoords: null,
-        pointerDownPicks: null,
-        isDragging: false
+        pointerDownPicks: null
       }
+    });
+  }
+
+  _onPointerMove(event: any) {
+    const { srcEvent } = event;
+    const screenCoords = this.getScreenCoords(srcEvent);
+    const mapCoords = this.getMapCoords(screenCoords);
+
+    const {
+      pointerDownPicks,
+      pointerDownScreenCoords,
+      pointerDownMapCoords
+    } = this.state._editableLayerState;
+
+    const picks = this.getPicks(screenCoords);
+
+    this.onPointerMove({
+      screenCoords,
+      mapCoords,
+      picks,
+      pointerDownPicks,
+      pointerDownScreenCoords,
+      pointerDownMapCoords,
+      sourceEvent: srcEvent
     });
   }
 
@@ -240,13 +238,6 @@ export default class EditableLayer extends CompositeLayer {
 
   getMapCoords(screenCoords: number[]) {
     return this.context.viewport.unproject([screenCoords[0], screenCoords[1]]);
-  }
-
-  movedEnoughForDrag(screenCoords1: number[], screenCoords2: number[]) {
-    return (
-      Math.abs(screenCoords1[0] - screenCoords2[0]) > MINIMUM_POINTER_MOVE_THRESHOLD_PIXELS ||
-      Math.abs(screenCoords1[1] - screenCoords2[1]) > MINIMUM_POINTER_MOVE_THRESHOLD_PIXELS
-    );
   }
 }
 

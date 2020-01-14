@@ -7,13 +7,7 @@ import {
   getPickedIntermediateEditHandle
 } from '../utils.js';
 import type { FeatureCollection } from '../geojson-types.js';
-import type {
-  ModeProps,
-  PointerMoveEvent,
-  StartDraggingEvent,
-  StopDraggingEvent
-} from '../types.js';
-import { type GeoJsonEditAction } from './geojson-edit-mode.js';
+import type { ModeProps, StartDraggingEvent, StopDraggingEvent, DraggingEvent } from '../types.js';
 import { ModifyMode } from './modify-mode.js';
 import { ImmutableFeatureCollection } from './immutable-feature-collection.js';
 
@@ -21,12 +15,11 @@ export class ExtrudeMode extends ModifyMode {
   // this mode is busted =(
 
   isPointAdded: boolean = false;
-  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>): void {
-    let editAction: ?GeoJsonEditAction = null;
 
+  handleDragging(event: DraggingEvent, props: ModeProps<FeatureCollection>): void {
     const editHandle = getPickedEditHandle(event.pointerDownPicks);
 
-    if (event.isDragging && editHandle) {
+    if (editHandle) {
       const { featureIndex } = editHandle.properties;
       let { positionIndexes } = editHandle.properties;
 
@@ -50,7 +43,7 @@ export class ExtrudeMode extends ModifyMode {
           .replacePosition(featureIndex, positionIndexes, p3)
           .getObject();
 
-        editAction = {
+        props.onEdit({
           updatedData,
           editType: 'extruding',
           editContext: {
@@ -58,19 +51,10 @@ export class ExtrudeMode extends ModifyMode {
             positionIndexes: this.nextPositionIndexes(positionIndexes, size),
             position: p3
           }
-        };
+        });
 
-        props.onEdit(editAction);
+        event.cancelPan();
       }
-    }
-
-    const cursor = this.getCursor(event);
-    props.onUpdateCursor(cursor);
-
-    // Cancel map panning if pointer went down on an edit handle
-    const cancelMapPan = Boolean(editHandle);
-    if (cancelMapPan) {
-      event.cancelPan();
     }
   }
 

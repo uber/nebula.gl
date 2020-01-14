@@ -7,6 +7,7 @@ import type {
   PointerMoveEvent,
   StartDraggingEvent,
   StopDraggingEvent,
+  DraggingEvent,
   ModeProps
 } from '../types.js';
 import type { FeatureCollection, Position } from '../geojson-types.js';
@@ -17,18 +18,13 @@ export class RotateMode extends BaseGeoJsonEditMode {
   _isRotatable: boolean;
   _geometryBeingRotated: ?FeatureCollection;
 
-  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>) {
-    this._isRotatable =
-      Boolean(this._geometryBeingRotated) || this.isSelectionPicked(event.picks, props);
-
-    this.updateCursor(props);
-
-    if (!this._isRotatable || !event.pointerDownMapCoords) {
+  handleDragging(event: DraggingEvent, props: ModeProps<FeatureCollection>) {
+    if (!this._isRotatable) {
       // Nothing to do
       return;
     }
 
-    if (event.isDragging && this._geometryBeingRotated) {
+    if (this._geometryBeingRotated) {
       // Rotate the geometry
       props.onEdit(
         this.getRotateAction(event.pointerDownMapCoords, event.mapCoords, 'rotating', props)
@@ -37,6 +33,12 @@ export class RotateMode extends BaseGeoJsonEditMode {
 
     // cancel map panning
     event.cancelPan();
+  }
+
+  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>) {
+    this._isRotatable = this.isSelectionPicked(event.pointerDownPicks || event.picks, props);
+
+    this.updateCursor(props);
   }
 
   handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollection>) {

@@ -39,6 +39,7 @@ export type {
   PointerMoveEvent,
   StartDraggingEvent,
   StopDraggingEvent,
+  DraggingEvent,
   DoubleClickEvent,
   ModeProps,
   Viewport

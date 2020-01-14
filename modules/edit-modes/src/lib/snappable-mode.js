@@ -5,6 +5,7 @@ import type {
   PointerMoveEvent,
   StartDraggingEvent,
   StopDraggingEvent,
+  DraggingEvent,
   ModeProps,
   Pick,
   GuideFeatureCollection,
@@ -13,7 +14,7 @@ import type {
 import { getPickedEditHandle, getPickedEditHandles, getEditHandlesForGeometry } from '../utils.js';
 import { BaseGeoJsonEditMode } from './geojson-edit-mode.js';
 
-type MovementTypeEvent = PointerMoveEvent | StartDraggingEvent | StopDraggingEvent;
+type MovementTypeEvent = PointerMoveEvent | StartDraggingEvent | StopDraggingEvent | DraggingEvent;
 
 export class SnappableMode extends BaseGeoJsonEditMode {
   _handler: BaseGeoJsonEditMode;
@@ -151,6 +152,10 @@ export class SnappableMode extends BaseGeoJsonEditMode {
 
   handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollection>) {
     this._handler.handleStopDragging(this._getSnapAwareEvent(event, props), props);
+  }
+
+  handleDragging(event: DraggingEvent, props: ModeProps<FeatureCollection>) {
+    this._handler.handleDragging(this._getSnapAwareEvent(event, props), props);
   }
 
   handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>) {

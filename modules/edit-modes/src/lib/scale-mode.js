@@ -8,7 +8,8 @@ import type {
   ModeProps,
   PointerMoveEvent,
   StartDraggingEvent,
-  StopDraggingEvent
+  StopDraggingEvent,
+  DraggingEvent
 } from '../types.js';
 import { BaseGeoJsonEditMode, type GeoJsonEditAction } from './geojson-edit-mode.js';
 import { ImmutableFeatureCollection } from './immutable-feature-collection.js';
@@ -17,26 +18,26 @@ export class ScaleMode extends BaseGeoJsonEditMode {
   _isScalable: boolean;
   _geometryBeingScaled: ?FeatureCollection;
 
-  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>) {
-    this._isScalable =
-      Boolean(this._geometryBeingScaled) || this.isSelectionPicked(event.picks, props);
-
-    this.updateCursor(props);
-
-    if (!this._isScalable || !event.pointerDownMapCoords) {
+  handleDragging(event: DraggingEvent, props: ModeProps<FeatureCollection>) {
+    if (!this._isScalable) {
       // Nothing to do
       return;
     }
 
-    if (event.isDragging && this._geometryBeingScaled) {
+    if (this._geometryBeingScaled) {
       // Scale the geometry
       props.onEdit(
         this.getScaleAction(event.pointerDownMapCoords, event.mapCoords, 'scaling', props)
       );
     }
 
-    // cancel map panning
     event.cancelPan();
+  }
+
+  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>) {
+    this._isScalable = this.isSelectionPicked(event.pointerDownPicks || event.picks, props);
+
+    this.updateCursor(props);
   }
 
   handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollection>) {

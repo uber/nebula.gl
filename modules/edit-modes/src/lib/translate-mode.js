@@ -9,6 +9,7 @@ import type {
   PointerMoveEvent,
   StartDraggingEvent,
   StopDraggingEvent,
+  DraggingEvent,
   ModeProps
 } from '../types.js';
 import { BaseGeoJsonEditMode, type GeoJsonEditAction } from './geojson-edit-mode.js';
@@ -18,18 +19,13 @@ export class TranslateMode extends BaseGeoJsonEditMode {
   _geometryBeforeTranslate: ?FeatureCollection;
   _isTranslatable: boolean;
 
-  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>) {
-    this._isTranslatable =
-      Boolean(this._geometryBeforeTranslate) || this.isSelectionPicked(event.picks, props);
-
-    this.updateCursor(props);
-
-    if (!this._isTranslatable || !event.pointerDownMapCoords) {
+  handleDragging(event: DraggingEvent, props: ModeProps<FeatureCollection>) {
+    if (!this._isTranslatable) {
       // Nothing to do
       return;
     }
 
-    if (event.isDragging && this._geometryBeforeTranslate) {
+    if (this._geometryBeforeTranslate) {
       // Translate the geometry
       const editAction = this.getTranslateAction(
         event.pointerDownMapCoords,
@@ -45,6 +41,12 @@ export class TranslateMode extends BaseGeoJsonEditMode {
 
     // cancel map panning
     event.cancelPan();
+  }
+
+  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>) {
+    this._isTranslatable = this.isSelectionPicked(event.pointerDownPicks || event.picks, props);
+
+    this.updateCursor(props);
   }
 
   handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollection>) {

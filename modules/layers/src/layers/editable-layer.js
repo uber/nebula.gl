@@ -11,6 +11,8 @@ import type {
   DoubleClickEvent
 } from '../../../edit-modes/src/index.js';
 
+const EVENT_TYPES = ['anyclick', 'pointermove', 'panstart', 'panmove', 'panend', 'dblclick'];
+
 export default class EditableLayer extends CompositeLayer {
   // Overridable interaction event handlers
   onLayerClick(event: ClickEvent) {
@@ -47,41 +49,57 @@ export default class EditableLayer extends CompositeLayer {
         // Screen coordinates where the pointer went down
         pointerDownScreenCoords: null,
         // Ground coordinates where the pointer went down
-        pointerDownMapCoords: null
+        pointerDownMapCoords: null,
+
+        // Keep track of the mjolnir.js event handler so it can be deregistered
+        eventHandler: this._forwardEventToCurrentLayer.bind(this)
       }
     });
 
     this._addPointerHandlers();
   }
 
+  finalizeState() {
+    this._removePointerHandlers();
+  }
+
   _addPointerHandlers() {
     const { eventManager } = this.context.deck;
+    const { eventHandler } = this.state._editableLayerState;
 
-    eventManager.on('anyclick', event => this._forwardEventToCurrentLayer('_onAnyClick', event));
-    eventManager.on('pointermove', event =>
-      this._forwardEventToCurrentLayer('_onPointerMove', event)
-    );
-    eventManager.on('panstart', event => this._forwardEventToCurrentLayer('_onPanStart', event), {
-      // give nebula a higher priority so that it can stop propagation to deck.gl's map panning handlers
-      priority: 100
-    });
-    eventManager.on('panmove', event => this._forwardEventToCurrentLayer('_onPanMove', event), {
-      // give nebula a higher priority so that it can stop propagation to deck.gl's map panning handlers
-      priority: 100
-    });
-    eventManager.on('panend', event => this._forwardEventToCurrentLayer('_onPanEnd', event));
-    eventManager.on('dblclick', event => this._forwardEventToCurrentLayer('_onDoubleClick', event));
+    for (const eventType of EVENT_TYPES) {
+      eventManager.on(eventType, eventHandler, {
+        // give nebula a higher priority so that it can stop propagation to deck.gl's map panning handlers
+        priority: 100
+      });
+    }
+  }
+
+  _removePointerHandlers() {
+    const { eventManager } = this.context.deck;
+    const { eventHandler } = this.state._editableLayerState;
+
+    for (const eventType of EVENT_TYPES) {
+      eventManager.off(eventType, eventHandler);
+    }
   }
 
   // A new layer instance is created on every render, so forward the event to the current layer
-  // This means that the first layer instance will stick around to be the event listener, but will forward to the
-  // latest layer instance.
-  _forwardEventToCurrentLayer(funcName: string, event: any) {
-    const func = this.getCurrentLayer()[funcName].bind(this.getCurrentLayer());
+  // This means that the first layer instance will stick around to be the event listener, but will forward the event
+  // to the latest layer instance.
+  _forwardEventToCurrentLayer(event: any) {
+    const currentLayer = this.getCurrentLayer();
+
+    // Use a naming convention to find the event handling function for this event type
+    const func = currentLayer[`_on${event.type}`].bind(currentLayer);
+    if (!func) {
+      console.warn(`no handler for mjolnir event ${event.type}`); // eslint-disable-line
+      return;
+    }
     func(event);
   }
 
-  _onAnyClick({ srcEvent }: any) {
+  _onanyclick({ srcEvent }: any) {
     const screenCoords = this.getScreenCoords(srcEvent);
     const mapCoords = this.getMapCoords(screenCoords);
 
@@ -95,7 +113,7 @@ export default class EditableLayer extends CompositeLayer {
     });
   }
 
-  _onDoubleClick({ srcEvent }: any) {
+  _ondblclick({ srcEvent }: any) {
     const screenCoords = this.getScreenCoords(srcEvent);
     const mapCoords = this.getMapCoords(screenCoords);
 
@@ -109,7 +127,7 @@ export default class EditableLayer extends CompositeLayer {
     });
   }
 
-  _onPanStart(event: any) {
+  _onpanstart(event: any) {
     const screenCoords = this.getScreenCoords(event.srcEvent);
     const mapCoords = this.getMapCoords(screenCoords);
 
@@ -135,7 +153,7 @@ export default class EditableLayer extends CompositeLayer {
     });
   }
 
-  _onPanMove(event: any) {
+  _onpanmove(event: any) {
     const { srcEvent } = event;
     const screenCoords = this.getScreenCoords(srcEvent);
     const mapCoords = this.getMapCoords(screenCoords);
@@ -165,7 +183,7 @@ export default class EditableLayer extends CompositeLayer {
     });
   }
 
-  _onPanEnd({ srcEvent }: any) {
+  _onpanend({ srcEvent }: any) {
     const screenCoords = this.getScreenCoords(srcEvent);
     const mapCoords = this.getMapCoords(screenCoords);
 
@@ -197,7 +215,7 @@ export default class EditableLayer extends CompositeLayer {
     });
   }
 
-  _onPointerMove(event: any) {
+  _onpointermove(event: any) {
     const { srcEvent } = event;
     const screenCoords = this.getScreenCoords(srcEvent);
     const mapCoords = this.getMapCoords(screenCoords);

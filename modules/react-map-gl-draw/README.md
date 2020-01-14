@@ -2,7 +2,7 @@
 
 `react-map-gl-draw` is a react based drawing library tailored for [`react-map-gl`](https://github.com/uber/react-map-gl).
 
-## Options 
+## Options
 - `mode` (String, Optional)
   - `EditorModes.READ_ONLY` - Not interactive. This is the default mode.
   - `EditorModes.SELECT` - Lets you select, delete, and drag features.
@@ -22,16 +22,16 @@
   - `editHandleIndex`: selected editHandle index. `null` if clicked an empty space.
   - `screenCoords`: screen coordinates of the clicked position.
   - `mapCoords`: map coordinates of the clicked position.
-  
+
 - `onUpdate` (Function, Optional) - callback when anything is updated. Receives an object containing the following parameters
   - `features` (Feature[]) - the updated list of GeoJSON features.
   - `editType` (String) -  `addFeature`, `addPosition`, `finishMovePosition`
   - `editContext` (Array) - list of edit objects, depend on `editType`, each object may contain `featureIndexes`, `editHandleIndexes`, `screenCoords`, `mapCoords`.
- 
+
 **Feature object structure:**
 ```js
 {
-  id, // an unique identified generated inside react-map-gl-draw library 
+  id, // an unique identified generated inside react-map-gl-draw library
   geometry: {
     coordinates, // latitude longitude pairs of the geometry points
     type // geojson type, one of `Point`, `LineString`, or `Polygon`
@@ -44,11 +44,11 @@
 ```
 
 ### Styling related options
-- `featureStyle` (Object|Function, Optional) : Object - Either a [style objects](https://reactjs.org/docs/dom-elements.html#style) or a function to style a feature, function parameters are 
+- `featureStyle` (Object|Function, Optional) : Object - Either a [style objects](https://reactjs.org/docs/dom-elements.html#style) or a function to style a feature, function parameters are
   - `feature`: feature to style.
   - `index`: index of the feature.
   - `state`: one of `SELECTED`, `HOVERED`, `INACTIVE`, `UNCOMMITTED`, `CLOSING`.
-  
+
 Returns is a map of [style objects](https://reactjs.org/docs/dom-elements.html#style) passed to SVG `path` elements.
 
 - `featureShape` (String|Function, Optional): if is a string, should be one of `rect` or `circle`. If is a function, will receive the following parameters
@@ -56,12 +56,12 @@ Returns is a map of [style objects](https://reactjs.org/docs/dom-elements.html#s
   - `index`: index of the feature.
   - `state`: one of `SELECTED`, `HOVERED`, `INACTIVE`, `UNCOMMITTED`, `CLOSING`.
 
-- `editHandleStyle` (Object|Function, Optional) : Object - Either a [style objects](https://reactjs.org/docs/dom-elements.html#style) or a function to style an `editHandle, function parameters are 
+- `editHandleStyle` (Object|Function, Optional) : Object - Either a [style objects](https://reactjs.org/docs/dom-elements.html#style) or a function to style an `editHandle, function parameters are
   - `feature`: feature to style.
   - `index`: index of the editHandle vertex in the feature.
   - `state`: one of `SELECTED`, `HOVERED`, `INACTIVE`, `UNCOMMITTED`, `CLOSING`.
   - `shape`: shape resolved from `editHandleShape`.
-  
+
 Returns is a map of [style objects](https://reactjs.org/docs/dom-elements.html#style) passed to SVG `circle` or `rect` elements.
 
 - `editHandleShape` (String|Function, Optional): if is a string, should be one of `rect` or `circle`. If is a function, will receive the following parameters
@@ -75,24 +75,24 @@ Returns is a map of [style objects](https://reactjs.org/docs/dom-elements.html#s
 
 ### State related concepts:
 - `INACTIVE`: neither selected nor hovered, default state of a complete `feature` or `editHandle`.
-- `SELECTED`: being clicked or dragged. 
+- `SELECTED`: being clicked or dragged.
 - `HOVERED`: hovered over by the mouse pointer.
 - `UNCOMMITTED`: in the middle of drawing, not yet added to the feature being edited.
-- `CLOSING`: closing a polygon. 
+- `CLOSING`: closing a polygon.
 
 ### Styling based on `state`:
 
 ![img](https://raw.githubusercontent.com/uber-common/deck.gl-data/master/nebula.gl/react-map-gl-draw.png)
 
-As shown in the above image, for the feature currently being edited, 
+As shown in the above image, for the feature currently being edited,
 - `featureStyle({feature, state: SELECTED})` will be applied to the committed parts of the feature. (Green strokes)
 - `editHandleStyle({state: SELECTED})` will be applied to the committed editHandle vertices.  (Vertices with black stroke)
-- `featureStyle({feature, state: UNCOMMITTED})` will be applied to the uncommitted parts of the feature. (Gray stroke) 
+- `featureStyle({feature, state: UNCOMMITTED})` will be applied to the uncommitted parts of the feature. (Gray stroke)
 - `editHandleStyle({state: UNCOMMITTED})` will be applied to the uncommitted editHandle vertex. (Gray vertex)
 
 ## Methods
 
-##### `getFeatures` 
+##### `getFeatures`
 
 - Return a list of finished GeoJson features.
 
@@ -100,7 +100,7 @@ As shown in the above image, for the feature currently being edited,
 
 - Add a single or multiple GeoJson features to editor.
 
-##### `deleteDeatures` (Feature | Feature[])
+##### `deleteFeatures` (Feature | Feature[])
 
 - Delete a single or multiple GeoJson features to editor.
 

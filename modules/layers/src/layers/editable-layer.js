@@ -58,7 +58,9 @@ export default class EditableLayer extends CompositeLayer {
     const { eventManager } = this.context.deck;
 
     eventManager.on('anyclick', event => this._forwardEventToCurrentLayer('_onAnyClick', event));
-    eventManager.on('pointermove', this._onPointerMove.bind(this));
+    eventManager.on('pointermove', event =>
+      this._forwardEventToCurrentLayer('_onPointerMove', event)
+    );
     eventManager.on('panstart', event => this._forwardEventToCurrentLayer('_onPanStart', event), {
       // give nebula a higher priority so that it can stop propagation to deck.gl's map panning handlers
       priority: 100

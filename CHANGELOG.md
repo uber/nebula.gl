@@ -6,6 +6,7 @@ _All notable changes to this project will be documented in this file. This proje
 
 <!-- NEXT VERSION
 * Call `event.cancelPan()` instead of `event.sourceEvent.stopPropagation()` in custom edit modes
+* `PointerMoveEvent` no longer has an `isDragging` flag. Instead, use the new `handleDragging` event.
 -->
 
 ## [0.17.0](https://github.com/uber/nebula.gl/compare/v0.16.0...v0.17.0) - 2020-01-10

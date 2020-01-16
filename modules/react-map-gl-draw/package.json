@@ -41,7 +41,7 @@
     "viewport-mercator-project": "^6.1.0"
   },
   "devDependencies": {
-    "react-map-gl": "^5.0.2"
+    "react-map-gl": "^5.2.1"
   },
   "peerDependencies": {
     "react": "^16.x",

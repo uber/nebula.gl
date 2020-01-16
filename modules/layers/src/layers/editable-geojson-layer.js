@@ -31,6 +31,7 @@ import type {
   ClickEvent,
   StartDraggingEvent,
   StopDraggingEvent,
+  DraggingEvent,
   PointerMoveEvent,
   GeoJsonEditMode,
   FeatureCollection
@@ -442,6 +443,10 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     this.getActiveMode().handleStartDragging(event, this.getModeProps(this.props));
   }
 
+  onDragging(event: DraggingEvent) {
+    this.getActiveMode().handleDragging(event, this.getModeProps(this.props));
+  }
+
   onStopDragging(event: StopDraggingEvent) {
     this.getActiveMode().handleStopDragging(event, this.getModeProps(this.props));
   }
@@ -454,6 +459,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   getCursor({ isDragging }: { isDragging: boolean }) {
     let { cursor } = this.state;
     if (!cursor) {
+      // default cursor
       cursor = isDragging ? 'grabbing' : 'grab';
     }
     return cursor;

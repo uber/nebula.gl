@@ -7,6 +7,7 @@ import type {
   PointerMoveEvent,
   StartDraggingEvent,
   StopDraggingEvent,
+  DraggingEvent,
   GuideFeatureCollection
 } from '../types.js';
 import { BaseGeoJsonEditMode } from './geojson-edit-mode.js';
@@ -46,6 +47,10 @@ export class CompositeMode extends BaseGeoJsonEditMode {
 
   handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollection>): void {
     return this._coalesce(handler => handler.handleStopDragging(event, props));
+  }
+
+  handleDragging(event: DraggingEvent, props: ModeProps<FeatureCollection>): void {
+    return this._coalesce(handler => handler.handleDragging(event, props));
   }
 
   getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {

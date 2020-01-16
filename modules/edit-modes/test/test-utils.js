@@ -267,7 +267,6 @@ export function createPointerDragEvent(
     screenCoords: [-1, -1],
     mapCoords,
     picks,
-    isDragging: true,
     pointerDownPicks: null,
     pointerDownScreenCoords: [-1, -1],
     pointerDownMapCoords,
@@ -280,10 +279,10 @@ export function createPointerMoveEvent(mapCoords: Position, picks: Pick[] = []):
     screenCoords: [-1, -1],
     mapCoords,
     picks,
-    isDragging: false,
     pointerDownPicks: null,
     pointerDownScreenCoords: null,
     pointerDownMapCoords: null,
+    cancelPan: jest.fn(),
     sourceEvent: null
   };
 }

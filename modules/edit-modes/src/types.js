@@ -51,7 +51,8 @@ export type StartDraggingEvent = {
   ...BasePointerEvent,
   pointerDownPicks?: ?(Pick[]),
   pointerDownScreenCoords: ScreenCoordinates,
-  pointerDownMapCoords: Position
+  pointerDownMapCoords: Position,
+  cancelPan: () => void
 };
 
 // Represents an event that occurs after the pointer goes down, moves some, then the pointer goes back up
@@ -62,10 +63,18 @@ export type StopDraggingEvent = {
   pointerDownMapCoords: Position
 };
 
+// Represents an event that occurs after the pointer goes down and is moving
+export type DraggingEvent = {
+  ...BasePointerEvent,
+  pointerDownPicks?: ?(Pick[]),
+  pointerDownScreenCoords: ScreenCoordinates,
+  pointerDownMapCoords: Position,
+  cancelPan: () => void
+};
+
 // Represents an event that occurs every time the pointer moves
 export type PointerMoveEvent = {
   ...BasePointerEvent,
-  isDragging: boolean,
   pointerDownPicks?: ?(Pick[]),
   pointerDownScreenCoords?: ?ScreenCoordinates,
   pointerDownMapCoords?: ?Position

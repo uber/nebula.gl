@@ -4,10 +4,18 @@ _All notable changes to this project will be documented in this file. This proje
 
 <!-- INSERT HERE -->
 
-<!-- NEXT VERSION
+## [0.17.1](https://github.com/uber/nebula.gl/compare/v0.17.0...v0.17.1) - 2020-01-16
+
+### Changes
+
+* Use mjolnir.js for event handling (#319)
+* Bump handlebars from 4.1.2 to 4.7.2 (#321)
+* Fix edit handle icons (#318)
+* Cleanup EditMode adapters (#316)
+
+### Breaking changes
 * Call `event.cancelPan()` instead of `event.sourceEvent.stopPropagation()` in custom edit modes
 * `PointerMoveEvent` no longer has an `isDragging` flag. Instead, use the new `handleDragging` event.
--->
 
 ## [0.17.0](https://github.com/uber/nebula.gl/compare/v0.16.0...v0.17.0) - 2020-01-10
 

@@ -1,12 +1,49 @@
 // @flow
 
-import type { ClickEvent, PointerMoveEvent, ModeProps, GuideFeatureCollection } from '../types.js';
+import type {
+  ClickEvent,
+  StartDraggingEvent,
+  StopDraggingEvent,
+  PointerMoveEvent,
+  ModeProps,
+  GuideFeatureCollection
+} from '../types.js';
 import type { Polygon, FeatureCollection, FeatureOf, Position } from '../geojson-types.js';
 import { BaseGeoJsonEditMode } from './geojson-edit-mode.js';
 
 export class TwoClickPolygonMode extends BaseGeoJsonEditMode {
   handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>) {
+    if (props.modeConfig.dragToDraw) {
+      // handled in drag handlers
+      return;
+    }
+
     this.addClickSequence(event);
+
+    this.checkAndFinishPolygon(props);
+  }
+
+  handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollection>): void {
+    if (!props.modeConfig.dragToDraw) {
+      // handled in click handlers
+      return;
+    }
+
+    this.addClickSequence(event);
+    event.cancelPan();
+  }
+
+  handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollection>): void {
+    if (!props.modeConfig.dragToDraw) {
+      // handled in click handlers
+      return;
+    }
+    this.addClickSequence(event);
+
+    this.checkAndFinishPolygon(props);
+  }
+
+  checkAndFinishPolygon(props: ModeProps<FeatureCollection>) {
     const clickSequence = this.getClickSequence();
     const tentativeFeature = this.getTentativeGuide(props);
 

@@ -129,6 +129,13 @@ const POLYGON_DRAWING_MODES = [
   DrawEllipseUsingThreePointsMode
 ];
 
+const TWO_CLICK_POLYGON_MODES = [
+  DrawRectangleMode,
+  DrawCircleFromCenterMode,
+  DrawCircleByDiameterMode,
+  DrawEllipseByBoundingBoxMode
+];
+
 const EMPTY_FEATURE_COLLECTION = {
   type: 'FeatureCollection',
   features: []
@@ -205,7 +212,24 @@ export default class Example extends Component<
 
     this.state = {
       viewport: initialViewport,
-      testFeatures: sampleGeoJson,
+      testFeatures: {
+        type: 'FeatureCollection',
+        features: [
+          // {
+          //   type: 'Feature',
+          //   geometry: {
+          //     type: 'LineString',
+          //     coordinates: [
+          //       [-122.58294162392625, 37.73997969548399],
+          //       [-122.56565612792978, 37.762442784961586],
+          //       [-122.53809374809275, 37.75411959741058],
+          //       [-122.5321566784383, 37.73683194309388],
+          //       [-122.53400606155404, 37.717869419079825]
+          //     ]
+          //   }
+          // }
+        ]
+      },
       mode: DrawPolygonMode,
       modeConfig: null,
       pointsRemovable: true,
@@ -233,7 +257,7 @@ export default class Example extends Component<
   };
 
   _onLayerClick = (info: any) => {
-    console.log('onLayerClick', info); // eslint-disable-line
+    // console.log('onLayerClick', info); // eslint-disable-line
 
     if (this.state.mode !== ViewMode || this.state.selectionTool) {
       // don't change selection while editing
@@ -439,15 +463,41 @@ export default class Example extends Component<
               }
               onClick={() => {
                 if (this.state.modeConfig && this.state.modeConfig.booleanOperation === operation) {
-                  this.setState({ modeConfig: null });
+                  this.setState({
+                    modeConfig: { ...(this.state.modeConfig || {}), booleanOperation: null }
+                  });
                 } else {
-                  this.setState({ modeConfig: { booleanOperation: operation } });
+                  this.setState({
+                    modeConfig: { ...(this.state.modeConfig || {}), booleanOperation: operation }
+                  });
                 }
               }}
             >
               {operation}
             </ToolboxButton>
           ))}
+        </ToolboxControl>
+      </ToolboxRow>
+    );
+  }
+
+  _renderTwoClickPolygonControls() {
+    return (
+      <ToolboxRow key="twoClick">
+        <ToolboxTitle>Drag to draw</ToolboxTitle>
+        <ToolboxControl>
+          <input
+            type="checkbox"
+            checked={Boolean(this.state.modeConfig && this.state.modeConfig.dragToDraw)}
+            onChange={event =>
+              this.setState({
+                modeConfig: {
+                  ...(this.state.modeConfig || {}),
+                  dragToDraw: Boolean(event.target.checked)
+                }
+              })
+            }
+          />
         </ToolboxControl>
       </ToolboxRow>
     );
@@ -560,6 +610,9 @@ export default class Example extends Component<
 
     if (POLYGON_DRAWING_MODES.indexOf(this.state.mode) > -1) {
       controls.push(this._renderBooleanOperationControls());
+    }
+    if (TWO_CLICK_POLYGON_MODES.indexOf(this.state.mode) > -1) {
+      controls.push(this._renderTwoClickPolygonControls());
     }
     if (this.state.mode === DrawLineStringMode) {
       controls.push(this._renderDrawLineStringModeControls());
@@ -873,6 +926,8 @@ export default class Example extends Component<
       });
     }
 
+    console.log('rendering', featuresToInfoString(testFeatures));
+
     const editableGeoJsonLayer = new EditableGeoJsonLayer({
       id: 'geojson',
       data: testFeatures,
@@ -1008,22 +1063,6 @@ function featuresToInfoString(featureCollection: any): string {
   return JSON.stringify(info);
 }
 
-function getPositionCount(geometry): number {
-  const flatMap = (f, arr) => arr.reduce((x, y) => [...x, ...f(y)], []);
-
-  const { type, coordinates } = geometry;
-  switch (type) {
-    case 'Point':
-      return 1;
-    case 'LineString':
-    case 'MultiPoint':
-      return coordinates.length;
-    case 'Polygon':
-    case 'MultiLineString':
-      return flatMap(x => x, coordinates).length;
-    case 'MultiPolygon':
-      return flatMap(x => flatMap(y => y, x), coordinates).length;
-    default:
-      throw Error(`Unknown geometry type: ${type}`);
-  }
+function getPositionCount(geometry) {
+  return JSON.stringify(geometry.coordinates);
 }

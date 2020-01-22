@@ -13,7 +13,7 @@ import { BaseGeoJsonEditMode } from './geojson-edit-mode.js';
 
 export class TwoClickPolygonMode extends BaseGeoJsonEditMode {
   handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>) {
-    if (props.modeConfig.dragToDraw) {
+    if (props.modeConfig && props.modeConfig.dragToDraw) {
       // handled in drag handlers
       return;
     }
@@ -24,7 +24,7 @@ export class TwoClickPolygonMode extends BaseGeoJsonEditMode {
   }
 
   handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollection>): void {
-    if (!props.modeConfig.dragToDraw) {
+    if (!props.modeConfig || !props.modeConfig.dragToDraw) {
       // handled in click handlers
       return;
     }
@@ -34,7 +34,7 @@ export class TwoClickPolygonMode extends BaseGeoJsonEditMode {
   }
 
   handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollection>): void {
-    if (!props.modeConfig.dragToDraw) {
+    if (!props.modeConfig || !props.modeConfig.dragToDraw) {
       // handled in click handlers
       return;
     }

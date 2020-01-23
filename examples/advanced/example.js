@@ -212,24 +212,7 @@ export default class Example extends Component<
 
     this.state = {
       viewport: initialViewport,
-      testFeatures: {
-        type: 'FeatureCollection',
-        features: [
-          // {
-          //   type: 'Feature',
-          //   geometry: {
-          //     type: 'LineString',
-          //     coordinates: [
-          //       [-122.58294162392625, 37.73997969548399],
-          //       [-122.56565612792978, 37.762442784961586],
-          //       [-122.53809374809275, 37.75411959741058],
-          //       [-122.5321566784383, 37.73683194309388],
-          //       [-122.53400606155404, 37.717869419079825]
-          //     ]
-          //   }
-          // }
-        ]
-      },
+      testFeatures: sampleGeoJson,
       mode: DrawPolygonMode,
       modeConfig: null,
       pointsRemovable: true,
@@ -257,7 +240,7 @@ export default class Example extends Component<
   };
 
   _onLayerClick = (info: any) => {
-    // console.log('onLayerClick', info); // eslint-disable-line
+    console.log('onLayerClick', info); // eslint-disable-line
 
     if (this.state.mode !== ViewMode || this.state.selectionTool) {
       // don't change selection while editing
@@ -926,8 +909,6 @@ export default class Example extends Component<
       });
     }
 
-    console.log('rendering', featuresToInfoString(testFeatures));
-
     const editableGeoJsonLayer = new EditableGeoJsonLayer({
       id: 'geojson',
       data: testFeatures,
@@ -1063,6 +1044,22 @@ function featuresToInfoString(featureCollection: any): string {
   return JSON.stringify(info);
 }
 
-function getPositionCount(geometry) {
-  return JSON.stringify(geometry.coordinates);
+function getPositionCount(geometry): number {
+  const flatMap = (f, arr) => arr.reduce((x, y) => [...x, ...f(y)], []);
+
+  const { type, coordinates } = geometry;
+  switch (type) {
+    case 'Point':
+      return 1;
+    case 'LineString':
+    case 'MultiPoint':
+      return coordinates.length;
+    case 'Polygon':
+    case 'MultiLineString':
+      return flatMap(x => x, coordinates).length;
+    case 'MultiPolygon':
+      return flatMap(x => flatMap(y => y, x), coordinates).length;
+    default:
+      throw Error(`Unknown geometry type: ${type}`);
+  }
 }

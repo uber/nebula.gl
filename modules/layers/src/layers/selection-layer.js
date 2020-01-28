@@ -5,6 +5,7 @@ import { PolygonLayer } from '@deck.gl/layers';
 import { polygon } from '@turf/helpers';
 import turfBuffer from '@turf/buffer';
 import turfDifference from '@turf/difference';
+import { DrawRectangleMode, DrawPolygonMode, ViewMode } from '@nebula.gl/edit-modes';
 
 import EditableGeoJsonLayer from './editable-geojson-layer';
 
@@ -12,6 +13,15 @@ export const SELECTION_TYPE = {
   NONE: null,
   RECTANGLE: 'rectangle',
   POLYGON: 'polygon'
+};
+
+const MODE_MAP = {
+  [SELECTION_TYPE.RECTANGLE]: DrawRectangleMode,
+  [SELECTION_TYPE.POLYGON]: DrawPolygonMode
+};
+
+const MODE_CONFIG_MAP = {
+  [SELECTION_TYPE.RECTANGLE]: { dragToDraw: true }
 };
 
 const defaultProps = {
@@ -122,11 +132,8 @@ export default class SelectionLayer extends CompositeLayer {
   renderLayers() {
     const { pendingPolygonSelection } = this.state;
 
-    const mode =
-      {
-        [SELECTION_TYPE.RECTANGLE]: 'drawRectangle',
-        [SELECTION_TYPE.POLYGON]: 'drawPolygon'
-      }[this.props.selectionType] || 'view';
+    const mode = MODE_MAP[this.props.selectionType] || ViewMode;
+    const modeConfig = MODE_CONFIG_MAP[this.props.selectionType];
 
     const inheritedProps = {};
     PASS_THROUGH_PROPS.forEach(p => {
@@ -139,6 +146,7 @@ export default class SelectionLayer extends CompositeLayer {
           id: LAYER_ID_GEOJSON,
           pickable: true,
           mode,
+          modeConfig,
           selectedFeatureIndexes: [],
           data: EMPTY_DATA,
           onEdit: ({ updatedData, editType }) => {

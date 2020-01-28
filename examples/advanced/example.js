@@ -129,6 +129,13 @@ const POLYGON_DRAWING_MODES = [
   DrawEllipseUsingThreePointsMode
 ];
 
+const TWO_CLICK_POLYGON_MODES = [
+  DrawRectangleMode,
+  DrawCircleFromCenterMode,
+  DrawCircleByDiameterMode,
+  DrawEllipseByBoundingBoxMode
+];
+
 const EMPTY_FEATURE_COLLECTION = {
   type: 'FeatureCollection',
   features: []
@@ -439,15 +446,41 @@ export default class Example extends Component<
               }
               onClick={() => {
                 if (this.state.modeConfig && this.state.modeConfig.booleanOperation === operation) {
-                  this.setState({ modeConfig: null });
+                  this.setState({
+                    modeConfig: { ...(this.state.modeConfig || {}), booleanOperation: null }
+                  });
                 } else {
-                  this.setState({ modeConfig: { booleanOperation: operation } });
+                  this.setState({
+                    modeConfig: { ...(this.state.modeConfig || {}), booleanOperation: operation }
+                  });
                 }
               }}
             >
               {operation}
             </ToolboxButton>
           ))}
+        </ToolboxControl>
+      </ToolboxRow>
+    );
+  }
+
+  _renderTwoClickPolygonControls() {
+    return (
+      <ToolboxRow key="twoClick">
+        <ToolboxTitle>Drag to draw</ToolboxTitle>
+        <ToolboxControl>
+          <input
+            type="checkbox"
+            checked={Boolean(this.state.modeConfig && this.state.modeConfig.dragToDraw)}
+            onChange={event =>
+              this.setState({
+                modeConfig: {
+                  ...(this.state.modeConfig || {}),
+                  dragToDraw: Boolean(event.target.checked)
+                }
+              })
+            }
+          />
         </ToolboxControl>
       </ToolboxRow>
     );
@@ -560,6 +593,9 @@ export default class Example extends Component<
 
     if (POLYGON_DRAWING_MODES.indexOf(this.state.mode) > -1) {
       controls.push(this._renderBooleanOperationControls());
+    }
+    if (TWO_CLICK_POLYGON_MODES.indexOf(this.state.mode) > -1) {
+      controls.push(this._renderTwoClickPolygonControls());
     }
     if (this.state.mode === DrawLineStringMode) {
       controls.push(this._renderDrawLineStringModeControls());

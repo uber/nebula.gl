@@ -91,6 +91,13 @@ User can draw a new `Polygon` feature with 90 degree corners (right angle) by cl
 
 User can draw a new rectangular `Polygon` feature by clicking two opposing corners of the rectangle.
 
+### ModeConfig
+
+The following options can be provided in the `modeConfig` object:
+
+* `dragToDraw` (optional):  `boolean`
+  * If `true`, user can click and drag instead of clicking twice. Note however, that the user will not be able to pan the map while drawing.
+
 ## [DrawRectangleUsingThreePointsMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/draw-rectangle-using-three-points-mode.js)
 
 User can draw a new rectangular `Polygon` feature by clicking three corners of the rectangle.
@@ -105,6 +112,8 @@ The following options can be provided in the `modeConfig` object:
 
 * `steps` (optional):  `x <number>`
   * If steps: `x` means the circle will be drawn using `x` number of points.
+* `dragToDraw` (optional):  `boolean`
+  * If `true`, user can click and drag instead of clicking twice. Note however, that the user will not be able to pan the map while drawing.
 
 ## [DrawCircleByDiameterMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/draw-circle-by-diameter-mode.js)
 
@@ -116,10 +125,19 @@ The following options can be provided in the `modeConfig` object:
 
 * `steps` (optional):  `x <number>`
   * If steps: `x` means the circle will be drawn using `x` number of points.
+* `dragToDraw` (optional):  `boolean`
+  * If `true`, user can click and drag instead of clicking twice. Note however, that the user will not be able to pan the map while drawing.
 
 ## [DrawEllipseByBoundingBoxMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/draw-ellipse-by-bounding-box-mode.js)
 
 User can draw a new ellipse shape `Polygon` feature by clicking two corners of bounding box.
+
+### ModeConfig
+
+The following options can be provided in the `modeConfig` object:
+
+* `dragToDraw` (optional):  `boolean`
+  * If `true`, user can click and drag instead of clicking twice. Note however, that the user will not be able to pan the map while drawing.
 
 ## [DrawEllipseUsingThreePointsMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/draw-ellipse-using-three-points-mode.js)
 

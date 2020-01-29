@@ -50,8 +50,7 @@ export class MeasureDistanceMode extends BaseGeoJsonEditMode {
       let text;
       if (formatTooltip) {
         text = formatTooltip(distance);
-      }
-      if (!formatTooltip) {
+      } else {
         // By default, round to 2 decimal places and append units
         text = `${parseFloat(distance).toFixed(2)} ${units}`;
       }

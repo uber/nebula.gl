@@ -32,6 +32,7 @@ import {
   DrawRectangleUsingThreePointsMode,
   Draw90DegreePolygonMode,
   MeasureDistanceMode,
+  MeasureAreaMode,
   ViewMode,
   CompositeMode,
   SnappableMode,
@@ -81,7 +82,8 @@ const ALL_MODES = [
     category: 'View',
     modes: [
       { label: 'View', mode: ViewMode },
-      { label: 'Measure Distance', mode: MeasureDistanceMode }
+      { label: 'Measure Distance', mode: MeasureDistanceMode },
+      { label: 'Measure Area', mode: MeasureAreaMode }
     ]
   },
   {

@@ -174,145 +174,105 @@ Number of pixels around the mouse cursor used for picking. This value determines
 
 Number of layers of overlapping features that will be picked. Useful in cases where features overlap.
 
-### GeoJsonLayer Options
+### Sub Layers
 
-The following properties from [GeoJsonLayer](https://uber.github.io/deck.gl/#/documentation/deckgl-api-reference/layers/geojson-layer) are supported and function the same:
+`EditableGeoJsonLayer` renders the following sub-layers:
 
-* `filled`
-* `stroked`
-* `lineWidthScale`
-* `lineWidthMinPixels`
-* `lineWidthMaxPixels`
-* `lineWidthUnits`
-* `lineJointRounded`
-* `lineMiterLimit`
-* `pointRadiusScale`
-* `pointRadiusMinPixels`
-* `pointRadiusMaxPixels`
-* `lineDashJustified`
-* `fp64`
+* `geojson`: a [GeoJsonLayer](https://deck.gl/#/documentation/deckgl-api-reference/layers/geojson-layer) that renders the GeoJSON features passed into the `data` property.
+* `guides`: a [GeoJsonLayer](https://deck.gl/#/documentation/deckgl-api-reference/layers/geojson-layer) that renders GeoJSON features that aid in editing.
+* `tooltips`: a [TextLayer](https://deck.gl/#/documentation/deckgl-api-reference/layers/text-layer) that renders tooltips used in some editing modes.
 
-The following accessors function the same, but can accept additional arguments:
+The styling and functionality of `EditableGeoJsonLayer` can be customized by providing the [_subLayerProps](https://deck.gl/#/documentation/deckgl-api-reference/layers/composite-layer?section=_sublayerprops-object-experimental) property. For example:
 
-* `getLineColor`
-* `getFillColor`
-* `getRadius`
-* `getLineWidth`
-* `getLineDashArray`
+```js
+new EditableGeoJsonLayer({
+  // ...
+  _subLayerProps: {
+    geojson: {
+      getFillColor: (feature) => getFillColorForFeature(feature),
+      getLineColor: (feature) => getLineColorForFeature(feature),
+    }
+  }
+})
+```
 
-The additional arguments (in order) are:
+#### `geojson` Sub Layer
 
-* `feature`: the given feature
-* `isSelected`: indicates if the given feature is a selected feature
-* `mode`: the current value of the `mode` prop
+The features being edited are rendered in the `geojson` sub layer whether they are selected or not. If you want to style selected features differently than unselected features, you can accomplish it like this:
 
-### Tentative Features
+```js
+const [data] = React.useState(/* some GeoJSON */);
+const [selectedFeatureIndexes] = React.useState(/* array of selected features */)
 
-While creating a new feature in any of the `draw` modes, portion of a feature which has not been "committed" yet can hold its own props. For example, in `drawLineString` mode, the tentative feature is the last line segment moving under the mouse. For polygons and ellipses, this would be the whole feature during drawing. Define the properties with the following accessors:
+new EditableGeoJsonLayer({
+  // ...
+  data,
+  selectedFeatureIndexes,
+  _subLayerProps: {
+    geojson: {
+      getFillColor: (feature) => {
+        if (selectedFeatureIndexes.some(i => data.features[i] === feature)) {
+          return SELECTED_FILL_COLOR;
+        } else {
+          return UNSELECTED_FILL_COLOR;
+        }
+      }
+    }
+  }
+})
+```
 
-* `getTentativeLineColor`
-* `getTentativeFillColor`
-* `getTentativeLineWidth`
-* `getTentativeLineDashArray`
+#### `guides` Sub Layer
 
-The following accessors default to the same values as the existing feature accessors above. The arguments in order:
+There are two types of "guides" rendered in the `guides` sub layer differentiated by `properties.guideType` of each feature.
 
-* `feature`: the segment/polygon that represents the tentative feature
-* `mode`: the current value of the `mode` prop
+##### Tentative Features
 
-### Edit Handles
+While creating a new feature in any of the `draw` modes, portion of a feature which has not been "committed" yet can hold its own props. For example, in `drawLineString` mode, the tentative feature is the last line segment moving under the mouse. For polygons and ellipses, this would be the whole feature during drawing. A tentative feature can be identified by checking if `properties.guideType === 'tentative'`.
 
-Edit handles are the points rendered on a feature to indicate interactive capabilities (e.g. vertices that can be moved).
+##### Edit Handles
 
-* `type` (String): either `existing` for existing positions or `intermediate` for positions half way between two other positions.
+Edit handles are the points rendered on a feature to indicate interactive capabilities (e.g. vertices that can be moved). Edit Handles can be identified by checking if `properties.guideType === 'editHandle'`.
 
-#### `editHandleType` (String, optional)
+There are also different types of edit handles differentiated by `properties.editHandleType`:
 
-* Default: `point`
+* `existing`: this is an edit handle rendered at an existing position of a feature
+* `intermediate`: this is an edit handle rendered between existing positions (e.g. to add new positions)
+* `snap-source`: this is an edit handle being moved that can snap to a `snap-target` edit handle
+* `snap-target`: this is an edit handle that will be snapped to if the pointer moves close enough
 
-* `point`: Edit handles endered as points
+##### Example
 
-* `icons`: Edit handles rendered as provided icons
+This shows how you can override how guides are rendered:
 
-Edit handle objects can be represented by either points or icons. `editHandlePoint...` are proxies for the [`ScatterplotLayer`](https://github.com/uber/deck.gl/blob/master/docs/layers/scatterplot-layer.md#properties) props, and `editHandleIcon...` are proxies for the [`IconLayer`](https://github.com/uber/deck.gl/blob/master/docs/layers/icon-layer.md#properties) props.
+```js
+new EditableGeoJsonLayer({
+  // ...
+  _subLayerProps: {
+    guides: {
+      getFillColor: (guide) => {
+        if (guide.properties.guideType === 'tentative') {
+          return TENTATIVE_FILL_COLOR;
+        } else {
+          return EDIT_HANDLE_FILL_COLOR;
+        }
+      }
+    }
+  }
+})
+```
 
-#### `editHandleParameters` (Object, optional)
+#### `tooltips` Sub Layer
 
-* Default: `{}`
+Some modes will render tooltips. For example, the measure modes. These modes will render text in the `tooltips` sub layer.
 
-* Set luma.gl parameters for handles (eg. depthTest, blend)
-
-#### `editHandlePointRadiusScale` (Number, optional)
-
-* Default: `1`
-
-#### `editHandlePointOutline` (Boolean, optional)
-
-* Default: `true`
-
-#### `editHandlePointStrokeWidth` (Number, optional)
-
-* Default: `2`
-
-#### `editHandlePointRadiusMinPixels` (Number, optional)
-
-* Default: `4`
-
-#### `editHandlePointRadiusMaxPixels` (Number, optional)
-
-* Default: `Number.MAX_SAFE_INTEGER`
-
-#### `getEditHandlePointColor` (Function | Array, optional)
-
-* Default: `handle => handle.type === 'existing' ? [0xc0, 0x0, 0x0, 0xff] : [0x0, 0x0, 0x0, 0x80]`
-
-#### `getEditHandlePointRadius` (Function | Number, optional)
-
-* Default: `handle => (handle.type === 'existing' ? 5 : 3)`
-
-#### `editHandleIconAtlas` (Texture2D | String, optional)
-
-* Default: `null`
-
-Atlas image url or texture.
-
-#### `editHandleIconMapping` (Object | String, optional)
-
-* Default: `null`
-
-Icon names mapped to icon definitions. See [`Icon Layer`](https://github.com/uber/deck.gl/blob/master/docs/layers/icon-layer.md#iconmapping-object--string-required).
-
-#### `editHandleIconSizeScale` (Number | optional)
-
-* Default: `null`
-
-Edit handle icon size multiplier.
-
-#### `getEditHandleIcon` (Function, optional)
-
-* Default: `handle => handle.type`
-
-Method called to retrieve the icon name of each edit handle, returns string.
-
-#### `getEditHandleIconSize` (Function | Number, optional)
-
-* Default: `10`
-
-The height of each edit handle, in pixels.
-
-#### `getEditHandleIconColor` (Function | Array, optional)
-
-* Default: `handle => handle.type === 'existing' ? [0xc0, 0x0, 0x0, 0xff] : [0x0, 0x0, 0x0, 0x80]`
-
-#### `getEditHandleIconAngle` (Function | Number, optional)
-
-* Default: `0`
-
-The rotating angle of each object, in degrees.
-
-##### `billboard` (Boolean, optional)
-
-* Default: `true`
-
-Passed to `GeoJsonLayer`. If `true`, extrude the path in screen space.
-Useful for showing features with altitude.
+```js
+new EditableGeoJsonLayer({
+  // ...
+  _subLayerProps: {
+    tooltips: {
+      getSize: 32,
+    }
+  }
+})
+```

@@ -536,11 +536,10 @@ export default class Editor extends ModeHandler {
     );
   };
 
-  _renderEditor = () => {
+  _render = () => {
     const viewport = (this._context && this._context.viewport) || {};
     const { style } = this.props;
     const { width, height } = viewport;
-
     return (
       <div
         id="editor"
@@ -557,8 +556,4 @@ export default class Editor extends ModeHandler {
       </div>
     );
   };
-
-  render() {
-    return super.render(this._renderEditor());
-  }
 }

@@ -472,7 +472,11 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
     return DRAWING_MODE.findIndex(m => m === mode) >= 0;
   }
 
-  render(child: any) {
+  _render() {
+    return <div />;
+  }
+
+  render() {
     return (
       <MapContext.Consumer>
         {context => {
@@ -483,7 +487,7 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
             return null;
           }
 
-          return child;
+          return this._render();
         }}
       </MapContext.Consumer>
     );

@@ -81,8 +81,7 @@ describe('when no selection', () => {
       },
       featureIndexes: [featureCollection.features.length],
       editContext: {
-      featureIndexes: [featureCollection.features.length],
-
+        featureIndexes: [featureCollection.features.length]
       }
     });
   });

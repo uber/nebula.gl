@@ -4,6 +4,15 @@ _All notable changes to this project will be documented in this file. This proje
 
 <!-- INSERT HERE -->
 
+## [0.17.2](https://github.com/uber/nebula.gl/compare/v0.17.1...v0.17.2) - 2020-02-06
+
+### Changes
+
+* v0.17.2
+* react-map-gl-draw: fix lagging between viewport and editor updating (#331)
+* MeasureAreaMode (#325)
+* Implement ability to drag and draw in certain modes (#323)
+
 ## [0.17.1](https://github.com/uber/nebula.gl/compare/v0.17.0...v0.17.1) - 2020-01-16
 
 ### Changes

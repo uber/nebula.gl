@@ -1,6 +1,7 @@
 // @flow
 
 import turfBearing from '@turf/bearing';
+import turfCenter from '@turf/center';
 import memoize from 'memoizee';
 
 import type {
@@ -44,9 +45,20 @@ export class MeasureAngleMode extends BaseGeoJsonEditMode {
         measurementCallback(angle);
       }
 
+      const position = turfCenter({
+        type: 'FeatureCollection',
+        features: [point1, point2].map(p => ({
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: p
+          }
+        }))
+      }).geometry.coordinates;
+
       tooltips = [
         {
-          position: point2,
+          position,
           text
         }
       ];

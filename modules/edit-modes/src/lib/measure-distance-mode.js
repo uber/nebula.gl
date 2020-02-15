@@ -1,7 +1,7 @@
 // @flow
 
 import turfDistance from '@turf/distance';
-import memoize from 'memoizee';
+import { _memoize } from '@deck.gl/core';
 import type {
   ClickEvent,
   PointerMoveEvent,
@@ -36,7 +36,7 @@ export class MeasureDistanceMode extends BaseGeoJsonEditMode {
     };
   }
 
-  _getTooltips = memoize((modeConfig, startingPoint, endingPoint) => {
+  _getTooltips = _memoize(({ modeConfig, startingPoint, endingPoint }) => {
     let tooltips = DEFAULT_TOOLTIPS;
 
     if (startingPoint && endingPoint) {
@@ -128,6 +128,10 @@ export class MeasureDistanceMode extends BaseGeoJsonEditMode {
   }
 
   getTooltips(props: ModeProps<FeatureCollection>): Tooltip[] {
-    return this._getTooltips(props.modeConfig, this.startingPoint, this.endingPoint);
+    return this._getTooltips({
+      modeConfig: props.modeConfig,
+      startingPoint: this.startingPoint,
+      endingPoint: this.endingPoint
+    });
   }
 }

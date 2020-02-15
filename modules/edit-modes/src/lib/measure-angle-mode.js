@@ -24,7 +24,6 @@ export class MeasureAngleMode extends BaseGeoJsonEditMode {
       const { formatTooltip, measurementCallback } = modeConfig || {};
       const units = 'deg';
 
-      // const angle = turfAngle(point1, vertex, point2);
       const angle1 = turfBearing(vertex, point1);
       const angle2 = turfBearing(vertex, point2);
       let angle = Math.abs(angle1 - angle2);
@@ -35,8 +34,7 @@ export class MeasureAngleMode extends BaseGeoJsonEditMode {
       let text;
       if (formatTooltip) {
         text = formatTooltip(angle);
-      }
-      if (!formatTooltip) {
+      } else {
         // By default, round to 2 decimal places and append units
         text = `${parseFloat(angle).toFixed(2)} ${units}`;
       }

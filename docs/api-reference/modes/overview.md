@@ -187,7 +187,7 @@ The following options can be provided in the `modeConfig` object:
   * Function to call as measurements are calculated
   * Default: `undefined`
 
-## [MeasureAngleMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/measure-area-mode.js)
+## [MeasureAngleMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/measure-angle-mode.js)
 
 User can measure an angle by drawing two lines.
 

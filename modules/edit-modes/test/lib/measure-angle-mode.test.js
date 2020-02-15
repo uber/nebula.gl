@@ -1,7 +1,7 @@
 // @flow
 /* eslint-env jest */
 
-import { MeasureAreaMode } from '../../src/lib/measure-area-mode.js';
+import { MeasureAngleMode } from '../../src/lib/measure-angle-mode.js';
 import {
   createFeatureCollectionProps,
   createClickEvent,
@@ -11,7 +11,7 @@ import {
 describe('move without click', () => {
   let mode;
   beforeEach(() => {
-    mode = new MeasureAreaMode();
+    mode = new MeasureAngleMode();
     mode.handlePointerMove(createPointerMoveEvent(), createFeatureCollectionProps());
   });
 
@@ -24,7 +24,7 @@ describe('move without click', () => {
 describe('one click', () => {
   let mode;
   beforeEach(() => {
-    mode = new MeasureAreaMode();
+    mode = new MeasureAngleMode();
     mode.handleClick(createClickEvent([1, 2]), createFeatureCollectionProps());
   });
 
@@ -39,7 +39,7 @@ describe('three clicks + pointer move', () => {
   let props;
 
   beforeEach(() => {
-    mode = new MeasureAreaMode();
+    mode = new MeasureAngleMode();
     props = createFeatureCollectionProps();
     mode.handleClick(createClickEvent([1, 1]), props);
     mode.handleClick(createClickEvent([-1, 1]), props);
@@ -47,21 +47,21 @@ describe('three clicks + pointer move', () => {
     props.lastPointerMoveEvent = createPointerMoveEvent([1, -1]);
   });
 
-  it('tooltip contains area', () => {
+  it('tooltip contains angle', () => {
     const tooltips = mode.getTooltips(props);
     expect(tooltips).toMatchSnapshot();
   });
 
-  it('can measure square meters', () => {
+  it('can measure degrees', () => {
     const tooltips = mode.getTooltips(props);
-    expect(tooltips[0].text).toContain('sq. m');
+    expect(tooltips[0].text).toContain('deg');
   });
 
-  it('can format area', () => {
+  it('can format angle', () => {
     const tooltips = mode.getTooltips({
       ...props,
-      modeConfig: { formatTooltip: area => String(Math.round(area)) }
+      modeConfig: { formatTooltip: angle => String(Math.round(angle)) }
     });
-    expect(tooltips[0].text).toEqual('49565599608');
+    expect(tooltips[0].text).toEqual('45');
   });
 });

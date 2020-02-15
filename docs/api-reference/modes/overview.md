@@ -187,6 +187,22 @@ The following options can be provided in the `modeConfig` object:
   * Function to call as measurements are calculated
   * Default: `undefined`
 
+## [MeasureAngleMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/measure-angle-mode.js)
+
+User can measure an angle by drawing two lines.
+
+### ModeConfig
+
+The following options can be provided in the `modeConfig` object:
+
+* `formatTooltip` (Function, optional)
+  * Function to format tooltip text (argument is the numeric area)
+  * Default: `(distance) => parseFloat(angle).toFixed(2) + units`
+
+* `measurementCallback` (Function, optional)
+  * Function to call as measurements are calculated
+  * Default: `undefined`
+
 ## [ElevationMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/elevation-mode.js)
 
 User can move a point up and down.

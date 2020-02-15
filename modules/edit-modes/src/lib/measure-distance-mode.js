@@ -1,12 +1,10 @@
 // @flow
 
 import turfDistance from '@turf/distance';
-import memoize from 'memoizee';
+import { _memoize } from '@deck.gl/core';
 import type {
   ClickEvent,
   PointerMoveEvent,
-  StartDraggingEvent,
-  StopDraggingEvent,
   Tooltip,
   ModeProps,
   GuideFeatureCollection,
@@ -38,7 +36,7 @@ export class MeasureDistanceMode extends BaseGeoJsonEditMode {
     };
   }
 
-  _getTooltips = memoize((modeConfig, startingPoint, endingPoint) => {
+  _getTooltips = _memoize(({ modeConfig, startingPoint, endingPoint }) => {
     let tooltips = DEFAULT_TOOLTIPS;
 
     if (startingPoint && endingPoint) {
@@ -102,12 +100,6 @@ export class MeasureDistanceMode extends BaseGeoJsonEditMode {
     props.onUpdateCursor('cell');
   }
 
-  // Called when the pointer went down on something rendered by this layer and the pointer started to move
-  handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollection>): void {}
-
-  // Called when the pointer went down on something rendered by this layer, the pointer moved, and now the pointer is up
-  handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollection>): void {}
-
   // Return features that can be used as a guide for editing the data
   getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
     const guides: GuideFeatureCollection = { type: 'FeatureCollection', features: [] };
@@ -136,6 +128,10 @@ export class MeasureDistanceMode extends BaseGeoJsonEditMode {
   }
 
   getTooltips(props: ModeProps<FeatureCollection>): Tooltip[] {
-    return this._getTooltips(props.modeConfig, this.startingPoint, this.endingPoint);
+    return this._getTooltips({
+      modeConfig: props.modeConfig,
+      startingPoint: this.startingPoint,
+      endingPoint: this.endingPoint
+    });
   }
 }

@@ -29,6 +29,7 @@ export { ImmutableFeatureCollection } from './lib/immutable-feature-collection.j
 export { ViewMode } from './lib/view-mode.js';
 export { MeasureDistanceMode } from './lib/measure-distance-mode.js';
 export { MeasureAreaMode } from './lib/measure-area-mode.js';
+export { MeasureAngleMode } from './lib/measure-angle-mode.js';
 export { CompositeMode } from './lib/composite-mode.js';
 export { SnappableMode } from './lib/snappable-mode.js';
 

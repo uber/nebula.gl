@@ -383,14 +383,16 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
 
   _onPointerDown = (event: BaseEvent) => {
     const pickedObject = event.picks && event.picks[0] && event.picks[0].object;
+    const isDragging = pickedObject && isNumeric(pickedObject.featureIndex);
     const startDraggingEvent = {
       ...event,
+      isDragging,
       pointerDownScreenCoords: event.screenCoords,
       pointerDownMapCoords: event.mapCoords
     };
 
     const newState = {
-      isDragging: pickedObject && isNumeric(pickedObject.featureIndex),
+      isDragging,
       pointerDownPicks: event.picks,
       pointerDownScreenCoords: event.screenCoords,
       pointerDownMapCoords: event.mapCoords
@@ -403,10 +405,13 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
   };
 
   _onPointerUp = (event: MjolnirEvent) => {
+    const { didDrag, pointerDownPicks, pointerDownScreenCoords, pointerDownMapCoords } = this.state;
     const stopDraggingEvent = {
       ...event,
-      pointerDownScreenCoords: this.state.pointerDownScreenCoords,
-      pointerDownMapCoords: this.state.pointerDownMapCoords
+      isDragging: false,
+      pointerDownPicks: didDrag ? pointerDownPicks : null,
+      pointerDownScreenCoords: didDrag ? pointerDownScreenCoords : null,
+      pointerDownMapCoords: didDrag ? pointerDownMapCoords : null
     };
 
     const newState = {
@@ -418,9 +423,11 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
     };
 
     this.setState(newState);
-
     const modeProps = this.getModeProps();
-    this._modeHandler.handleStopDragging(stopDraggingEvent, modeProps);
+
+    if (didDrag) {
+      this._modeHandler.handleStopDragging(stopDraggingEvent, modeProps);
+    }
   };
 
   _onPan = (event: BaseEvent) => {

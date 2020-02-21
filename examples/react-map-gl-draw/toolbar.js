@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { EditorModes } from 'react-map-gl-draw';
 
 const MODES = [
-  { id: EditorModes.SELECT, text: 'Edit Feature', icon: 'icon-select.svg' },
+  { id: EditorModes.EDITING, text: 'Edit Feature', icon: 'icon-select.svg' },
   { id: EditorModes.DRAW_POINT, text: 'Draw Point', icon: 'icon-point.svg' },
   { id: EditorModes.DRAW_PATH, text: 'Draw Polyline', icon: 'icon-path.svg' },
   { id: EditorModes.DRAW_POLYGON, text: 'Draw Polygon', icon: 'icon-polygon.svg' },

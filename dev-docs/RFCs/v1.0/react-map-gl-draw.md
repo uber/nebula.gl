@@ -26,7 +26,7 @@ Another `vis.gl` framework [Nebula.gl](http://nebula.gl) also provides geo editi
 - `clickRadius` (Number, optional) - Radius to detect features around a hovered or clicked point. Default value is `0`
 
 - `onSelect` (Function, Required) - callback when a feature is selected. Receives an object containing `selectedFeatureId`.
-- `onUpdate` (Function, Required) - callback when anything is updated. Receives one argument `features` that is the updated list of GeoJSON features.
+- `onUpdate` (Function, Required) - callback when any feature is updated. Receives one argument `features` that is the updated list of GeoJSON features.
 
 Feature object structure:
 

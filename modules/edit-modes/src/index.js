@@ -11,6 +11,7 @@ export { DuplicateMode } from './lib/duplicate-mode.js';
 export { SplitPolygonMode } from './lib/split-polygon-mode.js';
 export { ExtrudeMode } from './lib/extrude-mode.js';
 export { ElevationMode } from './lib/elevation-mode.js';
+export { TransformMode } from './lib/transform-mode';
 
 // Draw modes
 export { DrawPointMode } from './lib/draw-point-mode.js';

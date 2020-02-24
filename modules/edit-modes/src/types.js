@@ -85,7 +85,13 @@ export type Tooltip = {
   text: string
 };
 
-export type EditHandleType = 'existing' | 'intermediate' | 'snap-source' | 'snap-target';
+export type EditHandleType =
+  | 'existing'
+  | 'intermediate'
+  | 'snap-source'
+  | 'snap-target'
+  | 'scale'
+  | 'rotate';
 
 export type EditHandleFeature = FeatureWithProps<
   Point,
@@ -93,7 +99,8 @@ export type EditHandleFeature = FeatureWithProps<
     guideType: 'editHandle',
     editHandleType: EditHandleType,
     featureIndex: number,
-    positionIndexes: number[]
+    positionIndexes: number[],
+    index?: number
   }
 >;
 

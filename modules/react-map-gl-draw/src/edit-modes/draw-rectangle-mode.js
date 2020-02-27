@@ -1,6 +1,6 @@
 // @flow
 
-import type { Feature, ClickEvent, FeatureCollection } from '@nebula.gl/edit-modes';
+import type { Feature, ClickEvent, FeatureCollection, StopDraggingEvent } from '@ne bula.gl/edit-modes';
 import uuid from 'uuid/v1';
 import type { ModeProps } from '../types';
 
@@ -9,62 +9,82 @@ import BaseMode from './base-mode';
 import { getFeatureCoordinates, updateRectanglePosition } from './utils';
 
 export default class DrawRectangleMode extends BaseMode {
-  handleClick = (event: ClickEvent, props: ModeProps<FeatureCollection>) => {
-    const { data } = props;
 
-    let tentativeFeature = this.getTentativeFeature();
-
-    // close rectangle and commit
-    if (tentativeFeature) {
-      // clear guides
-      this.setTentativeFeature(null);
-
-      let coordinates = updateRectanglePosition(tentativeFeature, 2, event.mapCoords);
-      if (!coordinates) {
-        return;
+  _initTentativeFeature = (event: ClickEvent, props: ModeProps<FeatureCollection>) => {
+    this.setTentativeFeature({
+      type: 'Feature',
+      properties: {
+        // TODO deprecate id
+        id: uuid(),
+        renderType: RENDER_TYPE.RECTANGLE,
+        guideType: GUIDE_TYPE.TENTATIVE
+      },
+      geometry: {
+        type: 'LineString',
+        coordinates: [event.mapCoords, event.mapCoords, event.mapCoords, event.mapCoords]
       }
+    });
+  };
 
-      // close rectangle
-      coordinates = [...coordinates, coordinates[0]];
+  _commitTentativeFeature = (event: ClickEvent, props: ModeProps<FeatureCollection>) => {
+    // close rectangle and commit
+    const { data } = props;
+    const tentativeFeature = this.getTentativeFeature();
+    // clear guides
+    this.setTentativeFeature(null);
 
-      tentativeFeature = {
-        type: 'Feature',
-        properties: {
-          // TODO deprecate id
-          id: tentativeFeature.properties.id,
-          renderType: RENDER_TYPE.RECTANGLE
-        },
-        geometry: {
-          type: GEOJSON_TYPE.POLYGON,
-          coordinates: [coordinates]
-        }
-      };
+    let coordinates = updateRectanglePosition(tentativeFeature, 2, event.mapCoords);
+    if (!coordinates) {
+      return;
+    }
 
-      const updatedData = data.addFeature(tentativeFeature).getObject();
+    // close rectangle
+    coordinates = [...coordinates, coordinates[0]];
 
-      // commit rectangle
-      props.onEdit({
-        editType: EDIT_TYPE.ADD_FEATURE,
-        updatedData,
-        editContext: null
-      });
-    } else {
-      // create a tentativeFeature
-      tentativeFeature = {
-        type: 'Feature',
-        properties: {
-          // TODO deprecate id
-          id: uuid(),
-          renderType: RENDER_TYPE.RECTANGLE,
-          guideType: GUIDE_TYPE.TENTATIVE
-        },
-        geometry: {
-          type: 'LineString',
-          coordinates: [event.mapCoords, event.mapCoords, event.mapCoords, event.mapCoords]
-        }
-      };
+    const nextTentativeFeature = {
+      type: 'Feature',
+      properties: {
+        // TODO deprecate id
+        id: tentativeFeature.properties.id,
+        renderType: RENDER_TYPE.RECTANGLE
+      },
+      geometry: {
+        type: GEOJSON_TYPE.POLYGON,
+        coordinates: [coordinates]
+      }
+    };
 
-      this.setTentativeFeature(tentativeFeature);
+    const updatedData = data.addFeature(nextTentativeFeature).getObject();
+
+    // commit rectangle
+    props.onEdit({
+      editType: EDIT_TYPE.ADD_FEATURE,
+      updatedData,
+      editContext: null
+    });
+  };
+
+  handleClick = (event: ClickEvent, props: ModeProps<FeatureCollection>) => {
+  };
+
+  handleStartDragging = (event: StartDraggingEvent, props: ModeProps<FeatureCollection>) => {
+    const tentativeFeature = this.getTentativeFeature();
+    if (!tentativeFeature) {
+      this._initTentativeFeature(event, props);
+    }
+  };
+
+  handleStopDragging = (event: StopDraggingEvent, props: ModeProps<FeatureCollection>) => {
+    const tentativeFeature = this.getTentativeFeature();
+    if (tentativeFeature) {
+      this._commitTentativeFeature(event, props);
+    }
+  };
+
+  handlePan = (event: StartDraggingEvent, props: ModeProps<FeatureCollection>) => {
+    const tentativeFeature = this.getTentativeFeature();
+    if (tentativeFeature) {
+      event.sourceEvent.stopImmediatePropagation();
     }
   };
 

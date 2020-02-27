@@ -73,7 +73,7 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
       pointerup: evt => this._onEvent(this._onPointerUp, evt, true),
       panmove: evt => this._onEvent(this._onPan, evt, false),
       panstart: evt => this._onEvent(this._onPan, evt, false),
-      panend: evt => this._onEvent(this._onPan, evt, false)
+      panend: evt => this._onEvent(this._onPan, evt, false),
     };
   }
 
@@ -428,6 +428,7 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
     if (isDragging) {
       event.sourceEvent.stopImmediatePropagation();
     }
+    this._modeHandler.handlePan(event, this.getModeProps());
   };
 
   /* HELPERS */

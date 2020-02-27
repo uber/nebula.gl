@@ -26,6 +26,8 @@ export default class BaseMode {
 
   handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>) {}
 
+  handlePan(event: ClickEvent, props: ModeProps<FeatureCollection>) {}
+
   handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollection>) {}
 
   handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollection>) {}

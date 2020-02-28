@@ -1,6 +1,11 @@
 // @flow
 
-import type { Feature, ClickEvent, FeatureCollection, StopDraggingEvent } from '@ne bula.gl/edit-modes';
+import type {
+  Feature,
+  ClickEvent,
+  FeatureCollection,
+  StopDraggingEvent
+} from '@ne bula.gl/edit-modes';
 import uuid from 'uuid/v1';
 import type { ModeProps } from '../types';
 
@@ -9,7 +14,6 @@ import BaseMode from './base-mode';
 import { getFeatureCoordinates, updateRectanglePosition } from './utils';
 
 export default class DrawRectangleMode extends BaseMode {
-
   _initTentativeFeature = (event: ClickEvent, props: ModeProps<FeatureCollection>) => {
     this.setTentativeFeature({
       type: 'Feature',
@@ -64,8 +68,7 @@ export default class DrawRectangleMode extends BaseMode {
     });
   };
 
-  handleClick = (event: ClickEvent, props: ModeProps<FeatureCollection>) => {
-  };
+  handleClick = (event: ClickEvent, props: ModeProps<FeatureCollection>) => {};
 
   handleStartDragging = (event: StartDraggingEvent, props: ModeProps<FeatureCollection>) => {
     const tentativeFeature = this.getTentativeFeature();

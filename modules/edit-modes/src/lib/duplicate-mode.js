@@ -13,11 +13,12 @@ export class DuplicateMode extends TranslateMode {
     }
   }
 
-  updateCursor(props: ModeProps<FeatureCollection>) {
+  updateCursor(props: ModeProps<FeatureCollection>): boolean {
     if (this._isTranslatable) {
       props.onUpdateCursor('copy');
-    } else {
-      props.onUpdateCursor(null);
+      return true;
     }
+    props.onUpdateCursor(null);
+    return false;
   }
 }

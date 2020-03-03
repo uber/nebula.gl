@@ -18,6 +18,13 @@ import { ImmutableFeatureCollection } from './immutable-feature-collection.js';
 export class TranslateMode extends BaseGeoJsonEditMode {
   _geometryBeforeTranslate: ?FeatureCollection;
   _isTranslatable: boolean;
+  _isCompositionMode: boolean;
+
+  constructor(options: ?{ isCompositionMode: boolean }) {
+    super();
+    const { isCompositionMode } = options || {};
+    this._isCompositionMode = isCompositionMode || false;
+  }
 
   handleDragging(event: DraggingEvent, props: ModeProps<FeatureCollection>) {
     if (!this._isTranslatable) {
@@ -46,7 +53,9 @@ export class TranslateMode extends BaseGeoJsonEditMode {
   handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>) {
     this._isTranslatable = this.isSelectionPicked(event.pointerDownPicks || event.picks, props);
 
-    this.updateCursor(props);
+    if (!this._isCompositionMode) {
+      this.updateCursor(props);
+    }
   }
 
   handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollection>) {
@@ -75,12 +84,16 @@ export class TranslateMode extends BaseGeoJsonEditMode {
     }
   }
 
-  updateCursor(props: ModeProps<FeatureCollection>) {
+  updateCursor(props: ModeProps<FeatureCollection>): boolean {
     if (this._isTranslatable) {
       props.onUpdateCursor('move');
-    } else {
+      return true;
+    }
+
+    if (!this._isCompositionMode) {
       props.onUpdateCursor(null);
     }
+    return false;
   }
 
   getTranslateAction(

@@ -1654,13 +1654,6 @@
   dependencies:
     "@turf/helpers" "6.x"
 
-"@turf/bbox-polygon@^5.1.5":
-  version "5.1.5"
-  resolved "https://registry.yarnpkg.com/@turf/bbox-polygon/-/bbox-polygon-5.1.5.tgz#6aeba4ed51d85d296e0f7c38b88c339f01eee024"
-  integrity sha1-auuk7VHYXSluD3w4uIwznwHu4CQ=
-  dependencies:
-    "@turf/helpers" "^5.1.5"
-
 "@turf/bbox@*", "@turf/bbox@6.x", "@turf/bbox@>=4.0.0":
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/@turf/bbox/-/bbox-6.0.1.tgz#b966075771475940ee1c16be2a12cf389e6e923a"
@@ -1781,15 +1774,6 @@
     "@turf/invariant" "^5.1.5"
     "@turf/rhumb-destination" "^5.1.5"
     "@turf/transform-rotate" "^5.1.5"
-
-"@turf/envelope@^5.1.5":
-  version "5.1.5"
-  resolved "https://registry.yarnpkg.com/@turf/envelope/-/envelope-5.1.5.tgz#5013309c53fdd43dfaf4b588a65c3fed7dbc108a"
-  integrity sha1-UBMwnFP91D369LWIplw/7X28EIo=
-  dependencies:
-    "@turf/bbox" "^5.1.5"
-    "@turf/bbox-polygon" "^5.1.5"
-    "@turf/helpers" "^5.1.5"
 
 "@turf/helpers@6.x", "@turf/helpers@>=4.0.0", "@turf/helpers@^6.1.4":
   version "6.1.4"

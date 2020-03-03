@@ -57,7 +57,6 @@
     "@turf/difference": ">=4.0.0",
     "@turf/distance": ">=4.0.0",
     "@turf/ellipse": ">=4.0.0",
-    "@turf/envelope": "^5.1.5",
     "@turf/helpers": ">=4.0.0",
     "@turf/intersect": ">=4.0.0",
     "@turf/line-intersect": ">=4.0.0",

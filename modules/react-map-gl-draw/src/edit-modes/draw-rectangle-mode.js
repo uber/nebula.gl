@@ -5,7 +5,7 @@ import type {
   ClickEvent,
   FeatureCollection,
   StopDraggingEvent
-} from '@ne bula.gl/edit-modes';
+} from '@nebula.gl/edit-modes';
 import uuid from 'uuid/v1';
 import type { ModeProps } from '../types';
 

@@ -4,6 +4,7 @@ import type {
   Feature,
   ClickEvent,
   FeatureCollection,
+  StartDraggingEvent,
   StopDraggingEvent
 } from '@nebula.gl/edit-modes';
 import uuid from 'uuid/v1';
@@ -34,38 +35,40 @@ export default class DrawRectangleMode extends BaseMode {
     // close rectangle and commit
     const { data } = props;
     const tentativeFeature = this.getTentativeFeature();
-    // clear guides
-    this.setTentativeFeature(null);
+    if (tentativeFeature) {
+      // clear guides
+      this.setTentativeFeature(null);
 
-    let coordinates = updateRectanglePosition(tentativeFeature, 2, event.mapCoords);
-    if (!coordinates) {
-      return;
-    }
-
-    // close rectangle
-    coordinates = [...coordinates, coordinates[0]];
-
-    const nextTentativeFeature = {
-      type: 'Feature',
-      properties: {
-        // TODO deprecate id
-        id: tentativeFeature.properties.id,
-        renderType: RENDER_TYPE.RECTANGLE
-      },
-      geometry: {
-        type: GEOJSON_TYPE.POLYGON,
-        coordinates: [coordinates]
+      let coordinates = updateRectanglePosition(tentativeFeature, 2, event.mapCoords);
+      if (!coordinates) {
+        return;
       }
-    };
 
-    const updatedData = data.addFeature(nextTentativeFeature).getObject();
+      // close rectangle
+      coordinates = [...coordinates, coordinates[0]];
 
-    // commit rectangle
-    props.onEdit({
-      editType: EDIT_TYPE.ADD_FEATURE,
-      updatedData,
-      editContext: null
-    });
+      const nextTentativeFeature = {
+        type: 'Feature',
+        properties: {
+          // TODO deprecate id
+          id: tentativeFeature.properties.id,
+          renderType: RENDER_TYPE.RECTANGLE
+        },
+        geometry: {
+          type: GEOJSON_TYPE.POLYGON,
+          coordinates: [coordinates]
+        }
+      };
+
+      const updatedData = data.addFeature(nextTentativeFeature).getObject();
+
+      // commit rectangle
+      props.onEdit({
+        editType: EDIT_TYPE.ADD_FEATURE,
+        updatedData,
+        editContext: null
+      });
+    }
   };
 
   handleClick = (event: ClickEvent, props: ModeProps<FeatureCollection>) => {};

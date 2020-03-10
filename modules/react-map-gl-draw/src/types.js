@@ -44,7 +44,7 @@ export type ModeProps<TData> = {
   // Callback used to update cursor
   onUpdateCursor: (cursor: ?string) => void,
 
-  // Whether features are draggable in the mode
+  // Whether features are draggable in this mode
   featuresDraggable: ?boolean
 };
 

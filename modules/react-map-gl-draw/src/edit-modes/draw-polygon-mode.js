@@ -1,5 +1,5 @@
 // @flow
-import type { ClickEvent, FeatureCollection } from '@nebula.gl/edit-modes';
+import type { ClickEvent, Feature, FeatureCollection } from '@nebula.gl/edit-modes';
 import uuid from 'uuid/v1';
 
 import type { ModeProps } from '../types';
@@ -22,30 +22,7 @@ export default class DrawPolygonMode extends BaseMode {
       // clicked an editHandle of a tentative feature
       if (pickedObject && pickedObject.index === 0) {
         this.setTentativeFeature(null);
-
-        // append point to the tail, close the polygon
-        const coordinates = getFeatureCoordinates(tentativeFeature);
-        if (!coordinates) {
-          return;
-        }
-
-        coordinates.push(coordinates[0]);
-
-        tentativeFeature = {
-          type: 'Feature',
-          properties: {
-            // TODO deprecate id
-            id: tentativeFeature.properties.id,
-            renderType: RENDER_TYPE.POLYGON
-          },
-          geometry: {
-            type: GEOJSON_TYPE.POLYGON,
-            coordinates: [coordinates]
-          }
-        };
-
-        const updatedData = data.addFeature(tentativeFeature).getObject();
-
+        const updatedData = data.addFeature(closePolygon(tentativeFeature)).getObject();
         props.onEdit({
           editType: EDIT_TYPE.ADD_FEATURE,
           updatedData,
@@ -79,6 +56,20 @@ export default class DrawPolygonMode extends BaseMode {
       };
 
       this.setTentativeFeature(tentativeFeature);
+    }
+  };
+
+  handleDblClick = (event: ClickEvent, props: ModeProps<FeatureCollection>) => {
+    const { data } = props;
+    const tentativeFeature = this.getTentativeFeature();
+    if (tentativeFeature) {
+      this.setTentativeFeature(null);
+      const updatedData = data.addFeature(closePolygon(tentativeFeature)).getObject();
+      props.onEdit({
+        editType: EDIT_TYPE.ADD_FEATURE,
+        updatedData,
+        editContext: null
+      });
     }
   };
 
@@ -122,5 +113,26 @@ export default class DrawPolygonMode extends BaseMode {
       tentativeFeature,
       editHandles
     };
+  };
+}
+
+function closePolygon(tentativeFeature: Feature): ?Feature {
+  // append point to the tail to close the polygon
+  const coordinates = getFeatureCoordinates(tentativeFeature);
+  if (!coordinates) {
+    return undefined;
+  }
+  coordinates.push(coordinates[0]);
+  return {
+    type: 'Feature',
+    properties: {
+      // TODO deprecate id
+      id: tentativeFeature.properties.id,
+      renderType: RENDER_TYPE.POLYGON
+    },
+    geometry: {
+      type: GEOJSON_TYPE.POLYGON,
+      coordinates: [coordinates]
+    }
   };
 }

@@ -68,6 +68,7 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
     this._events = {
       anyclick: evt => this._onEvent(this._onClick, evt, true),
       click: evt => evt.stopImmediatePropagation(),
+      dblclick: evt => this._onEvent(this._onDblClick, evt, true),
       pointermove: evt => this._onEvent(this._onPointerMove, evt, true),
       pointerdown: evt => this._onEvent(this._onPointerDown, evt, true),
       pointerup: evt => this._onEvent(this._onPointerUp, evt, true),
@@ -341,6 +342,11 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
 
     const modeProps = this.getModeProps();
     this._modeHandler.handleClick(event, modeProps);
+  };
+
+  _onDblClick = (event: BaseEvent) => {
+    const modeProps = this.getModeProps();
+    this._modeHandler.handleDblClick(event, modeProps);
   };
 
   _onPointerMove = (event: BaseEvent) => {

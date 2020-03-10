@@ -24,7 +24,6 @@ export default class App extends Component {
       viewport: DEFAULT_VIEWPORT,
       // editor
       selectedMode: EditorModes.READ_ONLY,
-      features: [],
       selectedFeatureIndex: null
     };
     this._editorRef = null;

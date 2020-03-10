@@ -72,6 +72,7 @@ export default class EditingMode extends BaseMode {
 
     switch (pickedObject.type) {
       case ELEMENT_TYPE.FEATURE:
+      case ELEMENT_TYPE.FILL:
       case ELEMENT_TYPE.EDIT_HANDLE:
         this._handleDragging(event, props);
         break;

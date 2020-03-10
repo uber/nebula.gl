@@ -8,6 +8,6 @@ before_script:
   - "curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | sudo bash"
 script:
   - yarn test-ci
-  - fossa
+  - if [[ -n $FOSSA_API_KEY ]]; then fossa; fi
 after_success:
   - cat coverage/lcov.info | coveralls

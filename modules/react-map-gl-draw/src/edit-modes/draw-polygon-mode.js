@@ -117,7 +117,7 @@ export default class DrawPolygonMode extends BaseMode {
 }
 
 function closePolygon(tentativeFeature: Feature): ?Feature {
-  // append point to the tail, close the polygon
+  // append point to the tail to close the polygon
   const coordinates = getFeatureCoordinates(tentativeFeature);
   if (!coordinates) {
     return undefined;

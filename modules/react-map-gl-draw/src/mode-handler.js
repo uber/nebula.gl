@@ -228,10 +228,10 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
     }
   };
 
-  _onUpdate = (editAction: EditAction, isInternal: ?boolean) => {
+  _onUpdate = (editAction: EditAction) => {
     const { editType, updatedData, editContext } = editAction;
     this.setState({ featureCollection: new ImmutableFeatureCollection(updatedData) });
-    if (this.props.onUpdate && !isInternal) {
+    if (this.props.onUpdate) {
       this.props.onUpdate({
         data: updatedData && updatedData.features,
         editType,
@@ -244,14 +244,10 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
     const { mode } = this.props;
     const { editType, updatedData } = editAction;
 
+    this._onUpdate(editAction);
+
     switch (editType) {
-      case EDIT_TYPE.MOVE_POSITION:
-        // intermediate feature, do not need forward to application
-        // only need update editor internal state
-        this._onUpdate(editAction, true);
-        break;
       case EDIT_TYPE.ADD_FEATURE:
-        this._onUpdate(editAction);
         if (mode === MODES.DRAW_PATH) {
           const context = (editAction.editContext && editAction.editContext[0]) || {};
           const { screenCoords, mapCoords } = context;
@@ -266,13 +262,8 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
           });
         }
         break;
-      case EDIT_TYPE.ADD_POSITION:
-      case EDIT_TYPE.REMOVE_POSITION:
-      case EDIT_TYPE.FINISH_MOVE_POSITION:
-        this._onUpdate(editAction);
-        break;
-
       default:
+        break;
     }
   };
 

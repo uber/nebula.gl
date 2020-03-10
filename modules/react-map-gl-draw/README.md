@@ -23,7 +23,7 @@
   - `screenCoords`: screen coordinates of the clicked position.
   - `mapCoords`: map coordinates of the clicked position.
 
-- `onUpdate` (Function, Optional) - callback when anything is updated. Receives an object containing the following parameters
+- `onUpdate` (Function, Optional) - callback when any feature is updated. Receives an object containing the following parameters
   - `features` (Feature[]) - the updated list of GeoJSON features.
   - `editType` (String) -  `addFeature`, `addPosition`, `finishMovePosition`
   - `editContext` (Array) - list of edit objects, depend on `editType`, each object may contain `featureIndexes`, `editHandleIndexes`, `screenCoords`, `mapCoords`.

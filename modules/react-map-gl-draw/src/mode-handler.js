@@ -263,7 +263,6 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
         break;
       default:
         break;
-
     }
   };
 

@@ -4,6 +4,17 @@ _All notable changes to this project will be documented in this file. This proje
 
 <!-- INSERT HERE -->
 
+## [0.17.3](https://github.com/uber/nebula.gl/compare/v0.17.2...v0.17.3) - 2020-03-10
+
+### Changes
+
+* Assign key prop to html-overlay children that don't already have one specified (#348)
+* react-map-gl-draw: fix onUpdate to callback when anything is upd… (#339)
+* react-map-gl-draw: fix onUpdate bubbling up when dragging finish… (#337)
+* react-map-gl-draw: Closing polygon drawing on dblclick (#341)
+* Ability to measure angles with MeasureAngleMode (#332)
+* Change documentation to recommend using _subLayerProps (#329)
+
 ## [0.17.2](https://github.com/uber/nebula.gl/compare/v0.17.1...v0.17.2) - 2020-02-06
 
 ### Changes

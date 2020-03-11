@@ -59,10 +59,11 @@ export default class HtmlOverlay<Props> extends Component<
     const renderItems = [];
     this.getItems()
       .filter(Boolean)
-      .forEach(item => {
+      .forEach((item, index) => {
         const [x, y] = this.getCoords(item.props.coordinates);
         if (this.inView([x, y])) {
-          renderItems.push(cloneElement(item, { x, y }));
+          const key = item.key === null || item.key === undefined ? index : item.key;
+          renderItems.push(cloneElement(item, { x, y, key }));
         }
       });
 

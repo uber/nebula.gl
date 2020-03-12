@@ -29,19 +29,11 @@ import { ImmutableFeatureCollection } from './immutable-feature-collection.js';
 
 export class RotateMode extends BaseGeoJsonEditMode {
   _selectedEditHandle: ?EditHandleFeature;
-  _selectedGeometry: ?FeatureCollection;
-  _previousMouseCoords: ?Position;
+  _geometryBeingRotated: ?FeatureCollection;
   _isRotating: boolean = false;
-  _isCompositionMode: boolean;
 
-  constructor(options: ?{ isCompositionMode: boolean }) {
-    super();
-    const { isCompositionMode } = options || {};
-    this._isCompositionMode = isCompositionMode || false;
-  }
-
-  _isSinglePointGeometrySelected = (): boolean => {
-    const { features } = this._selectedGeometry || {};
+  _isSinglePointGeometrySelected = (geometry: ?FeatureCollection): boolean => {
+    const { features } = geometry || {};
     if (Array.isArray(features) && features.length === 1) {
       const { type } = getGeom(features[0]);
       return type === 'Point';
@@ -52,17 +44,18 @@ export class RotateMode extends BaseGeoJsonEditMode {
   getIsRotating = () => this._isRotating;
 
   getGuides(props: ModeProps<FeatureCollection>) {
-    this._selectedGeometry = this.getSelectedFeaturesAsFeatureCollection(props);
+    const selectedGeometry =
+      this._geometryBeingRotated || this.getSelectedFeaturesAsFeatureCollection(props);
 
     if (this._isRotating) {
       // Display rotate pivot
-      return featureCollection([turfCentroid(this._selectedGeometry)]);
+      return featureCollection([turfCentroid(selectedGeometry)]);
     }
 
     // Add buffer to the enveloping box if a single Point feature is selected
-    const featureWithBuffer = this._isSinglePointGeometrySelected()
-      ? turfBuffer(this._selectedGeometry, 1)
-      : this._selectedGeometry;
+    const featureWithBuffer = this._isSinglePointGeometrySelected(selectedGeometry)
+      ? turfBuffer(selectedGeometry, 1)
+      : selectedGeometry;
 
     const boundingBox = bboxPolygon(bbox(featureWithBuffer));
 
@@ -127,14 +120,13 @@ export class RotateMode extends BaseGeoJsonEditMode {
           : null;
     }
 
-    if (!this._isCompositionMode) {
-      this.updateCursor(props);
-    }
+    this.updateCursor(props);
   }
 
   handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollection>) {
     if (this._selectedEditHandle) {
       this._isRotating = true;
+      this._geometryBeingRotated = this.getSelectedFeaturesAsFeatureCollection(props);
     }
   }
 
@@ -152,24 +144,19 @@ export class RotateMode extends BaseGeoJsonEditMode {
         props.onEdit(rotateAction);
       }
 
-      this._selectedGeometry = null;
+      this._geometryBeingRotated = null;
       this._selectedEditHandle = null;
-      this._previousMouseCoords = null;
       this._isRotating = false;
     }
   }
 
-  updateCursor(props: ModeProps<FeatureCollection>): boolean {
+  updateCursor(props: ModeProps<FeatureCollection>) {
     if (this._selectedEditHandle) {
       // TODO: look at doing SVG cursors to get a better "rotate" cursor
       props.onUpdateCursor('crosshair');
-      return true;
-    }
-
-    if (!this._isCompositionMode) {
+    } else {
       props.onUpdateCursor(null);
     }
-    return false;
   }
 
   getRotateAction(
@@ -178,18 +165,16 @@ export class RotateMode extends BaseGeoJsonEditMode {
     editType: string,
     props: ModeProps<FeatureCollection>
   ): ?GeoJsonEditAction {
-    if (!this._selectedGeometry) {
+    if (!this._geometryBeingRotated) {
       return null;
     }
 
-    const centroid = turfCentroid(this._selectedGeometry);
-    const angle = getRotationAngle(
-      centroid,
-      this._previousMouseCoords || startDragPoint,
-      currentPoint
-    );
+    const centroid = turfCentroid(this._geometryBeingRotated);
+    const angle = getRotationAngle(centroid, startDragPoint, currentPoint);
 
-    const rotatedFeatures = turfTransformRotate(this._selectedGeometry, angle, { pivot: centroid });
+    const rotatedFeatures = turfTransformRotate(this._geometryBeingRotated, angle, {
+      pivot: centroid
+    });
 
     let updatedData = new ImmutableFeatureCollection(props.data);
 
@@ -199,8 +184,6 @@ export class RotateMode extends BaseGeoJsonEditMode {
       const movedFeature = rotatedFeatures.features[i];
       updatedData = updatedData.replaceGeometry(selectedIndex, movedFeature.geometry);
     }
-
-    this._previousMouseCoords = currentPoint;
 
     return {
       updatedData: updatedData.getObject(),

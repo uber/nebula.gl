@@ -182,6 +182,11 @@ export function getPickedEditHandle(picks: ?(Pick[])): ?EditHandleFeature {
   return handles.length ? handles[0] : null;
 }
 
+export function getPickedSnapSourceEditHandle(picks: ?(Pick[])): ?EditHandleFeature {
+  const handles = getPickedEditHandles(picks);
+  return handles.find(handle => handle.properties.editHandleType === 'snap-source');
+}
+
 export function getNonGuidePicks(picks: Pick[]): Pick[] {
   return picks && picks.filter(pick => !pick.isGuide);
 }

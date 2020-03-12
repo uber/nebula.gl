@@ -23,7 +23,8 @@ import {
   DrawRectangleUsingThreePointsMode,
   DrawEllipseUsingThreePointsMode,
   Draw90DegreePolygonMode,
-  SnappableMode
+  SnappableMode,
+  TransformMode
 } from '@nebula.gl/edit-modes';
 
 import type {
@@ -165,6 +166,7 @@ const modeNameMapping = {
   modify: ModifyMode,
   translate: new SnappableMode(new TranslateMode()),
 
+  transform: new SnappableMode(new TransformMode()),
   scale: ScaleMode,
   rotate: RotateMode,
   duplicate: DuplicateMode,

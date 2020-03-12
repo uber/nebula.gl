@@ -1,13 +1,7 @@
 // @flow
 
 import { TransformMode } from '../../src/lib/transform-mode';
-import {
-  createFeatureCollectionProps,
-  createPointerMoveEvent,
-  createStartDraggingEvent,
-  createStopDraggingEvent
-} from '../test-utils.js';
-import { type Pick } from '../../src/types';
+import { createFeatureCollectionProps, createPointerMoveEvent } from '../test-utils.js';
 
 let transformMode: TransformMode;
 
@@ -24,151 +18,34 @@ afterEach(() => {
   console.warn = warnBefore; // eslint-disable-line
 });
 
-describe('Transform - translate mode', () => {
-  const mockMove = (picks: Pick[], props: Object) => {
-    const moveEvent = createPointerMoveEvent([-1, -1], picks);
-    transformMode.handlePointerMove(moveEvent, props);
-
-    const startDragEvent = createStartDraggingEvent([-1, -1], [-1, -1], picks);
-    transformMode.handleStartDragging(startDragEvent, props);
-
-    const stopDragEvent = createStopDraggingEvent([2, 3], [-1, -1], picks);
-    transformMode.handleStopDragging(stopDragEvent, props);
-  };
-
-  test('Selected polygon feature can be translated', () => {
-    const mockOnEdit = jest.fn();
-    const props = createFeatureCollectionProps({
-      selectedIndexes: [2],
-      onEdit: mockOnEdit
-    });
-    mockMove([{ index: 2, isGuide: false, object: null }], props);
-
-    expect(mockOnEdit).toHaveBeenCalledTimes(1);
-    const movedFeature = mockOnEdit.mock.calls[0][0].updatedData.features[2];
-    expect(movedFeature).toMatchSnapshot();
-    expect(props.data.features[2]).not.toEqual(movedFeature);
+test('onUpdateCursor is only set to null once', () => {
+  const mockOnUpdateCursor = jest.fn();
+  const moveEvent = createPointerMoveEvent([-1, -1], []);
+  const props = createFeatureCollectionProps({
+    selectedIndexes: [2],
+    onUpdateCursor: mockOnUpdateCursor
   });
-
-  test('Non-picked selected polygon feature cannnot be translated', () => {
-    const mockOnEdit = jest.fn();
-    const props = createFeatureCollectionProps({
-      selectedIndexes: [2],
-      onEdit: mockOnEdit
-    });
-    mockMove([], props);
-    expect(mockOnEdit).toHaveBeenCalledTimes(0);
-  });
-
-  test('Picked non-selected polygon feature cannnot be translated', () => {
-    const mockOnEdit = jest.fn();
-    const props = createFeatureCollectionProps({
-      selectedIndexes: [0],
-      onEdit: mockOnEdit
-    });
-    mockMove([{ index: 2, isGuide: false, object: null }], props);
-    expect(mockOnEdit).toHaveBeenCalledTimes(0);
-  });
+  transformMode.handlePointerMove(moveEvent, props);
+  expect(mockOnUpdateCursor).toHaveBeenCalledTimes(1);
+  expect(mockOnUpdateCursor).toBeCalledWith(null);
 });
 
-describe('Transform - scale mode', () => {
-  const mockScale = (picks: Pick[], props: Object) => {
-    transformMode.getGuides(props);
+test('Transform mode correctly renders composited guides', () => {
+  const props = createFeatureCollectionProps({ selectedIndexes: [2] });
+  const guides: Array<any> = transformMode.getGuides(props).features;
+  const scaleGuides = guides.filter(guide => guide.properties.editHandleType === 'scale');
+  expect(scaleGuides.length).toEqual(4);
+  expect(scaleGuides).toMatchSnapshot();
 
-    const moveEvent = createPointerMoveEvent([-1, -1], picks);
-    transformMode.handlePointerMove(moveEvent, props);
+  const rotateGuide = guides.filter(guide => guide.properties.editHandleType === 'rotate');
+  expect(rotateGuide.length).toEqual(1);
+  expect(rotateGuide).toMatchSnapshot();
 
-    const startDragEvent = createStartDraggingEvent([-1, -1], [-1, -1], picks);
-    transformMode.handleStartDragging(startDragEvent, props);
+  const envelopingBox = guides.filter(guide => guide.geometry.type === 'Polygon');
+  expect(envelopingBox.length).toEqual(1);
+  expect(envelopingBox).toMatchSnapshot();
 
-    const stopDragEvent = createStopDraggingEvent([2, 3], [-1, -1], picks);
-    transformMode.handleStopDragging(stopDragEvent, props);
-  };
-
-  test('Selected polygon feature can be scaled', () => {
-    const mockOnEdit = jest.fn();
-    const props = createFeatureCollectionProps({
-      selectedIndexes: [2],
-      onEdit: mockOnEdit
-    });
-    const mockPicks = [
-      {
-        index: 2,
-        isGuide: true,
-        object: {
-          type: 'Feature',
-          geometry: { type: 'Point', coordinates: [-2, -2] },
-          properties: { guideType: 'editHandle', editHandleType: 'scale', index: 0 }
-        }
-      }
-    ];
-    mockScale(mockPicks, props);
-
-    expect(mockOnEdit).toHaveBeenCalledTimes(1);
-    const scaledFeature = mockOnEdit.mock.calls[0][0].updatedData.features[2];
-    expect(scaledFeature).toMatchSnapshot();
-    expect(props.data.features[2]).not.toEqual(scaledFeature);
-  });
-
-  test('Selected polygon feature without edit handle picks cannot be scaled', () => {
-    const mockOnEdit = jest.fn();
-    const props = createFeatureCollectionProps({
-      selectedIndexes: [2],
-      onEdit: mockOnEdit
-    });
-
-    mockScale([], props);
-    expect(mockOnEdit).toHaveBeenCalledTimes(0);
-  });
-});
-
-describe('Transform - rotate mode', () => {
-  const mockRotate = (picks: Pick[], props: Object) => {
-    transformMode.getGuides(props);
-
-    const moveEvent = createPointerMoveEvent([-1, -1], picks);
-    transformMode.handlePointerMove(moveEvent, props);
-
-    const startDragEvent = createStartDraggingEvent([-1, -1], [-1, -1], picks);
-    transformMode.handleStartDragging(startDragEvent, props);
-
-    const stopDragEvent = createStopDraggingEvent([2, 3], [-1, -1], picks);
-    transformMode.handleStopDragging(stopDragEvent, props);
-  };
-
-  test('Selected polygon feature can be rotated', () => {
-    const mockOnEdit = jest.fn();
-    const props = createFeatureCollectionProps({
-      selectedIndexes: [2],
-      onEdit: mockOnEdit
-    });
-    const mockPicks = [
-      {
-        index: 2,
-        isGuide: true,
-        object: {
-          type: 'Feature',
-          geometry: { type: 'Point', coordinates: [-2, -2] },
-          properties: { guideType: 'editHandle', editHandleType: 'rotate' }
-        }
-      }
-    ];
-    mockRotate(mockPicks, props);
-
-    expect(mockOnEdit).toHaveBeenCalledTimes(1);
-    const scaledFeature = mockOnEdit.mock.calls[0][0].updatedData.features[2];
-    expect(scaledFeature).toMatchSnapshot();
-    expect(props.data.features[2]).not.toEqual(scaledFeature);
-  });
-
-  test('Selected polygon feature without edit handle picks cannot be rotated', () => {
-    const mockOnEdit = jest.fn();
-    const props = createFeatureCollectionProps({
-      selectedIndexes: [2],
-      onEdit: mockOnEdit
-    });
-
-    mockRotate([], props);
-    expect(mockOnEdit).toHaveBeenCalledTimes(0);
-  });
+  const rotateLineGuide = guides.filter(guide => guide.geometry.type === 'LineString');
+  expect(rotateLineGuide.length).toEqual(1);
+  expect(rotateLineGuide).toMatchSnapshot();
 });

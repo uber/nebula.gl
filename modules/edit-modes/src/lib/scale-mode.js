@@ -24,22 +24,14 @@ import { BaseGeoJsonEditMode } from './geojson-edit-mode.js';
 import { ImmutableFeatureCollection } from './immutable-feature-collection.js';
 
 export class ScaleMode extends BaseGeoJsonEditMode {
-  _selectedGeometry: ?FeatureCollection;
+  _geometryBeingScaled: ?FeatureCollection;
   _selectedEditHandle: ?EditHandleFeature;
   _cornerGuidePoints: Array<EditHandleFeature>;
-  _previousMouseCoords: ?Position;
   _cursor: ?string;
   _isScaling: boolean = false;
-  _isCompositionMode: boolean;
 
-  constructor(options: ?{ isCompositionMode: boolean }) {
-    super();
-    const { isCompositionMode } = options || {};
-    this._isCompositionMode = isCompositionMode || false;
-  }
-
-  _isSinglePointGeometrySelected = (): boolean => {
-    const { features } = this._selectedGeometry || {};
+  _isSinglePointGeometrySelected = (geometry: ?FeatureCollection): boolean => {
+    const { features } = geometry || {};
     if (Array.isArray(features) && features.length === 1) {
       const { type } = getGeom(features[0]);
       return type === 'Point';
@@ -69,29 +61,28 @@ export class ScaleMode extends BaseGeoJsonEditMode {
     return updatedData.getObject();
   };
 
+  isEditHandleSelcted = (): boolean => Boolean(this._selectedEditHandle);
+
   getScaleAction = (
     startDragPoint: Position,
     currentPoint: Position,
     editType: string,
     props: ModeProps<FeatureCollection>
   ) => {
-    if (!this._selectedEditHandle || this._isSinglePointGeometrySelected()) {
+    if (
+      !this._selectedEditHandle ||
+      this._isSinglePointGeometrySelected(this._geometryBeingScaled)
+    ) {
       return null;
     }
 
     const oppositeHandle = this._getOppositeScaleHandle(this._selectedEditHandle);
     const origin = getCoord(oppositeHandle);
 
-    const scaleFactor = getScaleFactor(
-      origin,
-      this._previousMouseCoords || startDragPoint,
-      currentPoint
-    );
-    const scaledFeatures = turfTransformScale(this._selectedGeometry, scaleFactor, {
+    const scaleFactor = getScaleFactor(origin, startDragPoint, currentPoint);
+    const scaledFeatures = turfTransformScale(this._geometryBeingScaled, scaleFactor, {
       origin
     });
-
-    this._previousMouseCoords = currentPoint;
 
     return {
       updatedData: this._getUpdatedData(props, scaledFeatures),
@@ -102,15 +93,15 @@ export class ScaleMode extends BaseGeoJsonEditMode {
     };
   };
 
-  updateCursor = (props: ModeProps<FeatureCollection>): boolean => {
-    if (this._selectedEditHandle && this._selectedGeometry) {
+  updateCursor = (props: ModeProps<FeatureCollection>) => {
+    if (this._selectedEditHandle) {
       if (this._cursor) {
         props.onUpdateCursor(this._cursor);
-        return true;
       }
+      const cursorGeometry = this.getSelectedFeaturesAsFeatureCollection(props);
 
       // Get resize cursor direction from the hovered scale editHandle (e.g. nesw or nwse)
-      const centroid = turfCentroid(this._selectedGeometry);
+      const centroid = turfCentroid(cursorGeometry);
       const bearing = turfBearing(centroid, this._selectedEditHandle);
       const positiveBearing = bearing < 0 ? bearing + 180 : bearing;
       if (
@@ -123,14 +114,10 @@ export class ScaleMode extends BaseGeoJsonEditMode {
         this._cursor = 'nwse-resize';
         props.onUpdateCursor('nwse-resize');
       }
-      return true;
-    }
-
-    if (!this._isCompositionMode) {
+    } else {
       props.onUpdateCursor(null);
+      this._cursor = null;
     }
-    this._cursor = null;
-    return false;
   };
 
   handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>) {
@@ -142,14 +129,13 @@ export class ScaleMode extends BaseGeoJsonEditMode {
           : null;
     }
 
-    if (!this._isCompositionMode) {
-      this.updateCursor(props);
-    }
+    this.updateCursor(props);
   }
 
   handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollection>) {
     if (this._selectedEditHandle) {
       this._isScaling = true;
+      this._geometryBeingScaled = this.getSelectedFeaturesAsFeatureCollection(props);
     }
   }
 
@@ -184,9 +170,8 @@ export class ScaleMode extends BaseGeoJsonEditMode {
         props.onEdit(scaleAction);
       }
 
-      this._selectedGeometry = null;
+      this._geometryBeingScaled = null;
       this._selectedEditHandle = null;
-      this._previousMouseCoords = null;
       this._cursor = null;
       this._isScaling = false;
     }
@@ -194,14 +179,15 @@ export class ScaleMode extends BaseGeoJsonEditMode {
 
   getGuides(props: ModeProps<FeatureCollection>) {
     this._cornerGuidePoints = [];
-    this._selectedGeometry = this.getSelectedFeaturesAsFeatureCollection(props);
+    const selectedGeometry = this.getSelectedFeaturesAsFeatureCollection(props);
 
     // Add buffer to the enveloping box if a single Point feature is selected
-    const featureWithBuffer = this._isSinglePointGeometrySelected()
-      ? turfBuffer(this._selectedGeometry, 1)
-      : this._selectedGeometry;
+    const featureWithBuffer = this._isSinglePointGeometrySelected(selectedGeometry)
+      ? turfBuffer(selectedGeometry, 1)
+      : selectedGeometry;
 
     const boundingBox = bboxPolygon(bbox(featureWithBuffer));
+    boundingBox.properties.mode = 'scale';
     const cornerGuidePoints = [];
 
     coordEach(boundingBox, (coord, coordIndex) => {

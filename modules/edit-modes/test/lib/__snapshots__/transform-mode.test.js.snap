@@ -1,169 +1,149 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Transform - rotate mode Selected polygon feature can be rotated 1`] = `
-Object {
-  "geometry": Object {
-    "coordinates": Array [
-      Array [
-        Array [
-          0.5272280648573542,
-          0.8431285896095478,
-        ],
-        Array [
-          -1.437857681943001,
-          0.47152591660008025,
-        ],
-        Array [
-          -1.0663539798351849,
-          -1.4936478169257912,
-        ],
-        Array [
-          0.8989219206248436,
-          -1.1220394838939336,
-        ],
-        Array [
-          0.5272280648573542,
-          0.8431285896095478,
-        ],
+exports[`Transform mode correctly renders composited guides 1`] = `
+Array [
+  Object {
+    "geometry": Object {
+      "coordinates": Array [
+        -1,
+        -1,
       ],
-      Array [
-        Array [
-          0.12886514525962411,
-          0.2589380256236096,
-        ],
-        Array [
-          0.3146948902101485,
-          -0.7236467186215011,
-        ],
-        Array [
-          -0.6679218708436565,
-          -0.9094572530721381,
-        ],
-        Array [
-          -0.8537040799629949,
-          0.07312890620550877,
-        ],
-        Array [
-          0.12886514525962411,
-          0.2589380256236096,
-        ],
-      ],
-    ],
-    "type": "Polygon",
+      "type": "Point",
+    },
+    "properties": Object {
+      "editHandleType": "scale",
+      "guideType": "editHandle",
+      "index": 0,
+    },
+    "type": "Feature",
   },
-  "properties": Object {},
-  "type": "Feature",
-}
+  Object {
+    "geometry": Object {
+      "coordinates": Array [
+        1,
+        -1,
+      ],
+      "type": "Point",
+    },
+    "properties": Object {
+      "editHandleType": "scale",
+      "guideType": "editHandle",
+      "index": 1,
+    },
+    "type": "Feature",
+  },
+  Object {
+    "geometry": Object {
+      "coordinates": Array [
+        1,
+        1,
+      ],
+      "type": "Point",
+    },
+    "properties": Object {
+      "editHandleType": "scale",
+      "guideType": "editHandle",
+      "index": 2,
+    },
+    "type": "Feature",
+  },
+  Object {
+    "geometry": Object {
+      "coordinates": Array [
+        -1,
+        1,
+      ],
+      "type": "Point",
+    },
+    "properties": Object {
+      "editHandleType": "scale",
+      "guideType": "editHandle",
+      "index": 3,
+    },
+    "type": "Feature",
+  },
+]
 `;
 
-exports[`Transform - scale mode Selected polygon feature can be scaled 1`] = `
-Object {
-  "geometry": Object {
-    "coordinates": Array [
-      Array [
-        Array [
-          -0.5809507320924467,
-          -0.5809702731526293,
-        ],
-        Array [
-          1,
-          -0.5809702731526291,
-        ],
-        Array [
-          1,
-          1,
-        ],
-        Array [
-          -0.5809702731526158,
-          1,
-        ],
-        Array [
-          -0.5809507320924467,
-          -0.5809702731526293,
-        ],
+exports[`Transform mode correctly renders composited guides 2`] = `
+Array [
+  Object {
+    "geometry": Object {
+      "coordinates": Array [
+        0,
+        1.2223901604670657,
       ],
-      Array [
-        Array [
-          -0.1857336510214509,
-          -0.18572770486447193,
-        ],
-        Array [
-          -0.18574097865473504,
-          0.6047574317118429,
-        ],
-        Array [
-          0.6047530071150504,
-          0.6047574317118425,
-        ],
-        Array [
-          0.6047554496594785,
-          -0.18572770486447193,
-        ],
-        Array [
-          -0.1857336510214509,
-          -0.18572770486447193,
-        ],
-      ],
-    ],
-    "type": "Polygon",
+      "type": "Point",
+    },
+    "properties": Object {
+      "editHandleType": "rotate",
+      "guideType": "editHandle",
+    },
+    "type": "Feature",
   },
-  "properties": Object {},
-  "type": "Feature",
-}
+]
 `;
 
-exports[`Transform - translate mode Selected polygon feature can be translated 1`] = `
-Object {
-  "geometry": Object {
-    "coordinates": Array [
-      Array [
-        Array [
-          1.9993896804101041,
-          3.0004573272249484,
-        ],
-        Array [
-          3.999389680410104,
-          3.0004573272249484,
-        ],
-        Array [
-          4.003051832614915,
-          5.0004573272249475,
-        ],
-        Array [
-          2.003051832614915,
-          5.0004573272249475,
-        ],
-        Array [
-          1.9993896804101041,
-          3.0004573272249484,
-        ],
-      ],
-      Array [
-        Array [
-          2.4999614397826235,
-          3.5004573272249484,
-        ],
-        Array [
-          2.501792166258838,
-          4.500457327224948,
-        ],
-        Array [
-          3.501792166258838,
-          4.500457327224948,
-        ],
-        Array [
-          3.4999614397826235,
-          3.5004573272249484,
-        ],
-        Array [
-          2.4999614397826235,
-          3.5004573272249484,
-        ],
-      ],
+exports[`Transform mode correctly renders composited guides 3`] = `
+Array [
+  Object {
+    "bbox": Array [
+      -1,
+      -1,
+      1,
+      1,
     ],
-    "type": "Polygon",
+    "geometry": Object {
+      "coordinates": Array [
+        Array [
+          Array [
+            -1,
+            -1,
+          ],
+          Array [
+            1,
+            -1,
+          ],
+          Array [
+            1,
+            1,
+          ],
+          Array [
+            -1,
+            1,
+          ],
+          Array [
+            -1,
+            -1,
+          ],
+        ],
+      ],
+      "type": "Polygon",
+    },
+    "properties": Object {},
+    "type": "Feature",
   },
-  "properties": Object {},
-  "type": "Feature",
-}
+]
+`;
+
+exports[`Transform mode correctly renders composited guides 4`] = `
+Array [
+  Object {
+    "geometry": Object {
+      "coordinates": Array [
+        Array [
+          0,
+          1,
+        ],
+        Array [
+          0,
+          1.2223901604670657,
+        ],
+      ],
+      "type": "LineString",
+    },
+    "properties": Object {},
+    "type": "Feature",
+  },
+]
 `;

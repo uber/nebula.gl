@@ -115,7 +115,7 @@ const ALL_MODES = [
       { label: 'Duplicate', mode: DuplicateMode },
       { label: 'Extrude', mode: ExtrudeMode },
       { label: 'Split', mode: SplitPolygonMode },
-      { label: 'Transform', mode: TransformMode }
+      { label: 'Transform', mode: new SnappableMode(new TransformMode()) }
     ]
   },
   {

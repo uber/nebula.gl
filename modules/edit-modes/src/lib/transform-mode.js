@@ -1,89 +1,74 @@
 // @flow
 
 import { featureCollection } from '@turf/helpers';
-import { getPickedEditHandle } from '../utils';
-import type {
-  PointerMoveEvent,
-  StartDraggingEvent,
-  StopDraggingEvent,
-  DraggingEvent,
-  ModeProps
-} from '../types.js';
+import type { PointerMoveEvent, ModeProps, StartDraggingEvent } from '../types.js';
 import type { FeatureCollection } from '../geojson-types.js';
-import { BaseGeoJsonEditMode } from './geojson-edit-mode';
 import { TranslateMode } from './translate-mode';
 import { ScaleMode } from './scale-mode';
 import { RotateMode } from './rotate-mode';
 
-export class TransformMode extends BaseGeoJsonEditMode {
-  _transformMode: ?string;
-  _editModes: Object = {
-    scale: new ScaleMode({ isCompositionMode: true }),
-    rotate: new RotateMode({ isCompositionMode: true }),
-    translate: new TranslateMode({ isCompositionMode: true })
-  };
+import { CompositeMode } from './composite-mode';
 
-  getGuides(props: ModeProps<FeatureCollection>) {
-    const { rotate, scale } = this._editModes;
-    const scaleGuides = rotate.getIsRotating() ? [] : scale.getGuides(props).features;
-    const rotateGuides = rotate
-      .getGuides(props)
-      .features.filter(feature => feature.geometry.type !== 'Polygon');
-
-    return featureCollection([...scaleGuides, ...rotateGuides]);
+export class TransformMode extends CompositeMode {
+  constructor() {
+    super([new TranslateMode(), new ScaleMode(), new RotateMode()]);
   }
 
   handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>) {
-    let isCursorUpdated = false;
-    Object.values(this._editModes).forEach(mode => {
-      if (!mode) {
-        return;
-      }
-
-      if (typeof mode.handlePointerMove === 'function') {
-        mode.handlePointerMove(event, props);
-      }
-      if (typeof mode.updateCursor === 'function') {
-        if (!isCursorUpdated) {
-          isCursorUpdated = mode.updateCursor(props);
-        }
+    let updatedCursor = null;
+    super.handlePointerMove(event, {
+      ...props,
+      onUpdateCursor: cursor => {
+        updatedCursor = cursor || updatedCursor;
       }
     });
-
-    if (!isCursorUpdated) {
-      props.onUpdateCursor(null);
-    }
+    props.onUpdateCursor(updatedCursor);
   }
 
   handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollection>) {
-    const { picks, pointerDownPicks } = event;
-    const editHandle = getPickedEditHandle(picks);
-    if (editHandle) {
-      this._transformMode = editHandle.properties.editHandleType;
-    } else if (this.isSelectionPicked(pointerDownPicks || picks, props)) {
-      this._transformMode = 'translate';
-    } else {
-      this._transformMode = null;
+    let scaleMode = null;
+    let translateMode = null;
+    const filteredModes = [];
+
+    // If the user selects a scaling edit handle that overlaps with part of the selected feature,
+    // it is possible for both scale and translate actions to be triggered. This logic prevents
+    // this simultaneous action trigger from happening by putting a higher priority on scaling
+    // since the user needs to be more precise to hover over a scaling edit handle.
+    this._modes.forEach(mode => {
+      if (mode instanceof TranslateMode) {
+        translateMode = mode;
+      } else {
+        if (mode instanceof ScaleMode) {
+          scaleMode = mode;
+        }
+        filteredModes.push(mode);
+      }
+    });
+
+    if (scaleMode instanceof ScaleMode && !scaleMode.isEditHandleSelcted()) {
+      filteredModes.push(translateMode);
     }
 
-    const transformMode = this._editModes[this._transformMode];
-    if (transformMode) {
-      transformMode.handleStartDragging(event, props);
-    }
+    filteredModes.filter(Boolean).forEach(mode => mode.handleStartDragging(event, props));
   }
 
-  handleDragging(event: DraggingEvent, props: ModeProps<FeatureCollection>) {
-    const transformMode = this._editModes[this._transformMode || ''];
-    if (transformMode) {
-      transformMode.handleDragging(event, props);
-    }
-  }
+  getGuides(props: ModeProps<FeatureCollection>) {
+    let compositeGuides = super.getGuides(props);
+    const rotateMode = (this._modes || []).find(mode => mode instanceof RotateMode);
 
-  handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollection>) {
-    const transformMode = this._editModes[this._transformMode || ''];
-    if (transformMode) {
-      transformMode.handleStopDragging(event, props);
+    if (rotateMode instanceof RotateMode) {
+      const nonEnvelopeGuides = compositeGuides.features.filter(guide => {
+        const { editHandleType, mode } = (guide.properties: any) || {};
+        // Both scale and rotate modes have the same enveloping box as a guide - only need one
+        const guidesToFilterOut = [mode];
+        // Do not render scaling edit handles if rotating
+        if (rotateMode.getIsRotating()) {
+          guidesToFilterOut.push(editHandleType);
+        }
+        return !guidesToFilterOut.includes('scale');
+      });
+      compositeGuides = featureCollection(nonEnvelopeGuides);
     }
-    this._transformMode = null;
+    return compositeGuides;
   }
 }

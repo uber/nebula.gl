@@ -105,6 +105,9 @@ export default class EditingMode extends BaseMode {
       case ELEMENT_TYPE.FEATURE:
       case ELEMENT_TYPE.FILL:
       case ELEMENT_TYPE.SEGMENT:
+        if (!props.featuresDraggable) {
+          break;
+        }
         // dragging feature
         const dx = screenCoords[0] - lastPointerMoveEvent.screenCoords[0];
         const dy = screenCoords[1] - lastPointerMoveEvent.screenCoords[1];

@@ -20,7 +20,8 @@ const defaultProps = {
   featureShape: 'circle',
   editHandleShape: 'rect',
   editHandleStyle: defaultEditHandleStyle,
-  featureStyle: defaultFeatureStyle
+  featureStyle: defaultFeatureStyle,
+  featuresDraggable: true
 };
 
 export default class Editor extends ModeHandler {

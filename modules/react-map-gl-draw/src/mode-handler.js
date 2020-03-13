@@ -145,7 +145,8 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
       selectedIndexes: [selectedFeatureIndex],
       lastPointerMoveEvent,
       viewport,
-      onEdit: this._onEdit
+      onEdit: this._onEdit,
+      featuresDraggable: this.props.featuresDraggable
     };
   }
 

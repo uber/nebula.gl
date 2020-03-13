@@ -14,6 +14,7 @@ const MAIN_SRC_DIR = resolve(LIB_DIR, './modules/main/src');
 const EDIT_MODES_SRC_DIR = resolve(LIB_DIR, './modules/edit-modes/src');
 const LAYERS_SRC_DIR = resolve(LIB_DIR, './modules/layers/src');
 const OVERLAYS_SRC_DIR = resolve(LIB_DIR, './modules/overlays/src');
+const EDITOR_SRC_DIR = resolve(LIB_DIR, './modules/editor/src');
 const REACT_EDITOR_LITE_SRC_DIR = resolve(LIB_DIR, './modules/react-map-gl-draw/src');
 
 // const babelConfig = require('../babel.config');
@@ -43,6 +44,9 @@ function makeLocalDevConfig(EXAMPLE_DIR = LIB_DIR) {
 
         '@nebula.gl/overlays/dist': OVERLAYS_SRC_DIR,
         '@nebula.gl/overlays': OVERLAYS_SRC_DIR,
+
+        '@nebula.gl/editor/dist': EDITOR_SRC_DIR,
+        '@nebula.gl/editor': EDITOR_SRC_DIR,
 
         'react-map-gl-draw/dist': REACT_EDITOR_LITE_SRC_DIR,
         'react-map-gl-draw': REACT_EDITOR_LITE_SRC_DIR,

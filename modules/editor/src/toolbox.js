@@ -1,4 +1,5 @@
 // @flow
+/* eslint-env browser */
 
 import React from 'react';
 import { DrawPointMode, DrawPolygonMode } from '@nebula.gl/edit-modes';

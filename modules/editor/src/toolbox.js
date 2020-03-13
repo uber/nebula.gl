@@ -16,7 +16,9 @@ export type Props = {
 const MODE_BUTTONS = [
   // TODO: change these to icons
   { mode: DrawPointMode, content: <span>Draw point</span> },
-  { mode: DrawPolygonMode, content: <span>Draw polygon</span> }
+  { mode: DrawPolygonMode, content: <span>Draw polygon</span> },
+  { mode: DrawPolygonMode, content: <span>Import Geometry</span> },
+  { mode: DrawPolygonMode, content: <span>Export Geometry</span> }
 ];
 
 export function Toolbox({ mode, modeConfig, onSetMode, onSetModeConfig, position }: Props) {

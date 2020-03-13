@@ -1,3 +1,5 @@
+// @flow
+
 import React from 'react';
 import DeckGL from '@deck.gl/react';
 import { EditableGeoJsonLayer } from '@nebula.gl/layers';
@@ -14,6 +16,29 @@ const initialViewState = {
   zoom: 12
 };
 
+type ImportModalProps = {
+  onImport: geojson => mixed
+};
+
+function ImportModal(props: ImportModalProps) {
+  const divStyle = {
+    position: 'absolute',
+    top: '40px',
+    left: '10px',
+    display: 'flex',
+    flexFlow: 'column'
+  };
+
+  const [text, setText] = React.useState('');
+  return (
+    <div style={divStyle}>
+      Enter some text:
+      <textarea onChange={event => setText(event.target.value)} />
+      <button onClick={() => props.onImport(JSON.parse(text))}>Import Geometry</button>
+    </div>
+  );
+}
+
 export function Example() {
   const [features, setFeatures] = React.useState({
     type: 'FeatureCollection',
@@ -22,6 +47,8 @@ export function Example() {
   const [selectedFeatureIndexes] = React.useState([]);
   const [mode, setMode] = React.useState(() => DrawPolygonMode);
   const [modeConfig, setModeConfig] = React.useState(null);
+
+  const [showImportModal, setShowImportModal] = React.useState(false);
 
   const layer = new EditableGeoJsonLayer({
     data: features,
@@ -33,6 +60,22 @@ export function Example() {
       setFeatures(updatedData);
     }
   });
+
+  function ImportButton() {
+    const divStyle = {
+      position: 'absolute',
+      top: '10px',
+      left: '10px',
+      display: 'flex',
+      flexFlow: 'column'
+    };
+
+    return (
+      <div style={divStyle}>
+        <button onClick={() => setShowImportModal(true)}>Import</button>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -53,6 +96,15 @@ export function Example() {
         modeConfig={modeConfig}
         onSetModeConfig={setModeConfig}
       />
+      <ImportButton />
+      {showImportModal && (
+        <ImportModal
+          onImport={geojson => {
+            // console.log('GEOJSON!', geojson);
+            setFeatures(geojson);
+          }}
+        />
+      )}
     </>
   );
 }

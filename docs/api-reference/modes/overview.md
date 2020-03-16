@@ -37,6 +37,10 @@ User can rotate a feature about its centroid by clicking and dragging the select
 The user can move a feature by selecting one or more features and dragging anywhere within the screen.
 _Additionally, the user can initiate snapping by clicking and dragging the selected feature's vertex handles. If the vertex handle is close enough to another feature's vertex, the two features will snap together._
 
+## [TransformMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/transform-mode.js)
+
+A single mode that provides translating, rotating, and scaling capabilities. Translation can be performed by clicking and dragging the selected feature itself. Rotating can be performed by clicking and dragging the top-most edit handle around a centroid pivot. Scaling can be performed by clicking and dragging one of the corner edit handles. Just like the individual modes, this mode supports multiple selections and feature snapping.
+
 ## [DuplicateMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/duplicate-mode.js)
 
 User can duplicate and translate a feature by clicking selected feature and dragging anywhere on the screen.

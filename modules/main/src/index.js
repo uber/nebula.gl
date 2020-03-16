@@ -37,6 +37,7 @@ export { DuplicateMode } from '@nebula.gl/edit-modes';
 export { SplitPolygonMode } from '@nebula.gl/edit-modes';
 export { ExtrudeMode } from '@nebula.gl/edit-modes';
 export { ElevationMode } from '@nebula.gl/edit-modes';
+export { TransformMode } from '@nebula.gl/edit-modes';
 
 // Draw modes
 export { DrawPointMode } from '@nebula.gl/edit-modes';

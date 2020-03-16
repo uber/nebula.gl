@@ -11,7 +11,11 @@ import type {
   GuideFeatureCollection,
   EditHandleFeature
 } from '../types.js';
-import { getPickedEditHandle, getPickedEditHandles, getEditHandlesForGeometry } from '../utils.js';
+import {
+  getPickedSnapSourceEditHandle,
+  getPickedEditHandles,
+  getEditHandlesForGeometry
+} from '../utils.js';
 import { BaseGeoJsonEditMode } from './geojson-edit-mode.js';
 
 type MovementTypeEvent = PointerMoveEvent | StartDraggingEvent | StopDraggingEvent | DraggingEvent;
@@ -42,7 +46,7 @@ export class SnappableMode extends BaseGeoJsonEditMode {
   }
 
   _getPickedSnapSource(pointerDownPicks: ?(Pick[])): ?EditHandleFeature {
-    return getPickedEditHandle(pointerDownPicks);
+    return getPickedSnapSourceEditHandle(pointerDownPicks);
   }
 
   _getUpdatedSnapSourceHandle(
@@ -50,6 +54,9 @@ export class SnappableMode extends BaseGeoJsonEditMode {
     data: FeatureCollection
   ): EditHandleFeature {
     const { featureIndex, positionIndexes } = snapSourceHandle.properties;
+    if (!Array.isArray(positionIndexes)) {
+      return snapSourceHandle;
+    }
     const snapSourceFeature = data.features[featureIndex];
 
     // $FlowFixMe

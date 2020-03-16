@@ -15,6 +15,7 @@ import {
   type EditMode,
   ModifyMode,
   TranslateMode,
+  TransformMode,
   ScaleMode,
   RotateMode,
   DuplicateMode,
@@ -113,7 +114,8 @@ const ALL_MODES = [
       { label: 'Scale', mode: ScaleMode },
       { label: 'Duplicate', mode: DuplicateMode },
       { label: 'Extrude', mode: ExtrudeMode },
-      { label: 'Split', mode: SplitPolygonMode }
+      { label: 'Split', mode: SplitPolygonMode },
+      { label: 'Transform', mode: new SnappableMode(new TransformMode()) }
     ]
   },
   {

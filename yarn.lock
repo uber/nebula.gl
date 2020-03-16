@@ -1641,6 +1641,11 @@
   dependencies:
     "@babel/runtime" "^7.0.0"
 
+"@tmcw/togeojson@^3.2.0":
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/@tmcw%2ftogeojson/-/togeojson-3.2.0.tgz#0590e99b201971468fa9babd2d24f110ef800999"
+  integrity sha1-BZDpmyAZcUaPqbq9LSTxEO+ACZk=
+
 "@turf/area@6.x":
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/@turf/area/-/area-6.0.1.tgz#50ed63c70ef2bdb72952384f1594319d94f3b051"
@@ -1994,6 +1999,16 @@
   integrity sha512-XYVgHF2sQ0YblLRMLNPB3CkFMewzFmlDsH/TneZFHUXDlABQgh88uOxuez7ZcXxayLFrqLwtDH1t+FmlFwNZxw==
   dependencies:
     "@babel/types" "^7.3.0"
+
+"@types/geojson@^1.0.0":
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/@types%2fgeojson/-/geojson-1.0.6.tgz#3e02972728c69248c2af08d60a48cbb8680fffdf"
+  integrity sha1-PgKXJyjGkkjCrwjWCkjLuGgP/98=
+
+"@types/geojson@^7946.0.0 || ^1.0.0":
+  version "7946.0.7"
+  resolved "https://registry.yarnpkg.com/@types%2fgeojson/-/geojson-7946.0.7.tgz#c8fa532b60a0042219cdf173ca21a975ef0666ad"
+  integrity sha1-yPpTK2CgBCIZzfFzyiGpde8GZq0=
 
 "@types/istanbul-lib-coverage@*", "@types/istanbul-lib-coverage@^2.0.0":
   version "2.0.1"
@@ -9804,6 +9819,21 @@ temp-write@^3.4.0:
     temp-dir "^1.0.0"
     uuid "^3.0.1"
 
+terraformer-wkt-parser@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/terraformer-wkt-parser/-/terraformer-wkt-parser-1.2.1.tgz#8041e2aeb0c9f2b4cbbec8ec2c5c00c45ddfee02"
+  integrity sha1-gEHirrDJ8rTLvsjsLFwAxF3f7gI=
+  dependencies:
+    "@types/geojson" "^1.0.0"
+    terraformer "~1.0.5"
+
+terraformer@~1.0.5:
+  version "1.0.10"
+  resolved "https://registry.yarnpkg.com/terraformer/-/terraformer-1.0.10.tgz#9fed07ecdb56f59ddcdaf948fed5a5c85f39687a"
+  integrity sha1-n+0H7NtW9Z3c2vlI/tWlyF85aHo=
+  optionalDependencies:
+    "@types/geojson" "^7946.0.0 || ^1.0.0"
+
 test-exclude@^5.2.3:
   version "5.2.3"
   resolved "https://registry.yarnpkg.com/test-exclude/-/test-exclude-5.2.3.tgz#c3d3e1e311eb7ee405e092dac10aefd09091eac0"
@@ -10563,6 +10593,11 @@ xml-name-validator@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/xml-name-validator/-/xml-name-validator-3.0.0.tgz#6ae73e06de4d8c6e47f9fb181f78d648ad457c6a"
   integrity sha512-A5CUptxDsvxKJEU3yO6DuWBSJz/qizqzJKOMIfUJHETbBw/sFaDxgd6fxm1ewUaM0jZ444Fc5vC5ROYurg/4Pw==
+
+xmldom@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/xmldom/-/xmldom-0.3.0.tgz#e625457f4300b5df9c2e1ecb776147ece47f3e5a"
+  integrity sha1-5iVFf0MAtd+cLh7Ld2FH7OR/Plo=
 
 xregexp@4.0.0:
   version "4.0.0"

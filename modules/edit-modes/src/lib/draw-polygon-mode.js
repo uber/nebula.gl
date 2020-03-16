@@ -78,6 +78,7 @@ export class DrawPolygonMode extends BaseGeoJsonEditMode {
     if (
       clickSequence.length > 2 &&
       clickedEditHandle &&
+      Array.isArray(clickedEditHandle.properties.positionIndexes) &&
       (clickedEditHandle.properties.positionIndexes[0] === 0 ||
         clickedEditHandle.properties.positionIndexes[0] === clickSequence.length - 1)
     ) {

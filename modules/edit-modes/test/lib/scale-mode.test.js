@@ -50,7 +50,7 @@ test('Selected polygon feature can be scaled', () => {
       object: {
         type: 'Feature',
         geometry: { type: 'Point', coordinates: [-2, -2] },
-        properties: { guideType: 'editHandle', editHandleType: 'scale', index: 0 }
+        properties: { guideType: 'editHandle', editHandleType: 'scale', positionIndexes: [0] }
       }
     }
   ];

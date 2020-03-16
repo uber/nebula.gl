@@ -41,13 +41,22 @@ export class ScaleMode extends BaseGeoJsonEditMode {
 
   _getOppositeScaleHandle = (selectedHandle: EditHandleFeature) => {
     const selectedHandleIndex =
-      selectedHandle && selectedHandle.properties && selectedHandle.properties.index;
+      selectedHandle &&
+      selectedHandle.properties &&
+      Array.isArray(selectedHandle.properties.positionIndexes) &&
+      selectedHandle.properties.positionIndexes[0];
+
     if (typeof selectedHandleIndex !== 'number') {
       return null;
     }
     const guidePointCount = this._cornerGuidePoints.length;
     const oppositeIndex = (selectedHandleIndex + guidePointCount / 2) % guidePointCount;
-    return this._cornerGuidePoints.find(p => p.properties.index === oppositeIndex);
+    return this._cornerGuidePoints.find(p => {
+      if (!Array.isArray(p.properties.positionIndexes)) {
+        return false;
+      }
+      return p.properties.positionIndexes[0] === oppositeIndex;
+    });
   };
 
   _getUpdatedData = (props: ModeProps<FeatureCollection>, editedData: FeatureCollection) => {
@@ -196,7 +205,7 @@ export class ScaleMode extends BaseGeoJsonEditMode {
         const cornerPoint = point(coord, {
           guideType: 'editHandle',
           editHandleType: 'scale',
-          index: coordIndex
+          positionIndexes: [coordIndex]
         });
         cornerGuidePoints.push(cornerPoint);
       }

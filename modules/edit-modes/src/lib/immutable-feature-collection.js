@@ -34,7 +34,7 @@ export class ImmutableFeatureCollection {
    */
   replacePosition(
     featureIndex: number,
-    positionIndexes: number[],
+    positionIndexes: ?(number[]),
     updatedPosition: Position
   ): ImmutableFeatureCollection {
     const geometry = this.featureCollection.features[featureIndex].geometry;
@@ -62,7 +62,7 @@ export class ImmutableFeatureCollection {
    *
    * @returns A new `ImmutableFeatureCollection` with the given coordinate removed. Does not modify this `ImmutableFeatureCollection`.
    */
-  removePosition(featureIndex: number, positionIndexes: number[]): ImmutableFeatureCollection {
+  removePosition(featureIndex: number, positionIndexes: ?(number[])): ImmutableFeatureCollection {
     const geometry = this.featureCollection.features[featureIndex].geometry;
 
     if (geometry.type === 'Point') {
@@ -86,6 +86,7 @@ export class ImmutableFeatureCollection {
       geometry.type === 'Polygon' &&
       // outer ring is a triangle
       geometry.coordinates[0].length < 5 &&
+      Array.isArray(positionIndexes) &&
       // trying to remove from outer ring
       positionIndexes[0] === 0
     ) {
@@ -106,6 +107,7 @@ export class ImmutableFeatureCollection {
       geometry.coordinates.length === 1 &&
       // outer ring is a triangle
       geometry.coordinates[0][0].length < 5 &&
+      Array.isArray(positionIndexes) &&
       // trying to remove from first polygon
       positionIndexes[0] === 0 &&
       // trying to remove from outer ring
@@ -140,7 +142,7 @@ export class ImmutableFeatureCollection {
    */
   addPosition(
     featureIndex: number,
-    positionIndexes: number[],
+    positionIndexes: ?(number[]),
     positionToAdd: Position
   ): ImmutableFeatureCollection {
     const geometry = this.featureCollection.features[featureIndex].geometry;
@@ -230,7 +232,7 @@ function getUpdatedPosition(updatedPosition: Position, previousPosition: Positio
 
 function immutablyReplacePosition(
   coordinates: any,
-  positionIndexes: number[],
+  positionIndexes: ?(number[]),
   updatedPosition: Position,
   isPolygonal: boolean
 ): any {
@@ -274,7 +276,7 @@ function immutablyReplacePosition(
 
 function immutablyRemovePosition(
   coordinates: any,
-  positionIndexes: number[],
+  positionIndexes: ?(number[]),
   isPolygonal: boolean
 ): any {
   if (!positionIndexes) {
@@ -320,7 +322,7 @@ function immutablyRemovePosition(
 
 function immutablyAddPosition(
   coordinates: any,
-  positionIndexes: number[],
+  positionIndexes: ?(number[]),
   positionToAdd: Position,
   isPolygonal: boolean
 ): any {

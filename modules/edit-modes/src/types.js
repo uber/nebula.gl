@@ -99,8 +99,7 @@ export type EditHandleFeature = FeatureWithProps<
     guideType: 'editHandle',
     editHandleType: EditHandleType,
     featureIndex: number,
-    positionIndexes: number[],
-    index?: number
+    positionIndexes?: number[]
   }
 >;
 

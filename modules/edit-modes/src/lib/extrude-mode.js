@@ -147,23 +147,25 @@ export class ExtrudeMode extends ModifyMode {
   }
 
   coordinatesSize(
-    positionIndexes: number[],
+    positionIndexes: ?(number[]),
     featureIndex: number,
     { features }: FeatureCollection
   ) {
     let size = 0;
-    const feature = features[featureIndex];
-    const coordinates: any = feature.geometry.coordinates;
-    // for Multi polygons, length will be 3
-    if (positionIndexes.length === 3) {
-      const [a, b] = positionIndexes;
-      if (coordinates.length && coordinates[a].length) {
-        size = coordinates[a][b].length;
-      }
-    } else {
-      const [b] = positionIndexes;
-      if (coordinates.length && coordinates[b].length) {
-        size = coordinates[b].length;
+    if (Array.isArray(positionIndexes)) {
+      const feature = features[featureIndex];
+      const coordinates: any = feature.geometry.coordinates;
+      // for Multi polygons, length will be 3
+      if (positionIndexes.length === 3) {
+        const [a, b] = positionIndexes;
+        if (coordinates.length && coordinates[a].length) {
+          size = coordinates[a][b].length;
+        }
+      } else {
+        const [b] = positionIndexes;
+        if (coordinates.length && coordinates[b].length) {
+          size = coordinates[b].length;
+        }
       }
     }
     return size;
@@ -178,11 +180,14 @@ export class ExtrudeMode extends ModifyMode {
   }
 
   isOrthogonal(
-    positionIndexes: number[],
+    positionIndexes: ?(number[]),
     featureIndex: number,
     size: number,
     features: FeatureCollection
   ) {
+    if (!Array.isArray(positionIndexes)) {
+      return false;
+    }
     if (positionIndexes[positionIndexes.length - 1] === size - 1) {
       positionIndexes[positionIndexes.length - 1] = 0;
     }
@@ -202,7 +207,10 @@ export class ExtrudeMode extends ModifyMode {
     return [89, 90, 91, 269, 270, 271].includes(Math.abs(prevAngle - nextAngle));
   }
 
-  nextPositionIndexes(positionIndexes: number[], size: number): number[] {
+  nextPositionIndexes(positionIndexes: ?(number[]), size: number): number[] {
+    if (!Array.isArray(positionIndexes)) {
+      return [];
+    }
     const next = [...positionIndexes];
     if (next.length) {
       next[next.length - 1] = next[next.length - 1] === size - 1 ? 0 : next[next.length - 1] + 1;
@@ -210,7 +218,10 @@ export class ExtrudeMode extends ModifyMode {
     return next;
   }
 
-  prevPositionIndexes(positionIndexes: number[], size: number): number[] {
+  prevPositionIndexes(positionIndexes: ?(number[]), size: number): number[] {
+    if (!Array.isArray(positionIndexes)) {
+      return [];
+    }
     const prev = [...positionIndexes];
     if (prev.length) {
       prev[prev.length - 1] = prev[prev.length - 1] === 0 ? size - 2 : prev[prev.length - 1] - 1;
@@ -219,23 +230,25 @@ export class ExtrudeMode extends ModifyMode {
   }
 
   getPointForPositionIndexes(
-    positionIndexes: number[],
+    positionIndexes: ?(number[]),
     featureIndex: number,
     { features }: FeatureCollection
   ) {
     let p1;
-    const feature = features[featureIndex];
-    const coordinates: any = feature.geometry.coordinates;
-    // for Multi polygons, length will be 3
-    if (positionIndexes.length === 3) {
-      const [a, b, c] = positionIndexes;
-      if (coordinates.length && coordinates[a].length) {
-        p1 = coordinates[a][b][c];
-      }
-    } else {
-      const [b, c] = positionIndexes;
-      if (coordinates.length && coordinates[b].length) {
-        p1 = coordinates[b][c];
+    if (Array.isArray(positionIndexes)) {
+      const feature = features[featureIndex];
+      const coordinates: any = feature.geometry.coordinates;
+      // for Multi polygons, length will be 3
+      if (positionIndexes.length === 3) {
+        const [a, b, c] = positionIndexes;
+        if (coordinates.length && coordinates[a].length) {
+          p1 = coordinates[a][b][c];
+        }
+      } else {
+        const [b, c] = positionIndexes;
+        if (coordinates.length && coordinates[b].length) {
+          p1 = coordinates[b][c];
+        }
       }
     }
     return p1;

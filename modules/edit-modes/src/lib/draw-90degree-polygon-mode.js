@@ -109,6 +109,7 @@ export class Draw90DegreePolygonMode extends BaseGeoJsonEditMode {
 
       if (
         clickedEditHandle &&
+        Array.isArray(clickedEditHandle.properties.positionIndexes) &&
         (clickedEditHandle.properties.positionIndexes[1] === 0 ||
           clickedEditHandle.properties.positionIndexes[1] === polygon.coordinates[0].length - 3)
       ) {

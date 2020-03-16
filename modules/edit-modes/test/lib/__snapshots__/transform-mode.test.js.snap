@@ -13,7 +13,9 @@ Array [
     "properties": Object {
       "editHandleType": "scale",
       "guideType": "editHandle",
-      "index": 0,
+      "positionIndexes": Array [
+        0,
+      ],
     },
     "type": "Feature",
   },
@@ -28,7 +30,9 @@ Array [
     "properties": Object {
       "editHandleType": "scale",
       "guideType": "editHandle",
-      "index": 1,
+      "positionIndexes": Array [
+        1,
+      ],
     },
     "type": "Feature",
   },
@@ -43,7 +47,9 @@ Array [
     "properties": Object {
       "editHandleType": "scale",
       "guideType": "editHandle",
-      "index": 2,
+      "positionIndexes": Array [
+        2,
+      ],
     },
     "type": "Feature",
   },
@@ -58,7 +64,9 @@ Array [
     "properties": Object {
       "editHandleType": "scale",
       "guideType": "editHandle",
-      "index": 3,
+      "positionIndexes": Array [
+        3,
+      ],
     },
     "type": "Feature",
   },

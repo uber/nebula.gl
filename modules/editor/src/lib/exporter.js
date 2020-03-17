@@ -1,8 +1,8 @@
 // @flow
+/* eslint-env browser */
 
 import tokml from '@maphubs/tokml';
-// import { stringify as stringifyWkt } from 'wellknown';
-import WKT from 'terraformer-wkt-parser';
+import { stringify as stringifyWkt } from 'wellknown';
 import type { GeoJsonFeature, AnyGeoJson, GeoJsonGeometry, PolygonalGeometry } from '../types.js';
 import { isFeatureNew } from '../utils.js';
 
@@ -57,14 +57,14 @@ export function toWkt(geojson: AnyGeoJson): ExportParameters {
   const filename = `${getFilename(geojson)}.wkt`;
   const prepped = prepareGeoJsonForExport(geojson);
 
-  let wkt;
+  let wkt = '';
   if (prepped.type === 'Feature') {
-    wkt = WKT.convert(prepped);
+    wkt = stringifyWkt(prepped);
   } else {
     // feature collection
     wkt = '';
     for (const feature of prepped.features) {
-      wkt += `${WKT.convert(feature)}\n`;
+      wkt += `${stringifyWkt(feature)}\n`;
     }
     if (wkt.length > 0) {
       wkt = wkt.substring(0, wkt.length - 1);
@@ -127,33 +127,6 @@ export function toIds(geojson: AnyGeoJson): ExportParameters {
     mimetype: 'text/plain'
   };
 }
-
-// TODO: can remove this code once https://github.com/mapbox/tokml/issues/39 is fixed
-/*
-function addIdToKml(geojson: AnyGeoJson, kml: string): string {
-  const ids = geojson.type === 'FeatureCollection' ? geojson.features.map(f => f.id) : [geojson.id];
-
-  // Add id to each placemark element
-  const placemarks = kml.match(/<Placemark>/g);
-  if (placemarks && placemarks.length === ids.length) {
-    // Sanity check to ensure there's a placemark per feature
-    for (let i = 0; i < ids.length; i++) {
-      const id = ids[i];
-      if (id) {
-        // Put id in the XML
-        kml = kml.replace(/<Placemark>/, `<Placemark id="${id}">`);
-      } else {
-        // Put in a placeholder token so next loop goes to next placemark
-        kml = kml.replace(/<Placemark>/, '<Placemark __NOID__>');
-      }
-    }
-
-    // Take out the placholder token
-    kml = kml.replace(/<Placemark __NOID__>/g, '<Placemark>');
-  }
-  return kml;
-}
-*/
 
 function getPolygonalStats(geometry: GeoJsonGeometry) {
   if (geometry.type !== 'Polygon' && geometry.type !== 'MultiPolygon') {

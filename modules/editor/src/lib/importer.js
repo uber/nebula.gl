@@ -1,7 +1,7 @@
 // @flow
 /* eslint-env browser */
 
-import wkt from 'terraformer-wkt-parser';
+import { parse as parseWkt } from 'wellknown';
 import { kml } from '@tmcw/togeojson';
 // If we want to support node -- we need to import xmldom.
 // For now, we're only supporting browser so we can leave it out.
@@ -134,7 +134,7 @@ function parseImportString(data: string): Promise<ImportData> {
     }
   } else if (shouldTryWkt(data)) {
     try {
-      const parsed = wkt.parse(data);
+      const parsed = parseWkt(data);
       if (parsed) {
         validData = {
           valid: true,

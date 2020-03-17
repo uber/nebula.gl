@@ -53,7 +53,7 @@
     "react-dropzone": "^10.2.1",
     "styled-components": "^4.3.2",
     "styled-react-modal": "1.2.4",
-    "terraformer-wkt-parser": "^1.2.1"
+    "wellknown": "^0.5.0"
   },
   "devDependencies": {
     "sinon": "^9.0.1"

@@ -3,5 +3,7 @@
 export { Toolbox } from './toolbox.js';
 export { ImportModal } from './import-modal.js';
 export { ImportComponent } from './import-component.js';
-export { ImportData, ValidImportData, InvalidImportData, parseImport } from './lib/importer.js';
-export { ExportParameters, toKml, toWkt, toGeoJson, toStats, toIds } from './lib/exporter.js';
+export type { ImportData, ValidImportData, InvalidImportData } from './lib/importer.js';
+export { parseImport } from './lib/importer.js';
+export type { ExportParameters } from './lib/exporter.js';
+export { toKml, toWkt, toGeoJson, toStats, toIds } from './lib/exporter.js';

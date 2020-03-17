@@ -5,6 +5,7 @@ import React from 'react';
 import DeckGL from '@deck.gl/react';
 import { EditableGeoJsonLayer } from '@nebula.gl/layers';
 import { ImportModal, Toolbox } from '@nebula.gl/editor';
+// import { ImportModal, ImportComponent, Toolbox } from '@nebula.gl/editor';
 import { DrawPolygonMode } from '@nebula.gl/edit-modes';
 import { StaticMap } from 'react-map-gl';
 

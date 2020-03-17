@@ -47,10 +47,13 @@
   "dependencies": {
     "@nebula.gl/edit-modes": "^0.17.5",
     "react": "^16.8.0"
+    "@maphubs/tokml": "^0.5.2",
     "@tmcw/togeojson": "^3.2.0",
     "react": "^16.8.0",
-    "terraformer-wkt-parser": "^1.2.1",
-    "xmldom": "^0.3.0"
+    "strxml": "mapbox/strxml",
+    "terraformer-wkt-parser": "^1.2.1"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "sinon": "^9.0.1"
+  }
 }

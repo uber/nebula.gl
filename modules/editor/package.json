@@ -50,7 +50,6 @@
     "@maphubs/tokml": "^0.5.2",
     "@tmcw/togeojson": "^3.2.0",
     "react": "^16.8.0",
-    "strxml": "mapbox/strxml",
     "terraformer-wkt-parser": "^1.2.1"
   },
   "devDependencies": {

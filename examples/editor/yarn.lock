@@ -4487,7 +4487,7 @@ react-virtualized-auto-sizer@^1.0.2:
 
 react@^16.8.0:
   version "16.13.0"
-  resolved "https://unpm.uberinternal.com/react/-/react-16.13.0.tgz#d046eabcdf64e457bbeed1e792e235e1b9934cf7"
+  resolved "https://registry.yarnpkg.com/react/-/react-16.13.0.tgz#d046eabcdf64e457bbeed1e792e235e1b9934cf7"
   integrity sha1-0EbqvN9k5Fe77tHnkuI14bmTTPc=
   dependencies:
     loose-envify "^1.1.0"

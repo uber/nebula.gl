@@ -256,7 +256,6 @@ export default class Example extends Component<
     if (info) {
       console.log(`select editing feature ${info.index}`); // eslint-disable-line
       // a feature was clicked
-      // TODO: once https://github.com/uber/deck.gl/pull/1918 lands, this will work since it'll work with Multi* geometry types
       this.setState({ selectedFeatureIndexes: [info.index] });
     } else {
       console.log('deselect editing feature'); // eslint-disable-line

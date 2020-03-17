@@ -2063,16 +2063,6 @@
   dependencies:
     "@babel/types" "^7.3.0"
 
-"@types/geojson@^1.0.0":
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/@types%2fgeojson/-/geojson-1.0.6.tgz#3e02972728c69248c2af08d60a48cbb8680fffdf"
-  integrity sha1-PgKXJyjGkkjCrwjWCkjLuGgP/98=
-
-"@types/geojson@^7946.0.0 || ^1.0.0":
-  version "7946.0.7"
-  resolved "https://registry.yarnpkg.com/@types%2fgeojson/-/geojson-7946.0.7.tgz#c8fa532b60a0042219cdf173ca21a975ef0666ad"
-  integrity sha1-yPpTK2CgBCIZzfFzyiGpde8GZq0=
-
 "@types/istanbul-lib-coverage@*", "@types/istanbul-lib-coverage@^2.0.0":
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/@types/istanbul-lib-coverage/-/istanbul-lib-coverage-2.0.1.tgz#42995b446db9a48a11a07ec083499a860e9138ff"
@@ -3605,6 +3595,15 @@ concat-stream@^1.4.7, concat-stream@^1.5.0, concat-stream@^1.6.0, concat-stream@
     inherits "^2.0.3"
     readable-stream "^2.2.2"
     typedarray "^0.0.6"
+
+concat-stream@~1.5.0:
+  version "1.5.2"
+  resolved "https://registry.yarnpkg.com/concat-stream/-/concat-stream-1.5.2.tgz#708978624d856af41a5a741defdd261da752c266"
+  integrity sha1-cIl4Yk2FavQaWnQd790mHadSwmY=
+  dependencies:
+    inherits "~2.0.1"
+    readable-stream "~2.0.0"
+    typedarray "~0.0.5"
 
 config-chain@^1.1.11:
   version "1.1.12"
@@ -8452,6 +8451,11 @@ probe.gl@^3.2.0:
     "@babel/runtime" "^7.0.0"
     "@probe.gl/stats" "3.2.0"
 
+process-nextick-args@~1.0.6:
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/process-nextick-args/-/process-nextick-args-1.0.7.tgz#150e20b756590ad3f91093f25a4f2ad8bff30ba3"
+  integrity sha1-FQ4gt1ZZCtP5EJPyWk8q2L/zC6M=
+
 process-nextick-args@~2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/process-nextick-args/-/process-nextick-args-2.0.1.tgz#7820d9b16120cc55ca9ae7792680ae7dba6d7fe2"
@@ -8897,6 +8901,18 @@ readable-stream@^3.0.6:
     inherits "^2.0.3"
     string_decoder "^1.1.1"
     util-deprecate "^1.0.1"
+
+readable-stream@~2.0.0:
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-2.0.6.tgz#8f90341e68a53ccc928788dacfcd11b36eb9b78e"
+  integrity sha1-j5A0HmilPMySh4jaz80Rs265t44=
+  dependencies:
+    core-util-is "~1.0.0"
+    inherits "~2.0.1"
+    isarray "~1.0.0"
+    process-nextick-args "~1.0.6"
+    string_decoder "~0.10.x"
+    util-deprecate "~1.0.1"
 
 readdir-scoped-modules@^1.0.0:
   version "1.0.2"
@@ -9844,6 +9860,11 @@ string_decoder@^1.1.1:
   dependencies:
     safe-buffer "~5.1.0"
 
+string_decoder@~0.10.x:
+  version "0.10.31"
+  resolved "https://registry.yarnpkg.com/string_decoder/-/string_decoder-0.10.31.tgz#62e203bc41766c6c28c9fc84301dab1c5310fa94"
+  integrity sha1-YuIDvEF2bGwoyfyEMB2rHFMQ+pQ=
+
 string_decoder@~1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/string_decoder/-/string_decoder-1.1.1.tgz#9cf1611ba62685d7030ae9e4ba34149c3af03fc8"
@@ -10099,21 +10120,6 @@ temp-write@^3.4.0:
     temp-dir "^1.0.0"
     uuid "^3.0.1"
 
-terraformer-wkt-parser@^1.2.1:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/terraformer-wkt-parser/-/terraformer-wkt-parser-1.2.1.tgz#8041e2aeb0c9f2b4cbbec8ec2c5c00c45ddfee02"
-  integrity sha1-gEHirrDJ8rTLvsjsLFwAxF3f7gI=
-  dependencies:
-    "@types/geojson" "^1.0.0"
-    terraformer "~1.0.5"
-
-terraformer@~1.0.5:
-  version "1.0.10"
-  resolved "https://registry.yarnpkg.com/terraformer/-/terraformer-1.0.10.tgz#9fed07ecdb56f59ddcdaf948fed5a5c85f39687a"
-  integrity sha1-n+0H7NtW9Z3c2vlI/tWlyF85aHo=
-  optionalDependencies:
-    "@types/geojson" "^7946.0.0 || ^1.0.0"
-
 test-exclude@^5.2.3:
   version "5.2.3"
   resolved "https://registry.yarnpkg.com/test-exclude/-/test-exclude-5.2.3.tgz#c3d3e1e311eb7ee405e092dac10aefd09091eac0"
@@ -10320,7 +10326,7 @@ type-is@~1.6.15, type-is@~1.6.16:
     media-typer "0.3.0"
     mime-types "~2.1.18"
 
-typedarray@^0.0.6:
+typedarray@^0.0.6, typedarray@~0.0.5:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
 
@@ -10699,6 +10705,14 @@ websocket-driver@>=0.5.1:
 websocket-extensions@>=0.1.1:
   version "0.1.3"
   resolved "https://registry.yarnpkg.com/websocket-extensions/-/websocket-extensions-0.1.3.tgz#5d2ff22977003ec687a4b87073dfbbac146ccf29"
+
+wellknown@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/wellknown/-/wellknown-0.5.0.tgz#09ae9871fa826cf0a6ec1537ef00c379d78d7101"
+  integrity sha1-Ca6YcfqCbPCm7BU37wDDedeNcQE=
+  dependencies:
+    concat-stream "~1.5.0"
+    minimist "~1.2.0"
 
 wgs84@0.0.0:
   version "0.0.0"

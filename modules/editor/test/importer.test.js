@@ -324,8 +324,7 @@ describe('parseImport()', () => {
 
       test('reports error', () => {
         expect(importData.valid).toEqual(false);
-        // expect(importData.validationErrors).toEqual(['Invalid WKT']);
-        expect(importData.validationErrors[0]).toEqual('Error parsing WKT');
+        expect(importData.validationErrors).toEqual(['Invalid WKT']);
       });
     });
 

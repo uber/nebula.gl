@@ -9794,9 +9794,9 @@ strong-log-transformer@^2.0.0:
     minimist "^1.2.0"
     through "^2.3.4"
 
-strxml@mapbox/strxml:
+"strxml@github:mapbox/strxml":
   version "1.0.0"
-  resolved "https://registry.yarnpkg.com/mapbox/strxml/tar.gz/4325a5597621600183b869452da6104f8d2215b8"
+  resolved "https://codeload.github.com/mapbox/strxml/tar.gz/4325a5597621600183b869452da6104f8d2215b8"
   dependencies:
     xml-escape "1.1.0"
 

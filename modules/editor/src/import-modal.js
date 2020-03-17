@@ -3,6 +3,7 @@
 
 import React from 'react';
 import Modal, { ModalProvider } from 'styled-react-modal';
+import Dropzone from 'react-dropzone';
 import styled from 'styled-components';
 import TextareaAutosize from 'react-autosize-textarea';
 
@@ -100,6 +101,7 @@ export function ImportModal(props: ImportModalProps) {
   const [isOpen, setIsOpen] = React.useState(false);
   const [isImportText, setIsImportText] = React.useState(true);
   const [text, setText] = React.useState('');
+  const [importFile, setImportFile] = React.useState(null);
 
   function toggleModal(e) {
     setIsOpen(!isOpen);
@@ -120,95 +122,123 @@ export function ImportModal(props: ImportModalProps) {
         <Button style={{ position: 'absolute', top: '10px', left: '10px' }} onClick={toggleModal}>
           Import...
         </Button>
-        <StyledModal isOpen={isOpen} onBackgroundClick={toggleModal} onEscapeKeydown={toggleModal}>
-          <ModalContent>
-            <HeaderRow>
-              <Header>Import</Header>
-            </HeaderRow>
-            <ImportContent>
-              <ImportSelect>
+        {isOpen && (
+          <StyledModal
+            isOpen={isOpen}
+            onBackgroundClick={toggleModal}
+            onEscapeKeydown={toggleModal}
+          >
+            <ModalContent>
+              <HeaderRow>
+                <Header>Import</Header>
+              </HeaderRow>
+              <ImportContent>
+                <ImportSelect>
+                  <Button
+                    style={{
+                      backgroundColor: isImportText ? 'rgb(0, 105, 217)' : 'rgb(90, 98, 94)'
+                    }}
+                    onClick={() => {
+                      setIsImportText(true);
+                    }}
+                  >
+                    Import From Text
+                  </Button>
+                  <Button
+                    style={{
+                      backgroundColor: isImportText ? 'rgb(90, 98, 94)' : 'rgb(0, 105, 217)'
+                    }}
+                    onClick={() => {
+                      setIsImportText(false);
+                    }}
+                  >
+                    Import From File
+                  </Button>
+                </ImportSelect>
+                <ImportArea>
+                  {isImportText && (
+                    <TextareaAutosize
+                      style={textAreaStyle}
+                      rows={5}
+                      maxRows={25}
+                      onChange={event => setText(event.target.value)}
+                    />
+                  )}
+                  {!isImportText &&
+                    (!importFile ? (
+                      <Dropzone onDrop={importFiles => setImportFile(importFiles[0])}>
+                        {({ getRootProps, getInputProps }) => (
+                          <div style={textAreaStyle} {...getRootProps()}>
+                            <input {...getInputProps()} />
+                            <p>Drag 'n' drop your file here, or click to select a file.</p>
+                          </div>
+                        )}
+                      </Dropzone>
+                    ) : (
+                      <div style={textAreaStyle}>Selected File: {importFile.name}</div>
+                    ))}
+                </ImportArea>
+                <ImportInfo>
+                  Supported formats:
+                  <ul style={{ marginTop: '0' }}>
+                    <li>
+                      <a
+                        href="https://tools.ietf.org/html/rfc7946"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="GeoJSON Specification"
+                      >
+                        GeoJSON
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href="https://developers.google.com/kml/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="KML Specification"
+                      >
+                        KML
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href="https://en.wikipedia.org/wiki/Well-known_text"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="WKT"
+                      >
+                        WKT
+                      </a>
+                    </li>
+                  </ul>
+                </ImportInfo>
+              </ImportContent>
+              <FooterRow>
                 <Button
                   style={{
-                    backgroundColor: isImportText ? 'rgb(0, 105, 217)' : 'rgb(90, 98, 94)'
+                    backgroundColor: text || importFile ? 'rgb(0, 105, 217)' : 'rgb(0, 123, 255)'
                   }}
                   onClick={() => {
-                    setIsImportText(true);
+                    if (isImportText) {
+                      if (text) {
+                        props.onImport(JSON.parse(text));
+                      }
+                    } else if (importFile) {
+                      const fileReader = new FileReader();
+                      fileReader.onload = e => props.onImport(JSON.parse(e.target.result));
+                      fileReader.readAsText(importFile, 'utf8');
+                    }
+                    toggleModal();
                   }}
                 >
-                  Import From Text
+                  Import Geometry
                 </Button>
-                <Button
-                  style={{
-                    backgroundColor: isImportText ? 'rgb(90, 98, 94)' : 'rgb(0, 105, 217)'
-                  }}
-                  onClick={() => {
-                    setIsImportText(false);
-                  }}
-                >
-                  Import From File
-                </Button>
-              </ImportSelect>
-              <ImportArea>
-                {isImportText && (
-                  <TextareaAutosize
-                    style={textAreaStyle}
-                    rows={5}
-                    maxRows={25}
-                    onChange={event => setText(event.target.value)}
-                  />
-                )}
-                {!isImportText && <div>Import from a file.</div>}
-              </ImportArea>
-              <ImportInfo>
-                Supported formats:
-                <ul style={{ marginTop: '0' }}>
-                  <li>
-                    <a
-                      href="https://tools.ietf.org/html/rfc7946"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      title="GeoJSON Specification"
-                    >
-                      GeoJSON
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="https://developers.google.com/kml/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      title="KML Specification"
-                    >
-                      KML
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="https://en.wikipedia.org/wiki/Well-known_text"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      title="WKT"
-                    >
-                      WKT
-                    </a>
-                  </li>
-                </ul>
-              </ImportInfo>
-            </ImportContent>
-            <FooterRow>
-              <Button
-                style={{ backgroundColor: 'rgb(0, 105, 217)' }}
-                onClick={() => {
-                  props.onImport(JSON.parse(text));
-                  toggleModal();
-                }}
-              >
-                Import Geometry
-              </Button>
-              <Button onClick={toggleModal}>Cancel</Button>
-            </FooterRow>
-          </ModalContent>
-        </StyledModal>
+                <Button onClick={toggleModal}>Cancel</Button>
+              </FooterRow>
+            </ModalContent>
+          </StyledModal>
+        )}
       </ModalProvider>
     </div>
   );

@@ -5,6 +5,8 @@ import React from 'react';
 import Dropzone from 'react-dropzone';
 import styled from 'styled-components';
 import TextareaAutosize from 'react-autosize-textarea';
+import type { ImportData } from './lib/importer.js';
+import { parseImport } from './lib/importer.js';
 
 const Button = styled.button`
   display: inline-block;
@@ -84,7 +86,27 @@ export type ImportComponentProps = {
 export function ImportComponent(props: ImportComponentProps) {
   const [isImportText, setIsImportText] = React.useState(true);
   const [text, setText] = React.useState('');
-  const [importFile, setImportFile] = React.useState(null);
+  const [importFile, setImportFile] = React.useState<File | null>(null);
+
+  const [parseResult, setParseResult] = React.useState<ImportData>({
+    valid: false,
+    validationErrors: []
+  });
+
+  React.useEffect(
+    () => {
+      async function parseData() {
+        if (isImportText) {
+          setParseResult(await parseImport(text));
+        } else if (importFile !== null) {
+          setParseResult(await parseImport(importFile));
+        }
+      }
+
+      parseData();
+    },
+    [isImportText, text, importFile]
+  );
 
   const textAreaStyle = {
     padding: '0px',
@@ -193,15 +215,10 @@ export function ImportComponent(props: ImportComponentProps) {
           style={{
             backgroundColor: text || importFile ? 'rgb(0, 105, 217)' : 'rgb(0, 123, 255)'
           }}
+          disabled={!parseResult.valid}
           onClick={() => {
-            if (isImportText) {
-              if (text) {
-                props.onImport(JSON.parse(text));
-              }
-            } else if (importFile) {
-              const fileReader = new FileReader();
-              fileReader.onload = e => props.onImport(JSON.parse(e.target.result));
-              fileReader.readAsText(importFile, 'utf8');
+            if (parseResult.valid) {
+              props.onImport(parseResult.features);
             }
             flush();
           }}

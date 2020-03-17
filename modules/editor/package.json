@@ -45,11 +45,14 @@
     "test-rendering": "(cd test/rendering-test && webpack-dev-server --config webpack.config.test-rendering.js --progress --hot --open)"
   },
   "dependencies": {
+    "@maphubs/tokml": "^0.5.2",
     "@nebula.gl/edit-modes": "0.17.3",
     "@tmcw/togeojson": "^3.2.0",
     "react": "^16.8.0",
-    "terraformer-wkt-parser": "^1.2.1",
-    "xmldom": "^0.3.0"
+    "strxml": "mapbox/strxml",
+    "terraformer-wkt-parser": "^1.2.1"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "sinon": "^9.0.1"
+  }
 }

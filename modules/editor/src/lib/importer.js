@@ -2,10 +2,12 @@
 /* eslint-env browser */
 
 import wkt from 'terraformer-wkt-parser';
-import togeojson from '@tmcw/togeojson';
-import DOMParser from 'xmldom';
-import { newFeatureId } from './utils.js';
-import type { GeoJsonFeature, AnyGeoJson } from './types.js';
+import { kml } from '@tmcw/togeojson';
+// If we want to support node -- we need to import xmldom.
+// For now, we're only supporting browser so we can leave it out.
+// import { DOMParser } from 'xmldom';
+import { newFeatureId } from '../utils.js';
+import type { AnyGeoJson, GeoJsonFeature } from '../types.js';
 
 export type ValidImportData = {
   valid: true,
@@ -39,7 +41,7 @@ function shouldTryWkt(data: string): boolean {
   );
 }
 
-function getFeatures(geojson: AnyGeoJson): GeoJsonFeature[] {
+function getCleanedFeatures(geojson: AnyGeoJson): GeoJsonFeature[] {
   if (geojson.type !== 'FeatureCollection' && geojson.type !== 'Feature') {
     throw Error(`GeoJSON must have type of 'Feature' or 'FeatureCollection'`);
   }
@@ -47,7 +49,47 @@ function getFeatures(geojson: AnyGeoJson): GeoJsonFeature[] {
   const features: GeoJsonFeature[] =
     geojson.type === 'FeatureCollection' ? geojson.features : [geojson];
 
-  return features;
+  return features.map(getCleanedFeature);
+}
+
+function getCleanedFeature(feature: GeoJsonFeature): GeoJsonFeature {
+  let geometry = feature.geometry;
+  // reduce null-checking
+  const properties = feature.properties || {};
+
+  if (geometry.type === 'GeometryCollection' && geometry.geometries.length === 1) {
+    // There's only one geometry
+    geometry = geometry.geometries[0];
+  } else if (geometry.type === 'GeometryCollection' && geometry.geometries.length > 1) {
+    const types = new Set(geometry.geometries.map(g => g.type));
+    if (types.size === 1) {
+      // See if it can be combined into a Multi* geometry
+      const type = types.values().next().value;
+      if (type === 'Polygon') {
+        // Combine all the polygons into a single MultiPolygon
+        geometry = {
+          type: 'MultiPolygon',
+          coordinates: geometry.geometries.map(g => g.coordinates)
+        };
+      } else if (type === 'LineString') {
+        // Combine all the polygons into a single MultiPolygon
+        geometry = {
+          type: 'MultiLineString',
+          coordinates: geometry.geometries.map(g => g.coordinates)
+        };
+      }
+    } else {
+      // Mixed geometry types, we don't yet handle it
+      throw Error('GeometryCollection geometry type not yet supported');
+    }
+  }
+
+  return {
+    type: 'Feature',
+    geometry,
+    properties,
+    id: newFeatureId()
+  };
 }
 
 function parseImportString(data: string): Promise<ImportData> {
@@ -61,7 +103,7 @@ function parseImportString(data: string): Promise<ImportData> {
       validData = {
         valid: true,
         type: 'GeoJSON',
-        features: getFeatures(parsed)
+        features: getCleanedFeatures(parsed)
       };
     } catch (err) {
       validationErrors.push('Error parsing GeoJSON');
@@ -72,7 +114,7 @@ function parseImportString(data: string): Promise<ImportData> {
     const xml = new DOMParser().parseFromString(data, 'text/xml');
 
     try {
-      const parsed = togeojson.kml(xml);
+      const parsed = kml(xml);
       const isFeature = parsed && parsed.type === 'Feature';
       const isFeatureCollectionWithFeatures =
         parsed && parsed.type === 'FeatureCollection' && parsed.features.length > 0;
@@ -81,7 +123,7 @@ function parseImportString(data: string): Promise<ImportData> {
         validData = {
           valid: true,
           type: 'KML',
-          features: getFeatures(parsed)
+          features: getCleanedFeatures(parsed)
         };
       } else {
         validationErrors.push('Invalid KML');

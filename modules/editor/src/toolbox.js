@@ -5,6 +5,7 @@ import React from 'react';
 import { ViewMode, DrawPointMode, DrawPolygonMode } from '@nebula.gl/edit-modes';
 import styled from 'styled-components';
 import { ImportModal } from './import-modal.js';
+import { ExportModal } from './export-modal.js';
 
 const Tools = styled.div`
   position: absolute;
@@ -28,13 +29,6 @@ const Button = styled.span`
   padding: 0.1em 0.2em;
 `;
 
-/* const ExportModal = styled.div`
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  max-width: 500px;
-`;*/
-
 export type Props = {
   mode: any,
   features: any,
@@ -49,11 +43,10 @@ const MODE_BUTTONS = [
   { mode: DrawPolygonMode, content: 'Draw Polygon' }
 ];
 
-// export function Toolbox({ onSetMode, onImport }: Props) {
 export function Toolbox(props: Props) {
   // Initialize to zero index on load as nothing is active.
   const [showImport, setShowImport] = React.useState(false);
-  // const [showExport, setShowExport] = React.useState(false);
+  const [showExport, setShowExport] = React.useState(false);
 
   return (
     <>
@@ -73,8 +66,7 @@ export function Toolbox(props: Props) {
           </Button>
         ))}
         <Button onClick={() => setShowImport(true)}> Import Geomety </Button>
-        {/* eslint-disable-next-line */}
-        {/* <Button onClick={() => setShowExport(true)}> Export Geomety </Button> */}
+        {<Button onClick={() => setShowExport(true)}> Export Geomety </Button>}
       </Tools>
       {showImport && (
         <ImportModal
@@ -85,12 +77,7 @@ export function Toolbox(props: Props) {
           onClose={() => setShowImport(false)}
         />
       )}
-      {/* eslint-disable-next-line */}
-      {/* {showExport && (
-        <ExportModal features={props.features} onClose={() => setShowImport(false)}>
-          {JSON.stringify(props.features)}
-        </ExportModal>
-      )} */}
+      {showExport && <ExportModal features={props.features} onClose={() => setShowExport(false)} />}
     </>
   );
 }

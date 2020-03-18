@@ -33,20 +33,6 @@ const ImportComponentContent = styled.div`
   outline: 0;
 `;
 
-const HeaderRow = styled.div`
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  padding: 0.75rem 0.75rem;
-  border-bottom: 1px solid rgb(222, 226, 230);
-`;
-
-const Header = styled.h5`
-  font-size: 1.25rem;
-  font-weight: 500;
-  margin: 0;
-`;
-
 const ImportContent = styled.div`
   width: auto;
   height: auto;
@@ -125,9 +111,6 @@ export function ImportComponent(props: ImportComponentProps) {
 
   return (
     <ImportComponentContent>
-      <HeaderRow>
-        <Header>Import</Header>
-      </HeaderRow>
       <ImportContent>
         <ImportSelect>
           <Button

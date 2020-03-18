@@ -28,7 +28,7 @@ const Button = styled.span`
   padding: 0.1em 0.2em;
 `;
 
-/*const ExportModal = styled.div`
+/* const ExportModal = styled.div`
   position: absolute;
   top: 10px;
   left: 10px;
@@ -73,6 +73,7 @@ export function Toolbox(props: Props) {
           </Button>
         ))}
         <Button onClick={() => setShowImport(true)}> Import Geomety </Button>
+        {/* eslint-disable-next-line */}
         {/* <Button onClick={() => setShowExport(true)}> Export Geomety </Button> */}
       </Tools>
       {showImport && (
@@ -84,6 +85,7 @@ export function Toolbox(props: Props) {
           onClose={() => setShowImport(false)}
         />
       )}
+      {/* eslint-disable-next-line */}
       {/* {showExport && (
         <ExportModal features={props.features} onClose={() => setShowImport(false)}>
           {JSON.stringify(props.features)}

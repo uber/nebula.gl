@@ -3,7 +3,6 @@
 
 import React from 'react';
 import Modal, { ModalProvider } from 'styled-react-modal';
-import styled from 'styled-components';
 import { ImportComponent } from './import-component.js';
 
 const StyledModal = Modal.styled`
@@ -22,39 +21,28 @@ const StyledModal = Modal.styled`
   text-align: left;
 `;
 
-const Button = styled.button`
-  display: inline-block;
-  color: #fff;
-  background-color: rgb(90, 98, 94);
-  font-size: 1em;
-  margin: 0.25em;
-  padding: 0.375em 0.75em;
-  border: 1px solid transparent;
-  border-radius: 0.25em;
-  display: block;
-`;
-
 export type ImportModalProps = {
-  onImport: any => mixed
+  onImport: any => mixed,
+  onClose: () => mixed
 };
 
 export function ImportModal(props: ImportModalProps) {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = React.useState(true);
 
   function toggleModal(e) {
+    if (isOpen) {
+      props.onClose();
+    }
     setIsOpen(!isOpen);
   }
 
   return (
-    <div>
+    <>
       <ModalProvider>
-        <Button style={{ position: 'absolute', top: '10px', left: '10px' }} onClick={toggleModal}>
-          Import...
-        </Button>
         <StyledModal isOpen={isOpen} onBackgroundClick={toggleModal} onEscapeKeydown={toggleModal}>
           <ImportComponent onImport={props.onImport} onCancel={toggleModal} />
         </StyledModal>
       </ModalProvider>
-    </div>
+    </>
   );
 }

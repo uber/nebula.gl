@@ -4,9 +4,8 @@
 import React from 'react';
 import DeckGL from '@deck.gl/react';
 import { EditableGeoJsonLayer } from '@nebula.gl/layers';
-import { ImportModal, Toolbox } from '@nebula.gl/editor';
-// import { ImportModal, ImportComponent, Toolbox } from '@nebula.gl/editor';
-import { DrawPolygonMode } from '@nebula.gl/edit-modes';
+import { Toolbox } from '@nebula.gl/editor';
+import { ViewMode } from '@nebula.gl/edit-modes';
 import { StaticMap } from 'react-map-gl';
 
 const MAPBOX_ACCESS_TOKEN =
@@ -24,15 +23,12 @@ export function Example() {
     features: []
   });
   const [selectedFeatureIndexes] = React.useState([]);
-  const [mode, setMode] = React.useState(() => DrawPolygonMode);
-  const [modeConfig, setModeConfig] = React.useState(null);
+  const [mode, setMode] = React.useState(() => ViewMode);
 
   const layer = new EditableGeoJsonLayer({
     data: features,
     mode,
-    modeConfig,
     selectedFeatureIndexes,
-
     onEdit: ({ updatedData }) => {
       setFeatures(updatedData);
     }
@@ -50,14 +46,7 @@ export function Example() {
       >
         <StaticMap mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN} />
       </DeckGL>
-      <Toolbox
-        position="topright"
-        mode={mode}
-        onSetMode={setMode}
-        modeConfig={modeConfig}
-        onSetModeConfig={setModeConfig}
-      />
-      <ImportModal onImport={geojson => setFeatures(geojson)} />
+      <Toolbox mode={mode} features={features} onSetMode={setMode} onImport={setFeatures} />
     </>
   );
 }

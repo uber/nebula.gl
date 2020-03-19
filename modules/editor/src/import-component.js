@@ -174,7 +174,9 @@ export function ImportComponent(props: ImportComponentProps) {
             </Dropzone>
           )}
           <ImportInfo style={{ color: 'rgb(133, 100, 4)', backgroundColor: 'rgb(255, 243, 205)' }}>
-            {isDataSet() && !parseResult.valid && parseResult.validationErrors.map((err, i) => err)}
+            {isDataSet() &&
+              !parseResult.valid &&
+              parseResult.validationErrors.map((err, i) => <div>{err}</div>)}
           </ImportInfo>
         </ImportArea>
         <ImportInfo>

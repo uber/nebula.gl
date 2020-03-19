@@ -65,8 +65,8 @@ export function Toolbox(props: Props) {
             {modeButton.content}
           </Button>
         ))}
-        <Button onClick={() => setShowImport(true)}> Import Geomety </Button>
-        {<Button onClick={() => setShowExport(true)}> Export Geomety </Button>}
+        <Button onClick={() => setShowImport(true)}> Import Geometry </Button>
+        <Button onClick={() => setShowExport(true)}> Export Geometry </Button>
       </Tools>
       {showImport && (
         <ImportModal

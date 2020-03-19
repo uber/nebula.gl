@@ -6,7 +6,6 @@ import { kml } from '@tmcw/togeojson';
 // If we want to support node -- we need to import xmldom.
 // For now, we're only supporting browser so we can leave it out.
 // import { DOMParser } from 'xmldom';
-import { newFeatureId } from '../utils.js';
 import type { AnyGeoJson, GeoJsonFeature } from '../types.js';
 
 export type ValidImportData = {
@@ -87,8 +86,7 @@ function getCleanedFeature(feature: GeoJsonFeature): GeoJsonFeature {
   return {
     type: 'Feature',
     geometry,
-    properties,
-    id: newFeatureId()
+    properties
   };
 }
 
@@ -143,8 +141,7 @@ function parseImportString(data: string): Promise<ImportData> {
             {
               type: 'Feature',
               properties: {},
-              geometry: parsed,
-              id: newFeatureId()
+              geometry: parsed
             }
           ]
         };

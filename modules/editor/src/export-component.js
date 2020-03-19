@@ -2,10 +2,10 @@
 /* eslint-env browser */
 
 import React from 'react';
+import copy from 'clipboard-copy';
 import styled from 'styled-components';
 import { toGeoJson, toKml, toWkt } from './lib/exporter.js';
 import { Button } from './editor-modal.js';
-import type { AnyGeoJson } from './types.js';
 
 const FormatSelect = styled.div`
   display: flex;
@@ -42,7 +42,7 @@ const FooterRow = styled.div`
 `;
 
 export type ExportComponentProps = {
-  features: AnyGeoJson,
+  features: any,
   onClose: () => mixed
 };
 
@@ -100,6 +100,20 @@ export function ExportComponent(props: ExportComponentProps) {
         <ExportData readOnly={true} value={exportParams.data} />
       </ExportArea>
       <FooterRow>
+        <Button
+          style={{ backgroundColor: 'rgb(0, 105, 217)' }}
+          onClick={
+            () =>
+              copy(exportParams.data).then(() => {
+                props.onClose();
+              })
+            //   .catch(err => {
+            //     alert(`Error copying to clipboard: `, err);
+            //   })
+          }
+        >
+          Copy
+        </Button>
         <Button onClick={props.onClose}>Cancel</Button>
       </FooterRow>
     </>

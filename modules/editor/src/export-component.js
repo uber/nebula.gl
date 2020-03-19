@@ -52,6 +52,8 @@ export function ExportComponent(props: ExportComponentProps) {
   const [exportParams, setExportParams] = React.useState(toGeoJson(geojson));
   const [format, setFormat] = React.useState('geoJson');
 
+  const tooMuch = exportParams.data.length > 500000;
+
   function copyData() {
     copy(exportParams.data).then(() => props.onClose());
     // TODO Design and add in a notifications banner for errors in the modal.
@@ -102,7 +104,15 @@ export function ExportComponent(props: ExportComponentProps) {
         </Button>
       </FormatSelect>
       <ExportArea>
-        <ExportData readOnly={true} value={exportParams.data} />
+        <ExportData
+          readOnly={true}
+          style={tooMuch ? { fontStyle: 'italic', padding: '0.75rem 0rem' } : {}}
+          value={
+            tooMuch
+              ? 'Too much data to display. Download or Copy to clipboard instead.'
+              : exportParams.data
+          }
+        />
       </ExportArea>
       <FooterRow>
         <Button style={{ backgroundColor: 'rgb(0, 105, 217)' }} onClick={downloadData}>

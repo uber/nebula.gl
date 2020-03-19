@@ -16,7 +16,6 @@ const ImportComponentContent = styled.div`
   pointer-events: auto;
   background-color: #fff;
   background-clip: padding-box;
-  border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 0.3rem;
   outline: 0;
 `;
@@ -174,6 +173,9 @@ export function ImportComponent(props: ImportComponentProps) {
               )}
             </Dropzone>
           )}
+          <ImportInfo style={{ color: 'rgb(133, 100, 4)', backgroundColor: 'rgb(255, 243, 205)' }}>
+            {isDataSet() && !parseResult.valid && parseResult.validationErrors.map((err, i) => err)}
+          </ImportInfo>
         </ImportArea>
         <ImportInfo>
           Supported formats:

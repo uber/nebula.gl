@@ -3,7 +3,7 @@
 
 import tokml from '@maphubs/tokml';
 import { stringify as stringifyWkt } from 'wellknown';
-import type { GeoJsonFeature, AnyGeoJson, GeoJsonGeometry, PolygonalGeometry } from '../types.js';
+import type { Feature, AnyGeoJson, Geometry, PolygonalGeometry } from '@nebula.gl/edit-modes';
 
 export const UNNAMED = '__unnamed_feature__';
 
@@ -107,7 +107,7 @@ Points: ${pointCount}`;
   };
 }
 
-function getPolygonalStats(geometry: GeoJsonGeometry) {
+function getPolygonalStats(geometry: Geometry) {
   if (geometry.type !== 'Polygon' && geometry.type !== 'MultiPolygon') {
     return {
       pointCount: -1,
@@ -163,7 +163,7 @@ function prepareGeoJsonForExport(geojson: AnyGeoJson): AnyGeoJson {
   return forExport;
 }
 
-function prepareFeatureForExport(feature: GeoJsonFeature): GeoJsonFeature {
+function prepareFeatureForExport(feature: Feature): Feature {
   const prepped = {
     ...feature,
     properties: {

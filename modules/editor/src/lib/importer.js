@@ -6,12 +6,12 @@ import { kml } from '@tmcw/togeojson';
 // If we want to support node -- we need to import xmldom.
 // For now, we're only supporting browser so we can leave it out.
 // import { DOMParser } from 'xmldom';
-import type { AnyGeoJson, GeoJsonFeature } from '../types.js';
+import type { AnyGeoJson, Feature } from '@nebula.gl/edit-modes';
 
 export type ValidImportData = {
   valid: true,
   type: 'GeoJSON' | 'KML' | 'WKT',
-  features: GeoJsonFeature[]
+  features: Feature[]
 };
 
 export type InvalidImportData = {
@@ -40,18 +40,17 @@ function shouldTryWkt(data: string): boolean {
   );
 }
 
-function getCleanedFeatures(geojson: AnyGeoJson): GeoJsonFeature[] {
+function getCleanedFeatures(geojson: AnyGeoJson): Feature[] {
   if (geojson.type !== 'FeatureCollection' && geojson.type !== 'Feature') {
     throw Error(`GeoJSON must have type of 'Feature' or 'FeatureCollection'`);
   }
 
-  const features: GeoJsonFeature[] =
-    geojson.type === 'FeatureCollection' ? geojson.features : [geojson];
+  const features: Feature[] = geojson.type === 'FeatureCollection' ? geojson.features : [geojson];
 
   return features.map(getCleanedFeature);
 }
 
-function getCleanedFeature(feature: GeoJsonFeature): GeoJsonFeature {
+function getCleanedFeature(feature: Feature): Feature {
   let geometry = feature.geometry;
   // reduce null-checking
   const properties = feature.properties || {};

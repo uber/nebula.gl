@@ -1,13 +1,13 @@
 // @flow
 /* eslint-env jest */
 
+import type { Feature, FeatureCollection } from '@nebula.gl/edit-modes';
 import { toGeoJson, toKml, toWkt, toStats, UNNAMED } from '../src/lib/exporter.js';
-import type { GeoJsonFeature, GeoJsonFeatureCollection } from '../src/types.js';
 import { createRandomFeature } from './utils/test-features.js';
 
-let unsavedNamedFeature: GeoJsonFeature;
-let unsavedUnnamedFeature: GeoJsonFeature;
-let featureCollection: GeoJsonFeatureCollection;
+let unsavedNamedFeature: Feature;
+let unsavedUnnamedFeature: Feature;
+let featureCollection: FeatureCollection;
 
 beforeEach(() => {
   unsavedNamedFeature = createRandomFeature();
@@ -59,7 +59,7 @@ describe('toGeoJson()', () => {
     const expectedMimeType = 'application/json';
 
     const actual = toGeoJson(featureCollection);
-    const actualParsed: GeoJsonFeatureCollection = JSON.parse(actual.data);
+    const actualParsed: FeatureCollection = JSON.parse(actual.data);
 
     expect(actual.filename).toEqual(expectedFilename);
     expect(actual.mimetype).toEqual(expectedMimeType);

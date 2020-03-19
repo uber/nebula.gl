@@ -3,9 +3,10 @@
 /* eslint-env jest, browser */
 
 import sinon from 'sinon';
+import type { Feature, FeatureCollection } from '@nebula.gl/edit-modes';
 import { parseImport } from '../src/lib/importer.js';
 import { toKml, UNNAMED } from '../src/lib/exporter.js';
-import type { GeoJsonFeature, GeoJsonFeatureCollection } from '../src/types.js';
+
 import {
   createRandomFeature,
   createRandomPolygon,
@@ -14,8 +15,8 @@ import {
   createRandomMultiLineString
 } from './utils/test-features.js';
 
-let unsavedFeature: GeoJsonFeature;
-let featureCollection: GeoJsonFeatureCollection;
+let unsavedFeature: Feature;
+let featureCollection: FeatureCollection;
 
 beforeEach(() => {
   unsavedFeature = createRandomFeature();

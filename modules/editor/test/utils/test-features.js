@@ -2,17 +2,17 @@
 /* istanbul ignore file */
 
 import type {
-  PolygonalGeometry,
-  GeoJsonGeometry,
-  GeoJsonPolygon,
-  GeoJsonMultiPolygon,
-  GeoJsonLineString,
-  GeoJsonMultiLineString,
-  GeoJsonFeature,
-  GeoJsonFeatureCollection
-} from '../../src/types.js';
+  Polygonal,
+  Geometry,
+  Polygon,
+  MultiPolygon,
+  LineString,
+  MultiLineString,
+  Feature,
+  FeatureCollection
+} from '@nebula.gl/edit-modes';
 
-function getPacManMultiPolygon(): GeoJsonMultiPolygon {
+function getPacManMultiPolygon(): MultiPolygon {
   return {
     type: 'MultiPolygon',
     coordinates: [
@@ -80,7 +80,7 @@ function getPacManMultiPolygon(): GeoJsonMultiPolygon {
   };
 }
 
-function getPacManPolygon(): GeoJsonPolygon {
+function getPacManPolygon(): Polygon {
   return {
     type: 'Polygon',
     coordinates: [
@@ -100,54 +100,54 @@ function getPacManPolygon(): GeoJsonPolygon {
   };
 }
 
-export function createPolygonAroundNullIsland(): GeoJsonPolygon {
+export function createPolygonAroundNullIsland(): Polygon {
   return {
     type: 'Polygon',
     coordinates: [[[1, 1], [-1, 1], [-1, -1], [1, -1], [1, 1]]]
   };
 }
 
-export function createPolygonRightOfNullIsland(): GeoJsonPolygon {
+export function createPolygonRightOfNullIsland(): Polygon {
   return {
     type: 'Polygon',
     coordinates: [[[2, 2], [0, 2], [0, -2], [2, -2], [2, 2]]]
   };
 }
 
-export function createPolygonFarRightOfNullIsland(): GeoJsonPolygon {
+export function createPolygonFarRightOfNullIsland(): Polygon {
   return {
     type: 'Polygon',
     coordinates: [[[4, 1], [2, 1], [2, -1], [4, -1], [4, 1]]]
   };
 }
 
-export function createRandomPolygonal(): PolygonalGeometry {
+export function createRandomPolygonal(): Polygonal {
   return Math.random() > 0.5 ? getPacManMultiPolygon() : getPacManPolygon();
 }
 
-export function createRandomPolygon(): GeoJsonPolygon {
+export function createRandomPolygon(): Polygon {
   return getPacManPolygon();
 }
 
-export function createRandomMultiPolygon(): GeoJsonMultiPolygon {
+export function createRandomMultiPolygon(): MultiPolygon {
   return getPacManMultiPolygon();
 }
 
-export function createRandomLineString(): GeoJsonLineString {
+export function createRandomLineString(): LineString {
   return {
     type: 'LineString',
     coordinates: [[1, 2], [2, 3]]
   };
 }
 
-export function createRandomMultiLineString(): GeoJsonMultiLineString {
+export function createRandomMultiLineString(): MultiLineString {
   return {
     type: 'MultiLineString',
     coordinates: [[[1, 2], [2, 3], [3, 4]], [[4, 5], [5, 6]]]
   };
 }
 
-export function wrapInFeature(geometry: GeoJsonGeometry): GeoJsonFeature {
+export function wrapInFeature(geometry: Geometry): Feature {
   return {
     type: 'Feature',
     properties: { name: `name-${Math.round(Math.random() * 100)}` },
@@ -155,7 +155,7 @@ export function wrapInFeature(geometry: GeoJsonGeometry): GeoJsonFeature {
   };
 }
 
-export function createRandomFeature(): GeoJsonFeature {
+export function createRandomFeature(): Feature {
   return {
     type: 'Feature',
     properties: {},
@@ -163,7 +163,7 @@ export function createRandomFeature(): GeoJsonFeature {
   };
 }
 
-export function createRandomFeatureCollection(): GeoJsonFeatureCollection {
+export function createRandomFeatureCollection(): FeatureCollection {
   return {
     type: 'FeatureCollection',
     properties: {

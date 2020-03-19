@@ -48,6 +48,7 @@
     "@maphubs/tokml": "^0.5.2",
     "@nebula.gl/edit-modes": "0.17.3",
     "@tmcw/togeojson": "^3.2.0",
+    "clipboard-copy": "^3.1.0",
     "react": "^16.8.0",
     "react-autosize-textarea": "^7.0.0",
     "react-dropzone": "^10.2.1",

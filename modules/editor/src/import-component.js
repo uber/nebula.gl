@@ -5,20 +5,9 @@ import React from 'react';
 import Dropzone from 'react-dropzone';
 import styled from 'styled-components';
 import TextareaAutosize from 'react-autosize-textarea';
+import { Button } from './editor-modal.js';
 import type { ImportData } from './lib/importer.js';
 import { parseImport } from './lib/importer.js';
-
-const Button = styled.button`
-  display: inline-block;
-  color: #fff;
-  background-color: rgb(90, 98, 94);
-  font-size: 1em;
-  margin: 0.25em;
-  padding: 0.375em 0.75em;
-  border: 1px solid transparent;
-  border-radius: 0.25em;
-  display: block;
-`;
 
 const ImportComponentContent = styled.div`
   position: relative;
@@ -100,7 +89,11 @@ export function ImportComponent(props: ImportComponentProps) {
     minHeight: '250px',
     height: '100%',
     border: '1px solid rgb(206, 212, 218)',
-    borderRadius: '0.3rem'
+    borderRadius: '0.3rem',
+    fontFamily:
+      "-apple-system, system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans' sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'",
+    fontSize: '1rem',
+    fontWeight: '400'
   };
 
   function flush() {

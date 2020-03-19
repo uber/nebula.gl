@@ -11,22 +11,11 @@ export type ImportModalProps = {
 };
 
 export function ImportModal(props: ImportModalProps) {
-  const [isOpen, setIsOpen] = React.useState(true);
-
-  function toggleModal(e) {
-    if (isOpen) {
-      props.onClose();
-    }
-    setIsOpen(!isOpen);
-  }
-
   return (
-    <>
-      <EditorModal
-        onClose={props.onClose}
-        title={'Import'}
-        content={<ImportComponent onImport={props.onImport} onCancel={toggleModal} />}
-      />
-    </>
+    <EditorModal
+      onClose={props.onClose}
+      title={'Import'}
+      content={<ImportComponent onImport={props.onImport} onCancel={props.onClose} />}
+    />
   );
 }

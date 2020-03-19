@@ -5,6 +5,18 @@ import React from 'react';
 import Modal, { ModalProvider } from 'styled-react-modal';
 import styled from 'styled-components';
 
+export const Button = styled.button`
+  display: inline-block;
+  color: #fff;
+  background-color: rgb(90, 98, 94);
+  font-size: 1em;
+  margin: 0.25em;
+  padding: 0.375em 0.75em;
+  border: 1px solid transparent;
+  border-radius: 0.25em;
+  display: block;
+`;
+
 const StyledModal = Modal.styled`
   position: relative;
   display: block;

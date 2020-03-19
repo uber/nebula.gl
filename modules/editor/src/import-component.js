@@ -4,7 +4,6 @@
 import React from 'react';
 import Dropzone from 'react-dropzone';
 import styled from 'styled-components';
-import TextareaAutosize from 'react-autosize-textarea';
 import { Button } from './editor-modal.js';
 import type { ImportData } from './lib/importer.js';
 import { parseImport } from './lib/importer.js';
@@ -39,6 +38,34 @@ const ImportArea = styled.div`
   height: auto;
   min-height: 300px;
   padding: 0rem 1rem;
+`;
+
+const ImportTextArea = styled.textarea`
+  padding: 0px;
+  width: 100%;
+  resize: vertical;
+  min-height: 250px;
+  max-height: 450px;
+  border: 1px solid rgb(206, 212, 218);
+  border-radius: 0.3rem;
+  font-family: -apple-system, system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans',
+    sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  font-size: 1rem;
+  font-weight: 400;
+`;
+
+const ImportDropArea = styled.div`
+  padding: 0px;
+  width: 100%;
+  min-height: 250px;
+  height: 100%;
+  border: 1px solid rgb(206, 212, 218);
+  border-radius: 0.3rem;
+  fontfamily: -apple-system, system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    'Noto Sans' sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+    'Noto Color Emoji';
+  font-size: 1rem;
+  font-weight: 400;
 `;
 
 const ImportInfo = styled.div`
@@ -77,29 +104,19 @@ export function ImportComponent(props: ImportComponentProps) {
           setParseResult(await parseImport(importFile));
         }
       }
-
       parseData();
     },
     [isImportText, text, importFile]
   );
 
-  const textAreaStyle = {
-    padding: '0px',
-    width: '100%',
-    minHeight: '250px',
-    height: '100%',
-    border: '1px solid rgb(206, 212, 218)',
-    borderRadius: '0.3rem',
-    fontFamily:
-      "-apple-system, system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans' sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'",
-    fontSize: '1rem',
-    fontWeight: '400'
-  };
-
   function flush() {
     setImportFile(null);
     setText('');
     props.onCancel();
+  }
+
+  function isDataSet() {
+    return (isImportText && text) || (!isImportText && importFile);
   }
 
   return (
@@ -129,26 +146,34 @@ export function ImportComponent(props: ImportComponentProps) {
         </ImportSelect>
         <ImportArea>
           {isImportText && (
-            <TextareaAutosize
-              style={textAreaStyle}
-              rows={5}
-              maxRows={25}
+            <ImportTextArea
+              style={isDataSet() && !parseResult.valid ? { borderColor: 'rgb(220, 53, 69)' } : {}}
               onChange={event => setText(event.target.value)}
+              value={text}
             />
           )}
-          {!isImportText &&
-            (!importFile ? (
-              <Dropzone onDrop={importFiles => setImportFile(importFiles[0])}>
-                {({ getRootProps, getInputProps }) => (
-                  <div style={textAreaStyle} {...getRootProps()}>
-                    <input {...getInputProps()} />
+          {!isImportText && (
+            <Dropzone onDrop={importFiles => setImportFile(importFiles[0])}>
+              {({ getRootProps, getInputProps }) => (
+                <ImportDropArea
+                  style={
+                    isDataSet() && !parseResult.valid ? { borderColor: 'rgb(220, 53, 69)' } : {}
+                  }
+                  {...getRootProps()}
+                >
+                  <input {...getInputProps()} />
+                  {importFile ? (
+                    <p>
+                      {!parseResult.valid ? 'Invalid' : ''} Selected File: {importFile.name}.<br />
+                      Drag 'n' drop or click again to change the file.
+                    </p>
+                  ) : (
                     <p>Drag 'n' drop your file here, or click to select a file.</p>
-                  </div>
-                )}
-              </Dropzone>
-            ) : (
-              <div style={textAreaStyle}>Selected File: {importFile.name}</div>
-            ))}
+                  )}
+                </ImportDropArea>
+              )}
+            </Dropzone>
+          )}
         </ImportArea>
         <ImportInfo>
           Supported formats:
@@ -188,18 +213,24 @@ export function ImportComponent(props: ImportComponentProps) {
       </ImportContent>
       <FooterRow>
         <Button
-          style={{
-            backgroundColor: text || importFile ? 'rgb(0, 105, 217)' : 'rgb(0, 123, 255)'
-          }}
-          disabled={!parseResult.valid}
+          style={
+            isDataSet()
+              ? { backgroundColor: parseResult.valid ? 'rgb(0, 105, 217)' : 'rgb(220, 53, 69)' }
+              : { backgroundColor: 'rgb(206, 212, 218)' }
+          }
+          disabled={!isDataSet() || !parseResult.valid}
           onClick={() => {
             if (parseResult.valid) {
-              props.onImport(parseResult.features);
+              props.onImport({
+                type: 'FeatureCollection',
+                properties: {},
+                features: parseResult.features
+              });
             }
             flush();
           }}
         >
-          Import Geometry
+          {isDataSet() && !parseResult.valid ? 'Invalid Geometry' : 'Import Geometry'}
         </Button>
         <Button onClick={flush}>Cancel</Button>
       </FooterRow>

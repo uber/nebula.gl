@@ -48,14 +48,7 @@ export type ExportComponentProps = {
 };
 
 export function ExportComponent(props: ExportComponentProps) {
-  const geojson = props.features.hasOwnProperty('type')
-    ? props.features
-    : {
-        type: 'FeatureCollection',
-        properties: {},
-        features: props.features
-      };
-
+  const geojson = props.features;
   const [exportParams, setExportParams] = React.useState(toGeoJson(geojson));
   const [format, setFormat] = React.useState('geoJson');
 

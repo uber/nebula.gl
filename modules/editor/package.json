@@ -50,6 +50,7 @@
     "@maphubs/tokml": "^0.5.2",
     "@tmcw/togeojson": "^3.2.0",
     "clipboard-copy": "^3.1.0",
+    "downloadjs": "^1.4.7",
     "react": "^16.8.0",
     "react-autosize-textarea": "^7.0.0",
     "react-dropzone": "^10.2.1",

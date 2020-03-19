@@ -3,6 +3,7 @@
 
 import React from 'react';
 import copy from 'clipboard-copy';
+import downloadjs from 'downloadjs';
 import styled from 'styled-components';
 import { toGeoJson, toKml, toWkt } from './lib/exporter.js';
 import { Button } from './editor-modal.js';
@@ -58,6 +59,17 @@ export function ExportComponent(props: ExportComponentProps) {
   const [exportParams, setExportParams] = React.useState(toGeoJson(geojson));
   const [format, setFormat] = React.useState('geoJson');
 
+  function copyData() {
+    copy(exportParams.data).then(() => props.onClose());
+    // TODO Design and add in a notifications banner for errors in the modal.
+    //   .catch(err => {alert(`Error copying to clipboard: `, err)})
+  }
+
+  function downloadData() {
+    downloadjs(new Blob([exportParams.data]), exportParams.filename, exportParams.mimetype);
+    props.onClose();
+  }
+
   return (
     <>
       <FormatSelect>
@@ -100,18 +112,10 @@ export function ExportComponent(props: ExportComponentProps) {
         <ExportData readOnly={true} value={exportParams.data} />
       </ExportArea>
       <FooterRow>
-        <Button
-          style={{ backgroundColor: 'rgb(0, 105, 217)' }}
-          onClick={
-            () =>
-              copy(exportParams.data).then(() => {
-                props.onClose();
-              })
-            //   .catch(err => {
-            //     alert(`Error copying to clipboard: `, err);
-            //   })
-          }
-        >
+        <Button style={{ backgroundColor: 'rgb(0, 105, 217)' }} onClick={downloadData}>
+          Download
+        </Button>
+        <Button style={{ backgroundColor: 'rgb(0, 105, 217)' }} onClick={copyData}>
           Copy
         </Button>
         <Button onClick={props.onClose}>Cancel</Button>

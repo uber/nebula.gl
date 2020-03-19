@@ -1,8 +1,6 @@
 // @flow
 /* istanbul ignore file */
 
-import uuid from 'uuid/v4';
-import { newFeatureId } from '../../src/utils.js';
 import type {
   PolygonalGeometry,
   GeoJsonGeometry,
@@ -152,8 +150,7 @@ export function createRandomMultiLineString(): GeoJsonMultiLineString {
 export function wrapInFeature(geometry: GeoJsonGeometry): GeoJsonFeature {
   return {
     type: 'Feature',
-    properties: { name: `name-${uuid()}` },
-    id: newFeatureId(),
+    properties: { name: `name-${Math.round(Math.random() * 100)}` },
     geometry
   };
 }
@@ -162,8 +159,7 @@ export function createRandomFeature(): GeoJsonFeature {
   return {
     type: 'Feature',
     properties: {},
-    geometry: createRandomPolygon(),
-    id: newFeatureId()
+    geometry: createRandomPolygon()
   };
 }
 
@@ -179,7 +175,6 @@ export function createRandomFeatureCollection(): GeoJsonFeatureCollection {
         properties: {
           name: 'Pac-Man 1'
         },
-        id: newFeatureId(),
         geometry: {
           type: 'MultiPolygon',
           coordinates: [
@@ -210,7 +205,6 @@ export function createRandomFeatureCollection(): GeoJsonFeatureCollection {
         properties: {
           name: 'Pac-Man Ghost'
         },
-        id: newFeatureId(),
         geometry: {
           type: 'Polygon',
           coordinates: [
@@ -257,7 +251,6 @@ export function createRandomFeatureCollection(): GeoJsonFeatureCollection {
         properties: {
           name: 'Pac-Man 2'
         },
-        id: newFeatureId(),
         geometry: {
           type: 'Polygon',
           coordinates: [

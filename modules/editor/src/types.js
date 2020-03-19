@@ -57,9 +57,6 @@ export type PolygonalGeometry = GeoJsonPolygon | GeoJsonMultiPolygon;
 export type GeoJsonFeature = {
   type: 'Feature',
   geometry: GeoJsonGeometry,
-
-  // Don't allow null, even though it's allowed in the spec, to reduce null-checking bloat
-  id: string,
   properties: GeoJsonProperties
 };
 

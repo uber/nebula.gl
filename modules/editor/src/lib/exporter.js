@@ -4,7 +4,6 @@
 import tokml from '@maphubs/tokml';
 import { stringify as stringifyWkt } from 'wellknown';
 import type { GeoJsonFeature, AnyGeoJson, GeoJsonGeometry, PolygonalGeometry } from '../types.js';
-import { isFeatureNew } from '../utils.js';
 
 export const UNNAMED = '__unnamed_feature__';
 
@@ -33,12 +32,7 @@ export function toKml(geojson: AnyGeoJson): ExportParameters {
   // So, put it also in properties
   if (prepped.type === 'FeatureCollection') {
     prepped.features.forEach(f => {
-      if (!f.id) {
-        return;
-      }
-
       f.properties = f.properties || {};
-      f.properties.id = f.id;
     });
   }
 
@@ -113,21 +107,6 @@ Points: ${pointCount}`;
   };
 }
 
-export function toIds(geojson: AnyGeoJson): ExportParameters {
-  const filename = `${getFilename(geojson)}.txt`;
-  const features = geojson.type === 'FeatureCollection' ? geojson.features : [geojson];
-  const ids = features
-    .filter(f => !isFeatureNew(f))
-    .map(f => f.id)
-    .join('\n');
-
-  return {
-    data: ids,
-    filename,
-    mimetype: 'text/plain'
-  };
-}
-
 function getPolygonalStats(geometry: GeoJsonGeometry) {
   if (geometry.type !== 'Polygon' && geometry.type !== 'MultiPolygon') {
     return {
@@ -193,11 +172,6 @@ function prepareFeatureForExport(feature: GeoJsonFeature): GeoJsonFeature {
       description: feature.properties.description || ''
     }
   };
-
-  if (isFeatureNew(prepped)) {
-    // $FlowFixMe
-    delete prepped.id;
-  }
 
   return prepped;
 }

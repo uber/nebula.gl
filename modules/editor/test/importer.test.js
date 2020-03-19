@@ -3,24 +3,17 @@
 /* eslint-env jest, browser */
 
 import sinon from 'sinon';
-// import turfArea from '@turf/area';
-// import turfUnion from '@turf/union';
 import { parseImport } from '../src/lib/importer.js';
 import { toKml, UNNAMED } from '../src/lib/exporter.js';
 import type { GeoJsonFeature, GeoJsonFeatureCollection } from '../src/types.js';
 import {
-  // wrapInFeature,
-  // createRandomGeofence,
   createRandomFeature,
   createRandomPolygon,
-  // createPolygonAroundNullIsland,
-  // createPolygonFarRightOfNullIsland,
   createRandomMultiPolygon,
   createRandomLineString,
   createRandomMultiLineString
 } from './utils/test-features.js';
 
-// let savedFeature: Geofence;
 let unsavedFeature: GeoJsonFeature;
 let featureCollection: GeoJsonFeatureCollection;
 
@@ -66,10 +59,6 @@ describe('parseImport()', () => {
       );
     });
 
-    test('generates ids', () => {
-      expect(importData.features.every(f => f.id.startsWith('__NEW__'))).toBeTruthy();
-    });
-
     test('removes protected properties', () => {
       for (const feature of importData.features) {
         expect(feature.properties.entity_type).toBeUndefined();
@@ -95,10 +84,6 @@ describe('parseImport()', () => {
         featureCollection.features.map(f => f.geometry)
       );
     });
-
-    test('generates ids', () => {
-      expect(importData.features.every(f => f.id.startsWith('__NEW__'))).toBeTruthy();
-    });
   });
 
   describe('WKT string', () => {
@@ -117,10 +102,6 @@ describe('parseImport()', () => {
         type: 'Polygon',
         coordinates: [[[30, 10], [40, 40], [20, 40], [10, 20], [30, 10]]]
       });
-    });
-
-    test('generates ids', () => {
-      expect(importData.features.every(f => f.id.startsWith('__NEW__'))).toBeTruthy();
     });
   });
 

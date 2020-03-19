@@ -46,7 +46,17 @@ export function Example() {
       >
         <StaticMap mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN} />
       </DeckGL>
-      <Toolbox mode={mode} features={features} onSetMode={setMode} onImport={setFeatures} />
+      <Toolbox
+        mode={mode}
+        features={features}
+        onSetMode={setMode}
+        onImport={featureCollection =>
+          setFeatures({
+            ...features,
+            features: [...features.features, ...featureCollection.features]
+          })
+        }
+      />
     </>
   );
 }

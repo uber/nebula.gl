@@ -95,6 +95,13 @@ User can draw a new `Polygon` feature with 90 degree corners (right angle) by cl
 
 User can draw a new `Polygon` feature by dragging (similar to the lasso tool commonly found in photo editing software).
 
+### ModeConfig
+
+The following options can be provided in the `modeConfig` object:
+
+* `throttleMs` (optional):  `number`
+  * If provided, the dragging function will be throttled by the specified number of milliseconds.
+
 ## [DrawRectangleMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/draw-rectangle-mode.js)
 
 User can draw a new rectangular `Polygon` feature by clicking two opposing corners of the rectangle.

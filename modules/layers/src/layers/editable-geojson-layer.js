@@ -23,6 +23,7 @@ import {
   DrawRectangleUsingThreePointsMode,
   DrawEllipseUsingThreePointsMode,
   Draw90DegreePolygonMode,
+  DrawPolygonByDraggingMode,
   SnappableMode,
   TransformMode
 } from '@nebula.gl/edit-modes';
@@ -184,7 +185,8 @@ const modeNameMapping = {
   drawEllipseByBoundingBox: DrawEllipseByBoundingBoxMode,
   drawRectangleUsing3Points: DrawRectangleUsingThreePointsMode,
   drawEllipseUsing3Points: DrawEllipseUsingThreePointsMode,
-  draw90DegreePolygon: Draw90DegreePolygonMode
+  draw90DegreePolygon: Draw90DegreePolygonMode,
+  drawPolygonByDragging: DrawPolygonByDraggingMode
 };
 
 type Props = {

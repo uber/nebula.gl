@@ -24,6 +24,7 @@ export { DrawEllipseByBoundingBoxMode } from './lib/draw-ellipse-by-bounding-box
 export { DrawEllipseUsingThreePointsMode } from './lib/draw-ellipse-using-three-points-mode.js';
 export { DrawRectangleUsingThreePointsMode } from './lib/draw-rectangle-using-three-points-mode.js';
 export { Draw90DegreePolygonMode } from './lib/draw-90degree-polygon-mode.js';
+export { DrawPolygonByDraggingMode } from './lib/draw-polygon-by-dragging-mode.js';
 export { ImmutableFeatureCollection } from './lib/immutable-feature-collection.js';
 
 // Other modes

@@ -50,6 +50,7 @@ export { DrawEllipseByBoundingBoxMode } from '@nebula.gl/edit-modes';
 export { DrawEllipseUsingThreePointsMode } from '@nebula.gl/edit-modes';
 export { DrawRectangleUsingThreePointsMode } from '@nebula.gl/edit-modes';
 export { Draw90DegreePolygonMode } from '@nebula.gl/edit-modes';
+export { DrawPolygonByDraggingMode } from '@nebula.gl/edit-modes';
 export { ImmutableFeatureCollection } from '@nebula.gl/edit-modes';
 
 // Other modes

@@ -60,8 +60,6 @@ export class DrawPolygonByDraggingMode extends DrawPolygonMode {
 
     if (!clickedEditHandle) {
       // Don't add another point right next to an existing one.
-      // Also ensure that dragging has not yet ended,
-      // since the function call may have been delayed due to throttling.
       this.addClickSequence(event);
     }
   }

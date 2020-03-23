@@ -8,29 +8,10 @@ import type { MjolnirEvent } from 'mjolnir.js';
 import type { BaseEvent, EditorProps, EditorState, SelectAction } from './types';
 import memoize from './memoize';
 
-import { DRAWING_MODE, EDIT_TYPE, ELEMENT_TYPE, MODES } from './constants';
-import { getScreenCoords, isNumeric, parseEventElement } from './edit-modes/utils';
-import {
-  SelectMode,
-  EditingMode,
-  DrawPointMode,
-  DrawLineStringMode,
-  DrawRectangleMode,
-  DrawPolygonMode
-} from './edit-modes';
-
-const MODE_TO_HANDLER = Object.freeze({
-  [MODES.READ_ONLY]: null,
-  [MODES.SELECT]: SelectMode,
-  [MODES.EDITING]: EditingMode,
-  [MODES.DRAW_POINT]: DrawPointMode,
-  [MODES.DRAW_PATH]: DrawLineStringMode,
-  [MODES.DRAW_RECTANGLE]: DrawRectangleMode,
-  [MODES.DRAW_POLYGON]: DrawPolygonMode
-});
+import { getScreenCoords, parseEventElement } from './edit-modes/utils';
 
 const defaultProps = {
-  mode: MODES.READ_ONLY,
+  mode: null,
   features: null,
   onSelect: null,
   onUpdate: null
@@ -145,8 +126,9 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
       selectedIndexes: [selectedFeatureIndex],
       lastPointerMoveEvent,
       viewport,
+      featuresDraggable: this.props.featuresDraggable,
       onEdit: this._onEdit,
-      featuresDraggable: this.props.featuresDraggable
+      onSelect: this._onSelect
     };
   }
 
@@ -180,17 +162,14 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
 
   _setupModeHandler = () => {
     const mode = this.props.mode;
+    this._modeHandler = mode;
 
-    if (!mode || mode === MODES.READ_ONLY) {
+    if (!mode) {
       this._degregisterEvents();
-      this._modeHandler = null;
       return;
     }
 
     this._registerEvents();
-
-    const HandlerClass = MODE_TO_HANDLER[mode];
-    this._modeHandler = HandlerClass ? new HandlerClass() : null;
   };
 
   /* EDITING OPERATIONS */
@@ -216,12 +195,6 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
     return this.state.selectedFeatureIndex;
   };
 
-  _getSelectedFeature = (featureIndex: ?number) => {
-    const features = this.getFeatures();
-    featureIndex = isNumeric(featureIndex) ? featureIndex : this._getSelectedFeatureIndex();
-    return features[featureIndex];
-  };
-
   _onSelect = (selected: SelectAction) => {
     this.setState({ selectedFeatureIndex: selected && selected.selectedFeatureIndex });
     if (this.props.onSelect) {
@@ -229,7 +202,7 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
     }
   };
 
-  _onUpdate = (editAction: EditAction) => {
+  _onEdit = (editAction: EditAction) => {
     const { editType, updatedData, editContext } = editAction;
     this.setState({ featureCollection: new ImmutableFeatureCollection(updatedData) });
     if (this.props.onUpdate) {
@@ -238,33 +211,6 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
         editType,
         editContext
       });
-    }
-  };
-
-  _onEdit = (editAction: EditAction) => {
-    const { mode } = this.props;
-    const { editType, updatedData } = editAction;
-
-    this._onUpdate(editAction);
-
-    switch (editType) {
-      case EDIT_TYPE.ADD_FEATURE:
-        if (mode === MODES.DRAW_PATH) {
-          const context = (editAction.editContext && editAction.editContext[0]) || {};
-          const { screenCoords, mapCoords } = context;
-          const featureIndex = updatedData.features.length - 1;
-          const selectedFeature = this._getSelectedFeature(featureIndex);
-          this._onSelect({
-            selectedFeature,
-            selectedFeatureIndex: featureIndex,
-            selectedEditHandleIndex: null,
-            screenCoords,
-            mapCoords
-          });
-        }
-        break;
-      default:
-        break;
     }
   };
 
@@ -306,32 +252,6 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
   };
 
   _onClick = (event: BaseEvent) => {
-    const { mode } = this.props;
-    if (mode === MODES.SELECT || mode === MODES.EDITING) {
-      const { mapCoords, screenCoords } = event;
-      const pickedObject = event.picks && event.picks[0] && event.picks[0].object;
-      if (pickedObject && isNumeric(pickedObject.featureIndex)) {
-        const selectedFeatureIndex = pickedObject.featureIndex;
-        const selectedFeature = this._getSelectedFeature(selectedFeatureIndex);
-        this._onSelect({
-          selectedFeature,
-          selectedFeatureIndex,
-          selectedEditHandleIndex:
-            pickedObject.type === ELEMENT_TYPE.EDIT_HANDLE ? pickedObject.index : null,
-          mapCoords,
-          screenCoords
-        });
-      } else {
-        this._onSelect({
-          selectedFeature: null,
-          selectedFeatureIndex: null,
-          selectedEditHandleIndex: null,
-          mapCoords,
-          screenCoords
-        });
-      }
-    }
-
     const modeProps = this.getModeProps();
     this._modeHandler.handleClick(event, modeProps);
   };
@@ -380,17 +300,15 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
   };
 
   _onPointerDown = (event: BaseEvent) => {
-    const pickedObject = event.picks && event.picks[0] && event.picks[0].object;
-    const isDragging = pickedObject && isNumeric(pickedObject.featureIndex);
     const startDraggingEvent = {
       ...event,
-      isDragging,
+      isDragging: true,
       pointerDownScreenCoords: event.screenCoords,
       pointerDownMapCoords: event.mapCoords
     };
 
     const newState = {
-      isDragging,
+      isDragging: true,
       pointerDownPicks: event.picks,
       pointerDownScreenCoords: event.screenCoords,
       pointerDownMapCoords: event.mapCoords
@@ -433,6 +351,7 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
     if (isDragging) {
       event.sourceEvent.stopImmediatePropagation();
     }
+    this._modeHandler.handlePan(event, this.getModeProps());
   };
 
   /* HELPERS */
@@ -471,11 +390,6 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
       ...object
     };
   };
-
-  _isDrawing() {
-    const { mode } = this.props;
-    return DRAWING_MODE.findIndex(m => m === mode) >= 0;
-  }
 
   _render() {
     return <div />;

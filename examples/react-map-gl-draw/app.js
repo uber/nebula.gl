@@ -1,9 +1,29 @@
 import React, { Component } from 'react';
 import { render } from 'react-dom';
 import MapGL from 'react-map-gl';
-import { Editor, EditorModes } from 'react-map-gl-draw';
-
+import {
+  Editor,
+  SelectMode,
+  EditingMode,
+  DrawPointMode,
+  DrawLineStringMode,
+  DrawRectangleMode,
+  DrawRectangleOneclickMode,
+  DrawPolygonMode
+} from 'react-map-gl-draw';
+import { MODES } from './constants';
 import Toolbar from './toolbar';
+
+const MODE_TO_HANDLER = {
+  [MODES.READ_ONLY]: null,
+  [MODES.SELECT]: SelectMode,
+  [MODES.EDITING]: EditingMode,
+  [MODES.DRAW_POINT]: DrawPointMode,
+  [MODES.DRAW_PATH]: DrawLineStringMode,
+  [MODES.DRAW_RECTANGLE]: DrawRectangleMode,
+  [MODES.DRAW_RECTANGLE_ONE_CLICK]: DrawRectangleOneclickMode,
+  [MODES.DRAW_POLYGON]: DrawPolygonMode
+};
 
 // eslint-disable-next-line no-process-env, no-undef
 const MAP_STYLE = process.env.MapStyle || 'mapbox://styles/mapbox/light-v9';
@@ -23,7 +43,7 @@ export default class App extends Component {
       // map
       viewport: DEFAULT_VIEWPORT,
       // editor
-      selectedMode: EditorModes.READ_ONLY,
+      selectedMode: null,
       selectedFeatureIndex: null
     };
     this._editorRef = null;
@@ -44,7 +64,9 @@ export default class App extends Component {
       selectedMode = null;
     }
 
-    this.setState({ selectedMode });
+    const HandlerClass = MODE_TO_HANDLER[selectedMode];
+    const modeHandler = HandlerClass ? new HandlerClass() : null;
+    this.setState({ selectedMode, modeHandler });
   };
 
   _updateViewport = viewport => {
@@ -62,7 +84,7 @@ export default class App extends Component {
   };
 
   render() {
-    const { viewport, selectedMode } = this.state;
+    const { viewport, modeHandler } = this.state;
     return (
       <MapGL
         {...viewport}
@@ -77,7 +99,7 @@ export default class App extends Component {
           onSelect={selected => {
             this.setState({ selectedFeatureIndex: selected && selected.selectedFeatureIndex });
           }}
-          mode={selectedMode}
+          mode={modeHandler}
         />
         {this._renderToolbar()}
       </MapGL>

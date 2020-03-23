@@ -7,7 +7,8 @@ import { EditorModal } from './editor-modal.js';
 
 export type ImportModalProps = {
   onImport: any => mixed,
-  onClose: () => mixed
+  onClose: () => mixed,
+  additionalInputs?: React$Node
 };
 
 export function ImportModal(props: ImportModalProps) {
@@ -15,7 +16,13 @@ export function ImportModal(props: ImportModalProps) {
     <EditorModal
       onClose={props.onClose}
       title={'Import'}
-      content={<ImportComponent onImport={props.onImport} onCancel={props.onClose} />}
+      content={
+        <ImportComponent
+          onImport={props.onImport}
+          onCancel={props.onClose}
+          additionalInputs={props.additionalInputs}
+        />
+      }
     />
   );
 }

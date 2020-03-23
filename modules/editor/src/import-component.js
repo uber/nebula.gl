@@ -81,7 +81,8 @@ const FooterRow = styled.div`
 
 export type ImportComponentProps = {
   onImport: any => mixed,
-  onCancel: () => mixed
+  onCancel: () => mixed,
+  additionalInputs?: React$Node
 };
 
 export function ImportComponent(props: ImportComponentProps) {
@@ -182,7 +183,7 @@ export function ImportComponent(props: ImportComponentProps) {
         <ImportInfo>
           Supported formats:
           <ul style={{ marginTop: '0' }}>
-            <li>
+            <li key="geojson">
               <a
                 href="https://tools.ietf.org/html/rfc7946"
                 target="_blank"
@@ -192,7 +193,7 @@ export function ImportComponent(props: ImportComponentProps) {
                 GeoJSON
               </a>
             </li>
-            <li>
+            <li key="kml">
               <a
                 href="https://developers.google.com/kml/"
                 target="_blank"
@@ -202,7 +203,7 @@ export function ImportComponent(props: ImportComponentProps) {
                 KML
               </a>
             </li>
-            <li>
+            <li key="wkt">
               <a
                 href="https://en.wikipedia.org/wiki/Well-known_text"
                 target="_blank"
@@ -215,6 +216,7 @@ export function ImportComponent(props: ImportComponentProps) {
           </ul>
         </ImportInfo>
       </ImportContent>
+      {props.additionalInputs || null}
       <FooterRow>
         <Button
           style={

@@ -881,6 +881,11 @@ export default class Example extends Component<
           }
         ]
       };
+    } else if (mode === DrawPolygonByDraggingMode) {
+      modeConfig = {
+        ...modeConfig,
+        throttleMs: 100
+      };
     }
 
     // Demonstrate how to override sub layer properties

@@ -16,7 +16,6 @@ type DraggingHandler = (event: DraggingEvent, props: ModeProps<FeatureCollection
 
 export class DrawPolygonByDraggingMode extends DrawPolygonMode {
   handleDraggingThrottled: ?DraggingHandler = null;
-  handleDraggingAux: DraggingHandler;
 
   handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>) {
     // No-op

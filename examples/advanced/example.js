@@ -32,6 +32,7 @@ import {
   DrawEllipseUsingThreePointsMode,
   DrawRectangleUsingThreePointsMode,
   Draw90DegreePolygonMode,
+  DrawPolygonByDraggingMode,
   MeasureDistanceMode,
   MeasureAreaMode,
   MeasureAngleMode,
@@ -96,6 +97,7 @@ const ALL_MODES = [
       { label: 'Draw LineString', mode: DrawLineStringMode },
       { label: 'Draw Polygon', mode: DrawPolygonMode },
       { label: 'Draw 90° Polygon', mode: Draw90DegreePolygonMode },
+      { label: 'Draw Polygon By Dragging', mode: DrawPolygonByDraggingMode },
       { label: 'Draw Rectangle', mode: DrawRectangleMode },
       { label: 'Draw Rectangle Using 3 Points', mode: DrawRectangleUsingThreePointsMode },
       { label: 'Draw Circle From Center', mode: DrawCircleFromCenterMode },
@@ -127,6 +129,7 @@ const ALL_MODES = [
 const POLYGON_DRAWING_MODES = [
   DrawPolygonMode,
   Draw90DegreePolygonMode,
+  DrawPolygonByDraggingMode,
   DrawRectangleMode,
   DrawRectangleUsingThreePointsMode,
   DrawCircleFromCenterMode,

@@ -5,13 +5,13 @@ import type { Polygon, FeatureCollection } from '../geojson-types.js';
 import { getPickedEditHandle } from '../utils.js';
 import { DrawPolygonMode } from './draw-polygon-mode';
 
-export class DrawLassoMode extends DrawPolygonMode {
+export class DrawPolygonByDraggingMode extends DrawPolygonMode {
     handleClick() {
         // No-op
     }
 
-    handleStartDragging() {
-        // No-op
+    handleStartDragging(event: ClickEvent) {
+        event.cancelPan();
     }
 
     handleStopDragging(event: ClickEvent, props: ModeProps<FeatureCollection>) {

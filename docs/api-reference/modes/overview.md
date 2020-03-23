@@ -91,6 +91,10 @@ User can draw a new `Polygon` feature by clicking positions to add then closing 
 
 User can draw a new `Polygon` feature with 90 degree corners (right angle) by clicking positions to add then closing the polygon (or double-clicking). After clicking the 2 points, the draw mode guides/allows to have right angle polygon.
 
+## [DrawPolygonByDraggingMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/draw-polygon-by-dragging-mode.js)
+
+User can draw a new `Polygon` feature by dragging (similar to the lasso tool commonly found in photo editing software).
+
 ## [DrawRectangleMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/draw-rectangle-mode.js)
 
 User can draw a new rectangular `Polygon` feature by clicking two opposing corners of the rectangle.

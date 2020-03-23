@@ -1,24 +1,43 @@
 // @flow
 
-import type { StartDraggingEvent, StopDraggingEvent, ModeProps } from '../types.js';
+import throttle from 'lodash.throttle';
+import type {
+  ClickEvent,
+  StartDraggingEvent,
+  StopDraggingEvent,
+  DraggingEvent,
+  ModeProps
+} from '../types.js';
 import type { Polygon, FeatureCollection } from '../geojson-types.js';
 import { getPickedEditHandle } from '../utils.js';
 import { DrawPolygonMode } from './draw-polygon-mode';
-import throttle from 'lodash.throttle';
+
+type DraggingHandler = (event: DraggingEvent, props: ModeProps<FeatureCollection>) => void;
 
 export class DrawPolygonByDraggingMode extends DrawPolygonMode {
-  handleClick() {
+  handleDraggingThrottled: ?DraggingHandler = null;
+  handleDraggingAux: DraggingHandler;
+
+  handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>) {
     // No-op
   }
 
-  handleStartDragging(event: StartDraggingEvent) {
-    this.isDragging = true;
+  handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollection>) {
     event.cancelPan();
+    if (props.modeConfig && props.modeConfig.throttleMs) {
+      this.handleDraggingThrottled = throttle(this.handleDraggingAux, props.modeConfig.throttleMs);
+    } else {
+      this.handleDraggingThrottled = this.handleDraggingAux;
+    }
   }
 
   handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollection>) {
     this.addClickSequence(event);
     const clickSequence = this.getClickSequence();
+
+    if (this.handleDraggingThrottled && this.handleDraggingThrottled.cancel) {
+      this.handleDraggingThrottled.cancel();
+    }
 
     if (clickSequence.length > 2) {
       // Complete the polygon.
@@ -28,7 +47,6 @@ export class DrawPolygonByDraggingMode extends DrawPolygonMode {
       };
 
       this.resetClickSequence();
-      this.isDragging = false;
 
       const editAction = this.getAddFeatureOrBooleanPolygonAction(polygonToAdd, props);
       if (editAction) {
@@ -37,11 +55,11 @@ export class DrawPolygonByDraggingMode extends DrawPolygonMode {
     }
   }
 
-  handleDraggingAux(event: DraggingEvent) {
+  handleDraggingAux(event: DraggingEvent, props: ModeProps<FeatureCollection>) {
     const { picks } = event;
     const clickedEditHandle = getPickedEditHandle(picks);
 
-    if (!clickedEditHandle && this.isDragging) {
+    if (!clickedEditHandle) {
       // Don't add another point right next to an existing one.
       // Also ensure that dragging has not yet ended,
       // since the function call may have been delayed due to throttling.
@@ -50,15 +68,8 @@ export class DrawPolygonByDraggingMode extends DrawPolygonMode {
   }
 
   handleDragging(event: DraggingEvent, props: ModeProps<FeatureCollection>) {
-    // If the drag handler has not yet been bound,
-    // check the throttle config option and then bind it.
-    if (!this.handleDraggingBound) {
-      if (props.modeConfig && props.modeConfig.throttleMs) {
-        this.handleDraggingBound = throttle(this.handleDraggingAux, props.modeConfig.throttleMs);
-      } else {
-        this.handleDraggingBound = this.handleDraggingAux;
-      }
+    if (this.handleDraggingThrottled) {
+      this.handleDraggingThrottled(event, props);
     }
-    this.handleDraggingBound(event);
   }
 }

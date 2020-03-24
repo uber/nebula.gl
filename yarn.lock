@@ -1486,13 +1486,13 @@
     "@babel/runtime" "^7.3.1"
     "@loaders.gl/loader-utils" "2.0.2"
 
-"@loaders.gl/core@^2.1.1":
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/@loaders.gl/core/-/core-2.1.1.tgz#5dd79f9bc72f0aa7ea565dea419e3063edebb26f"
-  integrity sha512-HTh8aZduQSp9D6ELbtAhZumhkqUrhH+BKj1C9WRYiLFeFDjeJSj1D4sTXz+VY6OHZC07a9FyvsgwD8HC/2NXiw==
+"@loaders.gl/core@^2.1.2":
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/@loaders.gl/core/-/core-2.1.2.tgz#2a4ff61e138bd911ff6586fa47ffffb25d0867aa"
+  integrity sha512-3OWOOYk80LnUlhnFS3XEivKJnbB2AJH14BPCEighkCdkkQXFK0TWzQuk1uSCyd2P8fae1MRU1G7j0Bat4gWDxQ==
   dependencies:
     "@babel/runtime" "^7.3.1"
-    "@loaders.gl/loader-utils" "2.1.1"
+    "@loaders.gl/loader-utils" "2.1.2"
 
 "@loaders.gl/images@^2.0.0", "@loaders.gl/images@^2.0.2":
   version "2.0.2"
@@ -1506,18 +1506,18 @@
   dependencies:
     "@babel/runtime" "^7.3.1"
 
-"@loaders.gl/loader-utils@2.1.1":
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/@loaders.gl/loader-utils/-/loader-utils-2.1.1.tgz#970fcf2f9299dc848597b0a916d2cc8cec2f186c"
-  integrity sha512-lllCwscmrgqtGYoYHu61YSOe/amHPDRuioMn+SW2yisbRxf39MFFyOz7WdS50VP/eb3G22+fN41H3yrk9iMZXA==
+"@loaders.gl/loader-utils@2.1.2":
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/@loaders.gl/loader-utils/-/loader-utils-2.1.2.tgz#271892be6b0f39b2b1c50e24d531875f6281d0da"
+  integrity sha512-JfhNkvP1SdDBNKT0FeuK/ZlYWeDZJoY0lgWQlYvOY9F4Uc+Lhxwl1nDvUJUYZa2PKgPgTmYP++pGOzSaR1hnoQ==
   dependencies:
     "@babel/runtime" "^7.3.1"
     "@probe.gl/stats" "^3.2.1"
 
-"@loaders.gl/wkt@^2.1.1":
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/@loaders.gl/wkt/-/wkt-2.1.1.tgz#54ebf9a59ca16950acdd0285b2770b01b1bed08b"
-  integrity sha512-qOoWAIo58A4GYQi9MmXrBl9PJllM6y4anEEXhTZxYG/Z0Il6ABAWnRdFjYK8s9RgWo0EGSOKIFiugzmyz1fhDA==
+"@loaders.gl/wkt@^2.1.2":
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/@loaders.gl/wkt/-/wkt-2.1.2.tgz#549e82ead152bc9e016295f8c82c0042a58afc2a"
+  integrity sha512-k/2QHco4/azxwsOP1f4KiY9YCXyMwuj+ngJ9ZfM9NJvX0bwKcMljOAvLDk/fxDOsPHEQX193hdc3sSVfJnLQcA==
 
 "@luma.gl/constants@8.0.1", "@luma.gl/constants@^8.0.1":
   version "8.0.1"

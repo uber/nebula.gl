@@ -46,6 +46,19 @@
   },
   "dependencies": {
     "@nebula.gl/edit-modes": "^0.17.5",
-    "react": "^16.8.0"
+    "react": "^16.8.0",
+    "react-dropzone": "^10.2.1",
+    "@loaders.gl/core": "^2.1.2",
+    "@loaders.gl/wkt": "^2.1.2",
+    "@maphubs/tokml": "^0.5.2",
+    "@tmcw/togeojson": "^3.2.0",
+    "clipboard-copy": "^3.1.0",
+    "downloadjs": "^1.4.7",
+    "styled-components": "^4.3.2",
+    "styled-react-modal": "1.2.4",
+    "wellknown": "^0.5.0"
+  },
+  "devDependencies": {
+    "sinon": "^9.0.1"
   }
 }

@@ -81,7 +81,7 @@ const FooterRow = styled.div`
 
 export type ImportComponentProps = {
   onImport: any => mixed,
-  onValidate: any => mixed,
+  onValidate?: any => mixed,
   onCancel: () => mixed,
   additionalInputs?: React$Node
 };

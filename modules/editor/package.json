@@ -46,7 +46,7 @@
   },
   "dependencies": {
     "@nebula.gl/edit-modes": "^0.17.5",
-    "react": "^16.8.0"
+    "react": "^16.8.0",
     "@loaders.gl/core": "^2.1.1",
     "@loaders.gl/wkt": "^2.1.1",
     "@maphubs/tokml": "^0.5.2",

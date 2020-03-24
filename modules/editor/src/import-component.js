@@ -120,6 +120,12 @@ export function ImportComponent(props: ImportComponentProps) {
     return (isImportText && text) || (!isImportText && importFile);
   }
 
+  // Check validity (and call custom validation callback if present)
+  const valid =
+    isDataSet() &&
+    parseResult.valid &&
+    (!props.onValidate || props.onValidate(parseResult.features));
+
   return (
     <ImportComponentContent>
       <ImportContent>
@@ -178,7 +184,7 @@ export function ImportComponent(props: ImportComponentProps) {
           <ImportInfo style={{ color: 'rgb(133, 100, 4)', backgroundColor: 'rgb(255, 243, 205)' }}>
             {isDataSet() &&
               !parseResult.valid &&
-              parseResult.validationErrors.map((err, i) => <div>{err}</div>)}
+              parseResult.validationErrors.map((err, i) => <div key={i}>{err}</div>)}
           </ImportInfo>
         </ImportArea>
         <ImportInfo>
@@ -222,27 +228,21 @@ export function ImportComponent(props: ImportComponentProps) {
         <Button
           style={
             isDataSet()
-              ? { backgroundColor: parseResult.valid ? 'rgb(0, 105, 217)' : 'rgb(220, 53, 69)' }
+              ? { backgroundColor: valid ? 'rgb(0, 105, 217)' : 'rgb(220, 53, 69)' }
               : { backgroundColor: 'rgb(206, 212, 218)' }
           }
-          disabled={!isDataSet() || !parseResult.valid}
+          disabled={!valid}
           onClick={() => {
-            if (parseResult.valid) {
-              const featureCollection = {
-                type: 'FeatureCollection',
-                properties: {},
-                features: parseResult.features
-              };
-
-              // Call custom validation callback
-              if (!props.onValidate || props.onValidate(featureCollection)) {
-                props.onImport(featureCollection);
-              }
-            }
+            props.onImport({
+              type: 'FeatureCollection',
+              properties: {},
+              // $FlowFixMe - can't be clicked if it is invalid, so features will be there
+              features: parseResult.features
+            });
             flush();
           }}
         >
-          {isDataSet() && !parseResult.valid ? 'Invalid Geometry' : 'Import Geometry'}
+          {isDataSet() && !valid ? 'Invalid Geometry' : 'Import Geometry'}
         </Button>
         <Button onClick={flush}>Cancel</Button>
       </FooterRow>

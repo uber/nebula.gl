@@ -81,6 +81,7 @@ const FooterRow = styled.div`
 
 export type ImportComponentProps = {
   onImport: any => mixed,
+  onValidate: any => mixed,
   onCancel: () => mixed,
   additionalInputs?: React$Node
 };
@@ -227,11 +228,16 @@ export function ImportComponent(props: ImportComponentProps) {
           disabled={!isDataSet() || !parseResult.valid}
           onClick={() => {
             if (parseResult.valid) {
-              props.onImport({
+              const featureCollection = {
                 type: 'FeatureCollection',
                 properties: {},
                 features: parseResult.features
-              });
+              };
+
+              // Call custom validation callback
+              if (!props.onValidate || props.onValidate(featureCollection)) {
+                props.onImport(featureCollection);
+              }
             }
             flush();
           }}

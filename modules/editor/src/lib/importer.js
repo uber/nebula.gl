@@ -1,8 +1,11 @@
 // @flow
 /* eslint-env browser */
 
-import { parse as parseWkt } from 'wellknown';
 import { kml } from '@tmcw/togeojson';
+
+import { parseSync } from '@loaders.gl/core';
+import { WKTLoader } from '@loaders.gl/wkt';
+
 // If we want to support node -- we need to import xmldom.
 // For now, we're only supporting browser so we can leave it out.
 // import { DOMParser } from 'xmldom';
@@ -112,6 +115,21 @@ function parseImportString(data: string): Promise<ImportData> {
 
     try {
       const parsed = kml(xml);
+      /*
+      TODO: Revisit using loaders.gl/kml for this later
+      const parsed_ = parseSync(data, KMLasGeoJsonLoader);
+      // This is changing the coordinates to floats, because in loaders.gl/kml 2.1.1 they are returned as strings.
+      const parsed = {
+        ...parsed_,
+        features: parsed_.features.map(f => ({
+          ...f,
+          geometry: {
+            ...f.geometry,
+            coordinates: f.geometry.coordinates.map(coords => coords.map(triple => triple.map(s => Number.parseFloat(s))))
+          }
+        }))
+      };
+      */
       const isFeature = parsed && parsed.type === 'Feature';
       const isFeatureCollectionWithFeatures =
         parsed && parsed.type === 'FeatureCollection' && parsed.features.length > 0;
@@ -131,7 +149,7 @@ function parseImportString(data: string): Promise<ImportData> {
     }
   } else if (shouldTryWkt(data)) {
     try {
-      const parsed = parseWkt(data);
+      const parsed = parseSync(data, WKTLoader);
       if (parsed) {
         validData = {
           valid: true,

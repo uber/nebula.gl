@@ -1486,6 +1486,14 @@
     "@babel/runtime" "^7.3.1"
     "@loaders.gl/loader-utils" "2.0.2"
 
+"@loaders.gl/core@^2.1.1":
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/@loaders.gl/core/-/core-2.1.1.tgz#5dd79f9bc72f0aa7ea565dea419e3063edebb26f"
+  integrity sha512-HTh8aZduQSp9D6ELbtAhZumhkqUrhH+BKj1C9WRYiLFeFDjeJSj1D4sTXz+VY6OHZC07a9FyvsgwD8HC/2NXiw==
+  dependencies:
+    "@babel/runtime" "^7.3.1"
+    "@loaders.gl/loader-utils" "2.1.1"
+
 "@loaders.gl/images@^2.0.0", "@loaders.gl/images@^2.0.2":
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/@loaders.gl/images/-/images-2.0.2.tgz#546929146b38a428e55905e513b4b9ec7afc58e2"
@@ -1497,6 +1505,19 @@
   integrity sha512-sowdxj1wE2lSXSBSJswNjWfJvfdi21ZG9nB7OmenvbPiqcd1NyjUVsr+TeiTBiRsPlyQhp5BjVEYnywDLHSNUg==
   dependencies:
     "@babel/runtime" "^7.3.1"
+
+"@loaders.gl/loader-utils@2.1.1":
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/@loaders.gl/loader-utils/-/loader-utils-2.1.1.tgz#970fcf2f9299dc848597b0a916d2cc8cec2f186c"
+  integrity sha512-lllCwscmrgqtGYoYHu61YSOe/amHPDRuioMn+SW2yisbRxf39MFFyOz7WdS50VP/eb3G22+fN41H3yrk9iMZXA==
+  dependencies:
+    "@babel/runtime" "^7.3.1"
+    "@probe.gl/stats" "^3.2.1"
+
+"@loaders.gl/wkt@^2.1.1":
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/@loaders.gl/wkt/-/wkt-2.1.1.tgz#54ebf9a59ca16950acdd0285b2770b01b1bed08b"
+  integrity sha512-qOoWAIo58A4GYQi9MmXrBl9PJllM6y4anEEXhTZxYG/Z0Il6ABAWnRdFjYK8s9RgWo0EGSOKIFiugzmyz1fhDA==
 
 "@luma.gl/constants@8.0.1", "@luma.gl/constants@^8.0.1":
   version "8.0.1"
@@ -1665,6 +1686,13 @@
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/@probe.gl/stats/-/stats-3.2.0.tgz#642005c308d768db2ace859482fd89942cbbfc31"
   integrity sha512-Imo1NZwvV3B9jzVZDXz9Fl1rnhR54wb2YG41Ey25QrHQVH6sFqe2gUutFEY2T/sLLVkbFGNWuZU7jVqCRCJTdw==
+  dependencies:
+    "@babel/runtime" "^7.0.0"
+
+"@probe.gl/stats@^3.2.1":
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/@probe.gl/stats/-/stats-3.2.1.tgz#4e95c75513229ebb01384045e89524a466c022eb"
+  integrity sha512-tXe5krgbodxtVdUVWG4oIicMoCHNGp7QYkaHSDrUeTfJVqYuZz99T6r7qmn0bCo4wQlzn936jJ+QiAltHxatig==
   dependencies:
     "@babel/runtime" "^7.0.0"
 

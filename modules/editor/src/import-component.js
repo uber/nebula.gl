@@ -242,7 +242,7 @@ export function ImportComponent(props: ImportComponentProps) {
             flush();
           }}
         >
-          {isDataSet() && !valid ? 'Invalid Geometry' : 'Import Geometry'}
+          Import Geometry
         </Button>
         <Button onClick={flush}>Cancel</Button>
       </FooterRow>

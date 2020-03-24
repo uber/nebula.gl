@@ -10,17 +10,17 @@ import type {
   DraggingEvent,
   GuideFeatureCollection
 } from '../types.js';
-import { BaseGeoJsonEditMode } from './geojson-edit-mode.js';
+import { GeoJsonEditMode } from './geojson-edit-mode.js';
 
-export class CompositeMode extends BaseGeoJsonEditMode {
-  _modes: Array<BaseGeoJsonEditMode>;
+export class CompositeMode extends GeoJsonEditMode {
+  _modes: Array<GeoJsonEditMode>;
 
-  constructor(modes: Array<BaseGeoJsonEditMode>) {
+  constructor(modes: Array<GeoJsonEditMode>) {
     super();
     this._modes = modes;
   }
 
-  _coalesce<T>(callback: BaseGeoJsonEditMode => T, resultEval: ?(T) => boolean = null): T {
+  _coalesce<T>(callback: GeoJsonEditMode => T, resultEval: ?(T) => boolean = null): T {
     let result: T;
 
     for (let i = 0; i < this._modes.length; i++) {

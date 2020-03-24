@@ -31,9 +31,9 @@ const DEFAULT_GUIDES: GuideFeatureCollection = {
 const DEFAULT_TOOLTIPS: Tooltip[] = [];
 
 // Main interface for `EditMode`s that edit GeoJSON
-export type GeoJsonEditMode = EditMode<FeatureCollection, FeatureCollection>;
+export type GeoJsonEditModeType = EditMode<FeatureCollection, FeatureCollection>;
 
-export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, GuideFeatureCollection> {
+export class GeoJsonEditMode implements EditMode<FeatureCollection, GuideFeatureCollection> {
   _clickSequence: Position[] = [];
 
   getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {

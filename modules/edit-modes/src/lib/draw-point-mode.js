@@ -2,9 +2,9 @@
 
 import type { ClickEvent, PointerMoveEvent, ModeProps } from '../types.js';
 import type { FeatureCollection } from '../geojson-types.js';
-import { BaseGeoJsonEditMode } from './geojson-edit-mode.js';
+import { GeoJsonEditMode } from './geojson-edit-mode.js';
 
-export class DrawPointMode extends BaseGeoJsonEditMode {
+export class DrawPointMode extends GeoJsonEditMode {
   handleClick({ mapCoords }: ClickEvent, props: ModeProps<FeatureCollection>): void {
     const geometry = {
       type: 'Point',

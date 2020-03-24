@@ -1,5 +1,5 @@
 // @flow
 
-import { BaseGeoJsonEditMode } from './geojson-edit-mode.js';
+import { GeoJsonEditMode } from './geojson-edit-mode.js';
 
-export class ViewMode extends BaseGeoJsonEditMode {}
+export class ViewMode extends GeoJsonEditMode {}

@@ -19,10 +19,10 @@ import type {
   GuideFeatureCollection,
   TentativeFeature
 } from '../types.js';
-import { BaseGeoJsonEditMode, type GeoJsonEditAction } from './geojson-edit-mode.js';
+import { GeoJsonEditMode, type GeoJsonEditAction } from './geojson-edit-mode.js';
 import { ImmutableFeatureCollection } from './immutable-feature-collection.js';
 
-export class SplitPolygonMode extends BaseGeoJsonEditMode {
+export class SplitPolygonMode extends GeoJsonEditMode {
   calculateMapCoords(clickSequence: any, mapCoords: any, props: ModeProps<FeatureCollection>) {
     const modeConfig = props.modeConfig;
     if (!modeConfig || !modeConfig.lock90Degree || !clickSequence.length) {

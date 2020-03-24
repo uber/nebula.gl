@@ -21,13 +21,13 @@ import type {
 import { getPickedEditHandle } from '../utils';
 import type { FeatureCollection, Position } from '../geojson-types.js';
 import {
-  BaseGeoJsonEditMode,
+  GeoJsonEditMode,
   type GeoJsonEditAction,
   getIntermediatePosition
 } from './geojson-edit-mode.js';
 import { ImmutableFeatureCollection } from './immutable-feature-collection.js';
 
-export class RotateMode extends BaseGeoJsonEditMode {
+export class RotateMode extends GeoJsonEditMode {
   _selectedEditHandle: ?EditHandleFeature;
   _geometryBeingRotated: ?FeatureCollection;
   _isRotating: boolean = false;

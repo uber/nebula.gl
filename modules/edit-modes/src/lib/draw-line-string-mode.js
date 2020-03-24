@@ -2,10 +2,10 @@
 
 import type { Position, LineString, FeatureCollection } from '../geojson-types.js';
 import type { ClickEvent, PointerMoveEvent, ModeProps, GuideFeatureCollection } from '../types.js';
-import { BaseGeoJsonEditMode } from './geojson-edit-mode.js';
+import { GeoJsonEditMode } from './geojson-edit-mode.js';
 import { ImmutableFeatureCollection } from './immutable-feature-collection.js';
 
-export class DrawLineStringMode extends BaseGeoJsonEditMode {
+export class DrawLineStringMode extends GeoJsonEditMode {
   handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>) {
     const selectedFeatureIndexes = props.selectedIndexes;
     const selectedGeometry = this.getSelectedGeometry(props);

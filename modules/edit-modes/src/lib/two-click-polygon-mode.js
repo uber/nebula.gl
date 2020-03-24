@@ -9,9 +9,9 @@ import type {
   GuideFeatureCollection
 } from '../types.js';
 import type { Polygon, FeatureCollection, FeatureOf, Position } from '../geojson-types.js';
-import { BaseGeoJsonEditMode } from './geojson-edit-mode.js';
+import { GeoJsonEditMode } from './geojson-edit-mode.js';
 
-export class TwoClickPolygonMode extends BaseGeoJsonEditMode {
+export class TwoClickPolygonMode extends GeoJsonEditMode {
   handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>) {
     if (props.modeConfig && props.modeConfig.dragToDraw) {
       // handled in drag handlers

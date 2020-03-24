@@ -142,10 +142,10 @@ There will be breaking changes to refactor nebula's `ModeHandler` interface to a
 
 ## GeoJSON
 
-The primary implementation of `EditMode` will be for editing GeoJSON. We will expose a `BaseGeoJsonEditMode` class with helpers for editing GeoJSON.
+The primary implementation of `EditMode` will be for editing GeoJSON. We will expose a `GeoJsonEditMode` class with helpers for editing GeoJSON.
 
 ```javascript
-export class BaseGeoJsonEditMode implements EditMode<FeatureCollection, FeatureCollection> {
+export class GeoJsonEditMode implements EditMode<FeatureCollection, FeatureCollection> {
   //...
 }
 ```
@@ -163,7 +163,7 @@ The guides will also be represented as a GeoJSON FeatureCollection. Guides are v
 ![guide](https://i.imgur.com/Lx9puHJ.png)
 ![guide](https://i.imgur.com/JMfPDz6.png)
 
-The `BaseGeoJsonEditMode` will support 2 types of guides, tentative and edit handles.
+The `GeoJsonEditMode` will support 2 types of guides, tentative and edit handles.
 
 #### Tentative
 
@@ -237,7 +237,7 @@ Here's an example guides object after drawing two points of a line string:
 
 ## Custom EditMode
 
-A user can provide their own `EditMode` implementation. If it is for editing GeoJSON, it is likely easier to extend `BaseGeoJsonEditMode` or one of the existing edit modes implemented in nebula.
+A user can provide their own `EditMode` implementation. If it is for editing GeoJSON, it is likely easier to extend `GeoJsonEditMode` or one of the existing edit modes implemented in nebula.
 
 The following example demonstrates the `EditMode` interface. This `DrawPointsMode` class implements the ability to add a point to an array of points upon click.
 

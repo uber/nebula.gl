@@ -3,9 +3,9 @@
 import type { ClickEvent, PointerMoveEvent, ModeProps, GuideFeatureCollection } from '../types.js';
 import type { Polygon, FeatureCollection } from '../geojson-types.js';
 import { getPickedEditHandle } from '../utils.js';
-import { BaseGeoJsonEditMode } from './geojson-edit-mode.js';
+import { GeoJsonEditMode } from './geojson-edit-mode.js';
 
-export class DrawPolygonMode extends BaseGeoJsonEditMode {
+export class DrawPolygonMode extends GeoJsonEditMode {
   getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
     const { lastPointerMoveEvent } = props;
     const clickSequence = this.getClickSequence();

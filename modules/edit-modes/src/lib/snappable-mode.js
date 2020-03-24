@@ -16,14 +16,14 @@ import {
   getPickedEditHandles,
   getEditHandlesForGeometry
 } from '../utils.js';
-import { BaseGeoJsonEditMode } from './geojson-edit-mode.js';
+import { GeoJsonEditMode } from './geojson-edit-mode.js';
 
 type MovementTypeEvent = PointerMoveEvent | StartDraggingEvent | StopDraggingEvent | DraggingEvent;
 
-export class SnappableMode extends BaseGeoJsonEditMode {
-  _handler: BaseGeoJsonEditMode;
+export class SnappableMode extends GeoJsonEditMode {
+  _handler: GeoJsonEditMode;
 
-  constructor(handler: BaseGeoJsonEditMode) {
+  constructor(handler: GeoJsonEditMode) {
     super();
     this._handler = handler;
   }

@@ -1,6 +1,7 @@
 // @flow
 
 export { EditMode } from './lib/edit-mode.js';
+export { GeoJsonEditMode } from './lib/geojson-edit-mode.js';
 
 // Alter modes
 export { ModifyMode } from './lib/modify-mode.js';

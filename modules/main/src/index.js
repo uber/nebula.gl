@@ -27,6 +27,7 @@ export { PathOutlineLayer } from '@nebula.gl/layers';
 export { PathMarkerLayer } from '@nebula.gl/layers';
 
 export { EditMode } from '@nebula.gl/edit-modes';
+export { GeoJsonEditMode } from '@nebula.gl/edit-modes';
 
 // Alter modes
 export { ModifyMode } from '@nebula.gl/edit-modes';

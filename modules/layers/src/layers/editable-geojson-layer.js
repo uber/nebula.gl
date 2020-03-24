@@ -35,7 +35,7 @@ import type {
   StopDraggingEvent,
   DraggingEvent,
   PointerMoveEvent,
-  GeoJsonEditMode,
+  GeoJsonEditModeType,
   FeatureCollection
 } from '@nebula.gl/edit-modes';
 import EditableLayer from './editable-layer.js';
@@ -190,7 +190,7 @@ const modeNameMapping = {
 };
 
 type Props = {
-  mode: string | GeoJsonEditMode | Class<GeoJsonEditMode>,
+  mode: string | GeoJsonEditModeType | Class<GeoJsonEditModeType>,
   onEdit: (EditAction<FeatureCollection>) => void,
   // TODO: type the rest
   [string]: any
@@ -469,7 +469,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     return cursor;
   }
 
-  getActiveMode(): GeoJsonEditMode {
+  getActiveMode(): GeoJsonEditModeType {
     return this.state.mode;
   }
 }

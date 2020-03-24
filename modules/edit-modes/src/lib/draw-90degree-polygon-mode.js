@@ -12,9 +12,9 @@ import {
 } from '../utils';
 import type { ClickEvent, PointerMoveEvent, ModeProps, GuideFeatureCollection } from '../types.js';
 import type { Polygon, LineString, Position, FeatureCollection } from '../geojson-types.js';
-import { BaseGeoJsonEditMode } from './geojson-edit-mode.js';
+import { GeoJsonEditMode } from './geojson-edit-mode.js';
 
-export class Draw90DegreePolygonMode extends BaseGeoJsonEditMode {
+export class Draw90DegreePolygonMode extends GeoJsonEditMode {
   getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
     const guides: GuideFeatureCollection = {
       type: 'FeatureCollection',

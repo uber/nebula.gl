@@ -23,10 +23,10 @@ import type {
   Viewport,
   GuideFeatureCollection
 } from '../types.js';
-import { BaseGeoJsonEditMode } from './geojson-edit-mode.js';
+import { GeoJsonEditMode } from './geojson-edit-mode.js';
 import { ImmutableFeatureCollection } from './immutable-feature-collection.js';
 
-export class ModifyMode extends BaseGeoJsonEditMode {
+export class ModifyMode extends GeoJsonEditMode {
   getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
     const handles = [];
 

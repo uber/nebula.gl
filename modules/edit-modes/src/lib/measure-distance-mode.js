@@ -11,11 +11,11 @@ import type {
   EditHandleFeature
 } from '../types.js';
 import type { FeatureCollection, Position } from '../geojson-types.js';
-import { BaseGeoJsonEditMode } from './geojson-edit-mode.js';
+import { GeoJsonEditMode } from './geojson-edit-mode.js';
 
 const DEFAULT_TOOLTIPS = [];
 
-export class MeasureDistanceMode extends BaseGeoJsonEditMode {
+export class MeasureDistanceMode extends GeoJsonEditMode {
   startingPoint: ?$ReadOnly<EditHandleFeature> = null;
   endingPoint: ?$ReadOnly<EditHandleFeature> = null;
   endingPointLocked = false;

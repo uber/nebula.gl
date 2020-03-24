@@ -12,11 +12,11 @@ import type {
   GuideFeatureCollection
 } from '../types.js';
 import type { FeatureCollection } from '../geojson-types.js';
-import { BaseGeoJsonEditMode } from './geojson-edit-mode.js';
+import { GeoJsonEditMode } from './geojson-edit-mode.js';
 
 const DEFAULT_TOOLTIPS = [];
 
-export class MeasureAngleMode extends BaseGeoJsonEditMode {
+export class MeasureAngleMode extends GeoJsonEditMode {
   _getTooltips = _memoize(({ modeConfig, vertex, point1, point2 }) => {
     let tooltips = DEFAULT_TOOLTIPS;
 

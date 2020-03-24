@@ -20,10 +20,10 @@ import type {
   EditHandleFeature
 } from '../types.js';
 import { getPickedEditHandle } from '../utils';
-import { BaseGeoJsonEditMode } from './geojson-edit-mode.js';
+import { GeoJsonEditMode } from './geojson-edit-mode.js';
 import { ImmutableFeatureCollection } from './immutable-feature-collection.js';
 
-export class ScaleMode extends BaseGeoJsonEditMode {
+export class ScaleMode extends GeoJsonEditMode {
   _geometryBeingScaled: ?FeatureCollection;
   _selectedEditHandle: ?EditHandleFeature;
   _cornerGuidePoints: Array<EditHandleFeature>;

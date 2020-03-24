@@ -12,10 +12,10 @@ import type {
   DraggingEvent,
   ModeProps
 } from '../types.js';
-import { BaseGeoJsonEditMode, type GeoJsonEditAction } from './geojson-edit-mode.js';
+import { GeoJsonEditMode, type GeoJsonEditAction } from './geojson-edit-mode.js';
 import { ImmutableFeatureCollection } from './immutable-feature-collection.js';
 
-export class TranslateMode extends BaseGeoJsonEditMode {
+export class TranslateMode extends GeoJsonEditMode {
   _geometryBeforeTranslate: ?FeatureCollection;
   _isTranslatable: boolean;
 

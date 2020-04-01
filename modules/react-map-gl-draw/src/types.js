@@ -2,10 +2,10 @@
 
 import type { WebMercatorViewport } from 'viewport-mercator-project';
 import type {
+  ModeProps as BaseModeProps,
   Feature,
   ImmutableFeatureCollection,
   PointerMoveEvent,
-  EditAction,
   Pick,
   ClickEvent,
   ScreenCoordinates
@@ -21,28 +21,9 @@ export type GeoJsonType = $Values<typeof GEOJSON_TYPE>;
 
 // TODO extend from nebula
 export type ModeProps<TData> = {
-  // The data being edited, this can be an array or an object
-  data: TData,
-
-  // Additional configuration for this mode
-  modeConfig: any,
+  ...BaseModeProps<TData>,
 
   viewport: ?WebMercatorViewport,
-
-  // The indexes of the selected features
-  selectedIndexes: number[],
-
-  // The cursor type, as a [CSS Cursor](https://developer.mozilla.org/en-US/docs/Web/CSS/cursor)
-  cursor: ?string,
-
-  // The last pointer move event that occurred
-  lastPointerMoveEvent: PointerMoveEvent,
-
-  // Callback used to notify applications of an edit action
-  onEdit: (editAction: EditAction<TData>) => void,
-
-  // Callback used to update cursor
-  onUpdateCursor: (cursor: ?string) => void,
 
   // Whether features are draggable in this mode
   featuresDraggable: ?boolean

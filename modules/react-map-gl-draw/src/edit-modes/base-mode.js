@@ -1,6 +1,8 @@
 // @flow
 
 import type {
+  EditMode,
+  GuideFeatureCollection,
   Feature,
   ClickEvent,
   PointerMoveEvent,
@@ -13,7 +15,7 @@ import type { ModeProps } from '../types';
 import { GEOJSON_TYPE, GUIDE_TYPE } from '../constants';
 import { getFeatureCoordinates, isNumeric } from './utils';
 
-export default class BaseMode {
+export default class BaseMode implements EditMode<FeatureCollection, GuideFeatureCollection> {
   _tentativeFeature: ?Feature;
   _editHandles: ?(Feature[]);
 

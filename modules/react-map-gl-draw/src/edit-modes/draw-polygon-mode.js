@@ -10,10 +10,8 @@ import BaseMode from './base-mode';
 export default class DrawPolygonMode extends BaseMode {
   handleClick = (event: ClickEvent, props: ModeProps<FeatureCollection>) => {
     const picked = event.picks && event.picks[0];
-    const { data } = props;
 
-    // update tentative feature
-    let tentativeFeature = this.getTentativeFeature();
+    const tentativeFeature = this.getTentativeFeature();
 
     // add position to tentativeFeature
     // if click the first editHandle, commit tentativeFeature to featureCollection
@@ -21,55 +19,20 @@ export default class DrawPolygonMode extends BaseMode {
       const pickedObject = picked && picked.object;
       // clicked an editHandle of a tentative feature
       if (pickedObject && pickedObject.index === 0) {
-        this.setTentativeFeature(null);
-        const updatedData = data.addFeature(closePolygon(tentativeFeature)).getObject();
-        props.onEdit({
-          editType: EDIT_TYPE.ADD_FEATURE,
-          updatedData,
-          editContext: null
-        });
+        this._commitTentativeFeature(event, props);
       } else {
         // update tentativeFeature
-        tentativeFeature = {
-          ...tentativeFeature,
-          geometry: {
-            type: GEOJSON_TYPE.LINE_STRING,
-            coordinates: [...tentativeFeature.geometry.coordinates, event.mapCoords]
-          }
-        };
-        this.setTentativeFeature(tentativeFeature);
+        this._updateTentativeFeature(event, props);
       }
     } else {
-      // create a tentativeFeature
-      tentativeFeature = {
-        type: 'Feature',
-        properties: {
-          // TODO deprecate id
-          id: uuid(),
-          renderType: RENDER_TYPE.POLYGON,
-          guideType: GUIDE_TYPE.TENTATIVE
-        },
-        geometry: {
-          type: GEOJSON_TYPE.POINT,
-          coordinates: [event.mapCoords]
-        }
-      };
-
-      this.setTentativeFeature(tentativeFeature);
+      this._initTentativeFeature(event, props);
     }
   };
 
   handleDblClick = (event: ClickEvent, props: ModeProps<FeatureCollection>) => {
-    const { data } = props;
     const tentativeFeature = this.getTentativeFeature();
     if (tentativeFeature) {
-      this.setTentativeFeature(null);
-      const updatedData = data.addFeature(closePolygon(tentativeFeature)).getObject();
-      props.onEdit({
-        editType: EDIT_TYPE.ADD_FEATURE,
-        updatedData,
-        editContext: null
-      });
+      this._commitTentativeFeature(event, props);
     }
   };
 
@@ -113,6 +76,65 @@ export default class DrawPolygonMode extends BaseMode {
       tentativeFeature,
       editHandles
     };
+  };
+
+  _updateTentativeFeature = (event: ClickEvent, props: ModeProps<FeatureCollection>) => {
+    let tentativeFeature = this.getTentativeFeature();
+    if (!tentativeFeature || !tentativeFeature.geometry) {
+      return;
+    }
+    tentativeFeature = {
+      ...tentativeFeature,
+      geometry: {
+        type: GEOJSON_TYPE.LINE_STRING,
+        coordinates: [...tentativeFeature.geometry.coordinates, event.mapCoords]
+      }
+    };
+    this.setTentativeFeature(tentativeFeature);
+
+    props.onEdit({
+      editType: EDIT_TYPE.ADD_POSITION,
+      updatedData: props.data.getObject(),
+      editContext: [
+        {
+          feature: tentativeFeature,
+          featureIndex: null,
+          editHandleIndex: tentativeFeature.geometry.coordinates.length - 1,
+          screenCoords: event.screenCoords,
+          mapCoords: event.mapCoords
+        }
+      ]
+    });
+  };
+
+  _commitTentativeFeature = (event: ClickEvent, props: ModeProps<FeatureCollection>) => {
+    const tentativeFeature = this.getTentativeFeature();
+    const { data } = props;
+    this.setTentativeFeature(null);
+
+    const updatedData = data.addFeature(closePolygon(tentativeFeature)).getObject();
+
+    props.onEdit({
+      editType: EDIT_TYPE.ADD_FEATURE,
+      updatedData,
+      editContext: null
+    });
+  };
+
+  _initTentativeFeature = (event: ClickEvent, props: ModeProps<FeatureCollection>) => {
+    this.setTentativeFeature({
+      type: 'Feature',
+      properties: {
+        // TODO deprecate id
+        id: uuid(),
+        renderType: RENDER_TYPE.POLYGON,
+        guideType: GUIDE_TYPE.TENTATIVE
+      },
+      geometry: {
+        type: GEOJSON_TYPE.POINT,
+        coordinates: [event.mapCoords]
+      }
+    });
   };
 }
 

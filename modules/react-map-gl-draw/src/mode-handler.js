@@ -9,6 +9,7 @@ import type { BaseEvent, EditorProps, EditorState, SelectAction } from './types'
 import memoize from './memoize';
 
 import { getScreenCoords, parseEventElement } from './edit-modes/utils';
+import { EDIT_TYPE } from './constants';
 
 const defaultProps = {
   mode: null,
@@ -205,6 +206,20 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
   _onEdit = (editAction: EditAction) => {
     const { editType, updatedData, editContext } = editAction;
     this.setState({ featureCollection: new ImmutableFeatureCollection(updatedData) });
+
+    switch (editType) {
+      case EDIT_TYPE.ADD_FEATURE:
+        this.props.onSelect({
+          selectedFeature: null,
+          selectedFeatureIndex: null,
+          selectedEditHandleIndex: null,
+          screenCoords: editContext && editContext.screenCoords,
+          mapCoords: editContext && editContext.mapCoords
+        });
+        break;
+      default:
+    }
+
     if (this.props.onUpdate) {
       this.props.onUpdate({
         data: updatedData && updatedData.features,

@@ -11,35 +11,18 @@ import { getFeatureCoordinates } from './utils';
 
 export default class DrawLineStringMode extends BaseMode {
   handleClick = (event: ClickEvent, props: ModeProps<FeatureCollection>) => {
-    const selectedFeature = this.getSelectedFeature(props);
     const tentativeFeature = this.getTentativeFeature();
 
-    if (selectedFeature) {
-      // add position to a selectedFeature
-      this._updateFeature(event, props);
-    } else if (tentativeFeature) {
+    if (tentativeFeature) {
       // commit tentativeFeature to featureCollection
-      this._commitTentativeFeature(event, props);
+      this._updateTentativeFeature(event, props);
     } else {
       this._initTentativeFeature(event, props);
     }
   };
 
   handleDblClick(event: ClickEvent, props: ModeProps<FeatureCollection>) {
-    const selectedFeature = this.getSelectedFeature(props);
-    if (!selectedFeature) {
-      return;
-    }
-
-    this._updateFeature(event, props);
-
-    props.onSelect({
-      selectedFeature: null,
-      selectedFeatureIndex: null,
-      selectedEditHandleIndex: null,
-      screenCoords: event.screenCoords,
-      mapCoords: event.mapCoords
-    });
+    this._commitTentativeFeature(event, props);
   }
 
   getGuides = (props: ModeProps<FeatureCollection>) => {
@@ -74,16 +57,10 @@ export default class DrawLineStringMode extends BaseMode {
 
     // tentativeFeature
     tentativeFeature = {
-      type: 'Feature',
-      properties: {
-        // TODO deprecate id and renderType
-        id: uuid(),
-        guideType: GUIDE_TYPE.TENTATIVE,
-        renderType: RENDER_TYPE.LINE_STRING
-      },
+      ...tentativeFeature,
       geometry: {
         type: GEOJSON_TYPE.LINE_STRING,
-        coordinates: [coordinates[coordinates.length - 1], event.mapCoords]
+        coordinates: [...coordinates, event.mapCoords]
       }
     };
 
@@ -93,23 +70,29 @@ export default class DrawLineStringMode extends BaseMode {
     };
   };
 
-  _updateFeature = (event: ClickEvent, props: ModeProps<FeatureCollection>) => {
-    const { data, selectedIndexes } = props;
-    const selectedFeature = this.getSelectedFeature(props);
-    const selectedFeatureIndex = selectedIndexes[0];
-    const positionIndexes = [selectedFeature.geometry.coordinates.length];
-
-    const updatedData = data
-      .addPosition(selectedFeatureIndex, positionIndexes, event.mapCoords)
-      .getObject();
+  _updateTentativeFeature = (event: ClickEvent, props: ModeProps<FeatureCollection>) => {
+    let tentativeFeature = this.getTentativeFeature();
+    if (!tentativeFeature) {
+      return;
+    }
+    // update tentativeFeature
+    tentativeFeature = {
+      ...tentativeFeature,
+      geometry: {
+        type: GEOJSON_TYPE.LINE_STRING,
+        coordinates: [...tentativeFeature.geometry.coordinates, event.mapCoords]
+      }
+    };
+    this.setTentativeFeature(tentativeFeature);
 
     props.onEdit({
       editType: EDIT_TYPE.ADD_POSITION,
-      updatedData,
+      updatedData: props.data.getObject(),
       editContext: [
         {
-          featureIndex: selectedFeatureIndex,
-          editHandleIndex: positionIndexes[0],
+          feature: tentativeFeature,
+          featureIndex: null,
+          editHandleIndex: tentativeFeature.geometry.coordinates.length - 1,
           screenCoords: event.screenCoords,
           mapCoords: event.mapCoords
         }
@@ -124,37 +107,23 @@ export default class DrawLineStringMode extends BaseMode {
     }
 
     const { data } = props;
-    const selectedFeature = this.getSelectedFeature(props);
     this.setTentativeFeature(null);
 
     const feature = {
-      type: 'Feature',
+      ...tentativeFeature,
       properties: {
         id: tentativeFeature.properties.id,
         // todo deprecate renderType
         renderType: RENDER_TYPE.LINE_STRING
-      },
-      geometry: {
-        type: GEOJSON_TYPE.LINE_STRING,
-        coordinates: [tentativeFeature.geometry.coordinates[0], event.mapCoords]
       }
     };
 
     const updatedData = data.addFeature(feature).getObject();
-    const featureIndex = updatedData.features.length - 1;
 
     props.onEdit({
       editType: EDIT_TYPE.ADD_FEATURE,
       updatedData,
       editContext: null
-    });
-
-    props.onSelect({
-      selectedFeature,
-      selectedFeatureIndex: featureIndex,
-      selectedEditHandleIndex: null,
-      screenCoords: event.screenCoords,
-      mapCoords: event.mapCoords
     });
   };
 

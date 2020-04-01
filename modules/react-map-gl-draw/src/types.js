@@ -11,12 +11,13 @@ import type {
   ScreenCoordinates
 } from '@nebula.gl/edit-modes';
 
-import { RENDER_STATE, GEOJSON_TYPE } from './constants';
+import { RENDER_STATE, GEOJSON_TYPE, RENDER_TYPE } from './constants';
 
 export type Id = string | number;
 
 export type RenderState = $Values<typeof RENDER_STATE>;
 export type GeoJsonType = $Values<typeof GEOJSON_TYPE>;
+export type RenderType = $Values<typeof RENDER_TYPE>;
 
 export type SelectAction = {
   selectedFeature: ?Feature,

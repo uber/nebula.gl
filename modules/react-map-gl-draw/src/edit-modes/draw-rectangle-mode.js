@@ -78,7 +78,7 @@ export default class DrawRectangleMode extends BaseMode {
   _commitTentativeFeature = (event: ClickEvent, props: ModeProps<FeatureCollection>) => {
     // close rectangle and commit
     const { data } = props;
-    const tentativeFeature = this.getTentativeFeature();
+    let tentativeFeature = this.getTentativeFeature();
     if (tentativeFeature) {
       // clear guides
       this.setTentativeFeature(null);
@@ -91,8 +91,8 @@ export default class DrawRectangleMode extends BaseMode {
       // close rectangle
       coordinates = [...coordinates, coordinates[0]];
 
-      const nextTentativeFeature = {
-        type: 'Feature',
+      tentativeFeature = {
+        ...tentativeFeature,
         properties: {
           // TODO deprecate id
           id: tentativeFeature.properties.id,
@@ -104,21 +104,13 @@ export default class DrawRectangleMode extends BaseMode {
         }
       };
 
-      const updatedData = data.addFeature(nextTentativeFeature).getObject();
+      const updatedData = data.addFeature(tentativeFeature).getObject();
 
       // commit rectangle
       props.onEdit({
         editType: EDIT_TYPE.ADD_FEATURE,
         updatedData,
         editContext: null
-      });
-
-      props.onSelect({
-        selectedFeature: null,
-        selectedFeatureIndex: -1,
-        selectedEditHandleIndex: null,
-        screenCoords: event.screenCoords,
-        mapCoords: event.mapCoords
       });
     }
   };

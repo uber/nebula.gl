@@ -7458,7 +7458,7 @@ mixin-deep@^1.2.0:
     for-in "^1.0.2"
     is-extendable "^1.0.1"
 
-mjolnir.js@^2.2.0, mjolnir.js@^2.2.1:
+mjolnir.js@^2.1.2:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/mjolnir.js/-/mjolnir.js-2.3.0.tgz#192e66fb21b9e81521ee3ac71676e2a3fa678dec"
   integrity sha512-ungiyxsr+E/M6/76e/K3Ut98QbuEO3UhvC3ucHplDkOpA1x7TeAm01hpP3E8bDsYFrkPk4PCUVJEuirZWguxEA==
@@ -7466,7 +7466,7 @@ mjolnir.js@^2.2.0, mjolnir.js@^2.2.1:
     "@babel/runtime" "^7.0.0"
     hammerjs "^2.0.8"
 
-mjolnir.js@^2.3.0:
+mjolnir.js@^2.4.0:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/mjolnir.js/-/mjolnir.js-2.4.0.tgz#247f1640d8382c07c3030595f7957e1a5383b6e4"
   integrity sha512-0WyWlc5EzdZ7eD0Fjy1DarzJpknesJaMJ6P0c6gDlbotfj3GRzv0odTXfTVVMm9WxEQSUzxosdnPqnd0SDxIyA==
@@ -8752,7 +8752,7 @@ react-map-gl@^5.2.1:
   dependencies:
     "@babel/runtime" "^7.0.0"
     mapbox-gl "^1.0.0"
-    mjolnir.js "^2.2.0"
+    mjolnir.js "^2.4.0"
     prop-types "^15.7.2"
     react-virtualized-auto-sizer "^1.0.2"
     viewport-mercator-project "^6.2.3 || ^7.0.1"
@@ -10508,6 +10508,11 @@ uuid@^3.0.1, uuid@^3.3.2:
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.3.2.tgz#1b4af4955eb3077c501c23872fc6513811587131"
   integrity sha512-yXJmeNaw3DnnKAOKJE51sL/ZaYfWJRl1pK9dr19YFCu0ObS231AB1/LbqTKRAQ5kw8A90rA6fr4riOUpTZvQZA==
 
+uuid@^3.4.0:
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.4.0.tgz#b23e4358afa8a202fe7a100af1f5f883f02007ee"
+  integrity sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A==
+
 validate-npm-package-license@^3.0.1, validate-npm-package-license@^3.0.3:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/validate-npm-package-license/-/validate-npm-package-license-3.0.4.tgz#fc91f6b9c7ba15c857f4cb2c5defeec39d4f410a"
@@ -10542,14 +10547,6 @@ viewport-mercator-project@>=6.0.0, "viewport-mercator-project@^6.2.3 || ^7.0.1":
   integrity sha512-WKTuTL7o6WKdPQ+gmZhlXL7UpSdCdPUjxkDTBd/3AayBdAFSQGHxsqdbmPBvmoGwvo9KWo/30HTkNo/Z7ORJpw==
   dependencies:
     "@math.gl/web-mercator" "^3.1.3"
-
-viewport-mercator-project@^6.1.0:
-  version "6.1.1"
-  resolved "https://registry.yarnpkg.com/viewport-mercator-project/-/viewport-mercator-project-6.1.1.tgz#d7b2cb3cb772b819f1daab17cf4019102a9102a6"
-  integrity sha512-nI0GEmXnESwZxWSJuaQkdCnvOv6yckUfqqFbNB8KWVbQY3eUExVM4ZziqCVVs5mNznLjDF1auj6HLW5D5DKcng==
-  dependencies:
-    "@babel/runtime" "^7.0.0"
-    gl-matrix "^3.0.0"
 
 vlq@^0.2.1:
   version "0.2.3"

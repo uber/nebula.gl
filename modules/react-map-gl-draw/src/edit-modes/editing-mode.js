@@ -11,7 +11,8 @@ import type {
 import type { ModeProps } from '../types';
 
 import { RENDER_TYPE, EDIT_TYPE, ELEMENT_TYPE, GEOJSON_TYPE, GUIDE_TYPE } from '../constants';
-import BaseMode from './base-mode';
+// import BaseMode from './base-mode';
+import SelectMode from './select-mode';
 import {
   findClosestPointOnLineSegment,
   getFeatureCoordinates,
@@ -19,8 +20,10 @@ import {
   updateRectanglePosition
 } from './utils';
 
-export default class EditingMode extends BaseMode {
+export default class EditingMode extends SelectMode {
   handleClick = (event: ClickEvent, props: ModeProps<FeatureCollection>) => {
+    super.handleClick(event, props);
+
     const pickedObject = event.picks && event.picks[0] && event.picks[0].object;
     const selectedFeatureIndex = props.selectedIndexes && props.selectedIndexes[0];
     if (!pickedObject || pickedObject.featureIndex !== selectedFeatureIndex) {

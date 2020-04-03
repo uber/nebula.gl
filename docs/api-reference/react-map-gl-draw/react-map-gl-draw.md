@@ -3,7 +3,7 @@
 `react-map-gl-draw` is a react based drawing library tailored for [`react-map-gl`](https://github.com/uber/react-map-gl).
 
 ## Options
-- `mode` (String, Optional)
+- `mode` (Object, Optional)
   - `EditorModes.READ_ONLY` - Not interactive. This is the default mode.
   - `EditorModes.SELECT` - Lets you select, delete, and drag features.
   - `EditorModes.EDITTING` - Lets you select, delete, and drag vertices; and drag features.

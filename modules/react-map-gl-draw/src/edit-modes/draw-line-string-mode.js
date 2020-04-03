@@ -11,75 +11,19 @@ import { getFeatureCoordinates } from './utils';
 
 export default class DrawLineStringMode extends BaseMode {
   handleClick = (event: ClickEvent, props: ModeProps<FeatureCollection>) => {
-    const { data, selectedIndexes } = props;
+    const tentativeFeature = this.getTentativeFeature();
 
-    const selectedFeature = this.getSelectedFeature(props);
-    let tentativeFeature = this.getTentativeFeature();
-
-    // add position to a selectedFeature
-    if (selectedFeature) {
-      const selectedFeatureIndex = selectedIndexes[0];
-      const positionIndexes = [selectedFeature.geometry.coordinates.length];
-
-      const updatedData = data
-        .addPosition(selectedFeatureIndex, positionIndexes, event.mapCoords)
-        .getObject();
-
-      props.onEdit({
-        editType: EDIT_TYPE.ADD_POSITION,
-        updatedData,
-        editContext: [
-          {
-            featureIndex: selectedFeatureIndex,
-            editHandleIndex: positionIndexes[0],
-            screenCoords: event.screenCoords,
-            mapCoords: event.mapCoords
-          }
-        ]
-      });
-
+    if (tentativeFeature) {
       // commit tentativeFeature to featureCollection
-    } else if (tentativeFeature) {
-      this.setTentativeFeature(null);
-
-      const feature = {
-        type: 'Feature',
-        properties: {
-          id: tentativeFeature.properties.id,
-          // todo deprecate renderType
-          renderType: RENDER_TYPE.LINE_STRING
-        },
-        geometry: {
-          type: GEOJSON_TYPE.LINE_STRING,
-          coordinates: [tentativeFeature.geometry.coordinates[0], event.mapCoords]
-        }
-      };
-
-      const updatedData = data.addFeature(feature).getObject();
-
-      props.onEdit({
-        editType: EDIT_TYPE.ADD_FEATURE,
-        updatedData,
-        editContext: null
-      });
+      this._updateTentativeFeature(event, props);
     } else {
-      tentativeFeature = {
-        type: 'Feature',
-        properties: {
-          // TODO deprecate id & renderType
-          id: uuid(),
-          renderType: RENDER_TYPE.LINE_STRING,
-          guideType: GUIDE_TYPE.TENTATIVE
-        },
-        geometry: {
-          type: GEOJSON_TYPE.POINT,
-          coordinates: [event.mapCoords]
-        }
-      };
-
-      this.setTentativeFeature(tentativeFeature);
+      this._initTentativeFeature(event, props);
     }
   };
+
+  handleDblClick(event: ClickEvent, props: ModeProps<FeatureCollection>) {
+    this._commitTentativeFeature(event, props);
+  }
 
   getGuides = (props: ModeProps<FeatureCollection>) => {
     const selectedFeature = this.getSelectedFeature(props);
@@ -113,16 +57,10 @@ export default class DrawLineStringMode extends BaseMode {
 
     // tentativeFeature
     tentativeFeature = {
-      type: 'Feature',
-      properties: {
-        // TODO deprecate id and renderType
-        id: uuid(),
-        guideType: GUIDE_TYPE.TENTATIVE,
-        renderType: RENDER_TYPE.LINE_STRING
-      },
+      ...tentativeFeature,
       geometry: {
         type: GEOJSON_TYPE.LINE_STRING,
-        coordinates: [coordinates[coordinates.length - 1], event.mapCoords]
+        coordinates: [...coordinates, event.mapCoords]
       }
     };
 
@@ -130,5 +68,78 @@ export default class DrawLineStringMode extends BaseMode {
       tentativeFeature,
       editHandles
     };
+  };
+
+  _updateTentativeFeature = (event: ClickEvent, props: ModeProps<FeatureCollection>) => {
+    let tentativeFeature = this.getTentativeFeature();
+    if (!tentativeFeature) {
+      return;
+    }
+    // update tentativeFeature
+    tentativeFeature = {
+      ...tentativeFeature,
+      geometry: {
+        type: GEOJSON_TYPE.LINE_STRING,
+        coordinates: [...tentativeFeature.geometry.coordinates, event.mapCoords]
+      }
+    };
+    this.setTentativeFeature(tentativeFeature);
+
+    props.onEdit({
+      editType: EDIT_TYPE.ADD_POSITION,
+      updatedData: props.data.getObject(),
+      editContext: [
+        {
+          feature: tentativeFeature,
+          featureIndex: null,
+          editHandleIndex: tentativeFeature.geometry.coordinates.length - 1,
+          screenCoords: event.screenCoords,
+          mapCoords: event.mapCoords
+        }
+      ]
+    });
+  };
+
+  _commitTentativeFeature = (event: ClickEvent, props: ModeProps<FeatureCollection>) => {
+    const tentativeFeature = this.getTentativeFeature();
+    if (!tentativeFeature) {
+      return;
+    }
+
+    const { data } = props;
+    this.setTentativeFeature(null);
+
+    const feature = {
+      ...tentativeFeature,
+      properties: {
+        id: tentativeFeature.properties.id,
+        // todo deprecate renderType
+        renderType: RENDER_TYPE.LINE_STRING
+      }
+    };
+
+    const updatedData = data.addFeature(feature).getObject();
+
+    props.onEdit({
+      editType: EDIT_TYPE.ADD_FEATURE,
+      updatedData,
+      editContext: null
+    });
+  };
+
+  _initTentativeFeature = (event: ClickEvent, props: ModeProps<FeatureCollection>) => {
+    this.setTentativeFeature({
+      type: 'Feature',
+      properties: {
+        // TODO deprecate id & renderType
+        id: uuid(),
+        renderType: RENDER_TYPE.LINE_STRING,
+        guideType: GUIDE_TYPE.TENTATIVE
+      },
+      geometry: {
+        type: GEOJSON_TYPE.POINT,
+        coordinates: [event.mapCoords]
+      }
+    });
   };
 }

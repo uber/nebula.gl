@@ -1,107 +1,99 @@
 // @flow
 
-import type { Position, LineString, FeatureCollection } from '../geojson-types.js';
+import type { LineString, FeatureCollection } from '../geojson-types.js';
 import type { ClickEvent, PointerMoveEvent, ModeProps, GuideFeatureCollection } from '../types.js';
+import { getPickedEditHandle } from '../utils.js';
 import { GeoJsonEditMode } from './geojson-edit-mode.js';
-import { ImmutableFeatureCollection } from './immutable-feature-collection.js';
 
 export class DrawLineStringMode extends GeoJsonEditMode {
   handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>) {
-    const selectedFeatureIndexes = props.selectedIndexes;
-    const selectedGeometry = this.getSelectedGeometry(props);
+    const { picks } = event;
+    const clickedEditHandle = getPickedEditHandle(picks);
 
-    if (
-      selectedFeatureIndexes.length > 1 ||
-      (selectedGeometry && selectedGeometry.type !== 'LineString')
-    ) {
-      console.warn(`drawLineString mode only supported for single LineString selection`); // eslint-disable-line
-      return;
+    let positionAdded = false;
+    if (!clickedEditHandle) {
+      // Don't add another point right next to an existing one
+      this.addClickSequence(event);
+      positionAdded = true;
     }
-
-    this.addClickSequence(event);
-    const tentativeFeature = this.getTentativeGuide(props);
     const clickSequence = this.getClickSequence();
 
-    if (selectedGeometry && selectedGeometry.type === 'LineString') {
-      // Extend the LineString
-      const lineString: LineString = selectedGeometry;
+    if (
+      clickSequence.length > 1 &&
+      clickedEditHandle &&
+      Array.isArray(clickedEditHandle.properties.positionIndexes) &&
+      clickedEditHandle.properties.positionIndexes[0] === clickSequence.length - 1
+    ) {
+      // They clicked the last point (or double-clicked), so add the LineString
 
-      let positionIndexes = [lineString.coordinates.length];
+      const lineStringToAdd: LineString = {
+        type: 'LineString',
+        coordinates: [...clickSequence]
+      };
 
-      const modeConfig = props.modeConfig;
-      if (modeConfig && modeConfig.drawAtFront) {
-        positionIndexes = [0];
+      this.resetClickSequence();
+
+      const editAction = this.getAddFeatureAction(lineStringToAdd, props.data);
+      if (editAction) {
+        props.onEdit(editAction);
       }
-      const featureIndex = selectedFeatureIndexes[0];
-      const updatedData = new ImmutableFeatureCollection(props.data)
-        .addPosition(featureIndex, positionIndexes, event.mapCoords)
-        .getObject();
-
+    } else if (positionAdded) {
+      // new tentative point
       props.onEdit({
-        updatedData,
-        editType: 'addPosition',
+        // data is the same
+        updatedData: props.data,
+        editType: 'addTentativePosition',
         editContext: {
-          featureIndexes: [featureIndex],
-          positionIndexes,
           position: event.mapCoords
         }
       });
-
-      this.resetClickSequence();
-    } else if (clickSequence.length === 2 && tentativeFeature) {
-      // Add a new LineString
-      const { geometry } = tentativeFeature;
-      props.onEdit(this.getAddFeatureAction(geometry, props.data));
-
-      this.resetClickSequence();
     }
   }
 
   getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
+    const { lastPointerMoveEvent } = props;
+    const clickSequence = this.getClickSequence();
+
+    const lastCoords = lastPointerMoveEvent ? [lastPointerMoveEvent.mapCoords] : [];
+
     const guides = {
       type: 'FeatureCollection',
       features: []
     };
 
-    const clickSequence = this.getClickSequence();
-    const mapCoords = props.lastPointerMoveEvent && props.lastPointerMoveEvent.mapCoords;
-
-    let startPosition: ?Position = null;
-    const selectedFeatureIndexes = props.selectedIndexes;
-    const selectedGeometry = this.getSelectedGeometry(props);
-
-    if (
-      selectedFeatureIndexes.length > 1 ||
-      (selectedGeometry && selectedGeometry.type !== 'LineString')
-    ) {
-      // unsupported
-      return guides;
-    }
-
-    if (selectedGeometry && selectedGeometry.type === 'LineString') {
-      // Draw an extension line starting from one end of the selected LineString
-      startPosition = selectedGeometry.coordinates[selectedGeometry.coordinates.length - 1];
-
-      const modeConfig = props.modeConfig;
-      if (modeConfig && modeConfig.drawAtFront) {
-        startPosition = selectedGeometry.coordinates[0];
-      }
-    } else if (clickSequence.length > 0) {
-      startPosition = clickSequence[0];
-    }
-
-    if (startPosition) {
-      guides.features.push({
+    let tentativeFeature;
+    if (clickSequence.length > 0) {
+      tentativeFeature = {
         type: 'Feature',
         properties: {
           guideType: 'tentative'
         },
         geometry: {
           type: 'LineString',
-          coordinates: [startPosition, mapCoords]
+          coordinates: [...clickSequence, ...lastCoords]
         }
-      });
+      };
     }
+
+    if (tentativeFeature) {
+      guides.features.push(tentativeFeature);
+    }
+
+    const editHandles = clickSequence.map((clickedCoord, index) => ({
+      type: 'Feature',
+      properties: {
+        guideType: 'editHandle',
+        editHandleType: 'existing',
+        featureIndex: -1,
+        positionIndexes: [index]
+      },
+      geometry: {
+        type: 'Point',
+        coordinates: clickedCoord
+      }
+    }));
+
+    guides.features.push(...editHandles);
 
     return guides;
   }

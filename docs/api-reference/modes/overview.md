@@ -52,20 +52,18 @@ User can draw a new `Point` feature by clicking where the point is to be.
 
 ## [DrawLineStringMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/draw-line-string-mode.js)
 
-User can draw a new `LineString` feature by clicking positions to add.
+User can draw a new `LineString` feature by clicking positions to add. User finishes drawing by double-clicking.
 
-* If a `LineString` feature is selected, clicking will add a position to it.
+## [ExtendLineStringMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/extend-line-string-mode.js)
 
-* If no feature is selected, a new `LineString` feature will be added. *Note*: you must select the new feature (via the `onEdit` callback) in order to start extending it.
-
-* If multiple features are selected, or a non-`LineString` is selected, the user will be prevented from drawing.
+User can extend an existing `LineString` feature by clicking positions to add. A single `LineString` feature must be selected for this mode.
 
 ### ModeConfig
 
 The following options can be provided in the `modeConfig` object:
 
 * `drawAtFront` (optional):  `<boolean>`
-  * If `true`, will render the tentative feature at the "beginning" of the line, i.e. relative to the start of the coordinates array.
+  * If `true`, will extend from the "beginning" of the line, i.e. relative to the start of the coordinates array.
 
 ### Edit Context
 

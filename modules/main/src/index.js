@@ -35,6 +35,7 @@ export { TranslateMode } from '@nebula.gl/edit-modes';
 export { ScaleMode } from '@nebula.gl/edit-modes';
 export { RotateMode } from '@nebula.gl/edit-modes';
 export { DuplicateMode } from '@nebula.gl/edit-modes';
+export { ExtendLineStringMode } from '@nebula.gl/edit-modes';
 export { SplitPolygonMode } from '@nebula.gl/edit-modes';
 export { ExtrudeMode } from '@nebula.gl/edit-modes';
 export { ElevationMode } from '@nebula.gl/edit-modes';

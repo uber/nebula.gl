@@ -9,6 +9,7 @@ export { TranslateMode } from './lib/translate-mode.js';
 export { ScaleMode } from './lib/scale-mode.js';
 export { RotateMode } from './lib/rotate-mode.js';
 export { DuplicateMode } from './lib/duplicate-mode.js';
+export { ExtendLineStringMode } from './lib/extend-line-string-mode.js';
 export { SplitPolygonMode } from './lib/split-polygon-mode.js';
 export { ExtrudeMode } from './lib/extrude-mode.js';
 export { ElevationMode } from './lib/elevation-mode.js';

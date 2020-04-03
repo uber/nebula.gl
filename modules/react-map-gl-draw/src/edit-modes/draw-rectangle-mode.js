@@ -10,61 +10,11 @@ import { getFeatureCoordinates, updateRectanglePosition } from './utils';
 
 export default class DrawRectangleMode extends BaseMode {
   handleClick = (event: ClickEvent, props: ModeProps<FeatureCollection>) => {
-    const { data } = props;
-
-    let tentativeFeature = this.getTentativeFeature();
-
-    // close rectangle and commit
-    if (tentativeFeature) {
-      // clear guides
-      this.setTentativeFeature(null);
-
-      let coordinates = updateRectanglePosition(tentativeFeature, 2, event.mapCoords);
-      if (!coordinates) {
-        return;
-      }
-
-      // close rectangle
-      coordinates = [...coordinates, coordinates[0]];
-
-      tentativeFeature = {
-        type: 'Feature',
-        properties: {
-          // TODO deprecate id
-          id: tentativeFeature.properties.id,
-          renderType: RENDER_TYPE.RECTANGLE
-        },
-        geometry: {
-          type: GEOJSON_TYPE.POLYGON,
-          coordinates: [coordinates]
-        }
-      };
-
-      const updatedData = data.addFeature(tentativeFeature).getObject();
-
-      // commit rectangle
-      props.onEdit({
-        editType: EDIT_TYPE.ADD_FEATURE,
-        updatedData,
-        editContext: null
-      });
+    const tentativeFeature = this.getTentativeFeature();
+    if (!tentativeFeature) {
+      this._initTentativeFeature(event, props);
     } else {
-      // create a tentativeFeature
-      tentativeFeature = {
-        type: 'Feature',
-        properties: {
-          // TODO deprecate id
-          id: uuid(),
-          renderType: RENDER_TYPE.RECTANGLE,
-          guideType: GUIDE_TYPE.TENTATIVE
-        },
-        geometry: {
-          type: 'LineString',
-          coordinates: [event.mapCoords, event.mapCoords, event.mapCoords, event.mapCoords]
-        }
-      };
-
-      this.setTentativeFeature(tentativeFeature);
+      this._commitTentativeFeature(event, props);
     }
   };
 
@@ -123,5 +73,61 @@ export default class DrawRectangleMode extends BaseMode {
       tentativeFeature,
       editHandles
     };
+  };
+
+  _commitTentativeFeature = (event: ClickEvent, props: ModeProps<FeatureCollection>) => {
+    // close rectangle and commit
+    const { data } = props;
+    let tentativeFeature = this.getTentativeFeature();
+    if (tentativeFeature) {
+      // clear guides
+      this.setTentativeFeature(null);
+
+      let coordinates = updateRectanglePosition(tentativeFeature, 2, event.mapCoords);
+      if (!coordinates) {
+        return;
+      }
+
+      // close rectangle
+      coordinates = [...coordinates, coordinates[0]];
+
+      tentativeFeature = {
+        ...tentativeFeature,
+        properties: {
+          // TODO deprecate id
+          id: tentativeFeature.properties.id,
+          renderType: RENDER_TYPE.RECTANGLE
+        },
+        geometry: {
+          type: GEOJSON_TYPE.POLYGON,
+          coordinates: [coordinates]
+        }
+      };
+
+      const updatedData = data.addFeature(tentativeFeature).getObject();
+
+      // commit rectangle
+      props.onEdit({
+        editType: EDIT_TYPE.ADD_FEATURE,
+        updatedData,
+        editContext: null
+      });
+    }
+  };
+
+  _initTentativeFeature = (event: ClickEvent, props: ModeProps<FeatureCollection>) => {
+    this.setTentativeFeature({
+      type: 'Feature',
+      properties: {
+        // TODO deprecate id
+        id: uuid(),
+        renderType: RENDER_TYPE.RECTANGLE,
+        guideType: GUIDE_TYPE.TENTATIVE
+      },
+      geometry: {
+        type: 'LineString',
+        coordinates: [event.mapCoords, event.mapCoords, event.mapCoords, event.mapCoords]
+      }
+    });
   };
 }

@@ -1,14 +1,20 @@
 /* global setTimeout */
 import React, { PureComponent } from 'react';
 import styled from 'styled-components';
-import { EditorModes } from 'react-map-gl-draw';
 
-const MODES = [
-  { id: EditorModes.EDITING, text: 'Edit Feature', icon: 'icon-select.svg' },
-  { id: EditorModes.DRAW_POINT, text: 'Draw Point', icon: 'icon-point.svg' },
-  { id: EditorModes.DRAW_PATH, text: 'Draw Polyline', icon: 'icon-path.svg' },
-  { id: EditorModes.DRAW_POLYGON, text: 'Draw Polygon', icon: 'icon-polygon.svg' },
-  { id: EditorModes.DRAW_RECTANGLE, text: 'Draw Rectangle', icon: 'icon-rectangle.svg' }
+import { MODES } from './constants';
+
+const ICON_MAP = [
+  { id: MODES.EDITING, text: 'Edit Feature', icon: 'icon-select.svg' },
+  { id: MODES.DRAW_POINT, text: 'Draw Point', icon: 'icon-point.svg' },
+  { id: MODES.DRAW_PATH, text: 'Draw Polyline', icon: 'icon-path.svg' },
+  { id: MODES.DRAW_POLYGON, text: 'Draw Polygon', icon: 'icon-polygon.svg' },
+  { id: MODES.DRAW_RECTANGLE, text: 'Draw Rectangle', icon: 'icon-rectangle.svg' },
+  {
+    id: MODES.DRAW_RECTANGLE_ONE_CLICK,
+    text: 'Draw Rectangle (One Click)',
+    icon: 'icon-rectangle.svg'
+  }
 ];
 
 const Container = styled.div`
@@ -89,7 +95,7 @@ export default class Toolbar extends PureComponent {
 
     return (
       <Container>
-        {MODES.map(m => {
+        {ICON_MAP.map(m => {
           return (
             <Row
               onClick={this.props.onSwitchMode}

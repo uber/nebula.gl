@@ -24,6 +24,8 @@ export default class BaseMode implements EditMode<FeatureCollection, GuideFeatur
     this._editHandles = null;
   }
 
+  handlePan(event: ClickEvent, props: ModeProps<FeatureCollection>) {}
+
   handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>) {}
 
   handleDblClick(event: ClickEvent, props: ModeProps<FeatureCollection>) {}

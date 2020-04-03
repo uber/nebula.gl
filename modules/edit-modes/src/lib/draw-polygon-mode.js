@@ -69,9 +69,11 @@ export class DrawPolygonMode extends GeoJsonEditMode {
     const { picks } = event;
     const clickedEditHandle = getPickedEditHandle(picks);
 
+    let positionAdded = false;
     if (!clickedEditHandle) {
       // Don't add another point right next to an existing one
       this.addClickSequence(event);
+      positionAdded = true;
     }
     const clickSequence = this.getClickSequence();
 
@@ -96,21 +98,17 @@ export class DrawPolygonMode extends GeoJsonEditMode {
       if (editAction) {
         props.onEdit(editAction);
       }
+    } else if (positionAdded) {
+      // new tentative point
+      props.onEdit({
+        // data is the same
+        updatedData: props.data,
+        editType: 'addTentativePosition',
+        editContext: {
+          position: event.mapCoords
+        }
+      });
     }
-
-    // Trigger pointer move right away in order for it to update edit handles (to support double-click)
-    const fakePointerMoveEvent = {
-      screenCoords: [-1, -1],
-      mapCoords: event.mapCoords,
-      picks: [],
-      pointerDownPicks: null,
-      pointerDownScreenCoords: null,
-      pointerDownMapCoords: null,
-      cancelPan: () => {},
-      sourceEvent: null
-    };
-
-    this.handlePointerMove(fakePointerMoveEvent, props);
   }
 
   handlePointerMove({ mapCoords }: PointerMoveEvent, props: ModeProps<FeatureCollection>) {

@@ -1,4 +1,3 @@
-// @flow
 
 import type { Polygon, Position } from '@nebula.gl/edit-modes';
 import type { ClickEvent, PointerMoveEvent } from '../event-types.ts';

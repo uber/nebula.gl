@@ -1,4 +1,3 @@
-// @flow
 import EventEmitter from 'events';
 import document from 'global/document';
 import window from 'global/window';

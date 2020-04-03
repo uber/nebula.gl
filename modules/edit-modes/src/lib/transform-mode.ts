@@ -1,4 +1,3 @@
-// @flow
 
 import { featureCollection } from '@turf/helpers';
 import type { PointerMoveEvent, ModeProps, StartDraggingEvent } from '../types.ts';

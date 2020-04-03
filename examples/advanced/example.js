@@ -1,4 +1,3 @@
-// @flow
 /* eslint-env browser */
 
 import window from 'global/window';
@@ -217,7 +216,7 @@ export default class Example extends Component<
       y: number
     }
   }
-> {
+  > {
   constructor() {
     super();
 
@@ -774,7 +773,7 @@ export default class Example extends Component<
     );
   }
 
-  customizeLayers(layers: Object[]) {}
+  customizeLayers(layers: Object[]) { }
 
   onEdit = ({ updatedData, editType, editContext }) => {
     let updatedSelectedFeatureIndexes = this.state.selectedFeatureIndexes;

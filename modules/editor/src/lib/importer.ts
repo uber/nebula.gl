@@ -1,4 +1,3 @@
-// @flow
 /* eslint-env browser */
 
 import { kml } from '@tmcw/togeojson';

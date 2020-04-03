@@ -1,4 +1,3 @@
-// @flow
 /* eslint-disable no-unused-vars, prefer-const */
 
 import type {

@@ -1,4 +1,3 @@
-// @flow
 
 import type { Position, Feature, FeatureCollection } from '../geojson-types.ts';
 import type {
@@ -59,7 +58,6 @@ export class SnappableMode extends GeoJsonEditMode {
     }
     const snapSourceFeature = data.features[featureIndex];
 
-    // $FlowFixMe
     const snapSourceCoordinates: Position = positionIndexes.reduce(
       (a: any[], b: number) => a[b],
       snapSourceFeature.geometry.coordinates

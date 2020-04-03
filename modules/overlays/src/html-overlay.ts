@@ -1,4 +1,3 @@
-// @flow
 import React, { Component, cloneElement } from 'react';
 
 const styles = {

@@ -1,4 +1,3 @@
-// @flow
 
 import type { ClickEvent, PointerMoveEvent, ModeProps } from '../types.ts';
 import type { FeatureCollection } from '../geojson-types.ts';

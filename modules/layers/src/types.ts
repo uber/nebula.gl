@@ -1,4 +1,3 @@
-// @flow
 
 // [red, green, blue, alpha] in premultiplied alpha format
 export type Color = [number, number, number, number];

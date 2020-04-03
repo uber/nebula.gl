@@ -1,4 +1,3 @@
-// @flow
 /* eslint-env jest */
 
 import type { Position, FeatureCollection } from '@nebula.gl/edit-modes';

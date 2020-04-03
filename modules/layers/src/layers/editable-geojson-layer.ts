@@ -1,4 +1,3 @@
-// @flow
 /* eslint-env browser */
 
 import { GeoJsonLayer, ScatterplotLayer, IconLayer, TextLayer } from '@deck.gl/layers';

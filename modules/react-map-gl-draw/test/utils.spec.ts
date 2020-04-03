@@ -1,4 +1,3 @@
-// @flow
 /* eslint-env jest */
 
 import { findClosestPointOnLineSegment, isNumeric } from '../src/edit-modes/utils.ts';

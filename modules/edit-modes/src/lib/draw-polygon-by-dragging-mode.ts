@@ -1,4 +1,3 @@
-// @flow
 
 import throttle from 'lodash.throttle';
 import type {

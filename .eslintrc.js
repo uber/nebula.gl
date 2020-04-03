@@ -1,20 +1,16 @@
-// @flow
 module.exports = {
   parser: 'babel-eslint',
-  plugins: ['flowtype', 'prettier', 'babel', 'import'],
+  plugins: ['prettier', 'babel', 'import'],
   extends: [
     'eslint-config-uber-jsx',
     'eslint-config-uber-es2015',
-    'plugin:flowtype/recommended',
     'prettier',
-    'prettier/flowtype'
   ],
   rules: {
     'callback-return': 'off',
     complexity: 'off',
     'max-statements': 'off',
     'no-return-assign': 'off',
-    'flowtype/semi': ['error', 'always'],
     'func-style': 'error',
     'prettier/prettier': 'error',
     'react/no-multi-comp': 'off',

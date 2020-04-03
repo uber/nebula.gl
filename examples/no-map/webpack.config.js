@@ -25,11 +25,7 @@ const CONFIG = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: [
-              require('@babel/preset-env'),
-              require('@babel/preset-react'),
-              require('@babel/preset-flow')
-            ],
+            presets: [require('@babel/preset-env'), require('@babel/preset-react')],
             plugins: [
               require('@babel/plugin-proposal-class-properties'),
               require('@babel/plugin-proposal-export-default-from')

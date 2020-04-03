@@ -1,4 +1,3 @@
-// @flow
 
 import nearestPointOnLine from '@turf/nearest-point-on-line';
 import { point, lineString as toLineString } from '@turf/helpers';

@@ -1,4 +1,3 @@
-// @flow
 import { CompositeLayer } from '@deck.gl/core';
 import { ScatterplotLayer } from '@deck.gl/layers';
 

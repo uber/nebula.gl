@@ -1,4 +1,3 @@
-// @flow
 
 import type { ClickEvent } from '../event-types.ts';
 import { ModeHandler } from './mode-handler.ts';

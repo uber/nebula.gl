@@ -1,4 +1,3 @@
-// @flow
 
 import { TransformMode } from '../../src/lib/transform-mode';
 import {

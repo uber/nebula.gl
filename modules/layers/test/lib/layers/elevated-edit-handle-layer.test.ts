@@ -1,4 +1,3 @@
-// @flow
 /* eslint-env jest */
 
 import ElevatedEditHandleLayer from '../../../src/layers/elevated-edit-handle-layer.ts';

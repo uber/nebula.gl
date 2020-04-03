@@ -1,4 +1,3 @@
-// @flow
 import { _MapContext as MapContext } from 'react-map-gl';
 import React, { PureComponent } from 'react';
 import { ImmutableFeatureCollection } from '@nebula.gl/edit-modes';

@@ -1,4 +1,3 @@
-// @flow
 /* eslint-env browser */
 import { CompositeLayer } from '@deck.gl/core';
 import { PolygonLayer } from '@deck.gl/layers';

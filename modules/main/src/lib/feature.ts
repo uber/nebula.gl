@@ -1,4 +1,3 @@
-// @flow
 import type { Feature as GeoJson, Geometry } from 'geojson-types';
 
 import type { Style } from '../types';

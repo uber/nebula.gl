@@ -1,4 +1,3 @@
-// @flow
 
 export type LayerMouseEventResult = {
   eventConsumed?: boolean,

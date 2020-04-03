@@ -1,4 +1,3 @@
-// @flow
 /* eslint-env jest */
 
 import { ModifyMode } from '../../src/lib/modify-mode.ts';

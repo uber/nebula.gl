@@ -1,4 +1,3 @@
-// @flow
 
 import type { LineString } from '@nebula.gl/edit-modes';
 import { generatePointsParallelToLinePoints } from '../utils';

@@ -1,4 +1,3 @@
-// @flow
 
 import turfBuffer from '@turf/buffer';
 import bbox from '@turf/bbox';

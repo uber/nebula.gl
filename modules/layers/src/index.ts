@@ -1,4 +1,3 @@
-// @flow
 
 export { ArrowStyles, DEFAULT_ARROWS, MAX_ARROWS } from './style.ts';
 

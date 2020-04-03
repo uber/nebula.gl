@@ -1,4 +1,3 @@
-// @flow
 
 import type { FeatureCollection } from '../geojson-types.ts';
 import type {

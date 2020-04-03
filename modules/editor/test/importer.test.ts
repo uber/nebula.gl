@@ -1,5 +1,4 @@
 /* eslint-disable max-nested-callbacks */
-// @flow
 /* eslint-env jest, browser */
 
 import sinon from 'sinon';

@@ -1,4 +1,3 @@
-// @flow
 // Describes the arrow style of polylines
 export const ArrowStyles = {
   NONE: 0,

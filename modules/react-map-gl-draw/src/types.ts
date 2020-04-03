@@ -1,4 +1,3 @@
-// @flow
 
 import type { WebMercatorViewport } from 'viewport-mercator-project';
 import type {

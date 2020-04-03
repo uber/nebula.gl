@@ -1,4 +1,3 @@
-// @flow
 import { PathMarkerLayer } from '@nebula.gl/layers';
 import { MAX } from '@luma.gl/constants';
 

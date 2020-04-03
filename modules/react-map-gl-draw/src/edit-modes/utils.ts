@@ -1,4 +1,3 @@
-// @flow
 
 import type { MjolnirEvent } from 'mjolnir.ts';
 import type { Feature, Position } from '@nebula.gl/edit-modes';

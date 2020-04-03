@@ -1,4 +1,3 @@
-// @flow
 import { JunctionScatterplotLayer } from '@nebula.gl/layers';
 import NebulaLayer from '../nebula-layer';
 import { toDeckColor } from '../utils';

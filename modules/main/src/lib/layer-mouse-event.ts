@@ -1,4 +1,3 @@
-// @flow
 import type { Position } from 'geojson-types';
 
 export default class LayerMouseEvent {

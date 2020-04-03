@@ -1,4 +1,3 @@
-// @flow
 import type { ModeProps, PointerMoveEvent, StopDraggingEvent } from '../types.ts';
 import type { Position, FeatureCollection } from '../geojson-types.ts';
 import { getPickedEditHandle } from '../utils.ts';
@@ -31,7 +30,6 @@ export class ElevationMode extends ModifyMode {
       return event;
     }
 
-    // $FlowFixMe - really, I know it has something at index 2
     let elevation = position.length === 3 ? position[2] : 0;
 
     // calculateElevationChange is configurable because (at this time) modes are not aware of the viewport

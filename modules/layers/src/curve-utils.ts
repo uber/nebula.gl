@@ -1,4 +1,3 @@
-// @flow
 import hermite from 'cubic-hermite-spline';
 import turfDistance from '@turf/distance';
 import { lineString } from '@turf/helpers';

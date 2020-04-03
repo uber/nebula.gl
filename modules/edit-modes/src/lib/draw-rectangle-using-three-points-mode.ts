@@ -1,4 +1,3 @@
-// @flow
 
 import { generatePointsParallelToLinePoints } from '../utils.ts';
 import type { Position, Polygon, FeatureOf } from '../geojson-types.ts';

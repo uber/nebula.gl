@@ -1,4 +1,3 @@
-// @flow
 import EventEmitter from 'events';
 import uuid from 'uuid';
 

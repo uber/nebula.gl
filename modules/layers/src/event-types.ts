@@ -1,4 +1,3 @@
-// @flow
 import type { Position } from '@nebula.gl/edit-modes';
 
 // TODO edit-modes: delete this once all code is refactored to use event types in edit-modes module

@@ -1,4 +1,3 @@
-// @flow
 
 // Core
 export { default as HtmlOverlay } from './html-overlay';

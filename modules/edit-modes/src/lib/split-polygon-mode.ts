@@ -1,4 +1,3 @@
-// @flow
 
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import turfDifference from '@turf/difference';

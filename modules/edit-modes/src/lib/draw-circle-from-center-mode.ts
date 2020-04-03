@@ -1,4 +1,3 @@
-// @flow
 
 import circle from '@turf/circle';
 import distance from '@turf/distance';

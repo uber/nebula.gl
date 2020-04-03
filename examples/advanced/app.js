@@ -1,4 +1,3 @@
-// @flow
 import document from 'global/document';
 import * as React from 'react';
 import ReactDOM from 'react-dom';

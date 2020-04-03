@@ -1,4 +1,3 @@
-// @flow
 import { PolygonLayer } from '@deck.gl/layers';
 import { point, polygon } from '@turf/helpers';
 import turfBbox from '@turf/bbox';

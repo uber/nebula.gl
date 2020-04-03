@@ -1,4 +1,3 @@
-// @flow
 
 import turfDistance from '@turf/distance';
 import { _memoize } from '@deck.gl/core';

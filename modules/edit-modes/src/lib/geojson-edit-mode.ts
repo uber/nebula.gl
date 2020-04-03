@@ -1,5 +1,3 @@
-// @flow
-
 import turfUnion from '@turf/union';
 import turfDifference from '@turf/difference';
 import turfIntersect from '@turf/intersect';

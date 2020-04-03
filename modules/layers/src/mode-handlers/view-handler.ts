@@ -1,4 +1,3 @@
-// @flow
 
 import type { Position } from '@nebula.gl/edit-modes';
 import type { EditHandle } from './mode-handler.ts';

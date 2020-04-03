@@ -1,4 +1,3 @@
-// @flow
 
 import type { ClickEvent, PointerMoveEvent, ModeProps, GuideFeatureCollection } from '../types.ts';
 import type { Position, Polygon, FeatureOf, FeatureCollection } from '../geojson-types.ts';

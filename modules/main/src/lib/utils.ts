@@ -1,4 +1,3 @@
-// @flow
 
 export function toDeckColor(
   color?: ?[number, number, number, number],

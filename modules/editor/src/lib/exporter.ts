@@ -1,4 +1,3 @@
-// @flow
 /* eslint-env browser */
 
 import tokml from '@maphubs/tokml';

@@ -1,4 +1,3 @@
-// @flow
 
 export default class DeckCache<TORIG, TCONV> {
   objects: TCONV[];

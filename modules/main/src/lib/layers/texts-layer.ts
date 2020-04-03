@@ -1,4 +1,3 @@
-// @flow
 import { TextLayer } from '@deck.gl/layers';
 
 import NebulaLayer from '../nebula-layer';

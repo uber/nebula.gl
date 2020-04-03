@@ -1,4 +1,3 @@
-// @flow
 
 import bboxPolygon from '@turf/bbox-polygon';
 import type { PointerMoveEvent } from '../event-types.ts';

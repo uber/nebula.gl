@@ -1,4 +1,3 @@
-// @flow
 
 import type { StartDraggingEvent, ModeProps } from '../types.ts';
 import type { FeatureCollection } from '../geojson-types.ts';

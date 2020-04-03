@@ -1,4 +1,3 @@
-// @flow
 
 import destination from '@turf/destination';
 import bearing from '@turf/bearing';

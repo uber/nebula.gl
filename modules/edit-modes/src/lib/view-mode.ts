@@ -1,4 +1,3 @@
-// @flow
 
 import { GeoJsonEditMode } from './geojson-edit-mode.ts';
 

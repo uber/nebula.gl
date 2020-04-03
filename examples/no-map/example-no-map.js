@@ -1,4 +1,3 @@
-// @flow
 import { BitmapLayer } from '@deck.gl/layers';
 import Example from '../deck/example';
 

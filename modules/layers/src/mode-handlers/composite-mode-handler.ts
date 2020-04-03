@@ -1,4 +1,3 @@
-// @flow
 
 import type { FeatureCollection, Feature, Position } from '@nebula.gl/edit-modes';
 import type {

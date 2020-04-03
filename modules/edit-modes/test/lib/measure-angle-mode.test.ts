@@ -1,4 +1,3 @@
-// @flow
 /* eslint-env jest */
 
 import { MeasureAngleMode } from '../../src/lib/measure-angle-mode.ts';

@@ -1,4 +1,3 @@
-// @flow
 
 import type { Feature, FeatureCollection, Position } from '@nebula.gl/edit-modes';
 import type { PointerMoveEvent, StartDraggingEvent, StopDraggingEvent } from '../event-types.ts';

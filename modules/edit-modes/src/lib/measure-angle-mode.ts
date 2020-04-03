@@ -1,4 +1,3 @@
-// @flow
 
 import turfBearing from '@turf/bearing';
 import turfCenter from '@turf/center';

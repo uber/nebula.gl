@@ -1,4 +1,3 @@
-// @flow
 
 import { RotateMode } from '../../src/lib/rotate-mode';
 import {

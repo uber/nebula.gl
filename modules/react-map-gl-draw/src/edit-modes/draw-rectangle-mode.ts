@@ -1,4 +1,3 @@
-// @flow
 
 import type { Feature, ClickEvent, FeatureCollection } from '@nebula.gl/edit-modes';
 import uuid from 'uuid/v1';

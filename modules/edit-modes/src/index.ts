@@ -1,4 +1,3 @@
-// @flow
 
 export { EditMode } from './lib/edit-mode.ts';
 export { GeoJsonEditMode } from './lib/geojson-edit-mode.ts';

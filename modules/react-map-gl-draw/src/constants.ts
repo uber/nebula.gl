@@ -1,4 +1,3 @@
-// @flow
 
 export const GEOJSON_TYPE = {
   POINT: 'Point',

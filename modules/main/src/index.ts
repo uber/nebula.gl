@@ -1,4 +1,3 @@
-// @flow
 
 export { ArrowStyles, DEFAULT_ARROWS, MAX_ARROWS } from './lib/style';
 export { SELECTION_TYPE } from './lib/deck-renderer/deck-drawer';

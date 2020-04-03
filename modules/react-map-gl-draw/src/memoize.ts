@@ -1,4 +1,3 @@
-// @flow
 // port from @deck.gl/core
 
 function isEqual(a: any, b: any) {

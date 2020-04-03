@@ -1,4 +1,3 @@
-// @flow
 
 // TODO edit-modes: delete handlers once EditMode fully implemented
 

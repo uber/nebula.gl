@@ -1,4 +1,3 @@
-// @flow
 import type { Position } from 'geojson-types';
 
 export function toDegree(radian: number): number {

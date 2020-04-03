@@ -1,4 +1,3 @@
-// @flow
 
 import bboxPolygon from '@turf/bbox-polygon';
 import type { Position, Polygon, FeatureOf } from '../geojson-types.ts';

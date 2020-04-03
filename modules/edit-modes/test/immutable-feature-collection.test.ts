@@ -1,4 +1,3 @@
-// @flow
 /* eslint-env jest */
 
 import { ImmutableFeatureCollection } from '../src/lib/immutable-feature-collection.ts';

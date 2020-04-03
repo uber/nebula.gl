@@ -1,4 +1,3 @@
-// @flow
 /* eslint-env jest */
 
 import { DrawLineStringMode } from '../../src/lib/draw-line-string-mode.ts';

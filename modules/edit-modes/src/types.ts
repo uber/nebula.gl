@@ -1,4 +1,3 @@
-// @flow
 
 import type { Position, Point, Geometry, FeatureWithProps } from './geojson-types.ts';
 

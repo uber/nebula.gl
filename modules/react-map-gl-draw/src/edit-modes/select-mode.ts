@@ -1,4 +1,3 @@
-// @flow
 
 import type { ClickEvent, FeatureCollection } from '@nebula.gl/edit-modes';
 import type { ModeProps } from '../types';

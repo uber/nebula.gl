@@ -1,4 +1,3 @@
-// @flow
 
 export { Toolbox } from './toolbox.ts';
 export { ExportModal } from './export-modal.ts';

@@ -1,4 +1,3 @@
-// @flow
 import { point } from '@turf/helpers';
 import Supercluster from 'supercluster';
 import HtmlOverlay from './html-overlay';

@@ -1,4 +1,3 @@
-// @flow
 
 import bearing from '@turf/bearing';
 import { generatePointsParallelToLinePoints } from '../utils';

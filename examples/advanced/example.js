@@ -19,6 +19,7 @@ import {
   ScaleMode,
   RotateMode,
   DuplicateMode,
+  ExtendLineStringMode,
   SplitPolygonMode,
   ExtrudeMode,
   ElevationMode,
@@ -115,6 +116,7 @@ const ALL_MODES = [
       { label: 'Rotate', mode: RotateMode },
       { label: 'Scale', mode: ScaleMode },
       { label: 'Duplicate', mode: DuplicateMode },
+      { label: 'Extend LineString', mode: ExtendLineStringMode },
       { label: 'Extrude', mode: ExtrudeMode },
       { label: 'Split', mode: SplitPolygonMode },
       { label: 'Transform', mode: new SnappableMode(new TransformMode()) }
@@ -494,27 +496,6 @@ export default class Example extends Component<
     );
   }
 
-  _renderDrawLineStringModeControls() {
-    return (
-      <ToolboxRow key="drawLineString">
-        <ToolboxTitle>Draw LineString At Front</ToolboxTitle>
-        <ToolboxControl>
-          <input
-            type="checkbox"
-            checked={Boolean(this.state.modeConfig && this.state.modeConfig.drawAtFront)}
-            onChange={event =>
-              this.setState({
-                modeConfig: {
-                  drawAtFront: Boolean(event.target.checked)
-                }
-              })
-            }
-          />
-        </ToolboxControl>
-      </ToolboxRow>
-    );
-  }
-
   _renderModifyModeControls() {
     return (
       <ToolboxRow key="modify">
@@ -604,9 +585,6 @@ export default class Example extends Component<
     }
     if (TWO_CLICK_POLYGON_MODES.indexOf(this.state.mode) > -1) {
       controls.push(this._renderTwoClickPolygonControls());
-    }
-    if (this.state.mode === DrawLineStringMode) {
-      controls.push(this._renderDrawLineStringModeControls());
     }
     if (this.state.mode === ModifyMode) {
       controls.push(this._renderModifyModeControls());

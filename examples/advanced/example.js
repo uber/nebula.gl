@@ -42,7 +42,7 @@ import {
   SnappableMode,
   ElevatedEditHandleLayer,
   PathMarkerLayer,
-  SELECTION_TYPE
+  SELECTION_TYPE,
 } from 'nebula.gl';
 
 import sampleGeoJson from '../data/sample-geojson.json';
@@ -55,7 +55,7 @@ import {
   ToolboxTitle,
   ToolboxRow,
   ToolboxButton,
-  ToolboxCheckbox
+  ToolboxCheckbox,
 } from './toolbox';
 
 const COMPOSITE_MODE = new CompositeMode([new DrawLineStringMode(), new ModifyMode()]);
@@ -64,11 +64,11 @@ const styles = {
   mapContainer: {
     alignItems: 'stretch',
     display: 'flex',
-    height: '100vh'
+    height: '100vh',
   },
   checkbox: {
-    margin: 10
-  }
+    margin: 10,
+  },
 };
 
 const initialViewport = {
@@ -78,7 +78,7 @@ const initialViewport = {
   longitude: -122.44,
   pitch: 0,
   width: 0,
-  zoom: 11
+  zoom: 11,
 };
 
 const ALL_MODES = [
@@ -88,8 +88,8 @@ const ALL_MODES = [
       { label: 'View', mode: ViewMode },
       { label: 'Measure Distance', mode: MeasureDistanceMode },
       { label: 'Measure Area', mode: MeasureAreaMode },
-      { label: 'Measure Angle', mode: MeasureAngleMode }
-    ]
+      { label: 'Measure Angle', mode: MeasureAngleMode },
+    ],
   },
   {
     category: 'Draw',
@@ -104,8 +104,8 @@ const ALL_MODES = [
       { label: 'Draw Circle From Center', mode: DrawCircleFromCenterMode },
       { label: 'Draw Circle By Diameter', mode: DrawCircleByDiameterMode },
       { label: 'Draw Ellipse By Bounding Box', mode: DrawEllipseByBoundingBoxMode },
-      { label: 'Draw Ellipse Using 3 Points', mode: DrawEllipseUsingThreePointsMode }
-    ]
+      { label: 'Draw Ellipse Using 3 Points', mode: DrawEllipseUsingThreePointsMode },
+    ],
   },
   {
     category: 'Alter',
@@ -119,13 +119,13 @@ const ALL_MODES = [
       { label: 'Extend LineString', mode: ExtendLineStringMode },
       { label: 'Extrude', mode: ExtrudeMode },
       { label: 'Split', mode: SplitPolygonMode },
-      { label: 'Transform', mode: new SnappableMode(new TransformMode()) }
-    ]
+      { label: 'Transform', mode: new SnappableMode(new TransformMode()) },
+    ],
   },
   {
     category: 'Composite',
-    modes: [{ label: 'Draw LineString + Modify', mode: COMPOSITE_MODE }]
-  }
+    modes: [{ label: 'Draw LineString + Modify', mode: COMPOSITE_MODE }],
+  },
 ];
 
 const POLYGON_DRAWING_MODES = [
@@ -137,24 +137,24 @@ const POLYGON_DRAWING_MODES = [
   DrawCircleFromCenterMode,
   DrawCircleByDiameterMode,
   DrawEllipseByBoundingBoxMode,
-  DrawEllipseUsingThreePointsMode
+  DrawEllipseUsingThreePointsMode,
 ];
 
 const TWO_CLICK_POLYGON_MODES = [
   DrawRectangleMode,
   DrawCircleFromCenterMode,
   DrawCircleByDiameterMode,
-  DrawEllipseByBoundingBoxMode
+  DrawEllipseByBoundingBoxMode,
 ];
 
 const EMPTY_FEATURE_COLLECTION = {
   type: 'FeatureCollection',
-  features: []
+  features: [],
 };
 
 function hex2rgb(hex: string) {
   const value = parseInt(hex, 16);
-  return [16, 8, 0].map(shift => ((value >> shift) & 0xff) / 255);
+  return [16, 8, 0].map((shift) => ((value >> shift) & 0xff) / 255);
 }
 
 const FEATURE_COLORS = [
@@ -169,7 +169,7 @@ const FEATURE_COLORS = [
   'B0592D',
   'C1B5E3',
   '9C805B',
-  'CCDFE5'
+  'CCDFE5',
 ].map(hex2rgb);
 
 // TODO edit-modes:  delete once fully on EditMode implementation and just use handle.properties.editHandleType...
@@ -214,8 +214,8 @@ export default class Example extends Component<
     featureMenu: ?{
       index: number,
       x: number,
-      y: number
-    }
+      y: number,
+    },
   }
 > {
   constructor() {
@@ -232,7 +232,7 @@ export default class Example extends Component<
       selectionTool: null,
       showGeoJson: false,
       pathMarkerLayer: false,
-      featureMenu: null
+      featureMenu: null,
     };
   }
 
@@ -246,7 +246,7 @@ export default class Example extends Component<
 
   _onChangeViewport = (viewport: Object) => {
     this.setState({
-      viewport: { ...this.state.viewport, ...viewport }
+      viewport: { ...this.state.viewport, ...viewport },
     });
   };
 
@@ -277,7 +277,7 @@ export default class Example extends Component<
     if (type === 'mixed') {
       this.setState({
         testFeatures: sampleGeoJson,
-        selectedFeatureIndexes: []
+        selectedFeatureIndexes: [],
       });
     } else if (type === 'complex') {
       this.setState({
@@ -287,20 +287,20 @@ export default class Example extends Component<
             circle([-122.45, 37.81], 4, { steps: 5000 }),
             circle([-122.33, 37.81], 4, { steps: 5000 }),
             circle([-122.45, 37.73], 4, { steps: 5000 }),
-            circle([-122.33, 37.73], 4, { steps: 5000 })
-          ]
+            circle([-122.33, 37.73], 4, { steps: 5000 }),
+          ],
         },
-        selectedFeatureIndexes: []
+        selectedFeatureIndexes: [],
       });
     } else if (type === 'blank') {
       this.setState({
         testFeatures: EMPTY_FEATURE_COLLECTION,
-        selectedFeatureIndexes: []
+        selectedFeatureIndexes: [],
       });
     } else if (type === 'file') {
       const el = document.createElement('input');
       el.type = 'file';
-      el.onchange = e => {
+      el.onchange = (e) => {
         if (e.target.files && e.target.files[0]) {
           const reader = new FileReader();
           reader.onload = ({ target }) => {
@@ -324,10 +324,10 @@ export default class Example extends Component<
   _paste = () => {
     if (navigator && navigator.clipboard) {
       navigator.clipboard.readText().then(
-        value => {
+        (value) => {
           this._parseStringJson(value);
         },
-        reason => {
+        (reason) => {
           this._error(reason);
         }
       );
@@ -351,7 +351,7 @@ export default class Example extends Component<
       if (Array.isArray(testFeatures)) {
         testFeatures = {
           type: 'FeatureCollection',
-          features: testFeatures
+          features: testFeatures,
         };
       }
       // eslint-disable-next-line
@@ -369,7 +369,7 @@ export default class Example extends Component<
 
   _getHtmlColorForFeature(index: number, selected: boolean) {
     const length = FEATURE_COLORS.length;
-    const color = FEATURE_COLORS[index % length].map(c => c * 255).join(',');
+    const color = FEATURE_COLORS[index % length].map((c) => c * 255).join(',');
     const alpha = selected ? 1.0 : 0.7;
 
     return `rgba(${color}, ${alpha})`;
@@ -377,7 +377,7 @@ export default class Example extends Component<
 
   _getDeckColorForFeature(index: number, bright: number, alpha: number) {
     const length = FEATURE_COLORS.length;
-    const color = FEATURE_COLORS[index % length].map(c => c * bright * 255);
+    const color = FEATURE_COLORS[index % length].map((c) => c * bright * 255);
 
     return [...color, alpha * 255];
   }
@@ -393,18 +393,18 @@ export default class Example extends Component<
           onChange={() => {
             if (selectedFeatureIndexes.includes(index)) {
               this.setState({
-                selectedFeatureIndexes: selectedFeatureIndexes.filter(e => e !== index)
+                selectedFeatureIndexes: selectedFeatureIndexes.filter((e) => e !== index),
               });
             } else {
               this.setState({
-                selectedFeatureIndexes: [...selectedFeatureIndexes, index]
+                selectedFeatureIndexes: [...selectedFeatureIndexes, index],
               });
             }
           }}
         >
           <span
             style={{
-              color: this._getHtmlColorForFeature(index, selectedFeatureIndexes.includes(index))
+              color: this._getHtmlColorForFeature(index, selectedFeatureIndexes.includes(index)),
             }}
           >
             {index}
@@ -413,12 +413,12 @@ export default class Example extends Component<
           </span>
           <a
             style={{ position: 'absolute', right: 12 }}
-            onClick={e => {
+            onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
               this.setState({
                 selectedFeatureIndexes: [index],
-                featureMenu: { index, x: e.clientX, y: e.clientY }
+                featureMenu: { index, x: e.clientX, y: e.clientY },
               });
             }}
           >
@@ -431,7 +431,7 @@ export default class Example extends Component<
 
   _renderSelectFeatureCheckboxes() {
     const {
-      testFeatures: { features }
+      testFeatures: { features },
     } = this.state;
     const checkboxes = [];
     for (let i = 0; i < features.length; ++i) {
@@ -445,10 +445,12 @@ export default class Example extends Component<
     return (
       <ToolboxRow key="booleanOperations">
         <ToolboxTitle>
-          Boolean operation<br />(requires single selection)
+          Boolean operation
+          <br />
+          (requires single selection)
         </ToolboxTitle>
         <ToolboxControl>
-          {operations.map(operation => (
+          {operations.map((operation) => (
             <ToolboxButton
               key={operation}
               selected={
@@ -457,11 +459,11 @@ export default class Example extends Component<
               onClick={() => {
                 if (this.state.modeConfig && this.state.modeConfig.booleanOperation === operation) {
                   this.setState({
-                    modeConfig: { ...(this.state.modeConfig || {}), booleanOperation: null }
+                    modeConfig: { ...(this.state.modeConfig || {}), booleanOperation: null },
                   });
                 } else {
                   this.setState({
-                    modeConfig: { ...(this.state.modeConfig || {}), booleanOperation: operation }
+                    modeConfig: { ...(this.state.modeConfig || {}), booleanOperation: operation },
                   });
                 }
               }}
@@ -482,12 +484,12 @@ export default class Example extends Component<
           <input
             type="checkbox"
             checked={Boolean(this.state.modeConfig && this.state.modeConfig.dragToDraw)}
-            onChange={event =>
+            onChange={(event) =>
               this.setState({
                 modeConfig: {
                   ...(this.state.modeConfig || {}),
-                  dragToDraw: Boolean(event.target.checked)
-                }
+                  dragToDraw: Boolean(event.target.checked),
+                },
               })
             }
           />
@@ -519,7 +521,7 @@ export default class Example extends Component<
           <input
             type="checkbox"
             checked={Boolean(this.state.modeConfig && this.state.modeConfig.lock90Degree)}
-            onChange={event =>
+            onChange={(event) =>
               this.setState({ modeConfig: { lock90Degree: Boolean(event.target.checked) } })
             }
           />
@@ -537,10 +539,10 @@ export default class Example extends Component<
             <input
               type="checkbox"
               checked={Boolean(this.state.modeConfig && this.state.modeConfig.enableSnapping)}
-              onChange={event => {
+              onChange={(event) => {
                 const modeConfig = {
                   ...this.state.modeConfig,
-                  enableSnapping: Boolean(event.target.checked)
+                  enableSnapping: Boolean(event.target.checked),
                 };
                 this.setState({ modeConfig });
               }}
@@ -563,7 +565,7 @@ export default class Example extends Component<
                 this.state.modeConfig.turfOptions.units) ||
               'kilometers'
             }
-            onChange={event =>
+            onChange={(event) =>
               this.setState({ modeConfig: { turfOptions: { units: event.target.value } } })
             }
           >
@@ -605,7 +607,7 @@ export default class Example extends Component<
   _renderToolBox() {
     return (
       <Toolbox>
-        {ALL_MODES.map(category => (
+        {ALL_MODES.map((category) => (
           <ToolboxRow key={category.category}>
             <ToolboxTitle>{category.category} Modes</ToolboxTitle>
             {category.modes.map(({ mode, label }) => (
@@ -634,7 +636,9 @@ export default class Example extends Component<
                 rows={5}
                 style={{ width: '100%' }}
                 value={JSON.stringify(this.state.testFeatures)}
-                onChange={event => this.setState({ testFeatures: JSON.parse(event.target.value) })}
+                onChange={(event) =>
+                  this.setState({ testFeatures: JSON.parse(event.target.value) })
+                }
               />
             </ToolboxControl>
           </React.Fragment>
@@ -670,7 +674,7 @@ export default class Example extends Component<
               checked={this.state.editHandleType === 'icon'}
               onChange={() =>
                 this.setState({
-                  editHandleType: this.state.editHandleType === 'icon' ? 'point' : 'icon'
+                  editHandleType: this.state.editHandleType === 'icon' ? 'point' : 'icon',
                 })
               }
             >
@@ -684,7 +688,7 @@ export default class Example extends Component<
               checked={this.state.editHandleType === 'elevated'}
               onChange={() =>
                 this.setState({
-                  editHandleType: this.state.editHandleType === 'elevated' ? 'point' : 'elevated'
+                  editHandleType: this.state.editHandleType === 'elevated' ? 'point' : 'elevated',
                 })
               }
             >
@@ -698,7 +702,7 @@ export default class Example extends Component<
               checked={this.state.pathMarkerLayer}
               onChange={() =>
                 this.setState({
-                  pathMarkerLayer: !this.state.pathMarkerLayer
+                  pathMarkerLayer: !this.state.pathMarkerLayer,
                 })
               }
             >
@@ -751,7 +755,7 @@ export default class Example extends Component<
       const features = [...testFeatures.features];
       features.splice(index, 1);
       testFeatures = Object.assign({}, testFeatures, {
-        features
+        features,
       });
     } else if (action === 'split') {
       // TODO
@@ -796,7 +800,7 @@ export default class Example extends Component<
     }
     this.setState({
       testFeatures: updatedData,
-      selectedFeatureIndexes: updatedSelectedFeatureIndexes
+      selectedFeatureIndexes: updatedSelectedFeatureIndexes,
     });
   };
 
@@ -821,20 +825,20 @@ export default class Example extends Component<
     const viewport = {
       ...this.state.viewport,
       height: window.innerHeight,
-      width: window.innerWidth
+      width: window.innerWidth,
     };
 
     if (mode === ElevationMode) {
       modeConfig = {
         ...modeConfig,
         viewport,
-        calculateElevationChange: opts =>
-          ElevationMode.calculateElevationChangeWithViewport(viewport, opts)
+        calculateElevationChange: (opts) =>
+          ElevationMode.calculateElevationChangeWithViewport(viewport, opts),
       };
     } else if (mode === ModifyMode) {
       modeConfig = {
         ...modeConfig,
-        viewport
+        viewport,
       };
     } else if (mode instanceof SnappableMode && modeConfig && modeConfig.enableSnapping) {
       // Snapping can be accomplished to features that aren't rendered in the same layer
@@ -852,25 +856,25 @@ export default class Example extends Component<
                   [-122.52217, 37.712706],
                   [-122.49436, 37.711979],
                   [-122.49725, 37.734306],
-                  [-122.52235, 37.734008]
-                ]
-              ]
-            }
-          }
-        ]
+                  [-122.52235, 37.734008],
+                ],
+              ],
+            },
+          },
+        ],
       };
     } else if (mode === DrawPolygonByDraggingMode) {
       modeConfig = {
         ...modeConfig,
-        throttleMs: 100
+        throttleMs: 100,
       };
     }
 
     // Demonstrate how to override sub layer properties
     let _subLayerProps = {
       tooltips: {
-        getColor: [255, 255, 255, 255]
-      }
+        getColor: [255, 255, 255, 255],
+      },
     };
 
     if (this.state.editHandleType === 'elevated') {
@@ -879,10 +883,10 @@ export default class Example extends Component<
           _subLayerProps: {
             points: {
               type: ElevatedEditHandleLayer,
-              getFillColor: [0, 255, 0]
-            }
-          }
-        }
+              getFillColor: [0, 255, 0],
+            },
+          },
+        },
       });
     }
 
@@ -892,11 +896,11 @@ export default class Example extends Component<
           _subLayerProps: {
             'line-strings': {
               type: PathMarkerLayer,
-              getMarkerColor: x => [255, 255, 255, 255],
-              sizeScale: 1500
-            }
-          }
-        }
+              getMarkerColor: (x) => [255, 255, 255, 255],
+              sizeScale: 1500,
+            },
+          },
+        },
       });
     }
 
@@ -921,31 +925,31 @@ export default class Example extends Component<
           y: 0,
           width: 58,
           height: 58,
-          mask: false
+          mask: false,
         },
         existing: {
           x: 58,
           y: 0,
           width: 58,
           height: 58,
-          mask: false
+          mask: false,
         },
         'snap-source': {
           x: 58,
           y: 0,
           width: 58,
           height: 58,
-          mask: false
+          mask: false,
         },
         'snap-target': {
           x: 0,
           y: 0,
           width: 58,
           height: 58,
-          mask: false
-        }
+          mask: false,
+        },
       },
-      getEditHandleIcon: d => getEditHandleTypeFromEitherLayer(d),
+      getEditHandleIcon: (d) => getEditHandleTypeFromEitherLayer(d),
       getEditHandleIconSize: 40,
       getEditHandleIconColor: getEditHandleColor,
 
@@ -974,8 +978,8 @@ export default class Example extends Component<
 
         blend: true,
         blendEquation: GL.FUNC_ADD,
-        blendFunc: [GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA]
-      }
+        blendFunc: [GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA],
+      },
     });
 
     const layers = [editableGeoJsonLayer];
@@ -986,13 +990,13 @@ export default class Example extends Component<
           id: 'selection',
           selectionType: this.state.selectionTool,
           onSelect: ({ pickingInfos }) => {
-            this.setState({ selectedFeatureIndexes: pickingInfos.map(pi => pi.index) });
+            this.setState({ selectedFeatureIndexes: pickingInfos.map((pi) => pi.index) });
           },
           layerIds: ['geojson'],
 
           getTentativeFillColor: () => [255, 0, 255, 100],
           getTentativeLineColor: () => [0, 0, 255, 255],
-          lineWidthMinPixels: 3
+          lineWidthMinPixels: 3,
         })
       );
     }
@@ -1011,8 +1015,8 @@ export default class Example extends Component<
               id: 'basemap',
               controller: {
                 type: MapController,
-                doubleClickZoom: this.state.mode === 'view' && !this.state.selectionTool
-              }
+                doubleClickZoom: this.state.mode === 'view' && !this.state.selectionTool,
+              },
             })
           }
           onClick={this._onLayerClick}
@@ -1029,7 +1033,7 @@ export default class Example extends Component<
 
 function featuresToInfoString(featureCollection: any): string {
   const info = featureCollection.features.map(
-    feature => `${feature.geometry.type}(${getPositionCount(feature.geometry)})`
+    (feature) => `${feature.geometry.type}(${getPositionCount(feature.geometry)})`
   );
 
   return JSON.stringify(info);
@@ -1047,9 +1051,9 @@ function getPositionCount(geometry): number {
       return coordinates.length;
     case 'Polygon':
     case 'MultiLineString':
-      return flatMap(x => x, coordinates).length;
+      return flatMap((x) => x, coordinates).length;
     case 'MultiPolygon':
-      return flatMap(x => flatMap(y => y, x), coordinates).length;
+      return flatMap((x) => flatMap((y) => y, x), coordinates).length;
     default:
       throw Error(`Unknown geometry type: ${type}`);
   }

@@ -9,17 +9,17 @@ const config = {
   mode: 'development',
 
   entry: {
-    app: resolve('./app.js')
+    app: resolve('./app.js'),
   },
 
   devServer: {
-    contentBase: [resolve(__dirname), resolve(__dirname, './static')]
+    contentBase: [resolve(__dirname), resolve(__dirname, './static')],
   },
 
   output: {
     library: 'App',
     path: resolve(__dirname, './dist'),
-    filename: 'app.js'
+    filename: 'app.js',
   },
 
   devtool: 'source-map',
@@ -37,32 +37,32 @@ const config = {
             presets: [
               require('@babel/preset-env'),
               require('@babel/preset-react'),
-              require('@babel/preset-flow')
+              require('@babel/preset-flow'),
             ],
             plugins: [
               require('@babel/plugin-proposal-class-properties'),
-              require('@babel/plugin-proposal-export-default-from')
-            ]
-          }
-        }
+              require('@babel/plugin-proposal-export-default-from'),
+            ],
+          },
+        },
       },
       {
         // webpackl 4 fix for broken turf module: https://github.com/uber/nebula.gl/issues/64
         test: /\.mjs$/,
         include: /node_modules/,
-        type: 'javascript/auto'
+        type: 'javascript/auto',
       },
       {
         test: /\.(eot|svg|ttf|woff|woff2|gif|jpe?g|png)$/,
-        loader: 'url-loader'
-      }
-    ]
+        loader: 'url-loader',
+      },
+    ],
   },
 
   // Optional: Enables reading mapbox token from environment variable
-  plugins: [new webpack.EnvironmentPlugin(['MapboxAccessToken', 'MapStyle'])]
+  plugins: [new webpack.EnvironmentPlugin(['MapboxAccessToken', 'MapStyle'])],
 };
 
 // Enables bundling against src in this repo rather than the installed version
-module.exports = env =>
+module.exports = (env) =>
   env && env.local ? require('../webpack.config.local')(config)(env) : config;

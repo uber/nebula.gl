@@ -3,8 +3,8 @@ import styled from 'styled-components';
 
 const styles = {
   toolboxItem: {
-    flexBasis: '50%'
-  }
+    flexBasis: '50%',
+  },
 };
 
 export const Toolbox = styled.div`
@@ -21,8 +21,8 @@ export const Toolbox = styled.div`
   z-index: 999;
 `;
 
-export const ToolboxRow = props => <div>{props.children}</div>;
-export const ToolboxControl = props => <div style={styles.toolboxItem}>{props.children}</div>;
+export const ToolboxRow = (props) => <div>{props.children}</div>;
+export const ToolboxControl = (props) => <div style={styles.toolboxItem}>{props.children}</div>;
 
 export const ToolboxTitle = styled.div`
   background: rgba(39, 45, 59, 0.8);
@@ -33,7 +33,7 @@ export const ToolboxTitle = styled.div`
   padding: 0px 8px;
 `;
 
-const buttonBackground = props =>
+const buttonBackground = (props) =>
   props.selected ? 'rgba(30, 84, 183, 0.8)' : 'rgba(23, 28, 41, 0.8)';
 
 export const ToolboxButton = styled.button`
@@ -72,7 +72,7 @@ const ToolboxCheckboxContainer = styled.div`
   }
 `;
 
-export const ToolboxCheckbox = props => (
+export const ToolboxCheckbox = (props) => (
   <label>
     <ToolboxCheckboxContainer>
       <input {...{ ...props, children: null }} />

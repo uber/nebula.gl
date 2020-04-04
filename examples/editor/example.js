@@ -14,13 +14,13 @@ const MAPBOX_ACCESS_TOKEN =
 const initialViewState = {
   longitude: -122.43,
   latitude: 37.775,
-  zoom: 12
+  zoom: 12,
 };
 
 export function Example() {
   const [features, setFeatures] = React.useState({
     type: 'FeatureCollection',
-    features: []
+    features: [],
   });
   const [selectedFeatureIndexes] = React.useState([]);
   const [mode, setMode] = React.useState(() => ViewMode);
@@ -31,7 +31,7 @@ export function Example() {
     selectedFeatureIndexes,
     onEdit: ({ updatedData }) => {
       setFeatures(updatedData);
-    }
+    },
   });
 
   return (
@@ -39,7 +39,7 @@ export function Example() {
       <DeckGL
         initialViewState={initialViewState}
         controller={{
-          doubleClickZoom: false
+          doubleClickZoom: false,
         }}
         layers={[layer]}
         getCursor={layer.getCursor.bind(layer)}
@@ -50,10 +50,10 @@ export function Example() {
         mode={mode}
         features={features}
         onSetMode={setMode}
-        onImport={featureCollection =>
+        onImport={(featureCollection) =>
           setFeatures({
             ...features,
-            features: [...features.features, ...featureCollection.features]
+            features: [...features.features, ...featureCollection.features],
           })
         }
       />

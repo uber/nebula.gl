@@ -69,12 +69,13 @@ export default class BaseMode implements EditMode<FeatureCollection, GuideFeatur
           // TODO deprecate renderType
           renderType: feature.properties.renderType,
           guideType: GUIDE_TYPE.EDIT_HANDLE,
+          editHandleType: 'existing',
           featureIndex,
           positionIndexes: [i],
         },
         geometry: {
           type: GEOJSON_TYPE.POINT,
-          coordinates: [coord],
+          coordinates: coord,
         },
       };
     });
@@ -86,8 +87,7 @@ export default class BaseMode implements EditMode<FeatureCollection, GuideFeatur
   ) => {
     const { data, selectedIndexes } = props;
     // @ts-ignore
-    const featureCollection = data.getObject();
-    const features = featureCollection && featureCollection.features;
+    const features = data && data.features;
 
     const selectedIndex = isNumeric(featureIndex)
       ? Number(featureIndex)

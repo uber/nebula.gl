@@ -3,7 +3,7 @@ import React from 'react';
 import { Feature } from '@nebula.gl/edit-modes';
 import { GeoJsonType, RenderState, Id } from './types';
 
-import { RENDER_STATE, RENDER_TYPE, GEOJSON_TYPE, GUIDE_TYPE, ELEMENT_TYPE } from './constants';
+import { RENDER_STATE, SHAPE, GEOJSON_TYPE, GUIDE_TYPE, ELEMENT_TYPE } from './constants';
 import ModeHandler from './mode-handler';
 import { getFeatureCoordinates } from './edit-modes/utils';
 
@@ -120,11 +120,11 @@ export default class Editor extends ModeHandler {
     }
 
     const {
-      properties: { featureIndex, positionIndexes },
+      properties: { featureIndex, positionIndexes, editHandleType },
     } = editHandle;
     const { clickRadius, editHandleShape, editHandleStyle } = this.props;
 
-    const index = positionIndexes[0];
+    const index = positionIndexes.length > 1 ? positionIndexes[1] : positionIndexes[0];
 
     const shape = this._getStyleProp(editHandleShape, {
       feature: feature || editHandle,
@@ -152,7 +152,7 @@ export default class Editor extends ModeHandler {
       };
     }
 
-    const elemKey = `${ELEMENT_TYPE.EDIT_HANDLE}.${featureIndex}.${index}`;
+    const elemKey = `${ELEMENT_TYPE.EDIT_HANDLE}.${featureIndex}.${index}.${editHandleType}`;
     // first <circle|rect> is to make path easily interacted with
     switch (shape) {
       case 'circle':
@@ -274,16 +274,19 @@ export default class Editor extends ModeHandler {
   _renderTentativeFeature = (feature: Feature, cursorEditHandle: Feature) => {
     const { featureStyle } = this.props;
     const {
-      geometry: { coordinates },
-      properties: { renderType },
+      geometry: { type: geojsonType },
+      properties: { shape },
     } = feature;
 
+    const coordinates = getFeatureCoordinates(feature);
+    // @ts-ignore
     if (!coordinates || coordinates.length < 2) {
       return null;
     }
 
     // >= 2 coordinates
     const firstCoords = coordinates[0];
+    // @ts-ignore
     const lastCoords = coordinates[coordinates.length - 1];
     const uncommittedStyle = this._getStyleProp(featureStyle, {
       feature,
@@ -297,15 +300,17 @@ export default class Editor extends ModeHandler {
     // @ts-ignore
     const fill = this._renderFill('tentative', coordinates, uncommittedStyle);
 
-    switch (renderType) {
-      case RENDER_TYPE.LINE_STRING:
-      case RENDER_TYPE.POLYGON:
+    const type = shape || geojsonType;
+    switch (type) {
+      case SHAPE.LINE_STRING:
+      case SHAPE.POLYGON:
         const committedStyle = this._getStyleProp(featureStyle, {
           feature,
           state: RENDER_STATE.SELECTED,
         });
 
         if (cursorEditHandle) {
+          // @ts-ignore
           const cursorCoords = coordinates[coordinates.length - 2];
           committedPath = this._renderSegments(
             'tentative',
@@ -315,6 +320,7 @@ export default class Editor extends ModeHandler {
           );
           uncommittedPath = this._renderSegment(
             'tentative-uncommitted',
+            // @ts-ignore
             coordinates.length - 2,
             // @ts-ignore
             [cursorCoords, lastCoords],
@@ -325,7 +331,7 @@ export default class Editor extends ModeHandler {
           committedPath = this._renderSegments('tentative', coordinates, committedStyle);
         }
 
-        if (renderType === RENDER_TYPE.POLYGON) {
+        if (shape === SHAPE.POLYGON) {
           const closingStyle = this._getStyleProp(featureStyle, {
             feature,
             index: null,
@@ -334,6 +340,7 @@ export default class Editor extends ModeHandler {
 
           closingPath = this._renderSegment(
             'tentative-closing',
+            // @ts-ignore
             coordinates.length - 1,
             // @ts-ignore
             [lastCoords, firstCoords],
@@ -343,7 +350,7 @@ export default class Editor extends ModeHandler {
 
         break;
 
-      case RENDER_TYPE.RECTANGLE:
+      case SHAPE.RECTANGLE:
         uncommittedPath = this._renderSegments(
           'tentative',
           // @ts-ignore
@@ -358,20 +365,35 @@ export default class Editor extends ModeHandler {
     return [fill, committedPath, uncommittedPath, closingPath].filter(Boolean);
   };
 
-  _renderGuides = ({ tentativeFeature, editHandles }: Record<string, any>) => {
+  _renderGuides = (guideFeatures: Feature[]) => {
     const features = this.getFeatures();
-    const cursorEditHandle = editHandles.find(
-      (f) => f.properties.guideType === GUIDE_TYPE.CURSOR_EDIT_HANDLE
-    );
+    const cursorEditHandle =
+      guideFeatures &&
+      guideFeatures.find((f) => f.properties.guideType === GUIDE_TYPE.CURSOR_EDIT_HANDLE);
+    const tentativeFeature = features.find((f) => f.properties.guideType === GUIDE_TYPE.TENTATIVE);
+
     return (
       <g key="feature-guides">
-        {tentativeFeature && this._renderTentativeFeature(tentativeFeature, cursorEditHandle)}
-        {editHandles &&
-          editHandles.map((editHandle) => {
-            const feature =
-              (features && features[editHandle.properties.featureIndex]) || tentativeFeature;
-            return this._renderEditHandle(editHandle, feature);
-          })}
+        {guideFeatures.map((guide) => {
+          const guideType = guide.properties.guideType;
+          switch (guideType) {
+            case GUIDE_TYPE.TENTATIVE:
+              return this._renderTentativeFeature(guide, cursorEditHandle);
+            case GUIDE_TYPE.EDIT_HANDLE:
+            case GUIDE_TYPE.CURSOR_EDIT_HANDLE:
+              const shape = guide.properties.shape || guide.geometry.type;
+              // TODO this should be removed when fix editing mode
+              // don't render cursor for rectangle
+              if (shape === SHAPE.RECTANGLE && guide.properties.editHandleType === 'intermediate') {
+                return null;
+              }
+              const feature =
+                (features && features[guide.properties.featureIndex]) || tentativeFeature;
+              return this._renderEditHandle(guide, feature);
+            default:
+              return null;
+          }
+        })}
       </g>
     );
   };
@@ -521,23 +543,24 @@ export default class Editor extends ModeHandler {
     }
 
     const {
-      properties: { renderType },
-      geometry: { type },
+      properties: { shape },
+      geometry: { type: geojsonType },
     } = feature;
     // @ts-ignore
-    const path = this._getPathInScreenCoords(coordinates, type);
+    const path = this._getPathInScreenCoords(coordinates, geojsonType);
     if (!path) {
       return null;
     }
 
-    switch (renderType) {
-      case RENDER_TYPE.POINT:
+    const type = shape || geojsonType;
+    switch (type) {
+      case SHAPE.POINT:
         return this._renderPoint(feature, index, path);
-      case RENDER_TYPE.LINE_STRING:
+      case SHAPE.LINE_STRING:
         return this._renderPath(feature, index, path);
 
-      case RENDER_TYPE.POLYGON:
-      case RENDER_TYPE.RECTANGLE:
+      case SHAPE.POLYGON:
+      case SHAPE.RECTANGLE:
         return this._renderPolygon(feature, index, path);
 
       default:
@@ -548,13 +571,14 @@ export default class Editor extends ModeHandler {
   _renderCanvas = () => {
     const features = this.getFeatures();
     const guides = this._modeHandler && this._modeHandler.getGuides(this.getModeProps());
+    const guideFeatures = guides && guides.features;
 
     return (
       <svg key="draw-canvas" width="100%" height="100%">
         {features && features.length > 0 && (
           <g key="feature-group">{features.map(this._renderFeature)}</g>
         )}
-        {guides && <g key="feature-guides">{this._renderGuides(guides)}</g>}
+        {guideFeatures && <g key="feature-guides">{this._renderGuides(guideFeatures)}</g>}
       </svg>
     );
   };

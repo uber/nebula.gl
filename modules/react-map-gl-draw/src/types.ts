@@ -45,6 +45,7 @@ export type EditorProps = {
   featuresDraggable: boolean | null | undefined;
   onUpdate: Function;
   onSelect: Function;
+  onUpdateCursor: Function;
 };
 
 export type EditorState = {

@@ -19,13 +19,17 @@
   "files": [
     "dist",
     "dist-es6",
+    "dist-types",
     "src"
   ],
+  "types": "dist-types/index.d.ts",
+  "typings": "dist-types/index.d.ts",
   "scripts": {
     "build-clean": "rm -fr dist dist-es6 && mkdir -p dist dist-es6",
-    "build-es6": "rm -fr dist-es6 && BABEL_ENV=es6 babel src --config-file ../../babel.config.js --out-dir dist-es6 --source-maps inline",
-    "build-es5": "rm -fr dist && BABEL_ENV=es5 babel src --config-file ../../babel.config.js --out-dir dist --source-maps inline",
-    "build": "yarn build-clean && yarn build-es6 && yarn build-es5 && cp ../../README.md .",
+    "build-es6": "rm -fr dist-es6 && BABEL_ENV=es6 babel src --config-file ../../babel.config.js --out-dir dist-es6 --source-maps inline --extensions .ts,tsx",
+    "build-es5": "rm -fr dist && BABEL_ENV=es5 babel src --config-file ../../babel.config.js --out-dir dist --source-maps inline --extensions .ts,tsx",
+    "build": "yarn build-clean && yarn build-es6 && yarn run emitDeclarations && yarn build-es5 && cp ../../README.md .",
+    "emitDeclarations": "rm -fr  dist-types && tsc --emitDeclarationOnly",
     "flow": "(cd ../.. && yarn flow)",
     "lint": "(cd ../.. && yarn lint)",
     "prepublish": "yarn build",
@@ -72,7 +76,9 @@
     "cubic-hermite-spline": "^1.0.1",
     "geojson-types": "^2.0.1",
     "global": ">=4.3.0",
-    "viewport-mercator-project": ">=6.0.0"
+    "viewport-mercator-project": ">=6.0.0",
+    "uuid": "7.0.3"
+    
   },
   "peerDependencies": {
     "@deck.gl/core": "^8.0.3",

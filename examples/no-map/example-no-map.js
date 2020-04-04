@@ -21,11 +21,11 @@ export default class ExampleNoMap extends Example {
     };
   }
 
-  renderStaticMap(viewport: Object) {
+  renderStaticMap(viewport) {
     return null;
   }
 
-  customizeLayers(layers: Object[]) {
+  customizeLayers(layers) {
     layers.unshift(
       new BitmapLayer({
         id: 'bitmap-layer',

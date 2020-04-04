@@ -1,15 +1,7 @@
-// @flow
 /* eslint-env jest */
 
-import type { Position, FeatureCollection } from '@nebula.gl/edit-modes';
-import type {
-  ModeProps,
-  ClickEvent,
-  PointerMoveEvent,
-  StartDraggingEvent,
-  StopDraggingEvent,
-  Pick,
-} from '../src/types.js';
+import { Position, FeatureCollection } from '@nebula.gl/edit-modes';
+import { ClickEvent, PointerMoveEvent, StopDraggingEvent } from '../../src/event-types';
 
 export const FeatureType = {
   POINT: 'Point',
@@ -244,7 +236,9 @@ export const mockNonPickedHandle = {
 
 export const mockedGeoJsonProperties = { testString: 'hi', testNumber: 10 };
 
-function createFeature(featureType: string, options: ?{ [key: string]: any }) {
+function createFeature(featureType: string, options: {
+  [K in string]: any;
+} | null) {
   const feature = mockFeatures[featureType].geoJson;
   const { mockGeoJsonProperties } = options || {};
   if (mockGeoJsonProperties) {
@@ -253,31 +247,45 @@ function createFeature(featureType: string, options: ?{ [key: string]: any }) {
   return feature;
 }
 
-export function createPointFeature(options: ?{ [key: string]: any }) {
+export function createPointFeature(options: {
+  [K in string]: any;
+} | null) {
   return createFeature(FeatureType.POINT, options);
 }
 
-export function createLineStringFeature(options: ?{ [key: string]: any }) {
+export function createLineStringFeature(options: {
+  [K in string]: any;
+} | null) {
   return createFeature(FeatureType.LINE_STRING, options);
 }
 
-export function createPolygonFeature(options: ?{ [key: string]: any }) {
+export function createPolygonFeature(options: {
+  [K in string]: any;
+} | null) {
   return createFeature(FeatureType.POLYGON, options);
 }
 
-export function createMultiPointFeature(options: ?{ [key: string]: any }) {
+export function createMultiPointFeature(options: {
+  [K in string]: any;
+} | null) {
   return createFeature(FeatureType.MULTI_POINT, options);
 }
 
-export function createMultiLineStringFeature(options: ?{ [key: string]: any }) {
+export function createMultiLineStringFeature(options: {
+  [K in string]: any;
+} | null) {
   return createFeature(FeatureType.MULTI_LINE_STRING, options);
 }
 
-export function createMultiPolygonFeature(options: ?{ [key: string]: any }) {
+export function createMultiPolygonFeature(options: {
+  [K in string]: any;
+} | null) {
   return createFeature(FeatureType.MULTI_POLYGON, options);
 }
 
-export function getFeatureCollectionFeatures(options: ?{ [key: string]: any }) {
+export function getFeatureCollectionFeatures(options: {
+  [K in string]: any;
+} | null) {
   return [
     createPointFeature(options),
     createLineStringFeature(options),
@@ -288,7 +296,9 @@ export function getFeatureCollectionFeatures(options: ?{ [key: string]: any }) {
   ];
 }
 
-export function createFeatureCollection(options: ?{ [key: string]: any }) {
+export function createFeatureCollection(options: {
+  [K in string]: any;
+} | null) {
   return {
     type: 'FeatureCollection',
     features: getFeatureCollectionFeatures(options),
@@ -304,73 +314,41 @@ export function getMockFeatureDetails(featureType: string) {
   return featureDetails;
 }
 
-export function createClickEvent(mapCoords: Position, picks: Pick[] = []): ClickEvent {
+export function createClickEvent(groundCoords: Position, picks: any[] = []): ClickEvent {
   return {
     screenCoords: [-1, -1],
-    mapCoords,
+    groundCoords,
     picks,
     sourceEvent: null,
   };
 }
 
-export function createStartDraggingEvent(
-  mapCoords: Position,
-  pointerDownMapCoords: Position,
-  picks: Pick[] = []
-): StartDraggingEvent {
-  return {
-    screenCoords: [-1, -1],
-    mapCoords,
-    picks,
-    pointerDownPicks: null,
-    pointerDownScreenCoords: [-1, -1],
-    pointerDownMapCoords,
-    cancelPan: jest.fn(),
-    sourceEvent: null,
-  };
-}
-
-export function createStopDraggingEvent(
-  mapCoords: Position,
-  pointerDownMapCoords: Position,
-  picks: Pick[] = []
+export function createPointerDragEvent(
+  groundCoords: Position,
+  pointerDownGroundCoords: Position,
+  picks: any[] = []
 ): StopDraggingEvent {
   return {
     screenCoords: [-1, -1],
-    mapCoords,
+    groundCoords,
     picks,
+    isDragging: true,
     pointerDownPicks: null,
     pointerDownScreenCoords: [-1, -1],
-    pointerDownMapCoords,
+    pointerDownGroundCoords,
     sourceEvent: null,
   };
 }
 
-export function createPointerMoveEvent(mapCoords: Position, picks: Pick[] = []): PointerMoveEvent {
+export function createPointerMoveEvent(groundCoords: Position, picks: any[] = []): PointerMoveEvent {
   return {
     screenCoords: [-1, -1],
-    mapCoords,
+    groundCoords,
     picks,
+    isDragging: false,
     pointerDownPicks: null,
     pointerDownScreenCoords: null,
-    pointerDownMapCoords: null,
-    cancelPan: jest.fn(),
+    pointerDownGroundCoords: null,
     sourceEvent: null,
-  };
-}
-
-export function createFeatureCollectionProps(
-  overrides: ?$Shape<ModeProps<FeatureCollection>>
-): ModeProps<FeatureCollection> {
-  overrides = overrides || {};
-
-  return {
-    data: createFeatureCollection(),
-    selectedIndexes: [],
-    lastPointerMoveEvent: createPointerMoveEvent(),
-    modeConfig: null,
-    onEdit: jest.fn(),
-    onUpdateCursor: jest.fn(),
-    ...overrides,
   };
 }

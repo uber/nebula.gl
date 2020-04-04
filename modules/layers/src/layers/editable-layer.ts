@@ -92,7 +92,7 @@ export default class EditableLayer extends CompositeLayer<any> {
     // Use a naming convention to find the event handling function for this event type
     const func = currentLayer[`_on${event.type}`].bind(currentLayer);
     if (!func) {
-      console.warn(`no handler for mjolnir event ${event.type}`); // eslint-disable-line
+      console.warn(`no handler for mjolnir.js event ${event.type}`); // eslint-disable-line
       return;
     }
     func(event);

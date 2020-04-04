@@ -1,12 +1,11 @@
-// @flow
 /* eslint-env jest */
 
-import { MeasureAngleMode } from '../../src/lib/measure-angle-mode.js';
+import { MeasureAngleMode } from '../../src/lib/measure-angle-mode';
 import {
   createFeatureCollectionProps,
   createClickEvent,
   createPointerMoveEvent,
-} from '../test-utils.js';
+} from '../test-utils';
 
 describe('move without click', () => {
   let mode;

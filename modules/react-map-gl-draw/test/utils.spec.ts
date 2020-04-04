@@ -1,7 +1,6 @@
-// @flow
 /* eslint-env jest */
 
-import { findClosestPointOnLineSegment, isNumeric } from '../src/edit-modes/utils.js';
+import { findClosestPointOnLineSegment, isNumeric } from '../src/edit-modes/utils';
 
 describe('findClosestPointOnLineSegment', () => {
   it('should return null when point on the line and out of bounds', () => {

@@ -1,4 +1,3 @@
-// @flow-ignore
 import { convertE7Array, toDegree, toRadian } from '../../src/math';
 
 it('test toDegree()', () => {

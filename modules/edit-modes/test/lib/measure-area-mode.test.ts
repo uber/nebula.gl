@@ -1,12 +1,11 @@
-// @flow
 /* eslint-env jest */
 
-import { MeasureAreaMode } from '../../src/lib/measure-area-mode.js';
+import { MeasureAreaMode } from '../../src/lib/measure-area-mode';
 import {
   createFeatureCollectionProps,
   createClickEvent,
   createPointerMoveEvent,
-} from '../test-utils.js';
+} from '../test-utils';
 
 describe('move without click', () => {
   let mode;

@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`three clicks + pointer move tooltip contains angle 1`] = `
+Array [
+  Object {
+    "position": Array [
+      -1,
+      0,
+    ],
+    "text": "45.01 deg",
+  },
+]
+`;

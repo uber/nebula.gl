@@ -1,4 +1,3 @@
-// @flow
 export const center = [-122, 37];
 
 export const viewport = {

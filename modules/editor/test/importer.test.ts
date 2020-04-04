@@ -1,11 +1,10 @@
 /* eslint-disable max-nested-callbacks */
-// @flow
 /* eslint-env jest, browser */
 
 import sinon from 'sinon';
-import type { Feature, FeatureCollection } from '@nebula.gl/edit-modes';
-import { parseImport } from '../src/lib/importer.js';
-import { toKml, UNNAMED } from '../src/lib/exporter.js';
+import { Feature, FeatureCollection } from '@nebula.gl/edit-modes';
+import { parseImport } from '../src/lib/importer';
+import { toKml, UNNAMED } from '../src/lib/exporter';
 
 import {
   createRandomFeature,
@@ -13,7 +12,7 @@ import {
   createRandomMultiPolygon,
   createRandomLineString,
   createRandomMultiLineString,
-} from './utils/test-features.js';
+} from './utils/test-features';
 
 let unsavedFeature: Feature;
 let featureCollection: FeatureCollection;

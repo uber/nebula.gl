@@ -1,0 +1,780 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`getGuides() gets edit handles for LineString 1`] = `
+Object {
+  "features": Array [
+    Object {
+      "geometry": Object {
+        "coordinates": Array [
+          1,
+          2,
+        ],
+        "type": "Point",
+      },
+      "properties": Object {
+        "editHandleType": "existing",
+        "featureIndex": 0,
+        "guideType": "editHandle",
+        "positionIndexes": Array [
+          0,
+        ],
+      },
+      "type": "Feature",
+    },
+    Object {
+      "geometry": Object {
+        "coordinates": Array [
+          2,
+          3,
+        ],
+        "type": "Point",
+      },
+      "properties": Object {
+        "editHandleType": "existing",
+        "featureIndex": 0,
+        "guideType": "editHandle",
+        "positionIndexes": Array [
+          1,
+        ],
+      },
+      "type": "Feature",
+    },
+    Object {
+      "geometry": Object {
+        "coordinates": Array [
+          3,
+          4,
+        ],
+        "type": "Point",
+      },
+      "properties": Object {
+        "editHandleType": "existing",
+        "featureIndex": 0,
+        "guideType": "editHandle",
+        "positionIndexes": Array [
+          2,
+        ],
+      },
+      "type": "Feature",
+    },
+  ],
+  "type": "FeatureCollection",
+}
+`;
+
+exports[`getGuides() gets edit handles for MultiLineString 1`] = `
+Object {
+  "features": Array [
+    Object {
+      "geometry": Object {
+        "coordinates": Array [
+          1,
+          2,
+        ],
+        "type": "Point",
+      },
+      "properties": Object {
+        "editHandleType": "existing",
+        "featureIndex": 0,
+        "guideType": "editHandle",
+        "positionIndexes": Array [
+          0,
+          0,
+        ],
+      },
+      "type": "Feature",
+    },
+    Object {
+      "geometry": Object {
+        "coordinates": Array [
+          2,
+          3,
+        ],
+        "type": "Point",
+      },
+      "properties": Object {
+        "editHandleType": "existing",
+        "featureIndex": 0,
+        "guideType": "editHandle",
+        "positionIndexes": Array [
+          0,
+          1,
+        ],
+      },
+      "type": "Feature",
+    },
+    Object {
+      "geometry": Object {
+        "coordinates": Array [
+          3,
+          4,
+        ],
+        "type": "Point",
+      },
+      "properties": Object {
+        "editHandleType": "existing",
+        "featureIndex": 0,
+        "guideType": "editHandle",
+        "positionIndexes": Array [
+          0,
+          2,
+        ],
+      },
+      "type": "Feature",
+    },
+    Object {
+      "geometry": Object {
+        "coordinates": Array [
+          5,
+          6,
+        ],
+        "type": "Point",
+      },
+      "properties": Object {
+        "editHandleType": "existing",
+        "featureIndex": 0,
+        "guideType": "editHandle",
+        "positionIndexes": Array [
+          1,
+          0,
+        ],
+      },
+      "type": "Feature",
+    },
+    Object {
+      "geometry": Object {
+        "coordinates": Array [
+          6,
+          7,
+        ],
+        "type": "Point",
+      },
+      "properties": Object {
+        "editHandleType": "existing",
+        "featureIndex": 0,
+        "guideType": "editHandle",
+        "positionIndexes": Array [
+          1,
+          1,
+        ],
+      },
+      "type": "Feature",
+    },
+    Object {
+      "geometry": Object {
+        "coordinates": Array [
+          7,
+          8,
+        ],
+        "type": "Point",
+      },
+      "properties": Object {
+        "editHandleType": "existing",
+        "featureIndex": 0,
+        "guideType": "editHandle",
+        "positionIndexes": Array [
+          1,
+          2,
+        ],
+      },
+      "type": "Feature",
+    },
+  ],
+  "type": "FeatureCollection",
+}
+`;
+
+exports[`getGuides() gets edit handles for MultiPoint 1`] = `
+Object {
+  "features": Array [
+    Object {
+      "geometry": Object {
+        "coordinates": Array [
+          1,
+          2,
+        ],
+        "type": "Point",
+      },
+      "properties": Object {
+        "editHandleType": "existing",
+        "featureIndex": 0,
+        "guideType": "editHandle",
+        "positionIndexes": Array [
+          0,
+        ],
+      },
+      "type": "Feature",
+    },
+    Object {
+      "geometry": Object {
+        "coordinates": Array [
+          3,
+          4,
+        ],
+        "type": "Point",
+      },
+      "properties": Object {
+        "editHandleType": "existing",
+        "featureIndex": 0,
+        "guideType": "editHandle",
+        "positionIndexes": Array [
+          1,
+        ],
+      },
+      "type": "Feature",
+    },
+  ],
+  "type": "FeatureCollection",
+}
+`;
+
+exports[`getGuides() gets edit handles for MultiPolygon 1`] = `
+Object {
+  "features": Array [
+    Object {
+      "geometry": Object {
+        "coordinates": Array [
+          -1,
+          -1,
+        ],
+        "type": "Point",
+      },
+      "properties": Object {
+        "editHandleType": "existing",
+        "featureIndex": 0,
+        "guideType": "editHandle",
+        "positionIndexes": Array [
+          0,
+          0,
+          0,
+        ],
+      },
+      "type": "Feature",
+    },
+    Object {
+      "geometry": Object {
+        "coordinates": Array [
+          1,
+          -1,
+        ],
+        "type": "Point",
+      },
+      "properties": Object {
+        "editHandleType": "existing",
+        "featureIndex": 0,
+        "guideType": "editHandle",
+        "positionIndexes": Array [
+          0,
+          0,
+          1,
+        ],
+      },
+      "type": "Feature",
+    },
+    Object {
+      "geometry": Object {
+        "coordinates": Array [
+          1,
+          1,
+        ],
+        "type": "Point",
+      },
+      "properties": Object {
+        "editHandleType": "existing",
+        "featureIndex": 0,
+        "guideType": "editHandle",
+        "positionIndexes": Array [
+          0,
+          0,
+          2,
+        ],
+      },
+      "type": "Feature",
+    },
+    Object {
+      "geometry": Object {
+        "coordinates": Array [
+          -1,
+          1,
+        ],
+        "type": "Point",
+      },
+      "properties": Object {
+        "editHandleType": "existing",
+        "featureIndex": 0,
+        "guideType": "editHandle",
+        "positionIndexes": Array [
+          0,
+          0,
+          3,
+        ],
+      },
+      "type": "Feature",
+    },
+    Object {
+      "geometry": Object {
+        "coordinates": Array [
+          -0.5,
+          -0.5,
+        ],
+        "type": "Point",
+      },
+      "properties": Object {
+        "editHandleType": "existing",
+        "featureIndex": 0,
+        "guideType": "editHandle",
+        "positionIndexes": Array [
+          0,
+          1,
+          0,
+        ],
+      },
+      "type": "Feature",
+    },
+    Object {
+      "geometry": Object {
+        "coordinates": Array [
+          -0.5,
+          0.5,
+        ],
+        "type": "Point",
+      },
+      "properties": Object {
+        "editHandleType": "existing",
+        "featureIndex": 0,
+        "guideType": "editHandle",
+        "positionIndexes": Array [
+          0,
+          1,
+          1,
+        ],
+      },
+      "type": "Feature",
+    },
+    Object {
+      "geometry": Object {
+        "coordinates": Array [
+          0.5,
+          0.5,
+        ],
+        "type": "Point",
+      },
+      "properties": Object {
+        "editHandleType": "existing",
+        "featureIndex": 0,
+        "guideType": "editHandle",
+        "positionIndexes": Array [
+          0,
+          1,
+          2,
+        ],
+      },
+      "type": "Feature",
+    },
+    Object {
+      "geometry": Object {
+        "coordinates": Array [
+          0.5,
+          -0.5,
+        ],
+        "type": "Point",
+      },
+      "properties": Object {
+        "editHandleType": "existing",
+        "featureIndex": 0,
+        "guideType": "editHandle",
+        "positionIndexes": Array [
+          0,
+          1,
+          3,
+        ],
+      },
+      "type": "Feature",
+    },
+    Object {
+      "geometry": Object {
+        "coordinates": Array [
+          2,
+          -1,
+        ],
+        "type": "Point",
+      },
+      "properties": Object {
+        "editHandleType": "existing",
+        "featureIndex": 0,
+        "guideType": "editHandle",
+        "positionIndexes": Array [
+          1,
+          0,
+          0,
+        ],
+      },
+      "type": "Feature",
+    },
+    Object {
+      "geometry": Object {
+        "coordinates": Array [
+          4,
+          -1,
+        ],
+        "type": "Point",
+      },
+      "properties": Object {
+        "editHandleType": "existing",
+        "featureIndex": 0,
+        "guideType": "editHandle",
+        "positionIndexes": Array [
+          1,
+          0,
+          1,
+        ],
+      },
+      "type": "Feature",
+    },
+    Object {
+      "geometry": Object {
+        "coordinates": Array [
+          4,
+          1,
+        ],
+        "type": "Point",
+      },
+      "properties": Object {
+        "editHandleType": "existing",
+        "featureIndex": 0,
+        "guideType": "editHandle",
+        "positionIndexes": Array [
+          1,
+          0,
+          2,
+        ],
+      },
+      "type": "Feature",
+    },
+    Object {
+      "geometry": Object {
+        "coordinates": Array [
+          2,
+          1,
+        ],
+        "type": "Point",
+      },
+      "properties": Object {
+        "editHandleType": "existing",
+        "featureIndex": 0,
+        "guideType": "editHandle",
+        "positionIndexes": Array [
+          1,
+          0,
+          3,
+        ],
+      },
+      "type": "Feature",
+    },
+  ],
+  "type": "FeatureCollection",
+}
+`;
+
+exports[`getGuides() gets edit handles for Point 1`] = `
+Object {
+  "features": Array [
+    Object {
+      "geometry": Object {
+        "coordinates": Array [
+          1,
+          2,
+        ],
+        "type": "Point",
+      },
+      "properties": Object {
+        "editHandleType": "existing",
+        "featureIndex": 0,
+        "guideType": "editHandle",
+        "positionIndexes": Array [],
+      },
+      "type": "Feature",
+    },
+  ],
+  "type": "FeatureCollection",
+}
+`;
+
+exports[`getGuides() gets edit handles for Polygon 1`] = `
+Object {
+  "features": Array [
+    Object {
+      "geometry": Object {
+        "coordinates": Array [
+          -1,
+          -1,
+        ],
+        "type": "Point",
+      },
+      "properties": Object {
+        "editHandleType": "existing",
+        "featureIndex": 0,
+        "guideType": "editHandle",
+        "positionIndexes": Array [
+          0,
+          0,
+        ],
+      },
+      "type": "Feature",
+    },
+    Object {
+      "geometry": Object {
+        "coordinates": Array [
+          1,
+          -1,
+        ],
+        "type": "Point",
+      },
+      "properties": Object {
+        "editHandleType": "existing",
+        "featureIndex": 0,
+        "guideType": "editHandle",
+        "positionIndexes": Array [
+          0,
+          1,
+        ],
+      },
+      "type": "Feature",
+    },
+    Object {
+      "geometry": Object {
+        "coordinates": Array [
+          1,
+          1,
+        ],
+        "type": "Point",
+      },
+      "properties": Object {
+        "editHandleType": "existing",
+        "featureIndex": 0,
+        "guideType": "editHandle",
+        "positionIndexes": Array [
+          0,
+          2,
+        ],
+      },
+      "type": "Feature",
+    },
+    Object {
+      "geometry": Object {
+        "coordinates": Array [
+          -1,
+          1,
+        ],
+        "type": "Point",
+      },
+      "properties": Object {
+        "editHandleType": "existing",
+        "featureIndex": 0,
+        "guideType": "editHandle",
+        "positionIndexes": Array [
+          0,
+          3,
+        ],
+      },
+      "type": "Feature",
+    },
+    Object {
+      "geometry": Object {
+        "coordinates": Array [
+          -0.5,
+          -0.5,
+        ],
+        "type": "Point",
+      },
+      "properties": Object {
+        "editHandleType": "existing",
+        "featureIndex": 0,
+        "guideType": "editHandle",
+        "positionIndexes": Array [
+          1,
+          0,
+        ],
+      },
+      "type": "Feature",
+    },
+    Object {
+      "geometry": Object {
+        "coordinates": Array [
+          -0.5,
+          0.5,
+        ],
+        "type": "Point",
+      },
+      "properties": Object {
+        "editHandleType": "existing",
+        "featureIndex": 0,
+        "guideType": "editHandle",
+        "positionIndexes": Array [
+          1,
+          1,
+        ],
+      },
+      "type": "Feature",
+    },
+    Object {
+      "geometry": Object {
+        "coordinates": Array [
+          0.5,
+          0.5,
+        ],
+        "type": "Point",
+      },
+      "properties": Object {
+        "editHandleType": "existing",
+        "featureIndex": 0,
+        "guideType": "editHandle",
+        "positionIndexes": Array [
+          1,
+          2,
+        ],
+      },
+      "type": "Feature",
+    },
+    Object {
+      "geometry": Object {
+        "coordinates": Array [
+          0.5,
+          -0.5,
+        ],
+        "type": "Point",
+      },
+      "properties": Object {
+        "editHandleType": "existing",
+        "featureIndex": 0,
+        "guideType": "editHandle",
+        "positionIndexes": Array [
+          1,
+          3,
+        ],
+      },
+      "type": "Feature",
+    },
+  ],
+  "type": "FeatureCollection",
+}
+`;
+
+exports[`getGuides() gets edit handles for all selected features in collection 1`] = `
+Object {
+  "features": Array [
+    Object {
+      "geometry": Object {
+        "coordinates": Array [
+          1,
+          2,
+        ],
+        "type": "Point",
+      },
+      "properties": Object {
+        "editHandleType": "existing",
+        "featureIndex": 0,
+        "guideType": "editHandle",
+        "positionIndexes": Array [
+          0,
+        ],
+      },
+      "type": "Feature",
+    },
+    Object {
+      "geometry": Object {
+        "coordinates": Array [
+          2,
+          3,
+        ],
+        "type": "Point",
+      },
+      "properties": Object {
+        "editHandleType": "existing",
+        "featureIndex": 0,
+        "guideType": "editHandle",
+        "positionIndexes": Array [
+          1,
+        ],
+      },
+      "type": "Feature",
+    },
+    Object {
+      "geometry": Object {
+        "coordinates": Array [
+          3,
+          4,
+        ],
+        "type": "Point",
+      },
+      "properties": Object {
+        "editHandleType": "existing",
+        "featureIndex": 0,
+        "guideType": "editHandle",
+        "positionIndexes": Array [
+          2,
+        ],
+      },
+      "type": "Feature",
+    },
+    Object {
+      "geometry": Object {
+        "coordinates": Array [
+          1,
+          2,
+        ],
+        "type": "Point",
+      },
+      "properties": Object {
+        "editHandleType": "existing",
+        "featureIndex": 2,
+        "guideType": "editHandle",
+        "positionIndexes": Array [
+          0,
+        ],
+      },
+      "type": "Feature",
+    },
+    Object {
+      "geometry": Object {
+        "coordinates": Array [
+          3,
+          4,
+        ],
+        "type": "Point",
+      },
+      "properties": Object {
+        "editHandleType": "existing",
+        "featureIndex": 2,
+        "guideType": "editHandle",
+        "positionIndexes": Array [
+          1,
+        ],
+      },
+      "type": "Feature",
+    },
+  ],
+  "type": "FeatureCollection",
+}
+`;
+
+exports[`getGuides() includes an intermediate edit handle 1`] = `
+Object {
+  "geometry": Object {
+    "coordinates": Array [
+      -122.43850292231143,
+      37.777692666558565,
+    ],
+    "type": "Point",
+  },
+  "properties": Object {
+    "editHandleType": "intermediate",
+    "featureIndex": 0,
+    "guideType": "editHandle",
+    "positionIndexes": Array [
+      2,
+    ],
+  },
+  "type": "Feature",
+}
+`;

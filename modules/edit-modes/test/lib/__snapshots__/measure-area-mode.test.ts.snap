@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`three clicks + pointer move tooltip contains area 1`] = `
+Array [
+  Object {
+    "position": Array [
+      0.2,
+      0.2,
+    ],
+    "text": "49565599608.28 sq. m",
+  },
+]
+`;

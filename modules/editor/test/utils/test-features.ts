@@ -1,7 +1,6 @@
-// @flow
 /* istanbul ignore file */
 
-import type {
+import {
   Polygonal,
   Geometry,
   Polygon,

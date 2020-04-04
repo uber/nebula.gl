@@ -1,7 +1,6 @@
-// @flow
 /* eslint-disable no-unused-vars, prefer-const */
 
-import type {
+import {
   Point,
   LineString,
   Polygon,
@@ -12,7 +11,7 @@ import type {
   Position,
   Feature,
   FeatureOf,
-} from '../src/geojson-types.js';
+} from '../src/geojson-types';
 
 let point: Point = {
   type: 'Point',

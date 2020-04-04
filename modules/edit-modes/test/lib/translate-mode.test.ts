@@ -1,4 +1,3 @@
-// @flow
 
 import { TransformMode } from '../../src/lib/transform-mode';
 import {
@@ -6,8 +5,8 @@ import {
   createPointerMoveEvent,
   createStartDraggingEvent,
   createStopDraggingEvent,
-} from '../test-utils.js';
-import { type Pick } from '../../src/types';
+} from '../test-utils';
+import { Pick } from '../../src/types';
 
 let transformMode: TransformMode;
 
@@ -15,7 +14,7 @@ let warnBefore;
 beforeEach(() => {
   warnBefore = console.warn; // eslint-disable-line
   // $FlowFixMe
-  console.warn = function () {}; // eslint-disable-line
+  console.warn = function () { }; // eslint-disable-line
   transformMode = new TransformMode();
 });
 

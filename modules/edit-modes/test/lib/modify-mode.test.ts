@@ -1,8 +1,7 @@
-// @flow
 /* eslint-env jest */
 
-import { ModifyMode } from '../../src/lib/modify-mode.js';
-import { createFeatureCollectionProps } from '../test-utils.js';
+import { ModifyMode } from '../../src/lib/modify-mode';
+import { createFeatureCollectionProps } from '../test-utils';
 
 let pointFeature;
 let lineStringFeature;

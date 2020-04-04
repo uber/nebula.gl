@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`test HtmlTooltipOverlay no items shown 1`] = `
+<div
+  id="deckgl-wrapper"
+  style={
+    Object {
+      "height": "100%",
+      "left": 0,
+      "position": "absolute",
+      "top": 0,
+      "width": "100%",
+      "zIndex": 0,
+    }
+  }
+>
+  <canvas
+    style={
+      Object {
+        "left": 0,
+        "top": 0,
+      }
+    }
+  />
+</div>
+`;

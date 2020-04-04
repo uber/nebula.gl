@@ -1,22 +1,21 @@
-// @flow
 
-import { RotateMode } from '../../src/lib/rotate-mode';
+import { TransformMode } from '../../src/lib/transform-mode';
 import {
   createFeatureCollectionProps,
   createPointerMoveEvent,
   createStartDraggingEvent,
   createStopDraggingEvent,
-} from '../test-utils.js';
-import { type Pick } from '../../src/types';
+} from '../test-utils';
+import { Pick } from '../../src/types';
 
-let rotateMode: RotateMode;
+let transformMode: TransformMode;
 
 let warnBefore;
 beforeEach(() => {
   warnBefore = console.warn; // eslint-disable-line
   // $FlowFixMe
-  console.warn = function () {}; // eslint-disable-line
-  rotateMode = new RotateMode();
+  console.warn = function () { }; // eslint-disable-line
+  transformMode = new TransformMode();
 });
 
 afterEach(() => {
@@ -24,20 +23,20 @@ afterEach(() => {
   console.warn = warnBefore; // eslint-disable-line
 });
 
-const mockRotate = (picks: Pick[], props: Object) => {
-  rotateMode.getGuides(props);
+const mockScale = (picks: Pick[], props: Object) => {
+  transformMode.getGuides(props);
 
   const moveEvent = createPointerMoveEvent([-1, -1], picks);
-  rotateMode.handlePointerMove(moveEvent, props);
+  transformMode.handlePointerMove(moveEvent, props);
 
   const startDragEvent = createStartDraggingEvent([-1, -1], [-1, -1], picks);
-  rotateMode.handleStartDragging(startDragEvent, props);
+  transformMode.handleStartDragging(startDragEvent, props);
 
   const stopDragEvent = createStopDraggingEvent([2, 3], [-1, -1], picks);
-  rotateMode.handleStopDragging(stopDragEvent, props);
+  transformMode.handleStopDragging(stopDragEvent, props);
 };
 
-test('Selected polygon feature can be rotated', () => {
+test('Selected polygon feature can be scaled', () => {
   const mockOnEdit = jest.fn();
   const props = createFeatureCollectionProps({
     selectedIndexes: [2],
@@ -50,11 +49,11 @@ test('Selected polygon feature can be rotated', () => {
       object: {
         type: 'Feature',
         geometry: { type: 'Point', coordinates: [-2, -2] },
-        properties: { guideType: 'editHandle', editHandleType: 'rotate' },
+        properties: { guideType: 'editHandle', editHandleType: 'scale', positionIndexes: [0] },
       },
     },
   ];
-  mockRotate(mockPicks, props);
+  mockScale(mockPicks, props);
 
   expect(mockOnEdit).toHaveBeenCalledTimes(1);
   const scaledFeature = mockOnEdit.mock.calls[0][0].updatedData.features[2];
@@ -62,13 +61,13 @@ test('Selected polygon feature can be rotated', () => {
   expect(props.data.features[2]).not.toEqual(scaledFeature);
 });
 
-test('Selected polygon feature without edit handle picks cannot be rotated', () => {
+test('Selected polygon feature without edit handle picks cannot be scaled', () => {
   const mockOnEdit = jest.fn();
   const props = createFeatureCollectionProps({
     selectedIndexes: [2],
     onEdit: mockOnEdit,
   });
 
-  mockRotate([], props);
+  mockScale([], props);
   expect(mockOnEdit).toHaveBeenCalledTimes(0);
 });

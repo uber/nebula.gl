@@ -1,8 +1,7 @@
-// @flow
 /* eslint-env jest */
 
-import { DrawLineStringMode } from '../../src/lib/draw-line-string-mode.js';
-import { createFeatureCollectionProps, createClickEvent } from '../test-utils.js';
+import { DrawLineStringMode } from '../../src/lib/draw-line-string-mode';
+import { createFeatureCollectionProps, createClickEvent } from '../test-utils';
 
 let props;
 

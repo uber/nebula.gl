@@ -1,9 +1,8 @@
-// @flow
 /* eslint-env jest */
 
-import type { Feature, FeatureCollection } from '@nebula.gl/edit-modes';
-import { toGeoJson, toKml, toWkt, toStats, UNNAMED } from '../src/lib/exporter.js';
-import { createRandomFeature } from './utils/test-features.js';
+import { Feature, FeatureCollection } from '@nebula.gl/edit-modes';
+import { toGeoJson, toKml, toWkt, toStats, UNNAMED } from '../src/lib/exporter';
+import { createRandomFeature } from './utils/test-features';
 
 let unsavedNamedFeature: Feature;
 let unsavedUnnamedFeature: Feature;

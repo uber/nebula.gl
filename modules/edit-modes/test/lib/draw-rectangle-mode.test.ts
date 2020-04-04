@@ -1,9 +1,8 @@
-// @flow
 /* eslint-env jest */
 
 import turfArea from '@turf/area';
-import type { Feature, FeatureCollection } from '@nebula.gl/edit-modes';
-import { DrawRectangleMode } from '../../src/lib/draw-rectangle-mode.js';
+import { Feature, FeatureCollection } from '@nebula.gl/edit-modes';
+import { DrawRectangleMode } from '../../src/lib/draw-rectangle-mode';
 import {
   createFeatureCollectionProps,
   createFeatureCollection,
@@ -11,8 +10,8 @@ import {
   createPointerMoveEvent,
   createStartDraggingEvent,
   createStopDraggingEvent,
-} from '../test-utils.js';
-import type { GeoJsonEditAction } from '../../src/lib/geojson-edit-mode.js';
+} from '../test-utils';
+import { GeoJsonEditAction } from '../../src/lib/geojson-edit-mode';
 
 let featureCollection: FeatureCollection;
 let polygonFeature: Feature;
@@ -22,7 +21,7 @@ let warnBefore;
 beforeEach(() => {
   warnBefore = console.warn; // eslint-disable-line
   // $FlowFixMe
-  console.warn = function () {}; // eslint-disable-line
+  console.warn = function () { }; // eslint-disable-line
 
   featureCollection = createFeatureCollection();
 

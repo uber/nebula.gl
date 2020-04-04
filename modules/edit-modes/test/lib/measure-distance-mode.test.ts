@@ -1,12 +1,11 @@
-// @flow
 /* eslint-env jest */
 
-import { MeasureDistanceMode } from '../../src/lib/measure-distance-mode.js';
+import { MeasureDistanceMode } from '../../src/lib/measure-distance-mode';
 import {
   createFeatureCollectionProps,
   createClickEvent,
   createPointerMoveEvent,
-} from '../test-utils.js';
+} from '../test-utils';
 
 describe('move without click', () => {
   let mode;

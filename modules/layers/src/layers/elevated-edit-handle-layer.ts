@@ -6,8 +6,8 @@ import { ScatterplotLayer, LineLayer } from '@deck.gl/layers';
 const defaultProps = {};
 
 export default class ElevatedEditHandleLayer extends CompositeLayer<any> {
-  layerName = 'ElevatedEditHandleLayer';
-  defaultProps = defaultProps;
+  static layerName = 'ElevatedEditHandleLayer';
+  static defaultProps = defaultProps;
   renderLayers() {
     const handles = new ScatterplotLayer(
       Object.assign({}, this.props, {

@@ -26,7 +26,7 @@ module.exports = {
       ]
     },
     test: {
-      presets: [['@babel/env', { useBuiltIns: 'usage' }], '@babel/react', '@babel/preset-typescript'],
+      presets: [['@babel/env'], '@babel/react', '@babel/preset-typescript'],
       plugins: [
         '@babel/plugin-proposal-class-properties',
         '@babel/plugin-proposal-export-default-from',

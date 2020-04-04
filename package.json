@@ -48,11 +48,13 @@
     "@babel/plugin-transform-runtime": "^7.0.0",
     "@babel/preset-env": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
+    "@babel/preset-typescript": "^7.9.0",
     "@babel/register": "^7.0.0",
     "@deck.gl/core": "^8.0.6",
     "@deck.gl/layers": "^8.0.6",
     "@deck.gl/mesh-layers": "^8.0.6",
     "@deck.gl/react": "^8.0.6",
+    "@types/node": "^13.11.0",
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^9.0.0",
     "babel-jest": "^24.8.0",
@@ -89,6 +91,7 @@
     "tape": "4.8",
     "tape-catch": "^1.0.4",
     "transform-loader": "^0.2.3",
+    "typescript": "^3.8.3",
     "webpack": "^2.4.0",
     "webpack-dev-server": "^3.1.14"
   }

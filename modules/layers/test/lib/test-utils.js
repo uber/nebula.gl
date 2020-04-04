@@ -10,7 +10,7 @@ export const FeatureType = {
   POLYGON: 'Polygon',
   MULTI_POINT: 'MultiPoint',
   MULTI_LINE_STRING: 'MultiLineString',
-  MULTI_POLYGON: 'MultiPolygon'
+  MULTI_POLYGON: 'MultiPolygon',
 };
 
 const mockFeatures = {
@@ -18,17 +18,24 @@ const mockFeatures = {
     geoJson: {
       type: 'Feature',
       properties: {},
-      geometry: { type: 'Point', coordinates: [1, 2] }
+      geometry: { type: 'Point', coordinates: [1, 2] },
     },
-    clickCoords: [1, 2]
+    clickCoords: [1, 2],
   },
   LineString: {
     geoJson: {
       type: 'Feature',
       properties: {},
-      geometry: { type: 'LineString', coordinates: [[1, 2], [2, 3], [3, 4]] }
+      geometry: {
+        type: 'LineString',
+        coordinates: [
+          [1, 2],
+          [2, 3],
+          [3, 4],
+        ],
+      },
     },
-    clickCoords: [1, 2]
+    clickCoords: [1, 2],
   },
   Polygon: {
     geoJson: {
@@ -38,21 +45,39 @@ const mockFeatures = {
         type: 'Polygon',
         coordinates: [
           // exterior ring
-          [[-1, -1], [1, -1], [1, 1], [-1, 1], [-1, -1]],
+          [
+            [-1, -1],
+            [1, -1],
+            [1, 1],
+            [-1, 1],
+            [-1, -1],
+          ],
           // hole
-          [[-0.5, -0.5], [-0.5, 0.5], [0.5, 0.5], [0.5, -0.5], [-0.5, -0.5]]
-        ]
-      }
+          [
+            [-0.5, -0.5],
+            [-0.5, 0.5],
+            [0.5, 0.5],
+            [0.5, -0.5],
+            [-0.5, -0.5],
+          ],
+        ],
+      },
     },
-    clickCoords: [-0.5, -0.5]
+    clickCoords: [-0.5, -0.5],
   },
   MultiPoint: {
     geoJson: {
       type: 'Feature',
       properties: {},
-      geometry: { type: 'MultiPoint', coordinates: [[1, 2], [3, 4]] }
+      geometry: {
+        type: 'MultiPoint',
+        coordinates: [
+          [1, 2],
+          [3, 4],
+        ],
+      },
     },
-    clickCoords: [3, 4]
+    clickCoords: [3, 4],
   },
   MultiLineString: {
     geoJson: {
@@ -60,10 +85,21 @@ const mockFeatures = {
       properties: {},
       geometry: {
         type: 'MultiLineString',
-        coordinates: [[[1, 2], [2, 3], [3, 4]], [[5, 6], [6, 7], [7, 8]]]
-      }
+        coordinates: [
+          [
+            [1, 2],
+            [2, 3],
+            [3, 4],
+          ],
+          [
+            [5, 6],
+            [6, 7],
+            [7, 8],
+          ],
+        ],
+      },
     },
-    clickCoords: [6, 7]
+    clickCoords: [6, 7],
   },
   MultiPolygon: {
     geoJson: {
@@ -74,19 +110,37 @@ const mockFeatures = {
         coordinates: [
           [
             // exterior ring polygon 1
-            [[-1, -1], [1, -1], [1, 1], [-1, 1], [-1, -1]],
+            [
+              [-1, -1],
+              [1, -1],
+              [1, 1],
+              [-1, 1],
+              [-1, -1],
+            ],
             // hole  polygon 1
-            [[-0.5, -0.5], [-0.5, 0.5], [0.5, 0.5], [0.5, -0.5], [-0.5, -0.5]]
+            [
+              [-0.5, -0.5],
+              [-0.5, 0.5],
+              [0.5, 0.5],
+              [0.5, -0.5],
+              [-0.5, -0.5],
+            ],
           ],
           [
             // exterior ring polygon 2
-            [[2, -1], [4, -1], [4, 1], [2, 1], [2, -1]]
-          ]
-        ]
-      }
+            [
+              [2, -1],
+              [4, -1],
+              [4, 1],
+              [2, 1],
+              [2, -1],
+            ],
+          ],
+        ],
+      },
     },
-    clickCoords: [1, 1]
-  }
+    clickCoords: [1, 1],
+  },
 };
 
 export const featuresForSnappingTests: FeatureCollection = {
@@ -103,10 +157,10 @@ export const featuresForSnappingTests: FeatureCollection = {
             [-122.44252582524939, 37.987923255302974],
             [-122.44252847887157, 37.93873205786406],
             [-122.49485666643005, 37.93873205786406],
-            [-122.49485401280788, 37.987923255302974]
-          ]
-        ]
-      }
+            [-122.49485401280788, 37.987923255302974],
+          ],
+        ],
+      },
     },
     {
       type: 'Feature',
@@ -119,18 +173,18 @@ export const featuresForSnappingTests: FeatureCollection = {
             [-122.37737022011595, 37.97528325161274],
             [-122.37737142575622, 37.952934704562644],
             [-122.40815060746439, 37.952934704562644],
-            [-122.40814940182412, 37.97528325161274]
-          ]
-        ]
-      }
+            [-122.40814940182412, 37.97528325161274],
+          ],
+        ],
+      },
     },
     {
       type: 'Feature',
       properties: {},
       geometry: {
         type: 'Point',
-        coordinates: [-122.28103267622373, 37.98843664327903]
-      }
+        coordinates: [-122.28103267622373, 37.98843664327903],
+      },
     },
     {
       type: 'Feature',
@@ -143,10 +197,10 @@ export const featuresForSnappingTests: FeatureCollection = {
             [-122.34432261530361, 37.85902221692065],
             [-122.3442469760231, 37.8157115979288],
             [-122.40900961164311, 37.8157115979288],
-            [-122.40908525092362, 37.85902221692065]
-          ]
-        ]
-      }
+            [-122.40908525092362, 37.85902221692065],
+          ],
+        ],
+      },
     },
     {
       type: 'Feature',
@@ -159,26 +213,26 @@ export const featuresForSnappingTests: FeatureCollection = {
             [-122.34143228624993, 38.13330760982133],
             [-122.34144710122638, 38.08906337516829],
             [-122.40683745785105, 38.08906337516829],
-            [-122.40682264287454, 38.13330760982133]
-          ]
-        ]
-      }
-    }
-  ]
+            [-122.40682264287454, 38.13330760982133],
+          ],
+        ],
+      },
+    },
+  ],
 };
 
 export const mockPickedHandle = {
   featureIndex: 0,
   position: [-122.49485401280788, 37.987923255302974],
   positionIndexes: [0, 0],
-  type: 'snap'
+  type: 'snap',
 };
 
 export const mockNonPickedHandle = {
   featureIndex: 1,
   position: [-122.37737022011595, 37.97528325161274],
   positionIndexes: [0, 1],
-  type: 'intermediate'
+  type: 'intermediate',
 };
 
 export const mockedGeoJsonProperties = { testString: 'hi', testNumber: 10 };
@@ -223,20 +277,20 @@ export function getFeatureCollectionFeatures(options: ?{ [key: string]: any }) {
     createPolygonFeature(options),
     createMultiPointFeature(options),
     createMultiLineStringFeature(options),
-    createMultiPolygonFeature(options)
+    createMultiPolygonFeature(options),
   ];
 }
 
 export function createFeatureCollection(options: ?{ [key: string]: any }) {
   return {
     type: 'FeatureCollection',
-    features: getFeatureCollectionFeatures(options)
+    features: getFeatureCollectionFeatures(options),
   };
 }
 
 export function getMockFeatureDetails(featureType: string) {
   const featureCollectionIndex = getFeatureCollectionFeatures().findIndex(
-    feature => feature.geometry.type === featureType
+    (feature) => feature.geometry.type === featureType
   );
   const featureDetails = mockFeatures[featureType];
   featureDetails.index = featureCollectionIndex;
@@ -248,7 +302,7 @@ export function createClickEvent(groundCoords: Position, picks: any[] = []): Cli
     screenCoords: [-1, -1],
     groundCoords,
     picks,
-    sourceEvent: null
+    sourceEvent: null,
   };
 }
 
@@ -265,7 +319,7 @@ export function createPointerDragEvent(
     pointerDownPicks: null,
     pointerDownScreenCoords: [-1, -1],
     pointerDownGroundCoords,
-    sourceEvent: null
+    sourceEvent: null,
   };
 }
 
@@ -281,6 +335,6 @@ export function createPointerMoveEvent(
     pointerDownPicks: null,
     pointerDownScreenCoords: null,
     pointerDownGroundCoords: null,
-    sourceEvent: null
+    sourceEvent: null,
   };
 }

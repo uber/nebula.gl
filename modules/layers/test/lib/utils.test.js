@@ -4,23 +4,28 @@ import {
   generatePointsParallelToLinePoints,
   distance2d,
   mix,
-  nearestPointOnProjectedLine
+  nearestPointOnProjectedLine,
 } from '../../src/utils';
 
 const Point = {
   type: 'Feature',
   geometry: {
     type: 'Point',
-    coordinates: [102.0, 0.5]
-  }
+    coordinates: [102.0, 0.5],
+  },
 };
 
 const LineString = {
   type: 'Feature',
   geometry: {
     type: 'LineString',
-    coordinates: [[102.0, 0.0], [103.0, 1.0], [104.0, 0.0], [105.0, 1.0]]
-  }
+    coordinates: [
+      [102.0, 0.0],
+      [103.0, 1.0],
+      [104.0, 0.0],
+      [105.0, 1.0],
+    ],
+  },
 };
 
 const Polygon = {
@@ -28,10 +33,21 @@ const Polygon = {
   geometry: {
     type: 'Polygon',
     coordinates: [
-      [[35, 10], [45, 45], [15, 40], [10, 20], [35, 10]],
-      [[20, 30], [35, 35], [30, 20], [20, 30]]
-    ]
-  }
+      [
+        [35, 10],
+        [45, 45],
+        [15, 40],
+        [10, 20],
+        [35, 10],
+      ],
+      [
+        [20, 30],
+        [35, 35],
+        [30, 20],
+        [20, 30],
+      ],
+    ],
+  },
 };
 
 const MultiPolygon = {
@@ -39,13 +55,32 @@ const MultiPolygon = {
   geometry: {
     type: 'MultiPolygon',
     coordinates: [
-      [[[40, 40], [20, 45], [45, 30], [40, 40]]],
       [
-        [[20, 35], [10, 30], [10, 10], [30, 5], [45, 20], [20, 35]],
-        [[30, 20], [20, 15], [20, 25], [30, 20]]
-      ]
-    ]
-  }
+        [
+          [40, 40],
+          [20, 45],
+          [45, 30],
+          [40, 40],
+        ],
+      ],
+      [
+        [
+          [20, 35],
+          [10, 30],
+          [10, 10],
+          [30, 5],
+          [45, 20],
+          [20, 35],
+        ],
+        [
+          [30, 20],
+          [20, 15],
+          [20, 25],
+          [30, 20],
+        ],
+      ],
+    ],
+  },
 };
 
 describe('toDeckColor()', () => {
@@ -75,7 +110,7 @@ describe('recursivelyTraverseNestedArrays()', () => {
     recursivelyTraverseNestedArrays(LineString.geometry.coordinates, [], (array, prefix) => {
       results.push({
         array,
-        prefix
+        prefix,
       });
     });
     expect(results.length).toBe(1);
@@ -88,7 +123,7 @@ describe('recursivelyTraverseNestedArrays()', () => {
     recursivelyTraverseNestedArrays(Polygon.geometry.coordinates, [], (array, prefix) => {
       results.push({
         array,
-        prefix
+        prefix,
       });
     });
     expect(results.length).toBe(2);
@@ -103,7 +138,7 @@ describe('recursivelyTraverseNestedArrays()', () => {
     recursivelyTraverseNestedArrays(MultiPolygon.geometry.coordinates, [], (array, prefix) => {
       results.push({
         array,
-        prefix
+        prefix,
       });
     });
     expect(results.length).toBe(3);
@@ -148,17 +183,20 @@ describe('nearestPointOnProjectedLine() and related functions', () => {
   it('nearestPointOnProjectedLine()', () => {
     const line = {
       geometry: {
-        coordinates: [[0, 0, 0], [1, 1, 1]]
-      }
+        coordinates: [
+          [0, 0, 0],
+          [1, 1, 1],
+        ],
+      },
     };
     const inPoint = {
       geometry: {
-        coordinates: [0.5, 0.5]
-      }
+        coordinates: [0.5, 0.5],
+      },
     };
     const viewport = {
-      project: x => x,
-      unproject: x => x
+      project: (x) => x,
+      unproject: (x) => x,
     };
     const result = nearestPointOnProjectedLine(line, inPoint, viewport);
     expect(result.geometry.type).toEqual('Point');

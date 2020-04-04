@@ -5,7 +5,7 @@ import {
   createFeatureCollectionProps,
   createPointerMoveEvent,
   createStartDraggingEvent,
-  createStopDraggingEvent
+  createStopDraggingEvent,
 } from '../test-utils.js';
 import { type Pick } from '../../src/types';
 
@@ -15,7 +15,7 @@ let warnBefore;
 beforeEach(() => {
   warnBefore = console.warn; // eslint-disable-line
   // $FlowFixMe
-  console.warn = function() {}; // eslint-disable-line
+  console.warn = function () {}; // eslint-disable-line
   transformMode = new TransformMode();
 });
 
@@ -39,7 +39,7 @@ test('Selected polygon feature can be translated', () => {
   const mockOnEdit = jest.fn();
   const props = createFeatureCollectionProps({
     selectedIndexes: [2],
-    onEdit: mockOnEdit
+    onEdit: mockOnEdit,
   });
   mockMove([{ index: 2, isGuide: false, object: null }], props);
 
@@ -53,7 +53,7 @@ test('Non-picked selected polygon feature cannnot be translated', () => {
   const mockOnEdit = jest.fn();
   const props = createFeatureCollectionProps({
     selectedIndexes: [2],
-    onEdit: mockOnEdit
+    onEdit: mockOnEdit,
   });
   mockMove([], props);
   expect(mockOnEdit).toHaveBeenCalledTimes(0);
@@ -63,7 +63,7 @@ test('Picked non-selected polygon feature cannnot be translated', () => {
   const mockOnEdit = jest.fn();
   const props = createFeatureCollectionProps({
     selectedIndexes: [0],
-    onEdit: mockOnEdit
+    onEdit: mockOnEdit,
   });
   mockMove([{ index: 2, isGuide: false, object: null }], props);
   expect(mockOnEdit).toHaveBeenCalledTimes(0);

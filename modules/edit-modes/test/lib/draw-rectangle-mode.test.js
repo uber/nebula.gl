@@ -10,7 +10,7 @@ import {
   createClickEvent,
   createPointerMoveEvent,
   createStartDraggingEvent,
-  createStopDraggingEvent
+  createStopDraggingEvent,
 } from '../test-utils.js';
 import type { GeoJsonEditAction } from '../../src/lib/geojson-edit-mode.js';
 
@@ -22,11 +22,11 @@ let warnBefore;
 beforeEach(() => {
   warnBefore = console.warn; // eslint-disable-line
   // $FlowFixMe
-  console.warn = function() {}; // eslint-disable-line
+  console.warn = function () {}; // eslint-disable-line
 
   featureCollection = createFeatureCollection();
 
-  const makeFlowHappy = featureCollection.features.find(f => f.geometry.type === 'Polygon');
+  const makeFlowHappy = featureCollection.features.find((f) => f.geometry.type === 'Polygon');
   if (!makeFlowHappy) {
     throw new Error(`Need a Polygon in my setup`);
   }
@@ -56,7 +56,15 @@ describe('dragToDraw=false', () => {
 
     expect(tentativeFeature.geometry).toEqual({
       type: 'Polygon',
-      coordinates: [[[1, 2], [2, 2], [2, 3], [1, 3], [1, 2]]]
+      coordinates: [
+        [
+          [1, 2],
+          [2, 2],
+          [2, 3],
+          [1, 3],
+          [1, 2],
+        ],
+      ],
     });
   });
 
@@ -80,14 +88,22 @@ describe('dragToDraw=false', () => {
             properties: {},
             geometry: {
               type: 'Polygon',
-              coordinates: [[[1, 2], [2, 2], [2, 3], [1, 3], [1, 2]]]
-            }
-          }
-        ]
+              coordinates: [
+                [
+                  [1, 2],
+                  [2, 2],
+                  [2, 3],
+                  [1, 3],
+                  [1, 2],
+                ],
+              ],
+            },
+          },
+        ],
       },
       editContext: {
-        featureIndexes: [featureCollection.features.length]
-      }
+        featureIndexes: [featureCollection.features.length],
+      },
     };
 
     expect(props.onEdit).toHaveBeenCalledTimes(1);
@@ -101,8 +117,8 @@ describe('dragToDraw=true', () => {
 
     const props = createFeatureCollectionProps({
       modeConfig: {
-        dragToDraw: true
-      }
+        dragToDraw: true,
+      },
     });
     props.lastPointerMoveEvent = createPointerMoveEvent([1, 2]);
     mode.handleStartDragging(createStartDraggingEvent([1, 2], [1, 2]), props);
@@ -116,7 +132,15 @@ describe('dragToDraw=true', () => {
 
     expect(tentativeFeature.geometry).toEqual({
       type: 'Polygon',
-      coordinates: [[[1, 2], [2, 2], [2, 3], [1, 3], [1, 2]]]
+      coordinates: [
+        [
+          [1, 2],
+          [2, 2],
+          [2, 3],
+          [1, 3],
+          [1, 2],
+        ],
+      ],
     });
   });
 
@@ -125,8 +149,8 @@ describe('dragToDraw=true', () => {
 
     const props = createFeatureCollectionProps({
       modeConfig: {
-        dragToDraw: true
-      }
+        dragToDraw: true,
+      },
     });
     props.lastPointerMoveEvent = createPointerMoveEvent([1, 2]);
     mode.handleStartDragging(createStartDraggingEvent([1, 2], [1, 2]), props);
@@ -144,14 +168,22 @@ describe('dragToDraw=true', () => {
             properties: {},
             geometry: {
               type: 'Polygon',
-              coordinates: [[[1, 2], [2, 2], [2, 3], [1, 3], [1, 2]]]
-            }
-          }
-        ]
+              coordinates: [
+                [
+                  [1, 2],
+                  [2, 2],
+                  [2, 3],
+                  [1, 3],
+                  [1, 2],
+                ],
+              ],
+            },
+          },
+        ],
       },
       editContext: {
-        featureIndexes: [featureCollection.features.length]
-      }
+        featureIndexes: [featureCollection.features.length],
+      },
     };
 
     expect(props.onEdit).toHaveBeenCalledTimes(1);
@@ -166,7 +198,7 @@ describe('modeConfig.booleanOperation', () => {
 
       const props = createFeatureCollectionProps({
         selectedIndexes: [polygonFeatureIndex],
-        modeConfig: { booleanOperation: 'union' }
+        modeConfig: { booleanOperation: 'union' },
       });
 
       const areaBefore = turfArea(featureCollection.features[polygonFeatureIndex]);
@@ -191,7 +223,7 @@ describe('modeConfig.booleanOperation', () => {
 
       const props = createFeatureCollectionProps({
         selectedIndexes: [polygonFeatureIndex],
-        modeConfig: { booleanOperation: 'difference' }
+        modeConfig: { booleanOperation: 'difference' },
       });
 
       const areaBefore = turfArea(featureCollection.features[polygonFeatureIndex]);
@@ -216,7 +248,7 @@ describe('modeConfig.booleanOperation', () => {
 
       const props = createFeatureCollectionProps({
         selectedIndexes: [polygonFeatureIndex],
-        modeConfig: { booleanOperation: 'intersection' }
+        modeConfig: { booleanOperation: 'intersection' },
       });
 
       const areaBefore = turfArea(featureCollection.features[polygonFeatureIndex]);

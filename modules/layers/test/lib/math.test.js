@@ -15,5 +15,8 @@ it('test toRadian()', () => {
 
 it('test convertE7Array()', () => {
   const points = [378034847, -1224078182, 378039091, -1224079046];
-  expect(convertE7Array(points)).toEqual([[-122.4078182, 37.8034847], [-122.4079046, 37.8039091]]);
+  expect(convertE7Array(points)).toEqual([
+    [-122.4078182, 37.8034847],
+    [-122.4079046, 37.8039091],
+  ]);
 });

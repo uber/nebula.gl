@@ -11,7 +11,7 @@ const initialViewState = {
   latitude: 0,
   zoom: 10,
   pitch: 0,
-  bearing: 0
+  bearing: 0,
 };
 
 it('test HtmlOverlay map center', () => {
@@ -32,7 +32,7 @@ it('HtmlOverlay is able to handle a single null child', () => {
   const layer = new HtmlOverlay();
   layer.props = {
     children,
-    viewport: { project: coords => coords }
+    viewport: { project: (coords) => coords },
   };
   expect(layer.render()).toMatchSnapshot();
 });
@@ -45,13 +45,13 @@ it('HtmlOverlay is able to handle a null child with other valid children', () =>
     <HtmlOverlayItem key={2} coordinates={[0, 0, 50000]}>
       Map Center 50km Elevation
     </HtmlOverlayItem>,
-    null
+    null,
   ];
 
   const layer = new HtmlOverlay();
   layer.props = {
     children,
-    viewport: { project: coords => coords }
+    viewport: { project: (coords) => coords },
   };
   expect(layer.render()).toMatchSnapshot();
 });
@@ -59,7 +59,7 @@ it('HtmlOverlay is able to handle a null child with other valid children', () =>
 it('HtmlOverlay is able to handle no children', () => {
   const layer = new HtmlOverlay();
   layer.props = {
-    viewport: { project: coords => coords }
+    viewport: { project: (coords) => coords },
   };
   expect(layer.render()).toMatchSnapshot();
 });

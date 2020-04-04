@@ -5,7 +5,7 @@ import { MeasureDistanceMode } from '../../src/lib/measure-distance-mode.js';
 import {
   createFeatureCollectionProps,
   createClickEvent,
-  createPointerMoveEvent
+  createPointerMoveEvent,
 } from '../test-utils.js';
 
 describe('move without click', () => {

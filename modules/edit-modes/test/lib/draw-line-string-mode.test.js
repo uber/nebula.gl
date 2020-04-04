@@ -11,8 +11,8 @@ beforeAll(() => {
   props = createFeatureCollectionProps({
     data: {
       type: 'FeatureCollection',
-      features: []
-    }
+      features: [],
+    },
   });
 
   mode.handleClick(createClickEvent([1, 2]), props);
@@ -29,10 +29,10 @@ beforeAll(() => {
           object: {
             properties: {
               guideType: 'editHandle',
-              positionIndexes: [2]
-            }
-          }
-        }
+              positionIndexes: [2],
+            },
+          },
+        },
       ]
     ),
     props
@@ -54,7 +54,7 @@ describe('while tentative', () => {
   it(`doesn't change the data`, () => {
     const expectedData = {
       type: 'FeatureCollection',
-      features: []
+      features: [],
     };
 
     expect(props.onEdit.mock.calls[0][0].updatedData).toEqual(expectedData);
@@ -70,8 +70,15 @@ describe('after double-clicking', () => {
       {
         type: 'Feature',
         properties: {},
-        geometry: { type: 'LineString', coordinates: [[1, 2], [3, 4], [5, 6]] }
-      }
+        geometry: {
+          type: 'LineString',
+          coordinates: [
+            [1, 2],
+            [3, 4],
+            [5, 6],
+          ],
+        },
+      },
     ]);
   });
 });

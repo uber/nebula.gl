@@ -8,5 +8,5 @@ export const viewport = {
   longitude: center[0],
   pitch: 0,
   width: 800,
-  zoom: 12
+  zoom: 12,
 };

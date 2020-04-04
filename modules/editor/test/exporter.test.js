@@ -20,7 +20,7 @@ beforeEach(() => {
   featureCollection = {
     type: 'FeatureCollection',
     properties: {},
-    features: [unsavedNamedFeature, unsavedUnnamedFeature]
+    features: [unsavedNamedFeature, unsavedUnnamedFeature],
   };
 });
 
@@ -114,8 +114,16 @@ describe('toWkt()', () => {
       id: 'abc',
       geometry: {
         type: 'Polygon',
-        coordinates: [[[30, 10], [40, 40], [20, 40], [10, 20], [30, 10]]]
-      }
+        coordinates: [
+          [
+            [30, 10],
+            [40, 40],
+            [20, 40],
+            [10, 20],
+            [30, 10],
+          ],
+        ],
+      },
     });
 
     expect(actual.filename).toEqual(expectedFilename);
@@ -139,8 +147,16 @@ describe('toWkt()', () => {
           id: 'abc',
           geometry: {
             type: 'Polygon',
-            coordinates: [[[30, 10], [40, 40], [20, 40], [10, 20], [30, 10]]]
-          }
+            coordinates: [
+              [
+                [30, 10],
+                [40, 40],
+                [20, 40],
+                [10, 20],
+                [30, 10],
+              ],
+            ],
+          },
         },
         {
           type: 'Feature',
@@ -148,10 +164,18 @@ describe('toWkt()', () => {
           id: 'def',
           geometry: {
             type: 'Polygon',
-            coordinates: [[[3, 1], [4, 4], [2, 4], [1, 2], [3, 1]]]
-          }
-        }
-      ]
+            coordinates: [
+              [
+                [3, 1],
+                [4, 4],
+                [2, 4],
+                [1, 2],
+                [3, 1],
+              ],
+            ],
+          },
+        },
+      ],
     });
 
     expect(actual.filename).toEqual(expectedFilename);
@@ -167,7 +191,7 @@ describe('toWkt()', () => {
     const actual = toWkt({
       type: 'FeatureCollection',
       properties: {},
-      features: []
+      features: [],
     });
 
     expect(actual.filename).toEqual(expectedFilename);
@@ -188,8 +212,16 @@ describe('toStats()', () => {
       id: 'abc',
       geometry: {
         type: 'Polygon',
-        coordinates: [[[30, 10], [40, 40], [20, 40], [10, 20], [30, 10]]]
-      }
+        coordinates: [
+          [
+            [30, 10],
+            [40, 40],
+            [20, 40],
+            [10, 20],
+            [30, 10],
+          ],
+        ],
+      },
     });
 
     expect(actual.filename).toEqual(expectedFilename);
@@ -212,8 +244,16 @@ describe('toStats()', () => {
           id: 'abc',
           geometry: {
             type: 'Polygon',
-            coordinates: [[[30, 10], [40, 40], [20, 40], [10, 20], [30, 10]]]
-          }
+            coordinates: [
+              [
+                [30, 10],
+                [40, 40],
+                [20, 40],
+                [10, 20],
+                [30, 10],
+              ],
+            ],
+          },
         },
         {
           type: 'Feature',
@@ -223,14 +263,34 @@ describe('toStats()', () => {
             type: 'MultiPolygon',
             coordinates: [
               [
-                [[3, 1], [4, 4], [2, 4], [1, 2], [3, 1]],
-                [[3.5, 3.5], [2, 3.5], [1.5, 2], [2.5, 1.5], [3.5, 3.5]]
+                [
+                  [3, 1],
+                  [4, 4],
+                  [2, 4],
+                  [1, 2],
+                  [3, 1],
+                ],
+                [
+                  [3.5, 3.5],
+                  [2, 3.5],
+                  [1.5, 2],
+                  [2.5, 1.5],
+                  [3.5, 3.5],
+                ],
               ],
-              [[[13, 11], [14, 14], [12, 14], [11, 12], [13, 11]]]
-            ]
-          }
-        }
-      ]
+              [
+                [
+                  [13, 11],
+                  [14, 14],
+                  [12, 14],
+                  [11, 12],
+                  [13, 11],
+                ],
+              ],
+            ],
+          },
+        },
+      ],
     });
 
     expect(actual.filename).toEqual(expectedFilename);

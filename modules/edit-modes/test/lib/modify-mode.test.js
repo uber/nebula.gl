@@ -15,13 +15,20 @@ beforeEach(() => {
   pointFeature = {
     type: 'Feature',
     properties: {},
-    geometry: { type: 'Point', coordinates: [1, 2] }
+    geometry: { type: 'Point', coordinates: [1, 2] },
   };
 
   lineStringFeature = {
     type: 'Feature',
     properties: {},
-    geometry: { type: 'LineString', coordinates: [[1, 2], [2, 3], [3, 4]] }
+    geometry: {
+      type: 'LineString',
+      coordinates: [
+        [1, 2],
+        [2, 3],
+        [3, 4],
+      ],
+    },
   };
 
   polygonFeature = {
@@ -31,17 +38,35 @@ beforeEach(() => {
       type: 'Polygon',
       coordinates: [
         // exterior ring
-        [[-1, -1], [1, -1], [1, 1], [-1, 1], [-1, -1]],
+        [
+          [-1, -1],
+          [1, -1],
+          [1, 1],
+          [-1, 1],
+          [-1, -1],
+        ],
         // hole
-        [[-0.5, -0.5], [-0.5, 0.5], [0.5, 0.5], [0.5, -0.5], [-0.5, -0.5]]
-      ]
-    }
+        [
+          [-0.5, -0.5],
+          [-0.5, 0.5],
+          [0.5, 0.5],
+          [0.5, -0.5],
+          [-0.5, -0.5],
+        ],
+      ],
+    },
   };
 
   multiPointFeature = {
     type: 'Feature',
     properties: {},
-    geometry: { type: 'MultiPoint', coordinates: [[1, 2], [3, 4]] }
+    geometry: {
+      type: 'MultiPoint',
+      coordinates: [
+        [1, 2],
+        [3, 4],
+      ],
+    },
   };
 
   multiLineStringFeature = {
@@ -49,8 +74,19 @@ beforeEach(() => {
     properties: {},
     geometry: {
       type: 'MultiLineString',
-      coordinates: [[[1, 2], [2, 3], [3, 4]], [[5, 6], [6, 7], [7, 8]]]
-    }
+      coordinates: [
+        [
+          [1, 2],
+          [2, 3],
+          [3, 4],
+        ],
+        [
+          [5, 6],
+          [6, 7],
+          [7, 8],
+        ],
+      ],
+    },
   };
 
   multiPolygonFeature = {
@@ -61,16 +97,34 @@ beforeEach(() => {
       coordinates: [
         [
           // exterior ring polygon 1
-          [[-1, -1], [1, -1], [1, 1], [-1, 1], [-1, -1]],
+          [
+            [-1, -1],
+            [1, -1],
+            [1, 1],
+            [-1, 1],
+            [-1, -1],
+          ],
           // hole  polygon 1
-          [[-0.5, -0.5], [-0.5, 0.5], [0.5, 0.5], [0.5, -0.5], [-0.5, -0.5]]
+          [
+            [-0.5, -0.5],
+            [-0.5, 0.5],
+            [0.5, 0.5],
+            [0.5, -0.5],
+            [-0.5, -0.5],
+          ],
         ],
         [
           // exterior ring polygon 2
-          [[2, -1], [4, -1], [4, 1], [2, 1], [2, -1]]
-        ]
-      ]
-    }
+          [
+            [2, -1],
+            [4, -1],
+            [4, 1],
+            [2, 1],
+            [2, -1],
+          ],
+        ],
+      ],
+    },
   };
 });
 
@@ -80,9 +134,9 @@ describe('getGuides()', () => {
     const props = createFeatureCollectionProps({
       data: {
         type: 'FeatureCollection',
-        features: [pointFeature]
+        features: [pointFeature],
       },
-      selectedIndexes: [0]
+      selectedIndexes: [0],
     });
 
     const guides = mode.getGuides(props);
@@ -95,9 +149,9 @@ describe('getGuides()', () => {
     const props = createFeatureCollectionProps({
       data: {
         type: 'FeatureCollection',
-        features: [lineStringFeature]
+        features: [lineStringFeature],
       },
-      selectedIndexes: [0]
+      selectedIndexes: [0],
     });
 
     const guides = mode.getGuides(props);
@@ -110,9 +164,9 @@ describe('getGuides()', () => {
     const props = createFeatureCollectionProps({
       data: {
         type: 'FeatureCollection',
-        features: [polygonFeature]
+        features: [polygonFeature],
       },
-      selectedIndexes: [0]
+      selectedIndexes: [0],
     });
 
     const guides = mode.getGuides(props);
@@ -125,9 +179,9 @@ describe('getGuides()', () => {
     const props = createFeatureCollectionProps({
       data: {
         type: 'FeatureCollection',
-        features: [multiPointFeature]
+        features: [multiPointFeature],
       },
-      selectedIndexes: [0]
+      selectedIndexes: [0],
     });
 
     const guides = mode.getGuides(props);
@@ -140,9 +194,9 @@ describe('getGuides()', () => {
     const props = createFeatureCollectionProps({
       data: {
         type: 'FeatureCollection',
-        features: [multiLineStringFeature]
+        features: [multiLineStringFeature],
       },
-      selectedIndexes: [0]
+      selectedIndexes: [0],
     });
 
     const guides = mode.getGuides(props);
@@ -155,9 +209,9 @@ describe('getGuides()', () => {
     const props = createFeatureCollectionProps({
       data: {
         type: 'FeatureCollection',
-        features: [multiPolygonFeature]
+        features: [multiPolygonFeature],
       },
-      selectedIndexes: [0]
+      selectedIndexes: [0],
     });
 
     const guides = mode.getGuides(props);
@@ -170,9 +224,9 @@ describe('getGuides()', () => {
     const props = createFeatureCollectionProps({
       data: {
         type: 'FeatureCollection',
-        features: [lineStringFeature, pointFeature, multiPointFeature]
+        features: [lineStringFeature, pointFeature, multiPointFeature],
       },
-      selectedIndexes: [0, 2]
+      selectedIndexes: [0, 2],
     });
 
     const guides = mode.getGuides(props);
@@ -192,22 +246,22 @@ describe('getGuides()', () => {
         [-122.4250316619873, 37.778584505321376],
         [-122.42314338684082, 37.778652344496926],
         [-122.42357254028322, 37.77987343901049],
-        [-122.41198539733887, 37.78109451335266]
-      ]
-    }
+        [-122.41198539733887, 37.78109451335266],
+      ],
+    },
   };
 
   const point = {
     type: 'Feature',
     geometry: {
       type: 'Point',
-      coordinates: [-122.40880966186523, 37.783536601521924]
-    }
+      coordinates: [-122.40880966186523, 37.783536601521924],
+    },
   };
   const pick = {
     object: lineString,
     isGuide: false,
-    index: 0
+    index: 0,
   };
 
   const mapCoords = [-122.43862233312133, 37.77767798407437];
@@ -217,7 +271,7 @@ describe('getGuides()', () => {
     const props = createFeatureCollectionProps({
       data: {
         type: 'FeatureCollection',
-        features: [lineString]
+        features: [lineString],
       },
       selectedIndexes: [0],
       lastPointerMoveEvent: {
@@ -225,8 +279,8 @@ describe('getGuides()', () => {
         mapCoords,
         screenCoords: [42, 42],
         cancelPan: jest.fn(),
-        sourceEvent: null
-      }
+        sourceEvent: null,
+      },
     });
 
     const guides = mode.getGuides(props);
@@ -244,9 +298,9 @@ describe('getGuides()', () => {
     const props = createFeatureCollectionProps({
       data: {
         type: 'FeatureCollection',
-        features: [lineString]
+        features: [lineString],
       },
-      selectedIndexes: [0]
+      selectedIndexes: [0],
     });
 
     const guides = mode.getGuides(props);
@@ -263,7 +317,7 @@ describe('getGuides()', () => {
     const props = createFeatureCollectionProps({
       data: {
         type: 'FeatureCollection',
-        features: [lineString]
+        features: [lineString],
       },
       selectedIndexes: [0],
       lastPointerMoveEvent: {
@@ -274,15 +328,15 @@ describe('getGuides()', () => {
             index: 42,
             object: {
               properties: { guideType: 'editHandle', editHandleType: 'existing', featureIndex: 0 },
-              geometry: { coordinates: [] }
-            }
-          }
+              geometry: { coordinates: [] },
+            },
+          },
         ],
         mapCoords,
         screenCoords: [42, 42],
         cancelPan: jest.fn(),
-        sourceEvent: null
-      }
+        sourceEvent: null,
+      },
     });
 
     const guides = mode.getGuides(props);
@@ -299,8 +353,8 @@ describe('getGuides()', () => {
     const props = createFeatureCollectionProps({
       data: {
         type: 'FeatureCollection',
-        features: [lineString]
-      }
+        features: [lineString],
+      },
     });
 
     const guides = mode.getGuides(props);
@@ -317,7 +371,7 @@ describe('getGuides()', () => {
     const props = createFeatureCollectionProps({
       data: {
         type: 'FeatureCollection',
-        features: [point]
+        features: [point],
       },
       selectedIndexes: [0],
       lastPointerMoveEvent: {
@@ -325,14 +379,14 @@ describe('getGuides()', () => {
           {
             isGuide: false,
             index: 0,
-            object: point
-          }
+            object: point,
+          },
         ],
         mapCoords,
         screenCoords: [42, 42],
         cancelPan: jest.fn(),
-        sourceEvent: null
-      }
+        sourceEvent: null,
+      },
     });
     const guides = mode.getGuides(props);
     const intermediate = guides.features.find(

@@ -11,42 +11,45 @@ import type {
   Geometry,
   Position,
   Feature,
-  FeatureOf
+  FeatureOf,
 } from '../src/geojson-types.js';
 
 let point: Point = {
   type: 'Point',
-  coordinates: [1, 2]
+  coordinates: [1, 2],
 };
 
 let lineString: LineString = {
   type: 'LineString',
-  coordinates: [[1, 2], [3, 4]]
+  coordinates: [
+    [1, 2],
+    [3, 4],
+  ],
 };
 
 let polygonSolid: Polygon = {
   type: 'Polygon',
-  coordinates: [lineString.coordinates]
+  coordinates: [lineString.coordinates],
 };
 
 let polygonWithHole: Polygon = {
   type: 'Polygon',
-  coordinates: [lineString.coordinates, lineString.coordinates]
+  coordinates: [lineString.coordinates, lineString.coordinates],
 };
 
 let multiPoint: MultiPoint = {
   type: 'MultiPoint',
-  coordinates: [point.coordinates, point.coordinates]
+  coordinates: [point.coordinates, point.coordinates],
 };
 
 let multiLineString: MultiLineString = {
   type: 'MultiLineString',
-  coordinates: [lineString.coordinates, lineString.coordinates]
+  coordinates: [lineString.coordinates, lineString.coordinates],
 };
 
 let multiPolygon: MultiPolygon = {
   type: 'MultiPolygon',
-  coordinates: [polygonSolid.coordinates, polygonWithHole.coordinates]
+  coordinates: [polygonSolid.coordinates, polygonWithHole.coordinates],
 };
 
 let position: Position = multiPolygon[1][2];
@@ -55,17 +58,17 @@ let latitude: number = position[1];
 
 let pointFeature: FeatureOf<Point> = {
   type: 'Feature',
-  geometry: point
+  geometry: point,
 };
 
 let lineStringFeature: FeatureOf<LineString> = {
   type: 'Feature',
-  geometry: lineString
+  geometry: lineString,
 };
 
 let anyFeature: Feature = {
   type: 'Feature',
-  geometry: multiPolygon
+  geometry: multiPolygon,
 };
 
 if (Math.random() > 0.5) {

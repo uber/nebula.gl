@@ -60,7 +60,7 @@ describe('isNumeric', () => {
     const testCases = [null, undefined, '', 'a', [], [1], '1', '1.1', 1, 1.1];
 
     const expected = [false, false, false, false, false, false, true, true, true, true];
-    const results = testCases.map(t => isNumeric(t));
+    const results = testCases.map((t) => isNumeric(t));
 
     expect(results).toEqual(expected);
   });

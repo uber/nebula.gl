@@ -9,7 +9,7 @@ import {
   DrawLineStringMode,
   DrawRectangleMode,
   DrawRectangleOneclickMode,
-  DrawPolygonMode
+  DrawPolygonMode,
 } from 'react-map-gl-draw';
 import { MODES } from './constants';
 import Toolbar from './toolbar';
@@ -22,7 +22,7 @@ const MODE_TO_HANDLER = {
   [MODES.DRAW_PATH]: DrawLineStringMode,
   [MODES.DRAW_RECTANGLE]: DrawRectangleMode,
   [MODES.DRAW_RECTANGLE_ONE_CLICK]: DrawRectangleOneclickMode,
-  [MODES.DRAW_POLYGON]: DrawPolygonMode
+  [MODES.DRAW_POLYGON]: DrawPolygonMode,
 };
 
 // eslint-disable-next-line no-process-env, no-undef
@@ -33,7 +33,7 @@ const DEFAULT_VIEWPORT = {
   height: 600,
   longitude: -122.45,
   latitude: 37.78,
-  zoom: 14
+  zoom: 14,
 };
 
 export default class App extends Component {
@@ -44,7 +44,7 @@ export default class App extends Component {
       viewport: DEFAULT_VIEWPORT,
       // editor
       selectedMode: null,
-      selectedFeatureIndex: null
+      selectedFeatureIndex: null,
     };
     this._editorRef = null;
   }
@@ -58,7 +58,7 @@ export default class App extends Component {
     this._editorRef.deleteFeatures(selectedFeatureIndex);
   };
 
-  _switchMode = evt => {
+  _switchMode = (evt) => {
     let selectedMode = evt.target.id;
     if (selectedMode === this.state.selectedMode) {
       selectedMode = null;
@@ -69,7 +69,7 @@ export default class App extends Component {
     this.setState({ selectedMode, modeHandler });
   };
 
-  _updateViewport = viewport => {
+  _updateViewport = (viewport) => {
     this.setState({ viewport });
   };
 
@@ -94,9 +94,9 @@ export default class App extends Component {
         onViewportChange={this._updateViewport}
       >
         <Editor
-          ref={_ => (this._editorRef = _)}
+          ref={(_) => (this._editorRef = _)}
           clickRadius={12}
-          onSelect={selected => {
+          onSelect={(selected) => {
             this.setState({ selectedFeatureIndex: selected && selected.selectedFeatureIndex });
           }}
           mode={modeHandler}

@@ -11,22 +11,22 @@ const initialViewState = {
   latitude: 37.7,
   zoom: 10,
   pitch: 0,
-  bearing: 0
+  bearing: 0,
 };
 
 const styles = {
   mapContainer: {
     alignItems: 'stretch',
     display: 'flex',
-    height: '100vh'
+    height: '100vh',
   },
   box: {
-    background: 'white'
+    background: 'white',
   },
   image: {
     float: 'left',
-    margin: 10
-  }
+    margin: 10,
+  },
 };
 
 const DATA_URL = 'https://cors-anywhere.herokuapp.com/http://whc.unesco.org/en/list/georss/';
@@ -67,7 +67,7 @@ class WorldHeritage extends HtmlClusterOverlay {
             color: 'white',
             fontSize: 12,
             lineHeight: '10px',
-            maxWidth: 300
+            maxWidth: 300,
           }}
           key={object.title}
           coordinates={coordinates}
@@ -99,7 +99,7 @@ class WorldHeritage extends HtmlClusterOverlay {
           borderRadius: 20,
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center'
+          justifyContent: 'center',
         }}
         key={clusterId}
         coordinates={coordinates}
@@ -113,22 +113,22 @@ class WorldHeritage extends HtmlClusterOverlay {
 export default class Example extends Component<
   {},
   {
-    data: ?(Object[])
+    data: ?(Object[]),
   }
 > {
   constructor(props: any) {
     super(props);
 
     this.state = {
-      data: null
+      data: null,
     };
 
-    window.fetch(DATA_URL).then(response => {
-      response.text().then(text => {
+    window.fetch(DATA_URL).then((response) => {
+      response.text().then((text) => {
         const parser = new window.DOMParser();
         const xmlDoc = parser.parseFromString(text, 'text/xml');
 
-        const data = Array.from(xmlDoc.getElementsByTagName('item')).map(item => {
+        const data = Array.from(xmlDoc.getElementsByTagName('item')).map((item) => {
           const title = item.getElementsByTagName('title')[0].textContent;
           const description = item.getElementsByTagName('description')[0].textContent;
           const link = item.getElementsByTagName('link')[0].textContent;
@@ -141,7 +141,7 @@ export default class Example extends Component<
             image: (/src='(.+?)'/.exec(description) || [])[1],
             link,
             lat,
-            lng
+            lng,
           };
         });
 

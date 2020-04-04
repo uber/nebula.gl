@@ -19,19 +19,23 @@
   "files": [
     "dist",
     "dist-es6",
+    "dist-types",
     "src"
   ],
+  "types": "dist-types/index.d.ts",
+  "typings": "dist-types/index.d.ts",
   "scripts": {
     "build-clean": "rm -fr dist dist-es6 && mkdir -p dist dist-es6",
-    "build-es6": "rm -fr dist-es6 && BABEL_ENV=es6 babel src --config-file ../../babel.config.js --out-dir dist-es6 --source-maps inline",
-    "build-es5": "rm -fr dist && BABEL_ENV=es5 babel src --config-file ../../babel.config.js --out-dir dist --source-maps inline",
-    "build": "yarn build-clean && yarn build-es6 && yarn build-es5 && cp ../../README.md .",
-    "flow": "(cd ../.. && yarn flow)",
+    "build-es6": "rm -fr dist-es6 && BABEL_ENV=es6 babel src --config-file ../../babel.config.js --out-dir dist-es6 --source-maps inline --extensions .ts,tsx",
+    "build-es5": "rm -fr dist && BABEL_ENV=es5 babel src --config-file ../../babel.config.js --out-dir dist --source-maps inline --extensions .ts,tsx",
+    "build": "yarn build-clean && yarn build-es6 && yarn run emitDeclarations && yarn build-es5 && cp ../../README.md .",
+    "emitDeclarations": "rm -fr  dist-types && tsc --emitDeclarationOnly",
+    "types-check": "tsc --noEmit",
     "lint": "(cd ../.. && yarn lint)",
     "prepublish": "yarn build",
     "publish-prod": "yarn build && yarn test && yarn test-dist && npm publish",
     "publish-beta": "yarn build && yarn test && yarn test-dist && npm publish --tag beta",
-    "test": "yarn lint && yarn build && yarn flow && yarn jest",
+    "test": "yarn lint && yarn build && yarn types-check && yarn jest",
     "test-r": "yarn lint && yarn build && yarn test-node && (cd test/rendering-test && node node-rendering.js)",
     "test-fast": "yarn test-node",
     "test-ci": "yarn lint && node test/node-ci.js",
@@ -45,6 +49,7 @@
     "test-rendering": "(cd test/rendering-test && webpack-dev-server --config webpack.config.test-rendering.js --progress --hot --open)"
   },
   "dependencies": {
+    "@danmarshall/deckgl-typings": "^3.4.8",
     "@nebula.gl/edit-modes": "^0.17.6",
     "@turf/bbox": ">=4.0.0",
     "@turf/bbox-polygon": ">=4.0.0",

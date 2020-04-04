@@ -4,11 +4,11 @@ module.exports = {
   overrides: [
     // this must match codesandbox config
     {
-      files: ["examples/codesandbox/**/*.js", "examples/getting-started/*.js"],
+      files: ['examples/codesandbox/**/*.js', 'examples/getting-started/*.js'],
       options: {
         printWidth: 80,
-        singleQuote: false
-      }
-    }
-  ]
+        singleQuote: false,
+      },
+    },
+  ],
 };

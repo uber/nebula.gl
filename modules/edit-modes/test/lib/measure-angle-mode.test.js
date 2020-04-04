@@ -5,7 +5,7 @@ import { MeasureAngleMode } from '../../src/lib/measure-angle-mode.js';
 import {
   createFeatureCollectionProps,
   createClickEvent,
-  createPointerMoveEvent
+  createPointerMoveEvent,
 } from '../test-utils.js';
 
 describe('move without click', () => {
@@ -60,7 +60,7 @@ describe('three clicks + pointer move', () => {
   it('can format angle', () => {
     const tooltips = mode.getTooltips({
       ...props,
-      modeConfig: { formatTooltip: angle => String(Math.round(angle)) }
+      modeConfig: { formatTooltip: (angle) => String(Math.round(angle)) },
     });
     expect(tooltips[0].text).toEqual('45');
   });

@@ -5,7 +5,7 @@ import {
   createFeatureCollectionProps,
   createPointerMoveEvent,
   createStartDraggingEvent,
-  createStopDraggingEvent
+  createStopDraggingEvent,
 } from '../test-utils.js';
 import { type Pick } from '../../src/types';
 
@@ -15,7 +15,7 @@ let warnBefore;
 beforeEach(() => {
   warnBefore = console.warn; // eslint-disable-line
   // $FlowFixMe
-  console.warn = function() {}; // eslint-disable-line
+  console.warn = function () {}; // eslint-disable-line
   transformMode = new TransformMode();
 });
 
@@ -41,7 +41,7 @@ test('Selected polygon feature can be scaled', () => {
   const mockOnEdit = jest.fn();
   const props = createFeatureCollectionProps({
     selectedIndexes: [2],
-    onEdit: mockOnEdit
+    onEdit: mockOnEdit,
   });
   const mockPicks = [
     {
@@ -50,9 +50,9 @@ test('Selected polygon feature can be scaled', () => {
       object: {
         type: 'Feature',
         geometry: { type: 'Point', coordinates: [-2, -2] },
-        properties: { guideType: 'editHandle', editHandleType: 'scale', positionIndexes: [0] }
-      }
-    }
+        properties: { guideType: 'editHandle', editHandleType: 'scale', positionIndexes: [0] },
+      },
+    },
   ];
   mockScale(mockPicks, props);
 
@@ -66,7 +66,7 @@ test('Selected polygon feature without edit handle picks cannot be scaled', () =
   const mockOnEdit = jest.fn();
   const props = createFeatureCollectionProps({
     selectedIndexes: [2],
-    onEdit: mockOnEdit
+    onEdit: mockOnEdit,
   });
 
   mockScale([], props);

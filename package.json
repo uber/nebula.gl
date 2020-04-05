@@ -18,7 +18,7 @@
   ],
   "scripts": {
     "start": "open http://nebula.gl/docs",
-    "bootstrap": "npx lerna bootstrap --stream",
+    "bootstrap": "lerna bootstrap",
     "build": "lerna exec yarn run build --stream",
     "pretty": "prettier --write \"{modules,examples,test}/**/*.{ts,tsx,js}\" --loglevel warn",
     "lint": "yarn run lint-yarn && eslint modules/**/src/**/* --ext ts,tsx,js",

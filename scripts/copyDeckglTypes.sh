@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # This script makes sure that @danmarshall/deckgl-typings is copied to node_modules/@types
-# The package  has a script to do but it seems to be having issues with linux/mac
+# The package  has a script to do the same thing but it seems to be having issues with linux/mac
 
 typesPackageFolder="node_modules/@danmarshall/deckgl-typings"
 

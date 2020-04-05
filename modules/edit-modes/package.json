@@ -26,8 +26,8 @@
   "typings": "dist-types/index.d.ts",
   "scripts": {
     "build-clean": "rm -fr dist dist-es6 && mkdir -p dist dist-es6",
-    "build-es6": "rm -fr dist-es6 && BABEL_ENV=es6 babel src --config-file ../../babel.config.js --out-dir dist-es6 --source-maps inline --extensions .ts,tsx",
-    "build-es5": "rm -fr dist && BABEL_ENV=es5 babel src --config-file ../../babel.config.js --out-dir dist --source-maps inline --extensions .ts,tsx",
+    "build-es6": "rm -fr dist-es6 && BABEL_ENV=es6 babel src --config-file ../../babel.config.js --out-dir dist-es6 --source-maps inline --extensions .ts,.tsx",
+    "build-es5": "rm -fr dist && BABEL_ENV=es5 babel src --config-file ../../babel.config.js --out-dir dist --source-maps inline --extensions .ts,.tsx",
     "build": "yarn build-clean && yarn build-es6 && yarn run emitDeclarations && yarn build-es5 && cp ../../README.md . ",
     "emitDeclarations": "rm -fr  dist-types && tsc --emitDeclarationOnly",
     "types-check": "tsc --noEmit",
@@ -73,6 +73,6 @@
     "@turf/union": ">=4.0.0",
     "lodash.throttle": "^4.1.1",
     "viewport-mercator-project": ">=6.0.0",
-    "geojson":"0.5.0"
+    "geojson": "0.5.0"
   }
 }

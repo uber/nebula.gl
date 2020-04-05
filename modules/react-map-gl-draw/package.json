@@ -42,7 +42,8 @@
     "@turf/helpers": "^6.1.4",
     "mjolnir.js": "^2.4.0",
     "prop-types": "^15.7.2",
-    "uuid": "^3.4.0"
+    "uuid": "^3.4.0",
+    "@types/react-map-gl": "5.2.2"
   },
   "devDependencies": {
     "react-map-gl": "^5.2.3"

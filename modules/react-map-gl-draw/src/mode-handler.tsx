@@ -1,4 +1,4 @@
-import { _MapContext as MapContext } from 'react-map-gl';
+import { _MapContext as MapContext, MapContextProps } from 'react-map-gl';
 import React, { PureComponent } from 'react';
 import { ImmutableFeatureCollection, Feature, Position, EditAction } from '@nebula.gl/edit-modes';
 
@@ -77,7 +77,7 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
   _events: any;
   _eventsRegistered: boolean;
   _modeHandler: any;
-  _context: MapContext | null | undefined;
+  _context: MapContextProps | null | undefined;
   _containerRef: HTMLElement | null | undefined;
 
   getFeatures = () => {
@@ -372,11 +372,13 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
   /* HELPERS */
   project = (pt: Position) => {
     const viewport = this._context && this._context.viewport;
+    // @ts-ignore
     return viewport && viewport.project(pt);
   };
 
   unproject = (pt: Position) => {
     const viewport = this._context && this._context.viewport;
+    // @ts-ignore
     return viewport && viewport.unproject(pt);
   };
 

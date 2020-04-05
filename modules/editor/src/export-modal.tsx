@@ -1,5 +1,4 @@
 /* eslint-env browser */
-
 import React from 'react';
 import { AnyGeoJson } from '@nebula.gl/edit-modes';
 import { EditorModal } from './editor-modal';

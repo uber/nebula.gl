@@ -10,6 +10,7 @@
           "outDir": "./lib",
           "allowSyntheticDefaultImports": true,
           "downlevelIteration": true,
+          "isolatedModules": true,
           "esModuleInterop": true,
           "module": "esnext",
           "declarationMap": true,

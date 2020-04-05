@@ -14,4 +14,4 @@ export { default as JunctionScatterplotLayer } from './layers/junction-scatterpl
 export { toDeckColor } from './utils';
 
 // Types
-export { Color, Viewport } from './types';
+export type { Color, Viewport } from './types';

@@ -1,5 +1,7 @@
-export { EditMode } from './lib/edit-mode';
-export { GeoJsonEditMode, GeoJsonEditModeType } from './lib/geojson-edit-mode';
+export type { EditMode } from './lib/edit-mode';
+export type { GeoJsonEditModeType } from './lib/geojson-edit-mode';
+
+export { GeoJsonEditMode } from './lib/geojson-edit-mode';
 
 // Alter modes
 export { ModifyMode } from './lib/modify-mode';
@@ -35,7 +37,7 @@ export { MeasureAngleMode } from './lib/measure-angle-mode';
 export { CompositeMode } from './lib/composite-mode';
 export { SnappableMode } from './lib/snappable-mode';
 
-export {
+export type {
   ScreenCoordinates,
   EditAction,
   Pick,
@@ -51,7 +53,7 @@ export {
   Tooltip,
 } from './types';
 
-export {
+export type {
   Position,
   PointCoordinates,
   LineStringCoordinates,

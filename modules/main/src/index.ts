@@ -15,7 +15,7 @@ export { default as NebulaCore } from './lib/nebula';
 export { toDeckColor } from './lib/utils';
 
 // Types
-export { Color, Style } from './types';
+export type { Color, Style } from './types';
 
 // Moved to @nebula.gl/layers
 export { EditableGeoJsonLayer } from '@nebula.gl/layers';
@@ -24,7 +24,7 @@ export { ElevatedEditHandleLayer } from '@nebula.gl/layers';
 export { PathOutlineLayer } from '@nebula.gl/layers';
 export { PathMarkerLayer } from '@nebula.gl/layers';
 
-export { EditMode } from '@nebula.gl/edit-modes';
+export type { EditMode } from '@nebula.gl/edit-modes';
 export { GeoJsonEditMode } from '@nebula.gl/edit-modes';
 
 // Alter modes

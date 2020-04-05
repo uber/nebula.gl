@@ -8,7 +8,7 @@ import {
   DraggingEvent,
   PointerMoveEvent,
   DoubleClickEvent,
-} from '../../../edit-modes/src/index';
+} from '@nebula.gl/edit-modes';
 
 const EVENT_TYPES = ['anyclick', 'pointermove', 'panstart', 'panmove', 'panend', 'dblclick'];
 

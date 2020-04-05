@@ -1,7 +1,12 @@
 {
      "compilerOptions": {
           "strict": false,
-          "lib": ["dom", "dom.iterable", "esnext", "es6"],
+          "lib": [
+               "dom",
+               "dom.iterable",
+               "esnext",
+               "es6"
+          ],
           "outDir": "./lib",
           "allowSyntheticDefaultImports": true,
           "downlevelIteration": true,
@@ -21,6 +26,8 @@
           "target": "es5",
           "sourceMap": true,
           "importHelpers": true
-        },
-        "exclude": ["node_modules", "lib"]
+     },
+     "exclude": [
+          "node_modules"
+     ]
 }

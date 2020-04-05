@@ -75,6 +75,7 @@ export default class SegmentsLayer extends NebulaLayer {
       id: `segments-${this.id}`,
       data: objects,
       opacity: 1,
+      // @ts-ignore
       fp64: false,
       rounded: this.rounded,
       pickable: true,

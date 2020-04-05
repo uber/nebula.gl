@@ -72,6 +72,7 @@ export type PointerMoveEvent = BasePointerEvent & {
   pointerDownPicks?: Pick[] | null | undefined;
   pointerDownScreenCoords?: ScreenCoordinates | null | undefined;
   pointerDownMapCoords?: Position | null | undefined;
+  cancelPan: () => void;
 };
 
 export type Tooltip = {

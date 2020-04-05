@@ -127,7 +127,7 @@ export class Draw90DegreePolygonMode extends GeoJsonEditMode {
     }
 
     // Trigger pointer move right away in order for it to update edit handles (to support double-click)
-    const fakePointerMoveEvent = {
+    const fakePointerMoveEvent: PointerMoveEvent = {
       screenCoords: [-1, -1],
       mapCoords: event.mapCoords,
       picks: [],
@@ -137,7 +137,7 @@ export class Draw90DegreePolygonMode extends GeoJsonEditMode {
       cancelPan: () => {},
       sourceEvent: null,
     };
-    //@ts-ignore
+
     this.handlePointerMove(fakePointerMoveEvent, props);
   }
 

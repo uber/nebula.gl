@@ -243,9 +243,7 @@ export const mockNonPickedHandle = {
 
 export const mockedGeoJsonProperties = { testString: 'hi', testNumber: 10 };
 
-function createFeature(featureType: string, options: {
-  [K in string]: any;
-} | null) {
+function createFeature(featureType: string, options?: { [K: string]: any }) {
   const feature = mockFeatures[featureType].geoJson;
   const { mockGeoJsonProperties } = options || {};
   if (mockGeoJsonProperties) {
@@ -254,45 +252,31 @@ function createFeature(featureType: string, options: {
   return feature;
 }
 
-export function createPointFeature(options: {
-  [K in string]: any;
-} | null) {
+export function createPointFeature(options?: { [K: string]: any }) {
   return createFeature(FeatureType.POINT, options);
 }
 
-export function createLineStringFeature(options: {
-  [K in string]: any;
-} | null) {
+export function createLineStringFeature(options?: { [K: string]: any }) {
   return createFeature(FeatureType.LINE_STRING, options);
 }
 
-export function createPolygonFeature(options: {
-  [K in string]: any;
-} | null) {
+export function createPolygonFeature(options?: { [K: string]: any }) {
   return createFeature(FeatureType.POLYGON, options);
 }
 
-export function createMultiPointFeature(options: {
-  [K in string]: any;
-} | null) {
+export function createMultiPointFeature(options?: { [K: string]: any }) {
   return createFeature(FeatureType.MULTI_POINT, options);
 }
 
-export function createMultiLineStringFeature(options: {
-  [K in string]: any;
-} | null) {
+export function createMultiLineStringFeature(options?: { [K: string]: any }) {
   return createFeature(FeatureType.MULTI_LINE_STRING, options);
 }
 
-export function createMultiPolygonFeature(options: {
-  [K in string]: any;
-} | null) {
+export function createMultiPolygonFeature(options?: { [K: string]: any }) {
   return createFeature(FeatureType.MULTI_POLYGON, options);
 }
 
-export function getFeatureCollectionFeatures(options: {
-  [K in string]: any;
-} | null) {
+export function getFeatureCollectionFeatures(options?: { [K: string]: any }) {
   return [
     createPointFeature(options),
     createLineStringFeature(options),
@@ -303,9 +287,7 @@ export function getFeatureCollectionFeatures(options: {
   ];
 }
 
-export function createFeatureCollection(options: {
-  [K in string]: any;
-} | null) {
+export function createFeatureCollection(options?: { [K: string]: any }) {
   return {
     type: 'FeatureCollection',
     features: getFeatureCollectionFeatures(options),
@@ -374,6 +356,7 @@ export function createFeatureCollectionProps(overrides: $Shape<ModeProps<Feature
   return {
     data: createFeatureCollection(),
     selectedIndexes: [],
+    // @ts-ignore
     lastPointerMoveEvent: createPointerMoveEvent(),
     modeConfig: null,
     onEdit: jest.fn(),

@@ -93,8 +93,8 @@ export function generatePointsParallelToLinePoints(
   // Add the distance as the current position moves away from the lineString
   const p3 = destination(p2, ddistance, orthogonalBearing);
   const p4 = destination(p1, ddistance, orthogonalBearing);
-  //@ts-ignore
-  return [p3.geometry.coordinates, p4.geometry.coordinates];
+
+  return [p3.geometry.coordinates, p4.geometry.coordinates] as Position[];
 }
 
 export function distance2d(x1: number, y1: number, x2: number, y2: number): number {

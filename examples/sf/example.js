@@ -1,4 +1,3 @@
-// @flow
 import window from 'global/window';
 import React, { Component } from 'react';
 import DeckGL, { TextLayer } from 'deck.gl';
@@ -44,7 +43,7 @@ export default class Example extends Component<
     selectionType?: number,
     testFeatures: Array<Object>,
   }
-> {
+  > {
   constructor() {
     super();
 

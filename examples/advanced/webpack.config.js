@@ -12,14 +12,18 @@ const CONFIG = {
   devtool: 'source-map',
 
   entry: {
-    app: resolve('./app.js'),
+    app: resolve('./app.tsx'),
+  },
+  resolve: {
+    // Add '.ts' and '.tsx' as resolvable extensions.
+    extensions: [".ts", ".tsx", '.js', '.jsx']
   },
 
   module: {
     rules: [
       {
         // Compile ES2015 using babel
-        test: /\.js$/,
+        test: /\.tsx?$/,
         include: [resolve('.'), resolve('../../modules')],
         exclude: [/node_modules/],
         use: {

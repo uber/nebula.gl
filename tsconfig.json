@@ -18,6 +18,7 @@
           "strictNullChecks": false,
           "skipLibCheck": true,
           "noLib": false,
+          "resolveJsonModule": true,
           "emitDecoratorMetadata": true,
           "experimentalDecorators": true,
           "noUnusedLocals": true,

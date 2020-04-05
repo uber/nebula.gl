@@ -1,4 +1,3 @@
-// @flow
 import window from 'global/window';
 import React, { Component } from 'react';
 import DeckGL from '@deck.gl/react';
@@ -110,13 +109,8 @@ class WorldHeritage extends HtmlClusterOverlay {
   }
 }
 
-export default class Example extends Component<
-  {},
-  {
-    data: ?(Object[]),
-  }
-> {
-  constructor(props: any) {
+export default class Example extends Component {
+  constructor(props) {
     super(props);
 
     this.state = {

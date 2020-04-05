@@ -33,7 +33,7 @@ export const ToolboxTitle = styled.div`
   padding: 0px 8px;
 `;
 
-const buttonBackground = (props) =>
+const buttonBackground = (props: { selected?: boolean }) =>
   props.selected ? 'rgba(30, 84, 183, 0.8)' : 'rgba(23, 28, 41, 0.8)';
 
 export const ToolboxButton = styled.button`

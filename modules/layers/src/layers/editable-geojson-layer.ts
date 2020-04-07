@@ -202,8 +202,8 @@ type Props = {
 // };
 
 export default class EditableGeoJsonLayer extends EditableLayer {
-  layerName = 'EditableGeoJsonLayer';
-  defaultProps = defaultProps;
+  static layerName = 'EditableGeoJsonLayer';
+  static defaultProps = defaultProps;
   // props: Props;
 
   // setState: ($Shape<State>) => void;

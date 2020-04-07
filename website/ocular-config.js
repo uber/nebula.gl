@@ -4,10 +4,10 @@ const DOCS = require('../docs/table-of-contents.json');
 const DEPENDENCIES = require('./package.json').dependencies;
 
 const LIB_DIR = resolve(__dirname, '..');
-const MAIN_SRC_DIR = resolve(LIB_DIR, './modules/main/src');
-const EDIT_MODES_SRC_DIR = resolve(LIB_DIR, './modules/edit-modes/src');
-const LAYERS_SRC_DIR = resolve(LIB_DIR, './modules/layers/src');
-const OVERLAYS_SRC_DIR = resolve(LIB_DIR, './modules/overlays/src');
+const MAIN_SRC_DIR = resolve(LIB_DIR, './modules/main/dist');
+const EDIT_MODES_SRC_DIR = resolve(LIB_DIR, './modules/edit-modes/dist');
+const LAYERS_SRC_DIR = resolve(LIB_DIR, './modules/layers/dist');
+const OVERLAYS_SRC_DIR = resolve(LIB_DIR, './modules/overlays/dist');
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 const ALIASES = {

@@ -32,7 +32,7 @@ export class ScaleMode extends GeoJsonEditMode {
   _isSinglePointGeometrySelected = (geometry: FeatureCollection | null | undefined): boolean => {
     const { features } = geometry || {};
     if (Array.isArray(features) && features.length === 1) {
-      //@ts-ignore
+      // @ts-ignore
       const { type } = getGeom(features[0]);
       return type === 'Point';
     }
@@ -87,9 +87,9 @@ export class ScaleMode extends GeoJsonEditMode {
 
     const oppositeHandle = this._getOppositeScaleHandle(this._selectedEditHandle);
     const origin = getCoord(oppositeHandle);
-    //@ts-ignore
+    // @ts-ignore
     const scaleFactor = getScaleFactor(origin, startDragPoint, currentPoint);
-    //@ts-ignore
+    // @ts-ignore
     const scaledFeatures = turfTransformScale(this._geometryBeingScaled, scaleFactor, {
       origin,
     });
@@ -193,7 +193,7 @@ export class ScaleMode extends GeoJsonEditMode {
 
     // Add buffer to the enveloping box if a single Point feature is selected
     const featureWithBuffer = this._isSinglePointGeometrySelected(selectedGeometry)
-    //@ts-ignore
+    // @ts-ignore
       ?  turfBuffer(selectedGeometry, 1)
       : selectedGeometry;
 
@@ -214,7 +214,7 @@ export class ScaleMode extends GeoJsonEditMode {
     });
 
     this._cornerGuidePoints = cornerGuidePoints;
-    //@ts-ignore
+    // @ts-ignore
     return featureCollection([boundingBox, ...this._cornerGuidePoints]);
   }
 }

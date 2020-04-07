@@ -23,7 +23,7 @@ export default class NebulaLayer extends Event.EventEmitter {
     this.helperLayers = [];
 
     if (on) {
-      //@ts-ignore
+      // @ts-ignore
       Object.keys(on).forEach((key) => this.on(key, on[key]));
     }
   }

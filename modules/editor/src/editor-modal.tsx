@@ -68,7 +68,7 @@ export type ModalProps = {
 export function EditorModal(props: ModalProps) {
   const [isOpen, setIsOpen] = React.useState(true);
 
-  function toggleModal(e) {
+  function toggleModal() {
     if (isOpen) {
       props.onClose();
     }

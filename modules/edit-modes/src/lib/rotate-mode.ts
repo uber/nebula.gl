@@ -30,7 +30,7 @@ export class RotateMode extends GeoJsonEditMode {
   _isSinglePointGeometrySelected = (geometry: FeatureCollection | null | undefined): boolean => {
     const { features } = geometry || {};
     if (Array.isArray(features) && features.length === 1) {
-      //@ts-ignore
+      // @ts-ignore
       const { type } = getGeom(features[0]);
       return type === 'Point';
     }
@@ -50,7 +50,7 @@ export class RotateMode extends GeoJsonEditMode {
 
     // Add buffer to the enveloping box if a single Point feature is selected
     const featureWithBuffer = this._isSinglePointGeometrySelected(selectedGeometry)
-       //@ts-ignore
+       // @ts-ignore
        ? turfBuffer(selectedGeometry, 1)
       : selectedGeometry;
 
@@ -62,7 +62,7 @@ export class RotateMode extends GeoJsonEditMode {
 
     coordEach(boundingBox, (coord, coordIndex) => {
       if (previousCoord) {
-        //@ts-ignore
+        // @ts-ignore
         const edgeMidpoint = getIntermediatePosition(coord, previousCoord);
         if (!topEdgeMidpointCoords || edgeMidpoint[1] > topEdgeMidpointCoords[1]) {
           // Get the top edge midpoint of the enveloping box
@@ -87,7 +87,7 @@ export class RotateMode extends GeoJsonEditMode {
       guideType: 'editHandle',
       editHandleType: 'rotate',
     });
-    //@ts-ignore
+    // @ts-ignore
     return featureCollection([boundingBox, rotateHandle, lineFromEnvelopeToRotateHandle]);
   }
 
@@ -169,7 +169,7 @@ export class RotateMode extends GeoJsonEditMode {
 
     const centroid = turfCentroid(this._geometryBeingRotated);
     const angle = getRotationAngle(centroid, startDragPoint, currentPoint);
-    //@ts-ignore
+    // @ts-ignore
     const rotatedFeatures = turfTransformRotate(this._geometryBeingRotated, angle, {
       pivot: centroid,
     });

@@ -83,7 +83,7 @@ export class TranslateHandler extends ModeHandler {
     const direction = turfBearing(p1, p2);
 
     const movedFeatures = turfTransformTranslate(
-      //@ts-ignore
+      // @ts-ignore
       this._geometryBeforeTranslate,
       distanceMoved,
       direction

@@ -1,13 +1,14 @@
 
 module.exports = {
-  
+
   "parser": "@typescript-eslint/parser",
-  plugins: [ 'prettier', 'babel', 'import', "@typescript-eslint", 'react'],
+  plugins: ['prettier', 'babel', 'import', "@typescript-eslint", 'react', "react-hooks"],
   extends: [
     'eslint-config-uber-jsx',
     'eslint-config-uber-es2015',
     "plugin:@typescript-eslint/recommended",
     "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
     'prettier'
   ],
   rules: {
@@ -34,15 +35,15 @@ module.exports = {
     'import/newline-after-import': 'error',
     'import/extensions': 'off',
 
-    // Those are rules for migration
+    // Those are rules for typescript migration
     "@typescript-eslint/interface-name-prefix": 0,
-    "@typescript-eslint/ban-ts-ignore": 0,
-    "@typescript-eslint/no-empty-function":0,
+    "@typescript-eslint/no-empty-function": 0,
     "@typescript-eslint/explicit-function-return-type": 0,
-    "no-inline-comments":0,
-    "spaced-comment":0,
-    "@typescript-eslint/no-use-before-define":0,
-    "@typescript-eslint/camelcase":0,
+    "no-inline-comments": 0,
+    // TODO: Please remove these rules and fix eslint error when possible
+    "@typescript-eslint/no-use-before-define": 0,
+    "@typescript-eslint/ban-ts-ignore": 0,
+    "@typescript-eslint/camelcase": 0,
 
     /* Ignore rules conflicting with prettier */
     'react/jsx-wrap-multilines': 'off',
@@ -54,7 +55,7 @@ module.exports = {
   },
   globals: {
     Buffer: true,
-    window:true
+    window: true
   },
   env: {
     // Support global Jest variables (test, expect, etc.)

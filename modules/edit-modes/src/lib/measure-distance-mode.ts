@@ -1,6 +1,6 @@
-//@ts-ignore
+// @ts-ignore
 import turfDistance from '@turf/distance';
-//@ts-ignore
+// @ts-ignore
 import { _memoize } from '@deck.gl/core';
 import {
   ClickEvent,

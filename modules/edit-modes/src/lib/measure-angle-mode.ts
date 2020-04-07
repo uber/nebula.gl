@@ -1,7 +1,7 @@
 import turfBearing from '@turf/bearing';
-//@ts-ignore
+// @ts-ignore
 import turfCenter from '@turf/center';
-//@ts-ignore
+// @ts-ignore
 import { _memoize } from '@deck.gl/core';
 
 import { ClickEvent, PointerMoveEvent, Tooltip, ModeProps, GuideFeatureCollection } from '../types';
@@ -30,7 +30,7 @@ export class MeasureAngleMode extends GeoJsonEditMode {
         text = formatTooltip(angle);
       } else {
         // By default, round to 2 decimal places and append units
-        //@ts-ignore
+        // @ts-ignore
         text = `${parseFloat(angle).toFixed(2)} ${units}`;
       }
 

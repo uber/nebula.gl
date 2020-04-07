@@ -53,13 +53,13 @@ export function toWkt(geojson: AnyGeoJson): ExportParameters {
 
   let wkt = '';
   if (prepped.type === 'Feature') {
-    //@ts-ignore
+    // @ts-ignore
     wkt = stringifyWkt(prepped);
   } else {
     // feature collection
     wkt = '';
     for (const feature of prepped.features) {
-      //@ts-ignore
+      // @ts-ignore
       wkt += `${stringifyWkt(feature)}\n`;
     }
     if (wkt.length > 0) {

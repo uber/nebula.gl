@@ -56,14 +56,14 @@ function getCleanedFeature(feature: Feature): Feature {
   let geometry = feature.geometry;
   // reduce null-checking
   const properties = feature.properties || {};
-  //@ts-ignore
+  // @ts-ignore
   if (geometry.type === 'GeometryCollection' && geometry.geometries.length === 1) {
     // There's only one geometry
-    //@ts-ignore
+    // @ts-ignore
     geometry = geometry.geometries[0];
-    //@ts-ignore
+    // @ts-ignore
   } else if (geometry.type === 'GeometryCollection' && geometry.geometries.length > 1) {
-    //@ts-ignore
+    // @ts-ignore
     const types = new Set(geometry.geometries.map((g) => g.type));
     if (types.size === 1) {
       // See if it can be combined into a Multi* geometry
@@ -72,14 +72,14 @@ function getCleanedFeature(feature: Feature): Feature {
         // Combine all the polygons into a single MultiPolygon
         geometry = {
           type: 'MultiPolygon',
-          //@ts-ignore
+          // @ts-ignore
           coordinates: geometry.geometries.map((g) => g.coordinates),
         };
       } else if (type === 'LineString') {
         // Combine all the polygons into a single MultiPolygon
         geometry = {
           type: 'MultiLineString',
-          //@ts-ignore
+          // @ts-ignore
           coordinates: geometry.geometries.map((g) => g.coordinates),
         };
       }
@@ -88,7 +88,7 @@ function getCleanedFeature(feature: Feature): Feature {
       throw Error('GeometryCollection geometry type not yet supported');
     }
   }
-  //@ts-ignore
+  // @ts-ignore
   return {
     type: 'Feature',
     geometry,

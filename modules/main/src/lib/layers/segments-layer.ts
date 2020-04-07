@@ -86,12 +86,12 @@ export default class SegmentsLayer extends NebulaLayer {
         blendEquation: MAX,
       },
       getPath: (nf: any) => nf.geoJson.geometry.coordinates,
-      //@ts-ignore
+      // @ts-ignore
       getColor: (nf: any) => toDeckColor(nf.style.lineColor, defaultColor),
       getWidth: (nf: any) => nf.style.lineWidthMeters || 1,
       getZLevel: (nf: any) => nf.style.zLevel * 255,
       getDirection: (nf: any) => NEBULA_TO_DECK_DIRECTIONS[nf.style.arrowStyle],
-      //@ts-ignore
+      // @ts-ignore
       getMarkerColor: (nf: any) => toDeckColor(nf.style.arrowColor, defaultColor),
       getMarkerPercentages: this._calcMarkerPercentages,
       updateTriggers: { all: updateTrigger },

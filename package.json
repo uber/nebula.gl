@@ -14,12 +14,14 @@
     "url": "https://github.com/uber/nebula.gl"
   },
   "workspaces": [
-    "modules/*"
+    "modules/*",
+    "examples/advanced"
   ],
   "scripts": {
     "start": "open http://nebula.gl/docs",
+    "start-example": "lerna run start-local --scope=example-advance --stream",
     "bootstrap": "lerna bootstrap",
-    "build": "lerna exec yarn run build --stream",
+    "build": "lerna run build --stream",
     "pretty": "prettier --write \"{modules,examples,test}/**/*.{ts,tsx,js}\" --loglevel warn",
     "lint": "yarn run lint-yarn && eslint modules/**/src/**/* --ext ts,tsx,js",
     "lint-yarn": "!(grep -q unpm.u yarn.lock) && echo 'Lockfile valid.' || (echo 'Please rebuild yarn file using public npmrc' && false)",
@@ -69,6 +71,7 @@
     "eslint-plugin-import": "2.20.2",
     "eslint-plugin-prettier": "3.1.2",
     "eslint-plugin-react": "7.19.0",
+    "eslint-plugin-react-hooks": "3.0.0",
     "jest": "25.2.7",
     "@types/jest": "25.2.1",
     "jsdom": "^9.11.0",

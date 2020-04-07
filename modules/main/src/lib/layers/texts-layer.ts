@@ -27,7 +27,7 @@ export default class TextsLayer extends NebulaLayer {
 
       getText: (nf) => nf.style.text,
       getPosition: (nf) => nf.geoJson.geometry.coordinates,
-      //@ts-ignore
+      // @ts-ignore
       getColor: (nf) => toDeckColor(nf.style.fillColor) || defaultColor,
 
       // TODO: layer should offer option to scale with zoom

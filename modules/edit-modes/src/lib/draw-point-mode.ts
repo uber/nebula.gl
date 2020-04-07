@@ -8,7 +8,7 @@ export class DrawPointMode extends GeoJsonEditMode {
       type: 'Point',
       coordinates: mapCoords,
     };
-    //@ts-ignore
+    // @ts-ignore
     props.onEdit(this.getAddFeatureAction(geometry, props.data));
   }
 

@@ -92,7 +92,7 @@ export class DrawLineStringMode extends GeoJsonEditMode {
     }));
 
     guides.features.push(...editHandles);
-    //@ts-ignore
+    // @ts-ignore
     return guides;
   }
 

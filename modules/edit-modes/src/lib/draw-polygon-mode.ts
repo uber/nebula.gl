@@ -59,7 +59,7 @@ export class DrawPolygonMode extends GeoJsonEditMode {
     }));
 
     guides.features.push(...editHandles);
-    //@ts-ignore
+    // @ts-ignore
     return guides;
   }
 

@@ -64,7 +64,7 @@ export class ModifyMode extends GeoJsonEditMode {
           (lineString, prefix) => {
             const lineStringFeature = toLineString(lineString);
             const candidateIntermediatePoint = this.nearestPointOnLine(
-              //@ts-ignore
+              // @ts-ignore
               lineStringFeature,
               referencePoint,
               props.modeConfig && props.modeConfig.viewport

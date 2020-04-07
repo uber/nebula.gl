@@ -42,7 +42,7 @@ export function findClosestPointOnLineSegment(p1: Position, p2: Position, p: Pos
   // vertical line
   if (!isFinite(k)) {
     const q = [p1[0], p[1]];
-    //@ts-ignore
+    // @ts-ignore
     return inBounds(p1, p2, q) ? q : null;
   }
 

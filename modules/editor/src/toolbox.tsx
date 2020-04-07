@@ -1,5 +1,3 @@
-/* eslint-env browser */
-
 import React from 'react';
 import { ViewMode, DrawPointMode, DrawPolygonMode } from '@nebula.gl/edit-modes';
 import styled from 'styled-components';

@@ -15,6 +15,7 @@ const initialViewState = {
 
 it('test HtmlOverlay map center', () => {
   const Component = (
+    // @ts-ignore
     <DeckGL initialViewState={initialViewState}>
       <HtmlOverlay>
         <HtmlOverlayItem coordinates={[0, 0, 0]}>Map Center Zero Elevation</HtmlOverlayItem>
@@ -27,12 +28,11 @@ it('test HtmlOverlay map center', () => {
 });
 
 it('HtmlOverlay is able to handle a single null child', () => {
-  const children = [null];
-  const layer = new HtmlOverlay();
-  layer.props = {
-    children,
+
+  const layer = new HtmlOverlay({
     viewport: { project: (coords) => coords },
-  };
+  });
+
   expect(layer.render()).toMatchSnapshot();
 });
 
@@ -47,18 +47,14 @@ it('HtmlOverlay is able to handle a null child with other valid children', () =>
     null,
   ];
 
-  const layer = new HtmlOverlay();
-  layer.props = {
+  const layer = new HtmlOverlay({
     children,
-    viewport: { project: (coords) => coords },
-  };
+    viewport: { project: (coords) => coords }
+  });
   expect(layer.render()).toMatchSnapshot();
 });
 
 it('HtmlOverlay is able to handle no children', () => {
-  const layer = new HtmlOverlay();
-  layer.props = {
-    viewport: { project: (coords) => coords },
-  };
+  const layer = new HtmlOverlay({ viewport: { project: (coords) => coords }, });
   expect(layer.render()).toMatchSnapshot();
 });

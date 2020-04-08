@@ -74,6 +74,7 @@
     "eslint-plugin-react-hooks": "3.0.0",
     "jest": "25.2.7",
     "@types/jest": "25.2.1",
+    "ts-jest": "25.3.1",
     "jsdom": "^9.11.0",
     "lerna": "3.20.2",
     "module-alias": "^2.0.0",

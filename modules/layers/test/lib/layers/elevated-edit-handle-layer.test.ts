@@ -4,6 +4,7 @@ import ElevatedEditHandleLayer from '../../../src/layers/elevated-edit-handle-la
 
 describe('ElevatedEditHandleLayer tests', () => {
   test('renderLayers()', () => {
+    // @ts-ignore
     const layer = new ElevatedEditHandleLayer();
     const render = layer.renderLayers();
     expect(Array.isArray(render)).toBeTruthy();

@@ -1,6 +1,8 @@
 import { generateCurveFromControlPoints } from '../../src/curve-utils';
+import { Feature } from '@nebula.gl/edit-modes';
 
-const POLYLINE = {
+
+const POLYLINE: Feature = {
   type: 'Feature',
   properties: {},
   geometry: {
@@ -15,6 +17,7 @@ const POLYLINE = {
 };
 
 it('test generateCurveFromControlPoints', () => {
+  // @ts-ignore
   const result = generateCurveFromControlPoints(POLYLINE);
   expect(result).toMatchSnapshot();
 });

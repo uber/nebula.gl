@@ -10,6 +10,6 @@
         "dist"
     ],
     "include": [
-        "app.tsx",
+        "src",
     ]
 }

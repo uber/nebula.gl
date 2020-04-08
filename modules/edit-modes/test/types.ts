@@ -4,10 +4,7 @@ import {
   Point,
   LineString,
   Polygon,
-  MultiPoint,
-  MultiLineString,
   MultiPolygon,
-  Geometry,
   Position,
   Feature,
   FeatureOf,
@@ -36,24 +33,13 @@ let polygonWithHole: Polygon = {
   coordinates: [lineString.coordinates, lineString.coordinates],
 };
 
-let multiPoint: MultiPoint = {
-  type: 'MultiPoint',
-  coordinates: [point.coordinates, point.coordinates],
-};
 
-let multiLineString: MultiLineString = {
-  type: 'MultiLineString',
-  coordinates: [lineString.coordinates, lineString.coordinates],
-};
 
 let multiPolygon: MultiPolygon = {
   type: 'MultiPolygon',
   coordinates: [polygonSolid.coordinates, polygonWithHole.coordinates],
 };
 
-let position: Position = multiPolygon[1][2];
-let longitude: number = position[0];
-let latitude: number = position[1];
 
 let pointFeature: FeatureOf<Point> = {
   type: 'Feature',
@@ -81,21 +67,9 @@ if (anyGeometry.type === 'LineString') {
   lineStringFeature.geometry = anyGeometry;
 }
 
-// Seems like these should work with Flow, but they don't  =(
-// if (anyFeature.geometry.type === 'LineString') {
-//   lineStringFeature = anyFeature;
-// }
-// if (anyFeature.geometry.type === 'Point') {
-//   pointFeature = anyFeature;
-// }
 
-// $FlowFixMe: expected error
-let altitudeNotSupported: number = position[2];
-
-// $FlowFixMe: expected error
-let somethinAintRight: FeatureOf<Point> = lineStringFeature;
 
 if (anyGeometry.type === 'Point') {
-  // $FlowFixMe: expected error
+  // @ts-ignore
   lineStringFeature.geometry = anyGeometry;
 }

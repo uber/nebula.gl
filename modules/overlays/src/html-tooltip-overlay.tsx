@@ -3,7 +3,6 @@ import React from 'react';
 import HtmlOverlay from './html-overlay';
 import HtmlOverlayItem from './html-overlay-item';
 
-type Props = {};
 
 type State = {
   visible: boolean;
@@ -22,7 +21,7 @@ const styles = {
 
 const SHOW_TOOLTIP_TIMEOUT = 250;
 
-export default class HtmlTooltipOverlay extends HtmlOverlay<Props> {
+export default class HtmlTooltipOverlay extends HtmlOverlay {
   constructor(props: any) {
     super(props);
     this.state = { visible: false, pickingInfo: null };

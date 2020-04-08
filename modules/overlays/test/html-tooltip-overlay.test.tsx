@@ -6,6 +6,7 @@ import HtmlTooltipOverlay from '../src/html-tooltip-overlay';
 
 it('test HtmlTooltipOverlay no items shown', () => {
   const Component = (
+    // @ts-ignore
     <DeckGL>
       <HtmlTooltipOverlay />
     </DeckGL>

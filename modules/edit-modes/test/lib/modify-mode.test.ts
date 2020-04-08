@@ -2,9 +2,10 @@
 
 import { ModifyMode } from '../../src/lib/modify-mode';
 import { createFeatureCollectionProps } from '../test-utils';
+import { FeatureCollection, Position, Point, LineString, FeatureOf } from '../../src/geojson-types';
 
-let pointFeature;
-let lineStringFeature;
+let pointFeature: FeatureOf<Point>;
+let lineStringFeature: FeatureOf<LineString>;
 let polygonFeature;
 let multiPointFeature;
 let multiLineStringFeature;
@@ -134,7 +135,7 @@ describe('getGuides()', () => {
       data: {
         type: 'FeatureCollection',
         features: [pointFeature],
-      },
+      } as FeatureCollection,
       selectedIndexes: [0],
     });
 
@@ -224,7 +225,7 @@ describe('getGuides()', () => {
       data: {
         type: 'FeatureCollection',
         features: [lineStringFeature, pointFeature, multiPointFeature],
-      },
+      } as FeatureCollection,
       selectedIndexes: [0, 2],
     });
 
@@ -233,7 +234,7 @@ describe('getGuides()', () => {
     expect(guides).toMatchSnapshot();
   });
 
-  const lineString = {
+  const lineString: FeatureOf<LineString> = {
     type: 'Feature',
     geometry: {
       type: 'LineString',
@@ -263,7 +264,7 @@ describe('getGuides()', () => {
     index: 0,
   };
 
-  const mapCoords = [-122.43862233312133, 37.77767798407437];
+  const mapCoords: Position = [-122.43862233312133, 37.77767798407437];
 
   it('includes an intermediate edit handle', () => {
     const mode = new ModifyMode();
@@ -271,7 +272,7 @@ describe('getGuides()', () => {
       data: {
         type: 'FeatureCollection',
         features: [lineString],
-      },
+      } as FeatureCollection,
       selectedIndexes: [0],
       lastPointerMoveEvent: {
         picks: [pick],
@@ -317,7 +318,7 @@ describe('getGuides()', () => {
       data: {
         type: 'FeatureCollection',
         features: [lineString],
-      },
+      } as FeatureCollection,
       selectedIndexes: [0],
       lastPointerMoveEvent: {
         picks: [
@@ -353,7 +354,7 @@ describe('getGuides()', () => {
       data: {
         type: 'FeatureCollection',
         features: [lineString],
-      },
+      } as FeatureCollection,
     });
 
     const guides = mode.getGuides(props);
@@ -371,7 +372,7 @@ describe('getGuides()', () => {
       data: {
         type: 'FeatureCollection',
         features: [point],
-      },
+      } as FeatureCollection,
       selectedIndexes: [0],
       lastPointerMoveEvent: {
         picks: [

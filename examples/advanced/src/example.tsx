@@ -45,9 +45,9 @@ import {
   GeoJsonEditMode,
 } from 'nebula.gl';
 
-import sampleGeoJson from '../data/sample-geojson.json';
+import sampleGeoJson from '../../data/sample-geojson.json';
 
-import iconSheet from '../data/edit-handles.png';
+import iconSheet from '../../data/edit-handles.png';
 
 import {
   Toolbox,

@@ -4,7 +4,8 @@
   "version": "0.17.6",
   "scripts": {
     "start": "webpack-dev-server --progress --hot --open",
-    "start-local": "webpack-dev-server --env.local --progress --hot --open"
+    "start-local": "webpack-dev-server --env.local --progress --hot --open",
+    "types-check": "tsc --noEmit"
   },
   "dependencies": {
     "@deck.gl/core": "^8.0.6",

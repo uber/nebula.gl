@@ -6,6 +6,7 @@ import {
   mix,
   nearestPointOnProjectedLine,
 } from '../../src/utils';
+import { Position, FeatureOf, LineString as LineStringType, Point as PointType, Viewport } from '@nebula.gl/edit-modes';
 
 const Point = {
   type: 'Feature',
@@ -155,16 +156,16 @@ describe('recursivelyTraverseNestedArrays()', () => {
 
 describe('generatePointsParallelToLinePoints()', () => {
   it('generate Points Parallel to Line Points -- empty points', () => {
-    const p1 = [0, 0];
-    const p2 = [0, 0];
+    const p1: Position = [0, 0];
+    const p2: Position = [0, 0];
     const [p3, p4] = generatePointsParallelToLinePoints(p1, p2, [0, 0]);
     expect(p3).toEqual([0, 0]);
     expect(p4).toEqual([0, 0]);
   });
 
   it('generate Points Parallel to Line Points -- valid points', () => {
-    const p1 = [-122.32, 37.81800998554937];
-    const p2 = [-122.37, 37.83386913944292];
+    const p1: Position = [-122.32, 37.81800998554937];
+    const p2: Position = [-122.37, 37.83386913944292];
     const [p3, p4] = generatePointsParallelToLinePoints(p1, p2, [-124.5, 37.9]);
     expect(p3).toEqual([-123.14819346449626, 36.26988514860277]);
     expect(p4).toEqual([-123.09803547871964, 36.254027457172775]);
@@ -181,20 +182,25 @@ describe('nearestPointOnProjectedLine() and related functions', () => {
     expect(mix(1, 2, 1)).toEqual(2);
   });
   it('nearestPointOnProjectedLine()', () => {
-    const line = {
+    const line: FeatureOf<LineStringType> = {
+      type: "Feature",
       geometry: {
+        type: 'LineString',
         coordinates: [
           [0, 0, 0],
           [1, 1, 1],
         ],
       },
     };
-    const inPoint = {
+    const inPoint: FeatureOf<PointType> = {
+      type: "Feature",
       geometry: {
+        type: 'Point',
         coordinates: [0.5, 0.5],
       },
     };
-    const viewport = {
+    const viewport: Viewport = {
+      // @ts-ignore
       project: (x) => x,
       unproject: (x) => x,
     };

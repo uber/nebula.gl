@@ -337,11 +337,11 @@ export function createStopDraggingEvent(mapCoords: Position, pointerDownMapCoord
   };
 }
 
-export function createPointerMoveEvent(mapCoords: Position, picks: Pick[] = []): PointerMoveEvent {
+export function createPointerMoveEvent(mapCoords?: Position, picks?: Pick[]): PointerMoveEvent {
   return {
     screenCoords: [-1, -1],
     mapCoords,
-    picks,
+    picks: picks || [],
     pointerDownPicks: null,
     pointerDownScreenCoords: null,
     pointerDownMapCoords: null,
@@ -350,10 +350,11 @@ export function createPointerMoveEvent(mapCoords: Position, picks: Pick[] = []):
   };
 }
 
-export function createFeatureCollectionProps(overrides: $Shape<ModeProps<FeatureCollection>> | null): ModeProps<FeatureCollection> {
-  overrides = overrides || {};
+export function createFeatureCollectionProps(overrides: Partial<ModeProps<FeatureCollection>> = {}): ModeProps<FeatureCollection> {
+
 
   return {
+    // @ts-ignore
     data: createFeatureCollection(),
     selectedIndexes: [],
     // @ts-ignore

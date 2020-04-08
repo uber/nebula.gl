@@ -6,7 +6,8 @@ import {
   createStartDraggingEvent,
   createStopDraggingEvent,
 } from '../test-utils';
-import { Pick } from '../../src/types';
+import { Pick, ModeProps } from '../../src/types';
+import { FeatureCollection } from '../../src/geojson-types';
 
 let transformMode: TransformMode;
 
@@ -23,7 +24,7 @@ afterEach(() => {
   console.warn = warnBefore; // eslint-disable-line
 });
 
-const mockMove = (picks: Pick[], props: Object) => {
+const mockMove = (picks: Pick[], props: ModeProps<FeatureCollection>) => {
   const moveEvent = createPointerMoveEvent([-1, -1], picks);
   transformMode.handlePointerMove(moveEvent, props);
 

@@ -16,7 +16,7 @@ import {
 export type NearestPointType = FeatureWithProps<Point, { dist: number; index: number }>;
 
 export function toDeckColor(
-  color?: [number, number, number, number] | null | undefined,
+  color?: [number, number, number, number] | number,
   defaultColor: [number, number, number, number] = [255, 0, 0, 255]
 ): [number, number, number, number] {
   if (!Array.isArray(color)) {

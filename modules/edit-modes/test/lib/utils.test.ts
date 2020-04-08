@@ -6,6 +6,7 @@ import {
   mix,
   nearestPointOnProjectedLine,
 } from '../../src/utils';
+import { Position } from '../../src/geojson-types'
 
 const Point = {
   type: 'Feature',
@@ -157,14 +158,15 @@ describe('generatePointsParallelToLinePoints()', () => {
   it('generate Points Parallel to Line Points -- empty points', () => {
     const p1 = [0, 0];
     const p2 = [0, 0];
+    // @ts-ignore
     const [p3, p4] = generatePointsParallelToLinePoints(p1, p2, [0, 0]);
     expect(p3).toEqual([0, 0]);
     expect(p4).toEqual([0, 0]);
   });
 
   it('generate Points Parallel to Line Points -- valid points', () => {
-    const p1 = [-122.32, 37.81800998554937];
-    const p2 = [-122.37, 37.83386913944292];
+    const p1: Position = [-122.32, 37.81800998554937];
+    const p2: Position = [-122.37, 37.83386913944292];
     const [p3, p4] = generatePointsParallelToLinePoints(p1, p2, [-124.5, 37.9]);
     expect(p3).toEqual([-123.14819346449626, 36.26988514860277]);
     expect(p4).toEqual([-123.09803547871964, 36.254027457172775]);
@@ -198,6 +200,7 @@ describe('nearestPointOnProjectedLine() and related functions', () => {
       project: (x) => x,
       unproject: (x) => x,
     };
+    // @ts-ignore
     const result = nearestPointOnProjectedLine(line, inPoint, viewport);
     expect(result.geometry.type).toEqual('Point');
     expect(result.geometry.coordinates.length).toEqual(3);

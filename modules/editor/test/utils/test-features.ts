@@ -188,7 +188,7 @@ export function wrapInFeature(geometry: Geometry): Feature {
     type: 'Feature',
     properties: { name: `name-${Math.round(Math.random() * 100)}` },
     geometry,
-  };
+  } as Feature;
 }
 
 export function createRandomFeature(): Feature {

@@ -2,7 +2,7 @@ import turfBearing from '@turf/bearing';
 // @ts-ignore
 import turfCenter from '@turf/center';
 // @ts-ignore
-import { _memoize } from '@deck.gl/core';
+import memoize from '../memoize';
 
 import { ClickEvent, PointerMoveEvent, Tooltip, ModeProps, GuideFeatureCollection } from '../types';
 import { FeatureCollection } from '../geojson-types';
@@ -11,7 +11,7 @@ import { GeoJsonEditMode } from './geojson-edit-mode';
 const DEFAULT_TOOLTIPS = [];
 
 export class MeasureAngleMode extends GeoJsonEditMode {
-  _getTooltips = _memoize(({ modeConfig, vertex, point1, point2 }) => {
+  _getTooltips = memoize(({ modeConfig, vertex, point1, point2 }) => {
     let tooltips = DEFAULT_TOOLTIPS;
 
     if (vertex && point1 && point2) {

@@ -1,10 +1,9 @@
 import { _MapContext as MapContext, MapContextProps } from 'react-map-gl';
 import React, { PureComponent } from 'react';
-import { ImmutableFeatureCollection, Feature, Position, EditAction } from '@nebula.gl/edit-modes';
+import { ImmutableFeatureCollection, Feature, Position, EditAction, _memoize as memoize } from '@nebula.gl/edit-modes';
 
 import { MjolnirEvent } from 'mjolnir.js';
 import { BaseEvent, EditorProps, EditorState, SelectAction } from './types';
-import memoize from './memoize';
 
 import { getScreenCoords, parseEventElement } from './edit-modes/utils';
 import { EDIT_TYPE } from './constants';

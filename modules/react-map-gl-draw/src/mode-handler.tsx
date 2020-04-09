@@ -1,5 +1,5 @@
 import { _MapContext as MapContext, MapContextProps } from 'react-map-gl';
-import React, { PureComponent } from 'react';
+import * as React from 'react';
 import { ImmutableFeatureCollection, Feature, Position, EditAction } from '@nebula.gl/edit-modes';
 
 import { MjolnirEvent } from 'mjolnir.js';
@@ -37,7 +37,7 @@ const defaultState = {
   pointerDownMapCoords: null,
 };
 
-export default class ModeHandler extends PureComponent<EditorProps, EditorState> {
+export default class ModeHandler extends React.PureComponent<EditorProps, EditorState> {
   static displayName = 'ModeHandler';
   static defaultProps = defaultProps;
 

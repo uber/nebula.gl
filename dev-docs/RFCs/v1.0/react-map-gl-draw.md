@@ -86,7 +86,7 @@ As shown in the above image, for the feature currently being edited,
 
 ## Code Example
 ```js
-import React, { Component } from 'react';
+import * as React from 'react';
 import MapGL, {_MapContext as MapContext} from 'react-map-gl';
 import MapGLDraw, { EditorModes } from 'react-map-gl-draw';
 
@@ -98,7 +98,7 @@ const MODES = [
   { id: EditorModes.DRAW_RECTANGLE, text: 'Draw Rectangle'}
 ];
 
-class App extends Component {
+class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {

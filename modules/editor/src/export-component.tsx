@@ -1,6 +1,6 @@
 /* eslint-env browser */
 
-import React from 'react';
+import * as React from 'react';
 import copy from 'clipboard-copy';
 import downloadjs from 'downloadjs';
 import styled from 'styled-components';

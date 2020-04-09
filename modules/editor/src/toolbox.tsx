@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { ViewMode, DrawPointMode, DrawPolygonMode } from '@nebula.gl/edit-modes';
 import styled from 'styled-components';
 import { ImportModal } from './import-modal';

@@ -106,7 +106,7 @@ As shown in the above image, for the feature currently being edited,
 
 ## Code Example
 ```js
-import React, { Component } from 'react';
+import * as React from 'react';
 import MapGL from 'react-map-gl';
 import { Editor, EditorModes } from 'react-map-gl-draw';
 

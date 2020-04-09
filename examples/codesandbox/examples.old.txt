@@ -1,5 +1,5 @@
 import window from 'global/window';
-import React, { Component } from 'react';
+import * as React from 'react';
 import MapGL from 'react-map-gl';
 import DeckGL from 'deck.gl';
 import { featureCollection, point } from '@turf/helpers';
@@ -7,7 +7,7 @@ import { featureCollection, point } from '@turf/helpers';
 import { EditableGeoJsonLayer } from 'nebula.gl';
 import { Nebula, HtmlOverlay, HtmlOverlayItem, HtmlClusterOverlay } from 'nebula.gl-react';
 
-class Example extends Component {
+class Example extends React.Component {
   constructor() {
     super();
     this.state = {

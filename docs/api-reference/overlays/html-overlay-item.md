@@ -4,6 +4,7 @@ This is an HTML item that will be rendered inside
 [HtmlOverlay](/docs/api-reference/overlays/html-overlay) or
 [HtmlClusterOverlay](/docs/api-reference/overlays/html-cluster-overlay).
 
+Note: `HtmlOverlayItem` **must** be direct children of `HtmlOverlay` or `HtmlClusterOverlay`.
 
 ```jsx
 return (

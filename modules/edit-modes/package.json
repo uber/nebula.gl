@@ -74,8 +74,5 @@
     "lodash.throttle": "^4.1.1",
     "viewport-mercator-project": ">=6.0.0",
     "geojson": "0.5.0"
-  },
-  "devDependencies": {
-    "@probe.gl/test-utils": "^3.2.1"
   }
 }

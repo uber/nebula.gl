@@ -27,7 +27,7 @@ module.exports = {
       options: ocularConfig
     },
     {
-      resolve: `gatsby-plugin-flow`
+      resolve: `gatsby-plugin-typescript`
     },
     {
       resolve: `gatsby-transformer-remark`,

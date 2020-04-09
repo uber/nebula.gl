@@ -14,7 +14,7 @@ const DATA_URL =
 const initialViewState = {
   longitude: 20,
   latitude: 40,
-  zoom: 3
+  zoom: 3,
 };
 
 class WorldHeritage extends HtmlClusterOverlay {
@@ -36,7 +36,7 @@ class WorldHeritage extends HtmlClusterOverlay {
             color: "white",
             fontSize: 12,
             lineHeight: "10px",
-            maxWidth: 300
+            maxWidth: 300,
           }}
           key={object.name}
           coordinates={coordinates}
@@ -67,7 +67,7 @@ class WorldHeritage extends HtmlClusterOverlay {
           borderRadius: 20,
           display: "flex",
           alignItems: "center",
-          justifyContent: "center"
+          justifyContent: "center",
         }}
         key={clusterId}
         coordinates={coordinates}
@@ -80,13 +80,13 @@ class WorldHeritage extends HtmlClusterOverlay {
 
 export class WorldHeritageApp extends React.Component {
   componentDidMount() {
-    window.fetch(DATA_URL).then(response => {
-      response.text().then(text => {
+    window.fetch(DATA_URL).then((response) => {
+      response.text().then((text) => {
         const parser = new window.DOMParser();
         const xmlDoc = parser.parseFromString(text, "text/xml");
 
         const data = Array.from(xmlDoc.getElementsByTagName("item")).map(
-          item => {
+          (item) => {
             const title = item.getElementsByTagName("title")[0].textContent;
             const description = item.getElementsByTagName("description")[0]
               .textContent;
@@ -104,7 +104,7 @@ export class WorldHeritageApp extends React.Component {
               image: (/src='(.+?)'/.exec(description) || [])[1],
               link,
               lat,
-              lng
+              lng,
             };
           }
         );

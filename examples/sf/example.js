@@ -1,4 +1,3 @@
-// @flow
 import window from 'global/window';
 import React, { Component } from 'react';
 import DeckGL, { TextLayer } from 'deck.gl';
@@ -17,7 +16,7 @@ const initialViewport = {
   longitude: -122.445,
   pitch: 0,
   width: 0,
-  zoom: 17
+  zoom: 17,
 };
 
 const styles = {
@@ -27,13 +26,13 @@ const styles = {
     left: 12,
     background: 'rgba(0, 0, 0, 0.2)',
     padding: 10,
-    borderRadius: 10
+    borderRadius: 10,
   },
   mapContainer: {
     alignItems: 'stretch',
     display: 'flex',
-    height: '100vh'
-  }
+    height: '100vh',
+  },
 };
 
 export default class Example extends Component<
@@ -42,22 +41,22 @@ export default class Example extends Component<
     viewport: Object,
     allowEdit: boolean,
     selectionType?: number,
-    testFeatures: Array<Object>
+    testFeatures: Array<Object>,
   }
-> {
+  > {
   constructor() {
     super();
 
     this.state = {
       viewport: initialViewport,
       allowEdit: true,
-      testFeatures: { type: 'FeatureCollection', features: testPolygons }
+      testFeatures: { type: 'FeatureCollection', features: testPolygons },
     };
 
     this.testSegments = [];
     this.segmentsLayer = new SegmentsLayer({
       getData: () => this.testSegments,
-      toNebulaFeature: data => this._toNebulaFeature(data)
+      toNebulaFeature: (data) => this._toNebulaFeature(data),
     });
     this.segmentsLayer.highlightColor = [1, 1, 1, 1];
     this.segmentsLayer.arrowSize = 50;
@@ -87,8 +86,8 @@ export default class Example extends Component<
    * @param {string} path The path to the json file.
    */
   _loadData(path: string) {
-    window.fetch(path).then(response => {
-      response.text().then(json => {
+    window.fetch(path).then((response) => {
+      response.text().then((json) => {
         this.testSegments = JSON.parse(json);
 
         this.testJunctions = [];
@@ -106,7 +105,7 @@ export default class Example extends Component<
 
   _onChangeViewport = (viewport: Object) => {
     this.setState({
-      viewport: { ...this.state.viewport, ...viewport }
+      viewport: { ...this.state.viewport, ...viewport },
     });
   };
 
@@ -119,7 +118,7 @@ export default class Example extends Component<
     this._enableSelection(SELECTION_TYPE.NONE);
   };
 
-  _onLayerClick = info => {
+  _onLayerClick = (info) => {
     if (info) {
       console.log(`select editing feature ${info.index}`); // eslint-disable-line
       // a polygon was clicked
@@ -133,7 +132,7 @@ export default class Example extends Component<
 
   _enableSelection(type: number) {
     this.setState({
-      selectionType: type
+      selectionType: type,
     });
   }
 
@@ -142,16 +141,16 @@ export default class Example extends Component<
       type: 'Feature',
       geometry: {
         type: 'LineString',
-        coordinates: [segment.START, segment.END]
+        coordinates: [segment.START, segment.END],
       },
-      properties: null
+      properties: null,
     };
     const style = {
       lineColor: [0, 0, 1, 1],
       lineWidthMeters: 5.0,
       tooltip: segment.LINE,
       arrowStyle: 3,
-      zLevel: Math.random()
+      zLevel: Math.random(),
     };
     return new Feature(geojson, style);
   }
@@ -161,14 +160,14 @@ export default class Example extends Component<
       type: 'Feature',
       geometry: {
         type: 'Point',
-        coordinates: junc.position
+        coordinates: junc.position,
       },
-      properties: null
+      properties: null,
     };
     const style = {
       pointRadiusMeters: 5,
       outlineRadiusMeters: 0,
-      fillColor: [0, 0, 0, 1]
+      fillColor: [0, 0, 0, 1],
     };
     return new Feature(geojson, style);
   }
@@ -248,9 +247,9 @@ export default class Example extends Component<
       data: [
         {
           text: 'Text Layer :-)',
-          position: [-122.4, 37.7]
-        }
-      ]
+          position: [-122.4, 37.7],
+        },
+      ],
     });
     const nebulaLayers = [segmentsLayer];
     const deckLayers = this.nebula.updateAndGetRenderedLayers(nebulaLayers, viewport, this);

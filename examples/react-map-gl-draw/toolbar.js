@@ -13,8 +13,8 @@ const ICON_MAP = [
   {
     id: MODES.DRAW_RECTANGLE_ONE_CLICK,
     text: 'Draw Rectangle (One Click)',
-    icon: 'icon-rectangle.svg'
-  }
+    icon: 'icon-rectangle.svg',
+  },
 ];
 
 const Container = styled.div`
@@ -35,8 +35,8 @@ const Row = styled.div`
   padding: 7px;
   display: flex;
   justify-content: left;
-  color: ${props => (props.selected ? '#ffffff' : 'inherit')};
-  background: ${props => (props.selected ? '#0071bc' : props.hovered ? '#e6e6e6' : 'inherit')};
+  color: ${(props) => (props.selected ? '#ffffff' : 'inherit')};
+  background: ${(props) => (props.selected ? '#0071bc' : props.hovered ? '#e6e6e6' : 'inherit')};
 `;
 
 const Img = styled.img`
@@ -63,10 +63,10 @@ const Tooltip = styled.div`
 
 const Delete = styled(Row)`
   &:hover {
-    background: ${props => (props.selected ? '#0071bc' : '#e6e6e6')};
+    background: ${(props) => (props.selected ? '#0071bc' : '#e6e6e6')};
   }
   &:active: {
-    background: ${props => (props.selected ? '#0071bc' : 'inherit')};
+    background: ${(props) => (props.selected ? '#0071bc' : 'inherit')};
   }
 `;
 
@@ -75,15 +75,15 @@ export default class Toolbar extends PureComponent {
     super(props);
     this.state = {
       deleting: false,
-      hoveredId: null
+      hoveredId: null,
     };
   }
 
-  _onHover = evt => {
+  _onHover = (evt) => {
     this.setState({ hoveredId: evt && evt.target.id });
   };
 
-  _onDelete = evt => {
+  _onDelete = (evt) => {
     this.props.onDelete(evt);
     this.setState({ deleting: true });
     setTimeout(() => this.setState({ deleting: false }), 500);
@@ -95,12 +95,12 @@ export default class Toolbar extends PureComponent {
 
     return (
       <Container>
-        {ICON_MAP.map(m => {
+        {ICON_MAP.map((m) => {
           return (
             <Row
               onClick={this.props.onSwitchMode}
               onMouseOver={this._onHover}
-              onMouseOut={_ => this._onHover(null)}
+              onMouseOut={(_) => this._onHover(null)}
               selected={m.id === selectedMode}
               hovered={m.id === hoveredId}
               key={m.id}
@@ -115,7 +115,7 @@ export default class Toolbar extends PureComponent {
           selected={this.state.deleting}
           onClick={this._onDelete}
           onMouseOver={this._onHover}
-          onMouseOut={_ => this._onHover(null)}
+          onMouseOut={(_) => this._onHover(null)}
         >
           <Img
             id={'delete'}

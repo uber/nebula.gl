@@ -6,6 +6,7 @@
 // without publishing or npm linking, with conveniences such hot reloading etc.
 
 // avoid destructuring for older Node version support
+// test
 const resolve = require('path').resolve;
 const webpack = require('webpack');
 
@@ -25,8 +26,8 @@ function makeLocalDevConfig(EXAMPLE_DIR = LIB_DIR) {
     // suppress warnings about bundle size
     devServer: {
       stats: {
-        warnings: false
-      }
+        warnings: false,
+      },
     },
 
     devtool: 'source-map',
@@ -62,8 +63,8 @@ function makeLocalDevConfig(EXAMPLE_DIR = LIB_DIR) {
         // Versions will be controlled by the deck.gl top level package.json
         'math.gl': resolve(LIB_DIR, './node_modules/math.gl'),
         seer: resolve(LIB_DIR, './node_modules/seer'),
-        react: resolve(LIB_DIR, './node_modules/react')
-      }
+        react: resolve(LIB_DIR, './node_modules/react'),
+      },
     },
     module: {
       rules: [
@@ -71,12 +72,12 @@ function makeLocalDevConfig(EXAMPLE_DIR = LIB_DIR) {
           // Unfortunately, webpack doesn't import library sourcemaps on its own...
           test: /\.js$/,
           use: ['source-map-loader'],
-          enforce: 'pre'
-        }
-      ]
+          enforce: 'pre',
+        },
+      ],
     },
     // Optional: Enables reading mapbox token from environment variable
-    plugins: [new webpack.EnvironmentPlugin(['MapboxAccessToken'])]
+    plugins: [new webpack.EnvironmentPlugin(['MapboxAccessToken'])],
   };
 }
 
@@ -89,12 +90,12 @@ function addLocalDevSettings(config, exampleDir) {
 
   config.module = config.module || {};
   Object.assign(config.module, {
-    rules: (config.module.rules || []).concat(LOCAL_DEV_CONFIG.module.rules)
+    rules: (config.module.rules || []).concat(LOCAL_DEV_CONFIG.module.rules),
   });
   return config;
 }
 
-module.exports = (config, exampleDir) => env => {
+module.exports = (config, exampleDir) => (env) => {
   // npm run start-local now transpiles the lib
   if (env && env.local) {
     config = addLocalDevSettings(config, exampleDir);

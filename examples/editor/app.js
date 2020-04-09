@@ -1,9 +1,8 @@
-// @flow
 import document from 'global/document';
 import * as React from 'react';
 import ReactDOM from 'react-dom';
 
-import { Example } from './example.js';
+import { Example } from './example';
 
 const root = document.createElement('div');
 

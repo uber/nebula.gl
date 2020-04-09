@@ -1,4 +1,3 @@
-// @flow
 import { BitmapLayer } from '@deck.gl/layers';
 import Example from '../deck/example';
 
@@ -17,20 +16,20 @@ export default class ExampleNoMap extends Example {
       longitude: 0,
       pitch: 0,
       width: 0,
-      zoom: 5
+      zoom: 5,
     };
   }
 
-  renderStaticMap(viewport: Object) {
+  renderStaticMap(viewport) {
     return null;
   }
 
-  customizeLayers(layers: Object[]) {
+  customizeLayers(layers) {
     layers.unshift(
       new BitmapLayer({
         id: 'bitmap-layer',
         bounds: [-10, -10, +10, +10],
-        image: IMAGE
+        image: IMAGE,
       })
     );
   }

@@ -1,7 +1,7 @@
 language: node_js
 os: linux
 node_js:
-  - 8.15.0
+  - 12
 install:
   - yarn && yarn bootstrap
 before_script:

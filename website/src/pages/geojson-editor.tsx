@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 
-import Example from '../../../examples/advanced/example';
+import Example from '../../../examples/advanced/src/example';
 
 const Container = styled.div`
   width: 100%;

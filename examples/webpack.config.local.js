@@ -11,12 +11,12 @@ const resolve = require('path').resolve;
 const webpack = require('webpack');
 
 const LIB_DIR = resolve(__dirname, '..');
-const MAIN_SRC_DIR = resolve(LIB_DIR, './modules/main/src');
-const EDIT_MODES_SRC_DIR = resolve(LIB_DIR, './modules/edit-modes/src');
-const LAYERS_SRC_DIR = resolve(LIB_DIR, './modules/layers/src');
-const OVERLAYS_SRC_DIR = resolve(LIB_DIR, './modules/overlays/src');
-const EDITOR_SRC_DIR = resolve(LIB_DIR, './modules/editor/src');
-const REACT_EDITOR_LITE_SRC_DIR = resolve(LIB_DIR, './modules/react-map-gl-draw/src');
+const MAIN_SRC_DIR = resolve(LIB_DIR, './modules/main');
+const EDIT_MODES_SRC_DIR = resolve(LIB_DIR, './modules/edit-modes');
+const LAYERS_SRC_DIR = resolve(LIB_DIR, './modules/layers');
+const OVERLAYS_SRC_DIR = resolve(LIB_DIR, './modules/overlays');
+const EDITOR_SRC_DIR = resolve(LIB_DIR, './modules/editor');
+const REACT_EDITOR_LITE_SRC_DIR = resolve(LIB_DIR, './modules/react-map-gl-draw');
 
 // const babelConfig = require('../babel.config');
 

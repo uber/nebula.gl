@@ -4,6 +4,32 @@ _All notable changes to this project will be documented in this file. This proje
 
 <!-- INSERT HERE -->
 
+## [0.17.7](https://github.com/uber/nebula.gl/compare/v0.17.3...v0.17.7) - 2020-04-14
+
+### Changes
+
+* v0.17.7
+* edit-modes: fix dependencies and resolving dependencies in local… (#384)
+* fix website example
+* Fix examples/advanced
+* Typescript migration (#377)
+* DrawLineString improvements (#370)
+* react-map-gl-draw: customized modes (#360)
+* react-map-gl-draw: extend from @nebula.gl/edit-mode (#366)
+* v0.17.6
+* Add editor module with components for importing and exporting geometries (#357)
+* v0.17.5
+* Export GeoJsonEditMode (#363)
+* v0.17.4
+* Draw polygon by dragging mode (#362)
+* Add closing code tick (#358)
+* Remove TODO since #1918 landed (#353)
+* Check yarn.lock in examples also (#351)
+* Add transform edit mode (#340)
+* Add new editor module and example app (#349)
+* Configuration option to disable dragging features (#300)
+* v0.17.3 CHANGELOG
+
 ## [0.17.3](https://github.com/uber/nebula.gl/compare/v0.17.2...v0.17.3) - 2020-03-10
 
 ### Changes

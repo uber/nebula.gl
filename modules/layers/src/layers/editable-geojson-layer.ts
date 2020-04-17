@@ -333,6 +333,10 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       lastPointerMoveEvent: this.state.lastPointerMoveEvent,
       cursor: this.state.cursor,
       onEdit: (editAction: EditAction<FeatureCollection>) => {
+        // call empty setState in order to trigger a re-render
+        // This supports double-click where we need to ensure that there's a re-render between the two clicks
+        // even though the data wasn't changed, just the internal tentative feature.
+        this.setState({});
         props.onEdit(editAction);
       },
       onUpdateCursor: (cursor: string | null | undefined) => {

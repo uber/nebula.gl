@@ -80,7 +80,7 @@ const initialViewport = {
   zoom: 11,
 };
 
-const ALL_MODES = [
+const ALL_MODES: any = [
   {
     category: 'View',
     modes: [
@@ -611,8 +611,7 @@ export default class Example extends Component<
         {ALL_MODES.map((category) => (
           <ToolboxRow key={category.category}>
             <ToolboxTitle>{category.category} Modes</ToolboxTitle>
-            {// @ts-ignore
-            category.modes.map(({ mode, label }) => (
+            {category.modes.map(({ mode, label }) => (
               <ToolboxButton
                 key={label}
                 selected={this.state.mode === mode}

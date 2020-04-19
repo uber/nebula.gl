@@ -95,17 +95,23 @@ export class GeoJsonEditMode implements EditMode<FeatureCollection, GuideFeature
     return props.selectedIndexes.some((index) => pickedIndexes.has(index));
   }
 
-  getAddFeatureAction(geometry: Geometry, features: FeatureCollection): GeoJsonEditAction {
+  getAddFeatureAction(
+    featureOrGeometry: Geometry | Feature,
+    features: FeatureCollection
+  ): GeoJsonEditAction {
     // Unsure why flow can't deal with Geometry type, but there I fixed it
-    const geometryAsAny: any = geometry;
+    const featureOrGeometryAsAny: any = featureOrGeometry;
 
-    const updatedData = new ImmutableFeatureCollection(features)
-      .addFeature({
-        type: 'Feature',
-        properties: {},
-        geometry: geometryAsAny,
-      })
-      .getObject();
+    const feature: any =
+      featureOrGeometryAsAny.type === 'Feature'
+        ? featureOrGeometryAsAny
+        : {
+            type: 'Feature',
+            properties: {},
+            geometry: featureOrGeometryAsAny,
+          };
+
+    const updatedData = new ImmutableFeatureCollection(features).addFeature(feature).getObject();
 
     return {
       updatedData,
@@ -144,9 +150,11 @@ export class GeoJsonEditMode implements EditMode<FeatureCollection, GuideFeature
   }
 
   getAddFeatureOrBooleanPolygonAction(
-    geometry: Polygon,
+    featureOrGeometry: Polygon | Feature,
     props: ModeProps<FeatureCollection>
   ): GeoJsonEditAction | null | undefined {
+    const featureOrGeometryAsAny: any = featureOrGeometry;
+
     const selectedFeature = this.getSelectedFeature(props);
     const { modeConfig } = props;
     if (modeConfig && modeConfig.booleanOperation) {
@@ -162,10 +170,13 @@ export class GeoJsonEditMode implements EditMode<FeatureCollection, GuideFeature
         return null;
       }
 
-      const feature = {
-        type: 'Feature',
-        geometry,
-      };
+      const feature =
+        featureOrGeometryAsAny.type === 'Feature'
+          ? featureOrGeometryAsAny
+          : {
+              type: 'Feature',
+              geometry: featureOrGeometryAsAny,
+            };
 
       let updatedGeometry;
       if (modeConfig.booleanOperation === 'union') {
@@ -204,7 +215,7 @@ export class GeoJsonEditMode implements EditMode<FeatureCollection, GuideFeature
 
       return editAction;
     }
-    return this.getAddFeatureAction(geometry, props.data);
+    return this.getAddFeatureAction(featureOrGeometry, props.data);
   }
 
   handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>): void {}

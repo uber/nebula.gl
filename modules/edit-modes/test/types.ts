@@ -1,14 +1,6 @@
 /* eslint-disable no-unused-vars, prefer-const */
 
-import {
-  Point,
-  LineString,
-  Polygon,
-  MultiPolygon,
-  Position,
-  Feature,
-  FeatureOf,
-} from '../src/geojson-types';
+import { Point, LineString, Polygon, MultiPolygon, Feature, FeatureOf } from '../src/geojson-types';
 
 let point: Point = {
   type: 'Point',
@@ -33,13 +25,10 @@ let polygonWithHole: Polygon = {
   coordinates: [lineString.coordinates, lineString.coordinates],
 };
 
-
-
 let multiPolygon: MultiPolygon = {
   type: 'MultiPolygon',
   coordinates: [polygonSolid.coordinates, polygonWithHole.coordinates],
 };
-
 
 let pointFeature: FeatureOf<Point> = {
   type: 'Feature',
@@ -66,8 +55,6 @@ const anyGeometry = anyFeature.geometry;
 if (anyGeometry.type === 'LineString') {
   lineStringFeature.geometry = anyGeometry;
 }
-
-
 
 if (anyGeometry.type === 'Point') {
   // @ts-ignore

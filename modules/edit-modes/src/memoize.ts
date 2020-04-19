@@ -1,5 +1,4 @@
 // port from @deck.gl/core
-
 function isEqual(a: any, b: any) {
   if (a === b) {
     return true;

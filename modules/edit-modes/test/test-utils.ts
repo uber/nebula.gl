@@ -312,7 +312,11 @@ export function createClickEvent(mapCoords: Position, picks: Pick[] = []): Click
   };
 }
 
-export function createStartDraggingEvent(mapCoords: Position, pointerDownMapCoords: Position, picks: Pick[] = []): StartDraggingEvent {
+export function createStartDraggingEvent(
+  mapCoords: Position,
+  pointerDownMapCoords: Position,
+  picks: Pick[] = []
+): StartDraggingEvent {
   return {
     screenCoords: [-1, -1],
     mapCoords,
@@ -325,7 +329,11 @@ export function createStartDraggingEvent(mapCoords: Position, pointerDownMapCoor
   };
 }
 
-export function createStopDraggingEvent(mapCoords: Position, pointerDownMapCoords: Position, picks: Pick[] = []): StopDraggingEvent {
+export function createStopDraggingEvent(
+  mapCoords: Position,
+  pointerDownMapCoords: Position,
+  picks: Pick[] = []
+): StopDraggingEvent {
   return {
     screenCoords: [-1, -1],
     mapCoords,
@@ -350,9 +358,9 @@ export function createPointerMoveEvent(mapCoords?: Position, picks?: Pick[]): Po
   };
 }
 
-export function createFeatureCollectionProps(overrides: Partial<ModeProps<FeatureCollection>> = {}): ModeProps<FeatureCollection> {
-
-
+export function createFeatureCollectionProps(
+  overrides: Partial<ModeProps<FeatureCollection>> = {}
+): ModeProps<FeatureCollection> {
   return {
     // @ts-ignore
     data: createFeatureCollection(),

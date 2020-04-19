@@ -21,7 +21,7 @@ let warnBefore;
 beforeEach(() => {
   warnBefore = console.warn; // eslint-disable-line
   // $FlowFixMe
-  console.warn = function () { }; // eslint-disable-line
+  console.warn = function () {}; // eslint-disable-line
   // @ts-ignore
   featureCollection = createFeatureCollection();
 
@@ -84,7 +84,9 @@ describe('dragToDraw=false', () => {
           ...props.data.features,
           {
             type: 'Feature',
-            properties: {},
+            properties: {
+              shape: 'Rectangle',
+            },
             geometry: {
               type: 'Polygon',
               coordinates: [
@@ -165,7 +167,9 @@ describe('dragToDraw=true', () => {
           ...props.data.features,
           {
             type: 'Feature',
-            properties: {},
+            properties: {
+              shape: 'Rectangle',
+            },
             geometry: {
               type: 'Polygon',
               coordinates: [

@@ -16,9 +16,9 @@ const CONFIG = {
   },
   resolve: {
     // Add '.ts' and '.tsx' as resolvable extensions.
-    extensions: [".ts", ".tsx", '.js', '.jsx']
+    extensions: ['.ts', '.tsx', '.js', '.jsx'],
   },
-  stats: "minimal",
+  stats: 'minimal',
   module: {
     rules: [
       {

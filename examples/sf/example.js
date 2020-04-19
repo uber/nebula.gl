@@ -43,7 +43,7 @@ export default class Example extends Component<
     selectionType?: number,
     testFeatures: Array<Object>,
   }
-  > {
+> {
   constructor() {
     super();
 

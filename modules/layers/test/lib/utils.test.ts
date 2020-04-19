@@ -6,7 +6,13 @@ import {
   mix,
   nearestPointOnProjectedLine,
 } from '../../src/utils';
-import { Position, FeatureOf, LineString as LineStringType, Point as PointType, Viewport } from '@nebula.gl/edit-modes';
+import {
+  Position,
+  FeatureOf,
+  LineString as LineStringType,
+  Point as PointType,
+  Viewport,
+} from '@nebula.gl/edit-modes';
 
 const Point = {
   type: 'Feature',
@@ -183,7 +189,7 @@ describe('nearestPointOnProjectedLine() and related functions', () => {
   });
   it('nearestPointOnProjectedLine()', () => {
     const line: FeatureOf<LineStringType> = {
-      type: "Feature",
+      type: 'Feature',
       geometry: {
         type: 'LineString',
         coordinates: [
@@ -193,7 +199,7 @@ describe('nearestPointOnProjectedLine() and related functions', () => {
       },
     };
     const inPoint: FeatureOf<PointType> = {
-      type: "Feature",
+      type: 'Feature',
       geometry: {
         type: 'Point',
         coordinates: [0.5, 0.5],

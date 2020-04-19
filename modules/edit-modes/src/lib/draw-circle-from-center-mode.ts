@@ -15,7 +15,11 @@ export class DrawCircleFromCenterMode extends TwoClickPolygonMode {
     }
 
     const radius = Math.max(distance(coord1, coord2), 0.001);
+    const geometry = circle(coord1, radius, options);
 
-    return circle(coord1, radius, options);
+    geometry.properties = geometry.properties || {};
+    geometry.properties.shape = 'Circle';
+
+    return geometry;
   }
 }

@@ -18,8 +18,12 @@ coverage/
 *.rar
 .vscode
 
+# typescript generated 
+./lib
+
 # copied as part of a build step
 modules/main/README.md
 modules/edit-modes/README.md
 modules/editor/README.md
 modules/layers/README.md
+

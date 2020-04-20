@@ -323,7 +323,10 @@ export function createPointerDragEvent(
   };
 }
 
-export function createPointerMoveEvent(groundCoords: Position, picks: any[] = []): PointerMoveEvent {
+export function createPointerMoveEvent(
+  groundCoords: Position,
+  picks: any[] = []
+): PointerMoveEvent {
   return {
     screenCoords: [-1, -1],
     groundCoords,

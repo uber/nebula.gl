@@ -1,35 +1,35 @@
 {
-     "compilerOptions": {
-          "strict": false,
-          "lib": [
-               "dom",
-               "dom.iterable",
-               "esnext",
-               "es6"
-          ],
-          "outDir": "./lib",
-          "allowSyntheticDefaultImports": true,
-          "downlevelIteration": true,
-          "isolatedModules": true,
-          "esModuleInterop": true,
-          "module": "esnext",
-          "declarationMap": true,
-          "declaration": true,
-          "noImplicitAny": false,
-          "strictNullChecks": false,
-          "skipLibCheck": true,
-          "noLib": false,
-          "resolveJsonModule": true,
-          "emitDecoratorMetadata": true,
-          "experimentalDecorators": true,
-          "noUnusedLocals": true,
-          "moduleResolution": "node",
-          "jsx": "react",
-          "target": "es5",
-          "sourceMap": true,
-          "importHelpers": true
-     },
-     "exclude": [
-          "node_modules"
-     ]
+  "compilerOptions": {
+    "strict": false,
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext",
+      "es6"
+    ],
+    "outDir": "./lib",
+    "allowSyntheticDefaultImports": true,
+    "downlevelIteration": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "declarationMap": true,
+    "declaration": true,
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+    "skipLibCheck": true,
+    "noLib": false,
+    "resolveJsonModule": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "noUnusedLocals": true,
+    "moduleResolution": "node",
+    "jsx": "react",
+    "target": "es5",
+    "sourceMap": true,
+    "importHelpers": true
+  },
+  "exclude": [
+    "node_modules"
+  ]
 }

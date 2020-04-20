@@ -10,9 +10,9 @@ const styles = {
 };
 
 export default class HtmlOverlay extends Component<
-  { viewport?: Record<string, any>; zIndex?: number, children?: React.ReactNode },
+  { viewport?: Record<string, any>; zIndex?: number; children?: React.ReactNode },
   any
-  > {
+> {
   // Override this to provide your items
   getItems(): Array<any> {
     const { children } = this.props;

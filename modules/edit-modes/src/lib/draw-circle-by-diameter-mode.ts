@@ -18,6 +18,11 @@ export class DrawCircleByDiameterMode extends TwoClickPolygonMode {
     const centerCoordinates = getIntermediatePosition(coord1, coord2);
     const radius = Math.max(distance(coord1, centerCoordinates), 0.001);
 
-    return circle(centerCoordinates, radius, options);
+    const geometry = circle(centerCoordinates, radius, options);
+
+    geometry.properties = geometry.properties || {};
+    geometry.properties.shape = 'Circle';
+
+    return geometry;
   }
 }

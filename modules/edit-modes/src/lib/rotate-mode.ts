@@ -50,8 +50,9 @@ export class RotateMode extends GeoJsonEditMode {
 
     // Add buffer to the enveloping box if a single Point feature is selected
     const featureWithBuffer = this._isSinglePointGeometrySelected(selectedGeometry)
-       // @ts-ignore
-       ? turfBuffer(selectedGeometry, 1)
+      ? // eslint-disable-next-line
+        // @ts-ignore
+        turfBuffer(selectedGeometry, 1)
       : selectedGeometry;
 
     const boundingBox = bboxPolygon(bbox(featureWithBuffer));

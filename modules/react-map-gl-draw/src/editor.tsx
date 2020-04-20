@@ -493,11 +493,11 @@ export default class Editor extends ModeHandler {
       return (
         <g key={elemKey}>
           {// eslint-disable-next-line prettier/prettier
-            //@ts-ignore
-            this._renderFill(index, coordinates, style)}
+          //@ts-ignore
+          this._renderFill(index, coordinates, style)}
           {// eslint-disable-next-line prettier/prettier
-            // @ts-ignore
-            this._renderSegments(index, coordinates, style)}
+          // @ts-ignore
+          this._renderSegments(index, coordinates, style)}
         </g>
       );
     }

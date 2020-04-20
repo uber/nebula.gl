@@ -1,5 +1,3 @@
-
-
 import { Position, Point, Geometry, FeatureWithProps } from './geojson-types';
 
 export type ScreenCoordinates = [number, number];
@@ -95,6 +93,7 @@ export type EditHandleFeature = FeatureWithProps<
     editHandleType: EditHandleType;
     featureIndex: number;
     positionIndexes?: number[];
+    shape?: string;
   }
 >;
 
@@ -102,6 +101,7 @@ export type TentativeFeature = FeatureWithProps<
   Geometry,
   {
     guideType: 'tentative';
+    shape?: string;
   }
 >;
 

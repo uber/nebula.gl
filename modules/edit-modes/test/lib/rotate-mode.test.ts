@@ -1,4 +1,3 @@
-
 import { RotateMode } from '../../src/lib/rotate-mode';
 import {
   createFeatureCollectionProps,
@@ -15,7 +14,7 @@ let warnBefore;
 beforeEach(() => {
   warnBefore = console.warn; // eslint-disable-line
   // $FlowFixMe
-  console.warn = function () { }; // eslint-disable-line
+  console.warn = function () {}; // eslint-disable-line
   rotateMode = new RotateMode();
 });
 

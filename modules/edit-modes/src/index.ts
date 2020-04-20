@@ -38,7 +38,7 @@ export { CompositeMode } from './lib/composite-mode';
 export { SnappableMode } from './lib/snappable-mode';
 
 // Experimental
-export {default as _memoize} from './memoize';
+export { default as _memoize } from './memoize';
 
 export type {
   ScreenCoordinates,

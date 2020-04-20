@@ -3,7 +3,6 @@ import React from 'react';
 import HtmlOverlay from './html-overlay';
 import HtmlOverlayItem from './html-overlay-item';
 
-
 type State = {
   visible: boolean;
   pickingInfo: Record<string, any> | null | undefined;

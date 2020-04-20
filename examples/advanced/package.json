@@ -1,7 +1,7 @@
 {
   "name": "example-advance",
   "private": true,
-  "version": "0.17.6",
+  "version": "0.18.0",
   "scripts": {
     "start": "webpack-dev-server --progress --hot --open",
     "start-local": "webpack-dev-server --env.local --progress --hot --open",
@@ -21,9 +21,9 @@
     "@babel/core": "^7.9.0",
     "@babel/plugin-proposal-class-properties": "^7.8.3",
     "@babel/plugin-proposal-export-default-from": "^7.8.3",
-    "@babel/preset-typescript": "7.9.0",
     "@babel/preset-env": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
+    "@babel/preset-typescript": "7.9.0",
     "babel-loader": "^8.1.0",
     "html-webpack-plugin": "^3.2.0",
     "url-loader": "^1.0.1",

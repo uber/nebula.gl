@@ -1,7 +1,7 @@
 // @ts-ignore
 import turfDistance from '@turf/distance';
 // @ts-ignore
-import { _memoize } from '@deck.gl/core';
+import memoize from '../memoize';
 import {
   ClickEvent,
   PointerMoveEvent,
@@ -36,7 +36,7 @@ export class MeasureDistanceMode extends GeoJsonEditMode {
     };
   }
 
-  _getTooltips = _memoize(({ modeConfig, startingPoint, endingPoint }) => {
+  _getTooltips = memoize(({ modeConfig, startingPoint, endingPoint }) => {
     let tooltips = DEFAULT_TOOLTIPS;
 
     if (startingPoint && endingPoint) {

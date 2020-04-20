@@ -2,7 +2,7 @@
   "name": "@nebula.gl/edit-modes",
   "description": "GeoJSON editing modes for nebula.gl",
   "license": "MIT",
-  "version": "0.17.6",
+  "version": "0.18.0",
   "author": "Georgios Karnas <georgios@uber.com>",
   "repository": {
     "type": "git",
@@ -71,8 +71,8 @@
     "@turf/transform-scale": ">=4.0.0",
     "@turf/transform-translate": ">=4.0.0",
     "@turf/union": ">=4.0.0",
+    "geojson": "0.5.0",
     "lodash.throttle": "^4.1.1",
-    "viewport-mercator-project": ">=6.0.0",
-    "geojson": "0.5.0"
+    "viewport-mercator-project": ">=6.0.0"
   }
 }

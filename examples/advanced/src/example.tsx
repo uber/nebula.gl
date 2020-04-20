@@ -1,4 +1,3 @@
-/// <reference path='./index.d.ts'/>
 /* eslint-env browser */
 
 import window from 'global/window';
@@ -81,7 +80,7 @@ const initialViewport = {
   zoom: 11,
 };
 
-const ALL_MODES = [
+const ALL_MODES: any = [
   {
     category: 'View',
     modes: [
@@ -201,23 +200,23 @@ function getEditHandleColor(handle: {}) {
 export default class Example extends React.Component<
   {},
   {
-    viewport: Object,
-    testFeatures: any,
-    mode: typeof GeoJsonEditMode,
-    modeConfig: any,
-    pointsRemovable: boolean,
-    selectedFeatureIndexes: number[],
-    editHandleType: string,
-    selectionTool?: string,
-    showGeoJson: boolean,
-    pathMarkerLayer: boolean,
+    viewport: Record<string, any>;
+    testFeatures: any;
+    mode: typeof GeoJsonEditMode;
+    modeConfig: any;
+    pointsRemovable: boolean;
+    selectedFeatureIndexes: number[];
+    editHandleType: string;
+    selectionTool?: string;
+    showGeoJson: boolean;
+    pathMarkerLayer: boolean;
     featureMenu?: {
-      index: number,
-      x: number,
-      y: number,
-    },
+      index: number;
+      x: number;
+      y: number;
+    };
   }
-  > {
+> {
   constructor(props: {}) {
     super(props);
 
@@ -244,7 +243,7 @@ export default class Example extends React.Component<
     window.removeEventListener('resize', this._resize);
   }
 
-  _onChangeViewport = (viewport: Object) => {
+  _onChangeViewport = (viewport: Record<string, any>) => {
     this.setState({
       viewport: { ...this.state.viewport, ...viewport },
     });
@@ -612,19 +611,17 @@ export default class Example extends React.Component<
         {ALL_MODES.map((category) => (
           <ToolboxRow key={category.category}>
             <ToolboxTitle>{category.category} Modes</ToolboxTitle>
-            {
-              //@ts-ignore
-              category.modes.map(({ mode, label }) => (
-                <ToolboxButton
-                  key={label}
-                  selected={this.state.mode === mode}
-                  onClick={() => {
-                    this.setState({ mode, modeConfig: {}, selectionTool: null });
-                  }}
-                >
-                  {label}
-                </ToolboxButton>
-              ))}
+            {category.modes.map(({ mode, label }) => (
+              <ToolboxButton
+                key={label}
+                selected={this.state.mode === mode}
+                onClick={() => {
+                  this.setState({ mode, modeConfig: {}, selectionTool: null });
+                }}
+              >
+                {label}
+              </ToolboxButton>
+            ))}
           </ToolboxRow>
         ))}
         {this._renderModeConfigControls()}
@@ -747,7 +744,7 @@ export default class Example extends React.Component<
     );
   }
 
-  renderStaticMap(viewport: Object) {
+  renderStaticMap(viewport: Record<string, any>) {
     // @ts-ignore
     return <StaticMap {...viewport} mapStyle={'mapbox://styles/mapbox/dark-v10'} />;
   }
@@ -772,7 +769,7 @@ export default class Example extends React.Component<
     this.setState({ featureMenu: null, testFeatures });
   }
 
-  _renderFeatureMenu({ x, y }: { x: number, y: number }) {
+  _renderFeatureMenu({ x, y }: { x: number; y: number }) {
     return (
       <div style={{ position: 'fixed', top: y - 40, left: x + 20 }}>
         <ToolboxButton onClick={() => this._featureMenuClick('delete')}>Delete</ToolboxButton>
@@ -783,7 +780,7 @@ export default class Example extends React.Component<
     );
   }
 
-  customizeLayers(layers: Object[]) { }
+  customizeLayers(layers: Record<string, any>[]) {}
 
   onEdit = ({ updatedData, editType, editContext }) => {
     let updatedSelectedFeatureIndexes = this.state.selectedFeatureIndexes;
@@ -994,7 +991,7 @@ export default class Example extends React.Component<
       layers.push(
         new SelectionLayer({
           id: 'selection',
-          //@ts-ignore
+          // @ts-ignore
           selectionType: this.state.selectionTool,
           onSelect: ({ pickingInfos }) => {
             this.setState({ selectedFeatureIndexes: pickingInfos.map((pi) => pi.index) });
@@ -1019,16 +1016,16 @@ export default class Example extends React.Component<
           layers={layers}
           height="100%"
           width="100%"
-          views={
-            [new MapView({
+          views={[
+            new MapView({
               id: 'basemap',
               controller: {
                 type: MapController,
                 // @ts-ignore
                 doubleClickZoom: this.state.mode === 'view' && !this.state.selectionTool,
               },
-            })]
-          }
+            }),
+          ]}
           onClick={this._onLayerClick}
           onViewStateChange={({ viewState }) => this.setState({ viewport: viewState })}
         >

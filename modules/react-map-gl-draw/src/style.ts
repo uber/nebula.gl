@@ -1,4 +1,4 @@
-import { RENDER_STATE, RENDER_TYPE } from './constants';
+import { RENDER_STATE, SHAPE } from './constants';
 
 const RECT_STYLE = {
   stroke: '#7ac943',
@@ -42,7 +42,7 @@ const DEFAULT_STYLE = {
 };
 
 export function featureStyle({ feature, state }) {
-  const renderType = feature.properties.renderType;
+  const type = feature.properties.shape || feature.geometry.type;
   let style = null;
 
   switch (state) {
@@ -67,20 +67,20 @@ export function featureStyle({ feature, state }) {
       style = { ...DEFAULT_STYLE };
   }
 
-  switch (renderType) {
-    case RENDER_TYPE.POINT:
+  switch (type) {
+    case SHAPE.POINT:
       style.r = CIRCLE_RADIUS;
       break;
-    case RENDER_TYPE.LINE_STRING:
+    case SHAPE.LINE_STRING:
       style.fill = 'none';
       break;
-    case RENDER_TYPE.POLYGON:
+    case SHAPE.POLYGON:
       if (state === RENDER_STATE.CLOSING) {
         style.strokeDasharray = '4,2';
       }
 
       break;
-    case RENDER_TYPE.RECTANGLE:
+    case SHAPE.RECTANGLE:
       if (state === RENDER_STATE.UNCOMMITTED) {
         style.strokeDasharray = '4,2';
       }

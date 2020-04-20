@@ -11,14 +11,16 @@ import {
 import { MjolnirEvent } from 'mjolnir.js';
 import { BaseEvent, EditorProps, EditorState, SelectAction } from './types';
 
-import { getScreenCoords, parseEventElement } from './edit-modes/utils';
-import { EDIT_TYPE } from './constants';
+import { getScreenCoords, parseEventElement, isNumeric } from './edit-modes/utils';
+import { EDIT_TYPE, ELEMENT_TYPE } from './constants';
 
 const defaultProps = {
+  selectable: true,
   mode: null,
   features: null,
   onSelect: null,
   onUpdate: null,
+  onUpdateCursor: () => {},
 };
 
 const defaultState = {
@@ -54,7 +56,6 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
     this._events = {
       anyclick: (evt) => this._onEvent(this._onClick, evt, true),
       click: (evt) => evt.stopImmediatePropagation(),
-      dblclick: (evt) => this._onEvent(this._onDblClick, evt, true),
       pointermove: (evt) => this._onEvent(this._onPointerMove, evt, true),
       pointerdown: (evt) => this._onEvent(this._onPointerDown, evt, true),
       pointerup: (evt) => this._onEvent(this._onPointerUp, evt, true),
@@ -127,13 +128,13 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
     const viewport = this._context && this._context.viewport;
 
     return {
-      data: featureCollection,
-      selectedIndexes: [selectedFeatureIndex],
+      data: featureCollection && featureCollection.featureCollection,
+      selectedIndexes: isNumeric(selectedFeatureIndex) ? [selectedFeatureIndex] : [],
       lastPointerMoveEvent,
       viewport,
       featuresDraggable: this.props.featuresDraggable,
       onEdit: this._onEdit,
-      onSelect: this._onSelect,
+      onUpdateCursor: this.props.onUpdateCursor,
     };
   }
 
@@ -272,12 +273,38 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
 
   _onClick = (event: BaseEvent) => {
     const modeProps = this.getModeProps();
-    this._modeHandler.handleClick(event, modeProps);
-  };
 
-  _onDblClick = (event: BaseEvent) => {
-    const modeProps = this.getModeProps();
-    this._modeHandler.handleDblClick(event, modeProps);
+    // @ts-ignore
+    if (this.props.selectable) {
+      const { mapCoords, screenCoords } = event;
+      const pickedObject = event.picks && event.picks[0];
+      // @ts-ignore
+      if (pickedObject && isNumeric(pickedObject.featureIndex)) {
+        // @ts-ignore
+        const selectedFeatureIndex = pickedObject.featureIndex;
+        this._onSelect({
+          selectedFeature: pickedObject.object,
+          selectedFeatureIndex,
+          selectedEditHandleIndex:
+            // @ts-ignore
+            pickedObject.type === ELEMENT_TYPE.EDIT_HANDLE ? pickedObject.index : null,
+          // @ts-ignore
+          mapCoords,
+          screenCoords,
+        });
+      } else {
+        this._onSelect({
+          selectedFeature: null,
+          selectedFeatureIndex: null,
+          selectedEditHandleIndex: null,
+          // @ts-ignore
+          mapCoords,
+          screenCoords,
+        });
+      }
+    }
+
+    this._modeHandler.handleClick(event, modeProps);
   };
 
   _onPointerMove = (event: BaseEvent) => {
@@ -371,7 +398,9 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
     if (isDragging) {
       event.sourceEvent.stopImmediatePropagation();
     }
-    this._modeHandler.handlePan(event, this.getModeProps());
+    if (this._modeHandler.handlePan) {
+      this._modeHandler.handlePan(event, this.getModeProps());
+    }
   };
 
   /* HELPERS */
@@ -388,7 +417,9 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
   };
 
   _getEvent(evt: MjolnirEvent) {
-    const picked = parseEventElement(evt);
+    const features = this.getFeatures();
+    const guides = this._modeHandler.getGuides(this.getModeProps());
+    const picked = parseEventElement(evt, features, guides && guides.features);
     const screenCoords = getScreenCoords(evt);
     // @ts-ignore
     const mapCoords = this.unproject(screenCoords);
@@ -402,7 +433,7 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
   }
 
   _getHoverState = (event: BaseEvent) => {
-    const object = event.picks && event.picks[0] && event.picks[0].object;
+    const object = event.picks && event.picks[0];
     if (!object) {
       return null;
     }

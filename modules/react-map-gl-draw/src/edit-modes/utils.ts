@@ -1,29 +1,55 @@
 import { MjolnirEvent } from 'mjolnir.js';
-import { Feature, Position } from '@nebula.gl/edit-modes';
+import type { FeatureOf, Feature, Polygon, Position } from '@nebula.gl/edit-modes';
 
-import { GEOJSON_TYPE } from '../constants';
+import { GEOJSON_TYPE, ELEMENT_TYPE, GUIDE_TYPE } from '../constants';
 
 export function isNumeric(val: any) {
   return !Array.isArray(val) && !isNaN(parseFloat(val)) && isFinite(val);
 }
 
-export function parseEventElement(evt: MjolnirEvent) {
+export function parseEventElement(evt: MjolnirEvent, features: Feature[], guides: Feature[]) {
   const elem = evt.target;
   if (!elem || !elem.dataset || !elem.dataset.type) {
     return null;
   }
 
+  let featureIndex = elem.dataset.featureIndex;
+  featureIndex = isNumeric(featureIndex) ? Number(featureIndex) : -1;
+
+  let index = elem.dataset.index;
+  index = isNumeric(index) ? Number(index) : undefined;
+
   const type = elem.dataset.type;
-  const featureIndex = elem.dataset.featureIndex;
-  const index = elem.dataset.index;
+  const tentativeFeature =
+    guides && guides.find((g) => g.properties.guideType === GUIDE_TYPE.TENTATIVE);
+  let object = null;
+  let isGuide = false;
+
+  switch (type) {
+    case ELEMENT_TYPE.EDIT_HANDLE:
+      object = guides.find((g) => {
+        const indexes = g.properties.positionIndexes;
+        if (indexes) {
+          return indexes[indexes.length - 1] === index;
+        }
+        return false;
+      });
+      isGuide = true;
+      break;
+    case ELEMENT_TYPE.SEGMENT:
+    case ELEMENT_TYPE.FEATURE:
+    case ELEMENT_TYPE.FILL:
+      object = features[featureIndex] || tentativeFeature;
+      break;
+    default:
+  }
 
   return {
-    object: {
-      type,
-      index: isNumeric(index) ? Number(index) : undefined,
-      featureIndex: isNumeric(featureIndex) ? Number(featureIndex) : undefined,
-    },
+    object,
+    isGuide,
+    type,
     index,
+    featureIndex,
   };
 }
 
@@ -64,11 +90,12 @@ export function getFeatureCoordinates(feature: Feature) {
   }
 
   const isPolygonal = feature.geometry.type === GEOJSON_TYPE.POLYGON;
-  return isPolygonal ? coordinates[0] : coordinates;
+  const isSinglePoint = feature.geometry.type === GEOJSON_TYPE.POINT;
+  return isPolygonal ? coordinates[0] : isSinglePoint ? [coordinates] : coordinates;
 }
 
 export function updateRectanglePosition(
-  feature: Feature,
+  feature: FeatureOf<Polygon>,
   editHandleIndex: number,
   mapCoords: Position
 ) {

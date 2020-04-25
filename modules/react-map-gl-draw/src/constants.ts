@@ -4,6 +4,14 @@ export enum GEOJSON_TYPE {
   POLYGON = 'Polygon',
 }
 
+export enum SHAPE {
+  POINT = 'Point',
+  LINE_STRING = 'LineString',
+  POLYGON = 'Polygon',
+  RECTANGLE = 'Rectangle',
+  CIRCLE = 'Circle',
+}
+
 export enum RENDER_TYPE {
   POINT = 'Point',
   LINE_STRING = 'LineString',

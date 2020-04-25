@@ -6,7 +6,7 @@ import {
   mix,
   nearestPointOnProjectedLine,
 } from '../../src/utils';
-import { Position } from '../../src/geojson-types'
+import { Position } from '../../src/geojson-types';
 
 const Point = {
   type: 'Feature',

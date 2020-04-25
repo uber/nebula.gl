@@ -1,4 +1,5 @@
-import {
+import { ImmutableFeatureCollection } from '@nebula.gl/edit-modes';
+import type {
   Feature,
   FeatureCollection,
   ClickEvent,
@@ -8,9 +9,8 @@ import {
 } from '@nebula.gl/edit-modes';
 import { ModeProps } from '../types';
 
-import { RENDER_TYPE, EDIT_TYPE, ELEMENT_TYPE, GEOJSON_TYPE, GUIDE_TYPE } from '../constants';
-// import BaseMode from './base-mode';
-import SelectMode from './select-mode';
+import { SHAPE, EDIT_TYPE, ELEMENT_TYPE, GEOJSON_TYPE, GUIDE_TYPE } from '../constants';
+import BaseMode from './base-mode';
 import {
   findClosestPointOnLineSegment,
   getFeatureCoordinates,
@@ -18,23 +18,24 @@ import {
   updateRectanglePosition,
 } from './utils';
 
-export default class EditingMode extends SelectMode {
+export default class EditingMode extends BaseMode {
   handleClick = (event: ClickEvent, props: ModeProps<FeatureCollection>) => {
-    super.handleClick(event, props);
-
-    const pickedObject = event.picks && event.picks[0] && event.picks[0].object;
+    const picked = event.picks && event.picks[0];
     const selectedFeatureIndex = props.selectedIndexes && props.selectedIndexes[0];
-    if (!pickedObject || pickedObject.featureIndex !== selectedFeatureIndex) {
+    // @ts-ignore
+    if (!picked || !picked.object || picked.featureIndex !== selectedFeatureIndex) {
       return;
     }
 
-    const { featureIndex, index } = pickedObject;
+    // @ts-ignore
+    const { type: objectType, featureIndex, index } = picked;
     const feature = this.getSelectedFeature(props, featureIndex);
+
     if (
       feature &&
-      (feature.geometry.type === RENDER_TYPE.POLYGON ||
-        feature.geometry.type === RENDER_TYPE.LINE_STRING) &&
-      pickedObject.type === ELEMENT_TYPE.SEGMENT
+      (feature.geometry.type === GEOJSON_TYPE.POLYGON ||
+        feature.geometry.type === GEOJSON_TYPE.LINE_STRING) &&
+      objectType === ELEMENT_TYPE.SEGMENT
     ) {
       const coordinates = getFeatureCoordinates(feature);
       if (!coordinates) {
@@ -43,10 +44,10 @@ export default class EditingMode extends SelectMode {
       // @ts-ignore
       const insertIndex = (index + 1) % coordinates.length;
       const positionIndexes =
-        feature.geometry.type === RENDER_TYPE.POLYGON ? [0, insertIndex] : [insertIndex];
-      const insertMapCoords = this._getPointOnSegment(feature, pickedObject, event.mapCoords);
+        feature.geometry.type === SHAPE.POLYGON ? [0, insertIndex] : [insertIndex];
+      const insertMapCoords = this._getPointOnSegment(feature, picked, event.mapCoords);
 
-      const updatedData = props.data
+      const updatedData = new ImmutableFeatureCollection(props.data)
         // @ts-ignore
         .addPosition(featureIndex, positionIndexes, insertMapCoords)
         .getObject();
@@ -69,11 +70,14 @@ export default class EditingMode extends SelectMode {
 
   handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollection>) {
     // replace point
-    const pickedObject = event.picks && event.picks[0] && event.picks[0].object;
-    if (!pickedObject || !isNumeric(pickedObject.featureIndex)) {
+    const picked = event.picks && event.picks[0];
+
+    // @ts-ignore
+    if (!picked || !picked.Object || !isNumeric(picked.featureIndex)) {
       return;
     }
 
+    const pickedObject = picked.object;
     switch (pickedObject.type) {
       case ELEMENT_TYPE.FEATURE:
       case ELEMENT_TYPE.FILL:
@@ -97,18 +101,20 @@ export default class EditingMode extends SelectMode {
     const { isDragging, pointerDownPicks, screenCoords } = event;
     const { lastPointerMoveEvent } = props;
 
-    const clickedObject = pointerDownPicks && pointerDownPicks[0] && pointerDownPicks[0].object;
-    if (!clickedObject || !isNumeric(clickedObject.featureIndex)) {
+    const clicked = pointerDownPicks && pointerDownPicks[0];
+    // @ts-ignore
+    if (!clicked.object || !isNumeric(clicked.featureIndex)) {
       return;
     }
 
-    const editHandleIndex = clickedObject.index;
+    // @ts-ignore
+    const { type: objectType, index: editHandleIndex } = clicked;
 
     // not dragging
     let updatedData = null;
     const editType = isDragging ? EDIT_TYPE.MOVE_POSITION : EDIT_TYPE.FINISH_MOVE_POSITION;
 
-    switch (clickedObject.type) {
+    switch (objectType) {
       case ELEMENT_TYPE.FEATURE:
       case ELEMENT_TYPE.FILL:
       case ELEMENT_TYPE.SEGMENT:
@@ -130,9 +136,7 @@ export default class EditingMode extends SelectMode {
         // dragging editHandle
         // dragging rectangle or other shapes
         const updateType =
-          selectedFeature.properties.renderType === RENDER_TYPE.RECTANGLE
-            ? 'rectangle'
-            : 'editHandle';
+          selectedFeature.properties.shape === SHAPE.RECTANGLE ? 'rectangle' : 'editHandle';
         updatedData = this._updateFeature(props, updateType, {
           editHandleIndex,
           mapCoords: event.mapCoords,
@@ -184,11 +188,15 @@ export default class EditingMode extends SelectMode {
           feature.geometry.type === GEOJSON_TYPE.POLYGON
             ? [0, options.editHandleIndex]
             : [options.editHandleIndex];
-        // @ts-ignore
-        return data.replacePosition(featureIndex, positionIndexes, options.mapCoords).getObject();
+
+        return new ImmutableFeatureCollection(data)
+          .replacePosition(featureIndex, positionIndexes, options.mapCoords)
+          .getObject();
 
       case 'feature':
         const { dx, dy } = options;
+
+        // @ts-ignore
         newCoordinates = newCoordinates
           .map((mapCoords) => {
             // @ts-ignore
@@ -204,14 +212,21 @@ export default class EditingMode extends SelectMode {
         geometry = {
           type: feature.geometry.type,
           coordinates:
-            feature.geometry.type === GEOJSON_TYPE.POLYGON ? [newCoordinates] : newCoordinates,
+            feature.geometry.type === GEOJSON_TYPE.POLYGON
+              ? [newCoordinates]
+              : feature.geometry.type === GEOJSON_TYPE.POINT
+              ? newCoordinates[0]
+              : newCoordinates,
         };
-        // @ts-ignore
-        return data.replaceGeometry(featureIndex, geometry).getObject();
+
+        return new ImmutableFeatureCollection(data)
+          .replaceGeometry(featureIndex, geometry)
+          .getObject();
 
       case 'rectangle':
         // moved editHandleIndex and destination mapCoords
         newCoordinates = updateRectanglePosition(
+          // @ts-ignore
           feature,
           options.editHandleIndex,
           options.mapCoords
@@ -220,23 +235,25 @@ export default class EditingMode extends SelectMode {
           type: GEOJSON_TYPE.POLYGON,
           coordinates: newCoordinates,
         };
-        // @ts-ignore
-        return data.replaceGeometry(featureIndex, geometry).getObject();
+
+        return new ImmutableFeatureCollection(data)
+          .replaceGeometry(featureIndex, geometry)
+          .getObject();
 
       default:
-        // @ts-ignore
-        return data && data.getObject();
+        return data && new ImmutableFeatureCollection(data).getObject();
     }
   };
 
-  _getPointOnSegment(feature: Feature, pickedObject: any, pickedMapCoords: Position) {
+  _getPointOnSegment(feature: Feature, picked: any, pickedMapCoords: Position) {
     const coordinates = getFeatureCoordinates(feature);
     if (!coordinates) {
       return null;
     }
-    const srcVertexIndex = pickedObject.index;
-    const targetVertexIndex = pickedObject.index + 1;
+    const srcVertexIndex = picked.index;
+    const targetVertexIndex = picked.index + 1;
     return findClosestPointOnLineSegment(
+      // @ts-ignore
       coordinates[srcVertexIndex],
       coordinates[targetVertexIndex],
       pickedMapCoords
@@ -247,25 +264,22 @@ export default class EditingMode extends SelectMode {
     // @ts-ignore
     const { isDragging, picks } = event;
     // if not pick segment
-    const pickedObject = picks && picks[0] && picks[0].object;
-    if (
-      !pickedObject ||
-      !isNumeric(pickedObject.featureIndex) ||
-      pickedObject.type !== ELEMENT_TYPE.SEGMENT
-    ) {
+    const picked = picks && picks[0];
+    // @ts-ignore
+    if (!picked || !isNumeric(picked.featureIndex) || picked.type !== ELEMENT_TYPE.SEGMENT) {
       return null;
     }
 
     // if dragging or feature is neither polygon nor line string
     if (
       isDragging ||
-      (feature.properties.renderType !== GEOJSON_TYPE.POLYGON &&
-        feature.properties.renderType !== GEOJSON_TYPE.LINE_STRING)
+      (feature.geometry.type !== GEOJSON_TYPE.POLYGON &&
+        feature.geometry.type !== GEOJSON_TYPE.LINE_STRING)
     ) {
       return null;
     }
 
-    const insertMapCoords = this._getPointOnSegment(feature, pickedObject, event.mapCoords);
+    const insertMapCoords = this._getPointOnSegment(feature, picked, event.mapCoords);
 
     if (!insertMapCoords) {
       return null;
@@ -275,12 +289,13 @@ export default class EditingMode extends SelectMode {
       type: 'Feature',
       properties: {
         guideType: GUIDE_TYPE.CURSOR_EDIT_HANDLE,
-        renderType: feature.properties.renderType,
-        positionIndexes: [null],
+        shape: feature.properties.shape,
+        positionIndexes: [-1],
+        editHandleType: 'intermediate',
       },
       geometry: {
         type: GEOJSON_TYPE.POINT,
-        coordinates: [insertMapCoords],
+        coordinates: insertMapCoords,
       },
     };
   };
@@ -302,11 +317,13 @@ export default class EditingMode extends SelectMode {
     // cursor editHandle
     const cursorEditHandle = this._getCursorEditHandle(event, selectedFeature);
     if (cursorEditHandle) {
-      editHandles.push(this._getCursorEditHandle(event, selectedFeature));
+      // @ts-ignore
+      editHandles.push(cursorEditHandle);
     }
 
     return {
-      editHandles: editHandles.length ? editHandles : null,
+      type: 'FeatureCollection',
+      features: editHandles.length ? editHandles : null,
     };
   };
 }

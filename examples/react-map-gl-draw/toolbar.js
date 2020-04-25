@@ -10,11 +10,6 @@ const ICON_MAP = [
   { id: MODES.DRAW_PATH, text: 'Draw Polyline', icon: 'icon-path.svg' },
   { id: MODES.DRAW_POLYGON, text: 'Draw Polygon', icon: 'icon-polygon.svg' },
   { id: MODES.DRAW_RECTANGLE, text: 'Draw Rectangle', icon: 'icon-rectangle.svg' },
-  {
-    id: MODES.DRAW_RECTANGLE_ONE_CLICK,
-    text: 'Draw Rectangle (One Click)',
-    icon: 'icon-rectangle.svg',
-  },
 ];
 
 const Container = styled.div`

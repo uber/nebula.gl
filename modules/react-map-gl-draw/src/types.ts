@@ -17,8 +17,6 @@ export type RenderState = RENDER_STATE;
 export type GeoJsonType = GEOJSON_TYPE;
 export type RenderType = RENDER_TYPE;
 
-
-
 export type SelectAction = {
   selectedFeature: Feature | null | undefined;
   selectedFeatureIndex?: number | null | undefined;
@@ -47,6 +45,7 @@ export type EditorProps = {
   featuresDraggable: boolean | null | undefined;
   onUpdate: Function;
   onSelect: Function;
+  onUpdateCursor: Function;
 };
 
 export type EditorState = {

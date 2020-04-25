@@ -50,7 +50,17 @@ export class TwoClickPolygonMode extends GeoJsonEditMode {
       tentativeFeature &&
       tentativeFeature.geometry.type === 'Polygon'
     ) {
-      const editAction = this.getAddFeatureOrBooleanPolygonAction(tentativeFeature.geometry, props);
+      const feature: FeatureOf<Polygon> = {
+        type: 'Feature',
+        properties: {
+          shape: tentativeFeature.properties.shape,
+        },
+        geometry: {
+          type: 'Polygon',
+          coordinates: tentativeFeature.geometry.coordinates,
+        },
+      };
+      const editAction = this.getAddFeatureOrBooleanPolygonAction(feature, props);
 
       this.resetClickSequence();
 
@@ -82,6 +92,7 @@ export class TwoClickPolygonMode extends GeoJsonEditMode {
       guides.features.push({
         type: 'Feature',
         properties: {
+          shape: polygon.properties && polygon.properties.shape,
           guideType: 'tentative',
         },
         geometry: polygon.geometry,

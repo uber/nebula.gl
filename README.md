@@ -53,10 +53,12 @@
 ### Installation
 
 ```
-yarn add nebula.gl
+yarn add @nebula.gl/layers
+yarn add @nebula.gl/overlays
+yarn add @deck.gl/core
+yarn add @deck.gl/react
+yarn add @deck.gl/layers
 ```
-
-`nebula.gl` will automatically install a compatible version of `deck.gl`.
 
 ### `EditableGeoJsonLayer`
 

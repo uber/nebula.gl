@@ -11,12 +11,12 @@ const resolve = require('path').resolve;
 const webpack = require('webpack');
 
 const LIB_DIR = resolve(__dirname, '..');
-const MAIN_SRC_DIR = resolve(LIB_DIR, './modules/main');
-const EDIT_MODES_SRC_DIR = resolve(LIB_DIR, './modules/edit-modes');
-const LAYERS_SRC_DIR = resolve(LIB_DIR, './modules/layers');
-const OVERLAYS_SRC_DIR = resolve(LIB_DIR, './modules/overlays');
-const EDITOR_SRC_DIR = resolve(LIB_DIR, './modules/editor');
-const REACT_EDITOR_LITE_SRC_DIR = resolve(LIB_DIR, './modules/react-map-gl-draw');
+const MAIN_SRC_DIR = resolve(LIB_DIR, './modules/main/src/');
+const EDIT_MODES_SRC_DIR = resolve(LIB_DIR, './modules/edit-modes/src/');
+const LAYERS_SRC_DIR = resolve(LIB_DIR, './modules/layers/src/');
+const OVERLAYS_SRC_DIR = resolve(LIB_DIR, './modules/overlays/src/');
+const EDITOR_SRC_DIR = resolve(LIB_DIR, './modules/editor/src/');
+const REACT_EDITOR_LITE_SRC_DIR = resolve(LIB_DIR, './modules/react-map-gl-draw/src');
 
 // const babelConfig = require('../babel.config');
 
@@ -33,6 +33,7 @@ function makeLocalDevConfig(EXAMPLE_DIR = LIB_DIR) {
     devtool: 'source-map',
 
     resolve: {
+      extensions: ['.js', '.ts', '.tsx'],
       alias: {
         'nebula.gl/dist': MAIN_SRC_DIR,
         'nebula.gl': MAIN_SRC_DIR,
@@ -70,9 +71,14 @@ function makeLocalDevConfig(EXAMPLE_DIR = LIB_DIR) {
       rules: [
         {
           // Unfortunately, webpack doesn't import library sourcemaps on its own...
-          test: /\.js$/,
+          test: /\.js$|\.ts$|\.tsx$/,
           use: ['source-map-loader'],
           enforce: 'pre',
+        },
+        {
+          test: /\.tsx?$/,
+          use: 'ts-loader',
+          exclude: /node_modules/,
         },
       ],
     },

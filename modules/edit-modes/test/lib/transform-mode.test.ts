@@ -1,4 +1,3 @@
-
 import { TransformMode } from '../../src/lib/transform-mode';
 import { createFeatureCollectionProps, createPointerMoveEvent } from '../test-utils';
 
@@ -8,7 +7,7 @@ let warnBefore;
 beforeEach(() => {
   warnBefore = console.warn; // eslint-disable-line
   // $FlowFixMe
-  console.warn = function () { }; // eslint-disable-line
+  console.warn = function () {}; // eslint-disable-line
   transformMode = new TransformMode();
 });
 

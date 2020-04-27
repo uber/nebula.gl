@@ -541,7 +541,7 @@ export default class Editor extends ModeHandler {
     if (!coordinates || !coordinates.length) {
       return null;
     }
-
+    console.log('renderFeature')
     const {
       properties: { shape },
       geometry: { type: geojsonType },
@@ -578,7 +578,7 @@ export default class Editor extends ModeHandler {
         {features && features.length > 0 && (
           <g key="feature-group">{features.map(this._renderFeature)}</g>
         )}
-        {guideFeatures && <g key="feature-guides">{this._renderGuides(guideFeatures)}</g>}
+        {guideFeatures && guideFeatures.length > 0 && <g key="feature-guides">{this._renderGuides(guideFeatures)}</g>}
       </svg>
     );
   };

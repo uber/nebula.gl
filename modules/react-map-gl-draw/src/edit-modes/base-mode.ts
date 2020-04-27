@@ -18,12 +18,10 @@ import { getFeatureCoordinates, isNumeric } from './utils';
 export default class BaseMode implements EditMode<FeatureCollection, GuideFeatureCollection> {
   _tentativeFeature: Feature | null | undefined;
   _editHandles: Feature[] | null | undefined;
-  _modeConfig: any = null;
 
   constructor() {
     this._tentativeFeature = null;
     this._editHandles = null;
-    this._modeConfig = null;
   }
 
   handlePan(event: ClickEvent, props: ModeProps<FeatureCollection>) {}
@@ -81,10 +79,6 @@ export default class BaseMode implements EditMode<FeatureCollection, GuideFeatur
         },
       };
     });
-  }
-
-  setModeConfig(modeConfig: any): void {
-    this._modeConfig = modeConfig;
   }
 
   getSelectedFeature = (

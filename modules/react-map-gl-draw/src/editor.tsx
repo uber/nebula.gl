@@ -541,7 +541,6 @@ export default class Editor extends ModeHandler {
     if (!coordinates || !coordinates.length) {
       return null;
     }
-    console.log('renderFeature')
     const {
       properties: { shape },
       geometry: { type: geojsonType },

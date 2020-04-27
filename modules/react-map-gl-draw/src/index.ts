@@ -7,6 +7,8 @@ export * from './edit-modes';
 export * from './types';
 
 export {
+  DrawCircleFromCenterMode,
+  DrawCircleByDiameterMode,
   DrawPointMode,
   DrawLineStringMode,
   DrawPolygonMode,

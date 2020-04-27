@@ -558,6 +558,7 @@ export default class Editor extends ModeHandler {
       case SHAPE.LINE_STRING:
         return this._renderPath(feature, index, path);
 
+      case SHAPE.CIRCLE:
       case SHAPE.POLYGON:
       case SHAPE.RECTANGLE:
         return this._renderPolygon(feature, index, path);

@@ -211,7 +211,6 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
 
   _onEdit = (editAction: EditAction<any>) => {
     const { editType, updatedData, editContext } = editAction;
-    console.log('_onEdit');
     this.setState({ featureCollection: new ImmutableFeatureCollection(updatedData) });
 
     switch (editType) {
@@ -275,7 +274,6 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
 
   _onClick = (event: BaseEvent) => {
     const modeProps = this.getModeProps();
-
     // TODO refactor EditingMode
     // @ts-ignore
     if (this._modeHandler instanceof EditingMode || this.props.selectable) {

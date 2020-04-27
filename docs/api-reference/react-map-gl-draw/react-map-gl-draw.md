@@ -3,18 +3,24 @@
 `react-map-gl-draw` is a react based drawing library tailored for [`react-map-gl`](https://github.com/uber/react-map-gl).
 
 ## Options
-- `mode` (Object, Optional) - A mode instance. default to null. Available modes are
-  - `EditingMode`: Lets you select and drag vertices; and drag features.
+- `mode` (Object, Optional) - A mode instance. default to null. 
+
+Support the following modes from `@nebula.gl/edit-modes`
+  - `DrawCircleByDiameterMode`: Lets you draw a GeoJson `Circle` feature.
+  - `DrawCircleFromCenterMode`: Lets you draw a GeoJson `Circle` feature.
+  - `DrawPointMode`: Lets you draw a GeoJson `Point` feature.
   - `DrawLineStringMode`: Lets you draw a GeoJson `LineString` feature.
   - `DrawPolygonMode`: Lets you draw a GeoJson `Polygon` feature.
-  - `DrawPointMode`: Lets you draw a GeoJson `Point` feature.
   - `DrawRectangleMode`: Lets you draw a `Rectangle` (represented as GeoJson `Polygon` feature) with two clicks - start drawing on first click, and finish drawing on second click.
+
+And an advanced
+  - `EditingMode`: Lets you select and drag vertices; and drag features.
 
 - `features` (Feature[], Optional) - List of features in GeoJson format. If `features` are provided from users, then `react-map-gl-draw` respect the users' input, and therefore ignore any internal `features`. But if `features` are not provided, then `react-map-gl-draw` manages `features` internally, and users can access and manipulate the features by calling `getFeatures`, `addFeatures`, and `deleteFeatures`.
 - `selectedFeatureIndex` (String, Optional) - Index of the selected feature.
 - `clickRadius` (Number, Optional) - Radius to detect features around a hovered or clicked point. Default value is `0`
 
-- `onSelect` (Function, Optional) - callback when clicking a position under `SELECT` and `EDITING` mode. Receives an object containing the following parameters
+- `onSelect` (Function, Optional) - callback when clicking a position when `selectable` set to true. Receives an object containing the following parameters
   - `selectedFeature`: selected feature. `null` if clicked an empty space.
   - `selectedFeatureIndex`: selected feature index.`null` if clicked an empty space.
   - `editHandleIndex`: selected editHandle index. `null` if clicked an empty space.
@@ -54,7 +60,7 @@ Returns is a map of [style objects](https://reactjs.org/docs/dom-elements.html#s
   - `index`: index of the feature.
   - `state`: one of `SELECTED`, `HOVERED`, `INACTIVE`, `UNCOMMITTED`, `CLOSING`.
 
-- `editHandleStyle` (Object|Function, Optional) : Object - Either a [style objects](https://reactjs.org/docs/dom-elements.html#style) or a function to style an `editHandle, function parameters are
+- `editHandleStyle` (Object|Function, Optional) : Object - Either a [style objects](https://reactjs.org/docs/dom-elements.html#style) or a function to style an `editHandle`, function parameters are
   - `feature`: feature to style.
   - `index`: index of the editHandle vertex in the feature.
   - `state`: one of `SELECTED`, `HOVERED`, `INACTIVE`, `UNCOMMITTED`, `CLOSING`.
@@ -141,7 +147,7 @@ export default class App extends Component {
   _switchMode = evt => {
     const modeId = evt.target.value === this.state.modeId ? null : evt.target.value;
     const mode = MODES.find(m => m.id === modeId);
-    const modeHandler =  mode ? new mode.handler() : null;
+    const modeHandler = mode ? new mode.handler() : null;
     this.setState({modeId, modeHandler});
   };
 

@@ -42,6 +42,7 @@ export default class App extends Component {
       // editor
       selectedMode: null,
       selectedFeatureIndex: null,
+      selectable: false,
     };
     this._editorRef = null;
   }
@@ -81,7 +82,7 @@ export default class App extends Component {
   };
 
   render() {
-    const { viewport, modeHandler } = this.state;
+    const { viewport, modeHandler, modeConfigs } = this.state;
     return (
       <MapGL
         {...viewport}
@@ -97,6 +98,7 @@ export default class App extends Component {
             this.setState({ selectedFeatureIndex: selected && selected.selectedFeatureIndex });
           }}
           mode={modeHandler}
+          modeConfigs={modeConfigs}
         />
         {this._renderToolbar()}
       </MapGL>

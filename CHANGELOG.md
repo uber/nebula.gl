@@ -4,6 +4,24 @@ _All notable changes to this project will be documented in this file. This proje
 
 <!-- INSERT HERE -->
 
+## [0.18.2](https://github.com/uber/nebula.gl/compare/v0.17.7...v0.18.2) - 2020-05-01
+
+### Changes
+
+* v0.18.2
+* react-map-gl-draw: update docs and examples (#392)
+* Fix mode links in documentation
+* Update html-overlay-item.md (#381)
+* Update README.md
+
+* v0.18.1
+* react-map-gl-draw: use nebula.gl/edit-modes (#376)
+* edit-modes: support shape property for circles and rectangles (#375)
+
+* v0.18.0
+* Fix double-click to complete (#389)
+* update changelog
+
 ## [0.17.7](https://github.com/uber/nebula.gl/compare/v0.17.3...v0.17.7) - 2020-04-14
 
 ### Changes

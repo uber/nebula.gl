@@ -5,7 +5,7 @@
 ## Options
 - `mode` (Object, Optional) - A mode instance. default to null. 
 
-Support the following modes from `@nebula.gl/edit-modes`
+Support the following modes from [`@nebula.gl/edit-modes`](https://github.com/uber/nebula.gl/blob/master/docs/api-reference/modes/overview.md)
   - `DrawCircleByDiameterMode`: Lets you draw a GeoJson `Circle` feature.
   - `DrawCircleFromCenterMode`: Lets you draw a GeoJson `Circle` feature.
   - `DrawPointMode`: Lets you draw a GeoJson `Point` feature.

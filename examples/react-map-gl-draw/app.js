@@ -82,7 +82,7 @@ export default class App extends Component {
   };
 
   render() {
-    const { viewport, modeHandler, modeConfigs } = this.state;
+    const { viewport, modeHandler } = this.state;
     return (
       <MapGL
         {...viewport}
@@ -98,7 +98,6 @@ export default class App extends Component {
             this.setState({ selectedFeatureIndex: selected && selected.selectedFeatureIndex });
           }}
           mode={modeHandler}
-          modeConfigs={modeConfigs}
         />
         {this._renderToolbar()}
       </MapGL>

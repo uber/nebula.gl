@@ -5,7 +5,7 @@
 ## Options
 - `mode` (Object, Optional) - A mode instance. default to null. 
 
-Support the following modes from [`@nebula.gl/edit-modes`](https://github.com/uber/nebula.gl/blob/master/docs/api-reference/modes/overview.md)
+Support the following modes from `@nebula.gl/edit-modes`. Note: Currently `react-map-gl-draw` does not support `modeConfig` in `@nebula.gl/edit-modes`.   
   - `DrawCircleByDiameterMode`: Lets you draw a GeoJson `Circle` feature.
   - `DrawCircleFromCenterMode`: Lets you draw a GeoJson `Circle` feature.
   - `DrawPointMode`: Lets you draw a GeoJson `Point` feature.
@@ -109,6 +109,62 @@ As shown in the above image, for the feature currently being edited,
 - Delete a single or multiple GeoJson features to editor.
 
 ## Code Example
+
+**Simple example: Draw polygon**
+
+```js
+import React, { Component } from 'react';
+import MapGL from 'react-map-gl';
+import {
+  Editor,
+  DrawPolygonMode,
+} from 'react-map-gl-draw';
+
+const DEFAULT_VIEWPORT = {
+  width: 800,
+  height: 600,
+  longitude: -122.45,
+  latitude: 37.78,
+  zoom: 14,
+};
+
+export default class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      viewport: DEFAULT_VIEWPORT,
+      modeHandler: null,
+    };
+  }
+
+  _updateViewport = (viewport) => {
+    this.setState({ viewport });
+  };
+
+  render() {
+    const { viewport } = this.state;
+    return (
+      <MapGL
+        {...viewport}
+        width="100%"
+        height="100%"
+        mapStyle={'mapbox://styles/mapbox/light-v9'}
+        onViewportChange={this._updateViewport}
+      >
+        <Editor
+          // to make the lines/vertices easier to interact with
+          clickRadius={12}
+          mode={new DrawPolygonMode()}
+        />
+        {this._renderToolbar()}
+      </MapGL>
+    );
+  }
+}
+```
+
+**Advanced example: multiple draw modes and editing drawn features**
+
 ```js
 import React, { Component } from 'react';
 import { render } from 'react-dom';

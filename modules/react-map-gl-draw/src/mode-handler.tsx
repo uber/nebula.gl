@@ -11,6 +11,7 @@ import {
 import { MjolnirEvent } from 'mjolnir.js';
 import { BaseEvent, EditorProps, EditorState, SelectAction } from './types';
 
+import EditingMode from './edit-modes/editing-mode';
 import { getScreenCoords, parseEventElement, isNumeric } from './edit-modes/utils';
 import { EDIT_TYPE, ELEMENT_TYPE } from './constants';
 
@@ -273,9 +274,9 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
 
   _onClick = (event: BaseEvent) => {
     const modeProps = this.getModeProps();
-
+    // TODO refactor EditingMode
     // @ts-ignore
-    if (this.props.selectable) {
+    if (this._modeHandler instanceof EditingMode || this.props.selectable) {
       const { mapCoords, screenCoords } = event;
       const pickedObject = event.picks && event.picks[0];
       // @ts-ignore

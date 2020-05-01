@@ -541,7 +541,6 @@ export default class Editor extends ModeHandler {
     if (!coordinates || !coordinates.length) {
       return null;
     }
-
     const {
       properties: { shape },
       geometry: { type: geojsonType },
@@ -559,6 +558,7 @@ export default class Editor extends ModeHandler {
       case SHAPE.LINE_STRING:
         return this._renderPath(feature, index, path);
 
+      case SHAPE.CIRCLE:
       case SHAPE.POLYGON:
       case SHAPE.RECTANGLE:
         return this._renderPolygon(feature, index, path);
@@ -578,7 +578,7 @@ export default class Editor extends ModeHandler {
         {features && features.length > 0 && (
           <g key="feature-group">{features.map(this._renderFeature)}</g>
         )}
-        {guideFeatures && <g key="feature-guides">{this._renderGuides(guideFeatures)}</g>}
+        {guideFeatures && guideFeatures.length > 0 && <g key="feature-guides">{this._renderGuides(guideFeatures)}</g>}
       </svg>
     );
   };

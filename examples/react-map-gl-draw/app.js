@@ -94,9 +94,9 @@ export default class App extends Component {
         <Editor
           ref={(_) => (this._editorRef = _)}
           clickRadius={12}
-          onSelect={(selected) => {
-            this.setState({ selectedFeatureIndex: selected && selected.selectedFeatureIndex });
-          }}
+          // onSelect={(selected) => {
+          //   this.setState({ selectedFeatureIndex: selected && selected.selectedFeatureIndex });
+          // }}
           mode={modeHandler}
         />
         {this._renderToolbar()}

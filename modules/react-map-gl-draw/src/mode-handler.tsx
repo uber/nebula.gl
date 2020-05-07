@@ -348,15 +348,16 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
   };
 
   _onPointerDown = (event: BaseEvent) => {
+    const isDragging = event.picks && event.picks[0];
     const startDraggingEvent = {
       ...event,
-      isDragging: true,
+      isDragging,
       pointerDownScreenCoords: event.screenCoords,
       pointerDownMapCoords: event.mapCoords,
     };
 
     const newState = {
-      isDragging: true,
+      isDragging,
       pointerDownPicks: event.picks,
       pointerDownScreenCoords: event.screenCoords,
       pointerDownMapCoords: event.mapCoords,

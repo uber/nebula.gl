@@ -4,6 +4,14 @@ _All notable changes to this project will be documented in this file. This proje
 
 <!-- INSERT HERE -->
 
+## [0.18.3](https://github.com/uber/nebula.gl/compare/v0.18.2...v0.18.3) - 2020-05-07
+
+### Changes
+
+* v0.18.3
+* react-map-gl-draw: fix onSelection exception (#395)
+* react-map-gl-draw: allow user pan map in drawing mode (#398)
+
 ## [0.18.2](https://github.com/uber/nebula.gl/compare/v0.17.7...v0.18.2) - 2020-05-01
 
 ### Changes

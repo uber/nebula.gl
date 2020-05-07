@@ -200,7 +200,7 @@ class App extends React.Component {
       modeHandler: null,
     };
   }
-  
+
   _switchMode = evt => {
     const modeId = evt.target.value === this.state.modeId ? null : evt.target.value;
     const mode = MODES.find(m => m.id === modeId);

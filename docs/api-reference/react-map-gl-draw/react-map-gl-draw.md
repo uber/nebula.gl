@@ -128,7 +128,7 @@ const DEFAULT_VIEWPORT = {
   zoom: 14,
 };
 
-export default class App extends Component {
+class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -165,9 +165,10 @@ export default class App extends Component {
 
 **Advanced example: multiple draw modes and editing drawn features**
 
+[codesandbox](https://codesandbox.io/s/react-map-gl-draw-example-5n97w?file=/src/app.js)
+
 ```js
 import React, { Component } from 'react';
-import { render } from 'react-dom';
 import MapGL from 'react-map-gl';
 import {
   Editor,
@@ -190,7 +191,7 @@ const DEFAULT_VIEWPORT = {
   zoom: 14,
 };
 
-export default class App extends Component {
+class App extends Component {
   constructor(props) {
     super(props);
     this.state = {

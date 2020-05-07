@@ -56,6 +56,7 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
 
     this._events = {
       anyclick: (evt) => this._onEvent(this._onClick, evt, true),
+      dblclick: (evt) => this._onEvent(this._onDblclick, evt, false),
       click: (evt) => evt.stopImmediatePropagation(),
       pointermove: (evt) => this._onEvent(this._onPointerMove, evt, true),
       pointerdown: (evt) => this._onEvent(this._onPointerDown, evt, true),
@@ -215,7 +216,7 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
 
     switch (editType) {
       case EDIT_TYPE.ADD_FEATURE:
-        this.props.onSelect({
+        this._onSelect({
           selectedFeature: null,
           selectedFeatureIndex: null,
           selectedEditHandleIndex: null,
@@ -306,6 +307,12 @@ export default class ModeHandler extends PureComponent<EditorProps, EditorState>
     }
 
     this._modeHandler.handleClick(event, modeProps);
+  };
+
+  _onDblclick = (event: BaseEvent) => {
+    if (isNumeric(this._getSelectedFeatureIndex())) {
+      event.sourceEvent.stopImmediatePropagation();
+    }
   };
 
   _onPointerMove = (event: BaseEvent) => {

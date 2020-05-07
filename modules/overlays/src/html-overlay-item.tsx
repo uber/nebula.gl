@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import * as React from 'react';
 
 const styles = {
   item: {
@@ -18,7 +18,7 @@ type Props = {
   style?: Record<string, any>;
 };
 
-export default class HtmlOverlayItem extends Component<Props> {
+export default class HtmlOverlayItem extends React.Component<Props> {
   render() {
     const { x, y, children, style, ...props } = this.props;
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 
 import HtmlOverlay from './html-overlay';
 import HtmlOverlayItem from './html-overlay-item';

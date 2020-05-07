@@ -168,7 +168,7 @@ class App extends Component {
 [codesandbox](https://codesandbox.io/s/react-map-gl-draw-example-5n97w?file=/src/app.js)
 
 ```js
-import React, { Component } from 'react';
+import * as React from 'react';
 import MapGL from 'react-map-gl';
 import {
   Editor,
@@ -191,7 +191,7 @@ const DEFAULT_VIEWPORT = {
   zoom: 14,
 };
 
-class App extends Component {
+class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {

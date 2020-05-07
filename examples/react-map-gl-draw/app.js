@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { render } from 'react-dom';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import MapGL from 'react-map-gl';
 import { Editor, EditingMode } from 'react-map-gl-draw';
 
@@ -33,7 +33,7 @@ const DEFAULT_VIEWPORT = {
   zoom: 14,
 };
 
-export default class App extends Component {
+export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -106,5 +106,5 @@ export default class App extends Component {
 }
 
 export function renderToDom(container) {
-  render(<App />, container);
+  ReactDOM.render(<App />, container);
 }

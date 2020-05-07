@@ -113,7 +113,7 @@ As shown in the above image, for the feature currently being edited,
 **Simple example: Draw polygon**
 
 ```js
-import React, { Component } from 'react';
+import * as React from 'react';
 import MapGL from 'react-map-gl';
 import {
   Editor,

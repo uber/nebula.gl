@@ -1,7 +1,7 @@
 /* eslint-env browser */
 
 import window from 'global/window';
-import React, { Component } from 'react';
+import * as React from 'react';
 import DeckGL from '@deck.gl/react';
 import { MapView, MapController } from '@deck.gl/core';
 import { StaticMap } from 'react-map-gl';
@@ -197,7 +197,7 @@ function getEditHandleColor(handle: {}) {
   }
 }
 
-export default class Example extends Component<
+export default class Example extends React.Component<
   {},
   {
     viewport: Record<string, any>;

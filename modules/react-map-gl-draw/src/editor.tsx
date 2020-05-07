@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 
 import { Feature } from '@nebula.gl/edit-modes';
 import { GeoJsonType, RenderState, Id } from './types';

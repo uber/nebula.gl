@@ -1,5 +1,5 @@
 import window from 'global/window';
-import React, { Component } from 'react';
+import * as React from 'react';
 import DeckGL, { TextLayer } from 'deck.gl';
 import MapGL from 'react-map-gl';
 
@@ -35,7 +35,7 @@ const styles = {
   },
 };
 
-export default class Example extends Component<
+export default class Example extends React.Component<
   {},
   {
     viewport: Object,

@@ -1,5 +1,5 @@
 import window from 'global/window';
-import React, { Component } from 'react';
+import * as React from 'react';
 import DeckGL from '@deck.gl/react';
 import { StaticMap } from 'react-map-gl';
 
@@ -109,7 +109,7 @@ class WorldHeritage extends HtmlClusterOverlay {
   }
 }
 
-export default class Example extends Component {
+export default class Example extends React.Component {
   constructor(props) {
     super(props);
 

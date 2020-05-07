@@ -1,6 +1,6 @@
 /* eslint-env browser */
 
-import React from 'react';
+import * as React from 'react';
 import { ImportComponent } from './import-component';
 import { EditorModal } from './editor-modal';
 

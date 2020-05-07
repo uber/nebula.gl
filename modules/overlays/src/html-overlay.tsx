@@ -1,4 +1,4 @@
-import React, { Component, cloneElement } from 'react';
+import * as React from 'react';
 
 const styles = {
   mainContainer: {
@@ -9,7 +9,7 @@ const styles = {
   },
 };
 
-export default class HtmlOverlay extends Component<
+export default class HtmlOverlay extends React.Component<
   { viewport?: Record<string, any>; zIndex?: number; children?: React.ReactNode },
   any
 > {
@@ -62,7 +62,7 @@ export default class HtmlOverlay extends Component<
         const [x, y] = this.getCoords(item.props.coordinates);
         if (this.inView([x, y])) {
           const key = item.key === null || item.key === undefined ? index : item.key;
-          renderItems.push(cloneElement(item, { x, y, key }));
+          renderItems.push(React.cloneElement(item, { x, y, key }));
         }
       });
 

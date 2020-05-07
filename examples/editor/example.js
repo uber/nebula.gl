@@ -1,6 +1,6 @@
 /* eslint-env browser */
 
-import React from 'react';
+import * as React from 'react';
 import DeckGL from '@deck.gl/react';
 import { EditableGeoJsonLayer } from '@nebula.gl/layers';
 import { Toolbox } from '@nebula.gl/editor';

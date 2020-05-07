@@ -1,6 +1,6 @@
 /* eslint-env browser */
 
-import React from 'react';
+import * as React from 'react';
 import Modal, { ModalProvider } from 'styled-react-modal';
 import styled from 'styled-components';
 

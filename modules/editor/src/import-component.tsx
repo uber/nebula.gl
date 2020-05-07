@@ -1,6 +1,6 @@
 /* eslint-env browser */
 
-import React from 'react';
+import * as React from 'react';
 import Dropzone from 'react-dropzone';
 import styled from 'styled-components';
 import { Button } from './editor-modal';

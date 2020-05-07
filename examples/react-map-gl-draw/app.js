@@ -42,6 +42,7 @@ export default class App extends React.Component {
       // editor
       selectedMode: null,
       selectedFeatureIndex: null,
+      selectable: false,
     };
     this._editorRef = null;
   }

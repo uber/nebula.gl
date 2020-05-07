@@ -11,6 +11,7 @@ import {
 import { MjolnirEvent } from 'mjolnir.js';
 import { BaseEvent, EditorProps, EditorState, SelectAction } from './types';
 
+import EditingMode from './edit-modes/editing-mode';
 import { getScreenCoords, parseEventElement, isNumeric } from './edit-modes/utils';
 import { EDIT_TYPE, ELEMENT_TYPE } from './constants';
 
@@ -55,6 +56,7 @@ export default class ModeHandler extends React.PureComponent<EditorProps, Editor
 
     this._events = {
       anyclick: (evt) => this._onEvent(this._onClick, evt, true),
+      dblclick: (evt) => this._onEvent(this._onDblclick, evt, false),
       click: (evt) => evt.stopImmediatePropagation(),
       pointermove: (evt) => this._onEvent(this._onPointerMove, evt, true),
       pointerdown: (evt) => this._onEvent(this._onPointerDown, evt, true),
@@ -214,7 +216,7 @@ export default class ModeHandler extends React.PureComponent<EditorProps, Editor
 
     switch (editType) {
       case EDIT_TYPE.ADD_FEATURE:
-        this.props.onSelect({
+        this._onSelect({
           selectedFeature: null,
           selectedFeatureIndex: null,
           selectedEditHandleIndex: null,
@@ -273,9 +275,9 @@ export default class ModeHandler extends React.PureComponent<EditorProps, Editor
 
   _onClick = (event: BaseEvent) => {
     const modeProps = this.getModeProps();
-
+    // TODO refactor EditingMode
     // @ts-ignore
-    if (this.props.selectable) {
+    if (this._modeHandler instanceof EditingMode || this.props.selectable) {
       const { mapCoords, screenCoords } = event;
       const pickedObject = event.picks && event.picks[0];
       // @ts-ignore
@@ -305,6 +307,12 @@ export default class ModeHandler extends React.PureComponent<EditorProps, Editor
     }
 
     this._modeHandler.handleClick(event, modeProps);
+  };
+
+  _onDblclick = (event: BaseEvent) => {
+    if (isNumeric(this._getSelectedFeatureIndex())) {
+      event.sourceEvent.stopImmediatePropagation();
+    }
   };
 
   _onPointerMove = (event: BaseEvent) => {
@@ -347,15 +355,16 @@ export default class ModeHandler extends React.PureComponent<EditorProps, Editor
   };
 
   _onPointerDown = (event: BaseEvent) => {
+    const isDragging = event.picks && event.picks[0];
     const startDraggingEvent = {
       ...event,
-      isDragging: true,
+      isDragging,
       pointerDownScreenCoords: event.screenCoords,
       pointerDownMapCoords: event.mapCoords,
     };
 
     const newState = {
-      isDragging: true,
+      isDragging,
       pointerDownPicks: event.picks,
       pointerDownScreenCoords: event.screenCoords,
       pointerDownMapCoords: event.mapCoords,

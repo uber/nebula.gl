@@ -5,3 +5,12 @@ export { GEOJSON_TYPE, SHAPE, RENDER_STATE, ELEMENT_TYPE, EDIT_TYPE } from './co
 export * from './edit-modes';
 
 export * from './types';
+
+export {
+  DrawCircleFromCenterMode,
+  DrawCircleByDiameterMode,
+  DrawPointMode,
+  DrawLineStringMode,
+  DrawPolygonMode,
+  DrawRectangleMode
+} from '@nebula.gl/edit-modes';

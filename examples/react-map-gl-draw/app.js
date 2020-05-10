@@ -13,6 +13,7 @@ import {
 import { MODES } from './constants';
 import Toolbar from './toolbar';
 import { getEditHandleStyle, getFeatureStyle } from './style';
+import featureCollection from './data/sample-geojson.json';
 
 const MODE_TO_HANDLER = {
   [MODES.READ_ONLY]: null,
@@ -31,7 +32,7 @@ const DEFAULT_VIEWPORT = {
   height: 600,
   longitude: -122.45,
   latitude: 37.78,
-  zoom: 14,
+  zoom: 12,
 };
 
 export default class App extends Component {
@@ -44,6 +45,8 @@ export default class App extends Component {
       selectedMode: null,
       selectedFeatureIndex: null,
       selectable: false,
+
+      features: featureCollection
     };
     this._editorRef = null;
   }
@@ -95,7 +98,7 @@ export default class App extends Component {
           // note: there is an issue with react-map-gl https://github.com/visgl/react-map-gl/issues/1098
           // Editor isn't available in `componentDidMount`
           // A workaround is calling` addFeatures`  when `map` loaded.
-          this._editorRef.addFeatures(features);
+          this._editorRef.addFeatures(featureCollection.features);
         }}
       >
         <Editor

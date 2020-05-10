@@ -103,7 +103,7 @@ export default class EditingMode extends BaseMode {
 
     const clicked = pointerDownPicks && pointerDownPicks[0];
     // @ts-ignore
-    if (!clicked.object || !isNumeric(clicked.featureIndex)) {
+    if (!clicked || !clicked.object || !isNumeric(clicked.featureIndex)) {
       return;
     }
 

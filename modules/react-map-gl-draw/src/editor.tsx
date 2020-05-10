@@ -231,6 +231,7 @@ export default class Editor extends ModeHandler {
           data-feature-index={featureIndex}
           style={{
             ...others,
+            stroke: 'rgba(0,0,0,0)',
             strokeWidth: clickRadius || radius,
             opacity: 0,
           }}
@@ -279,14 +280,12 @@ export default class Editor extends ModeHandler {
     } = feature;
 
     const coordinates = getFeatureCoordinates(feature);
-    // @ts-ignore
-    if (!coordinates || coordinates.length < 2) {
+    if (!coordinates || !Array.isArray(coordinates) || coordinates.length < 2) {
       return null;
     }
 
     // >= 2 coordinates
     const firstCoords = coordinates[0];
-    // @ts-ignore
     const lastCoords = coordinates[coordinates.length - 1];
     const uncommittedStyle = this._getStyleProp(featureStyle, {
       feature,
@@ -482,6 +481,7 @@ export default class Editor extends ModeHandler {
           key={`${elemKey}.hidden`}
           style={{
             ...style,
+            stroke: 'rgba(0,0,0,0)',
             strokeWidth: clickRadius,
             opacity: 0,
           }}
@@ -578,7 +578,9 @@ export default class Editor extends ModeHandler {
         {features && features.length > 0 && (
           <g key="feature-group">{features.map(this._renderFeature)}</g>
         )}
-        {guideFeatures && guideFeatures.length > 0 && <g key="feature-guides">{this._renderGuides(guideFeatures)}</g>}
+        {guideFeatures && guideFeatures.length > 0 && (
+          <g key="feature-guides">{this._renderGuides(guideFeatures)}</g>
+        )}
       </svg>
     );
   };
@@ -587,7 +589,7 @@ export default class Editor extends ModeHandler {
     const viewport = (this._context && this._context.viewport) || {};
     const { style } = this.props;
     // @ts-ignore
-    const { width, height } = viewport;
+    const { width = 0, height = 0 } = viewport;
     return (
       <div
         id="editor"

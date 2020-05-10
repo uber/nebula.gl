@@ -12,6 +12,7 @@ import {
 
 import { MODES } from './constants';
 import Toolbar from './toolbar';
+import { getEditHandleStyle, getFeatureStyle } from './style';
 
 const MODE_TO_HANDLER = {
   [MODES.READ_ONLY]: null,
@@ -90,6 +91,12 @@ export default class App extends Component {
         height="100%"
         mapStyle={MAP_STYLE}
         onViewportChange={this._updateViewport}
+        onLoad={() => {
+          // note: there is an issue with react-map-gl https://github.com/visgl/react-map-gl/issues/1098
+          // Editor isn't available in `componentDidMount`
+          // A workaround is calling` addFeatures`  when `map` loaded.
+          this._editorRef.addFeatures(features);
+        }}
       >
         <Editor
           ref={(_) => (this._editorRef = _)}
@@ -97,6 +104,9 @@ export default class App extends Component {
           onSelect={(selected) => {
             this.setState({ selectedFeatureIndex: selected && selected.selectedFeatureIndex });
           }}
+          featureStyle={getFeatureStyle}
+          editHandleStyle={getEditHandleStyle}
+          editHandleShape={'circle'}
           mode={modeHandler}
         />
         {this._renderToolbar()}

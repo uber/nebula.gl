@@ -1,7 +1,10 @@
-import { RENDER_STATE, SHAPE } from './constants';
+import { RENDER_STATE, SHAPE } from 'react-map-gl-draw';
+
+const STROKE_COLOR = 'rgb(38, 181, 242)';
+const FILL_COLOR = 'rgb(189,189,189)';
 
 const RECT_STYLE = {
-  stroke: '#7ac943',
+  stroke: STROKE_COLOR,
   strokeWidth: 2,
   x: -6,
   y: -6,
@@ -12,37 +15,37 @@ const RECT_STYLE = {
 const CIRCLE_RADIUS = 8;
 
 const SELECTED_STYLE = {
-  stroke: 'rgb(38, 181, 242)',
+  stroke: STROKE_COLOR,
   strokeWidth: 2,
-  fill: 'rgb(189,189,189)',
+  fill: FILL_COLOR,
   fillOpacity: 0.3,
 };
 
 const HOVERED_STYLE = {
-  stroke: 'rgb(38, 181, 242)',
+  stroke: STROKE_COLOR,
   strokeWidth: 2,
-  fill: 'rgb(122,202,67)',
+  fill: FILL_COLOR,
   fillOpacity: 0.3,
 };
 
 const UNCOMMITTED_STYLE = {
-  stroke: 'rgb(189,189,189)',
+  stroke: STROKE_COLOR,
   strokeDasharray: '4,2',
   strokeWidth: 2,
-  fill: 'rgb(189,189,189)',
-  fillOpacity: 0.1,
+  fill: FILL_COLOR,
+  fillOpacity: 0.2,
 };
 
 const INACTIVE_STYLE = UNCOMMITTED_STYLE;
 
 const DEFAULT_STYLE = {
-  stroke: '#000000',
+  stroke: '#000',
   strokeWidth: 2,
-  fill: '#a9a9a9',
+  fill: FILL_COLOR,
   fillOpacity: 0.1,
 };
 
-export function featureStyle({ feature, state }) {
+export function getFeatureStyle({ feature, state }) {
   const type = feature.properties.shape || feature.geometry.type;
   let style = null;
 
@@ -93,7 +96,7 @@ export function featureStyle({ feature, state }) {
   return style;
 }
 
-export function editHandleStyle({ feature, shape, index, state }) {
+export function getEditHandleStyle({ feature, shape, index, state }) {
   let style = {};
   switch (state) {
     case RENDER_STATE.SELECTED:

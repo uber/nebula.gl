@@ -37,6 +37,7 @@ export type EditorProps = {
   style: Record<string, any> | null | undefined;
   features: Feature[] | null | undefined;
   selectedFeatureIndex: number | null | undefined;
+  selectable: Boolean;
   clickRadius: number;
   featureShape: Function | string;
   editHandleShape: Function | string;
@@ -46,6 +47,7 @@ export type EditorProps = {
   onUpdate: Function;
   onSelect: Function;
   onUpdateCursor: Function;
+  modeConfig?: any;
 };
 
 export type EditorState = {

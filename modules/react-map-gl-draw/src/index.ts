@@ -12,5 +12,5 @@ export {
   DrawPointMode,
   DrawLineStringMode,
   DrawPolygonMode,
-  DrawRectangleMode
+  DrawRectangleMode,
 } from '@nebula.gl/edit-modes';

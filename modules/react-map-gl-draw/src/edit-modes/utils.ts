@@ -67,8 +67,7 @@ export function findClosestPointOnLineSegment(p1: Position, p2: Position, p: Pos
 
   // vertical line
   if (!isFinite(k)) {
-    const q = [p1[0], p[1]];
-    // @ts-ignore
+    const q: Position = [p1[0], p[1]];
     return inBounds(p1, p2, q) ? q : null;
   }
 
@@ -121,7 +120,7 @@ export function updateRectanglePosition(
   return feature.geometry.type === GEOJSON_TYPE.POLYGON ? [[...points, points[0]]] : points;
 }
 
-function inBounds(p1: Position, p2: Position, p: Position) {
+function inBounds(p1: Position, p2: Position, p: Position): boolean {
   const bounds = [
     Math.min(p1[0], p2[0]),
     Math.max(p1[0], p2[0]),

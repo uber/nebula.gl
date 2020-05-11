@@ -12,9 +12,14 @@ Support the following modes from `@nebula.gl/edit-modes`. Note: Currently `react
   - `DrawLineStringMode`: Lets you draw a GeoJson `LineString` feature.
   - `DrawPolygonMode`: Lets you draw a GeoJson `Polygon` feature.
   - `DrawRectangleMode`: Lets you draw a `Rectangle` (represented as GeoJson `Polygon` feature) with two clicks - start drawing on first click, and finish drawing on second click.
+    - If you'd like to starting drawing by mouse down and end drawing by mouse up, you can use `modeConfig: {dragToDraw: true}`. See `modeConfig` for more details.
 
 And an advanced
   - `EditingMode`: Lets you select and drag vertices; and drag features.
+
+- `modeConfig` (Object, Optional) - Additional configuration for the provided mode.
+Check `nebula.gl` [doc](https://github.com/uber/nebula.gl/blob/master/docs/api-reference/modes/overview.md) to see mode details. 
+
 
 - `features` (Feature[], Optional) - List of features in GeoJson format. If `features` are provided from users, then `react-map-gl-draw` respect the users' input, and therefore ignore any internal `features`. But if `features` are not provided, then `react-map-gl-draw` manages `features` internally, and users can access and manipulate the features by calling `getFeatures`, `addFeatures`, and `deleteFeatures`.
 - `selectedFeatureIndex` (String, Optional) - Index of the selected feature.
@@ -108,9 +113,35 @@ As shown in the above image, for the feature currently being edited,
 
 - Delete a single or multiple GeoJson features to editor.
 
+
+## Know Issues
+
+- `@turf/difference`: If you are seeing the below error, you can force `@turf/difference`'s version in your project `package.json` file and redo `yarn install`. 
+
+```bash
+./node_modules/@turf/difference/index.mjs Can't import the named export 'diff' from non EcmaScript module (only default export is available)
+``` 
+
+```json
+{
+  ...,
+  "dependencies": {
+    ...
+  },
+  "resolutions": {
+    "@turf/difference": "6.0.1"  
+  }
+}
+```
+
+references:
+ - [yarn](https://classic.yarnpkg.com/en/docs/selective-version-resolutions/)
+ - [`@turf/difference` issue](https://github.com/Turfjs/turf/issues/1833)
+ - related issues: [issues/335](https://github.com/uber/nebula.gl/issues/335) [issues/333](https://github.com/uber/nebula.gl/issues/333)
+ 
 ## Code Example
 
-**Simple example: Draw polygon**
+**Basic example: Draw polygon**
 
 ```js
 import React, { Component } from 'react';
@@ -161,6 +192,43 @@ class App extends Component {
     );
   }
 }
+```
+
+**Add customized styles**
+
+This is continuous example extends from the `Basic Example`. Check default [style](https://github.com/uber/nebula.gl/blob/master/modules/react-map-gl-draw/src/style.ts) used in editor for more details.
+
+```js
+<Editor
+  // to make the lines/vertices easier to interact with
+  clickRadius={12}
+  mode={new DrawPolygonMode()}
+  featureStyle={({feature, state}) => {
+    if  (state === RENDER_STATE.SELECTED) {
+      return { 
+        stroke: 'rgb(38, 181, 242)',
+        fill: 'rgb(189,189,189)'
+     }
+    }
+    return {
+      stroke: 'rgb(189,189,189)',
+      strokeDasharray: '4,2',
+    }; 
+  }}
+  editHandleStyle={({feature, shape, state}) => {
+    if (state === RENDER_STATE.SELECTED) {
+      return { 
+        stroke: 'rgb(38, 181, 242)',
+        fill: 'rgb(189,189,189)'
+     }
+    }
+    return {
+      stroke: 'rgb(189,189,189)',
+      strokeDasharray: '4,2',
+    }; 
+  }}
+  editHandleShape={'circle'}
+/>
 ```
 
 **Advanced example: multiple draw modes and editing drawn features**

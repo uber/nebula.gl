@@ -3,11 +3,9 @@ import * as React from 'react';
 import {
   ImmutableFeatureCollection,
   Feature,
-  Position,
   EditAction,
   _memoize as memoize,
 } from '@nebula.gl/edit-modes';
-
 import { MjolnirEvent } from 'mjolnir.js';
 import { BaseEvent, EditorProps, EditorState, SelectAction } from './types';
 
@@ -58,7 +56,7 @@ export default class ModeHandler extends React.PureComponent<EditorProps, Editor
       anyclick: (evt) => this._onEvent(this._onClick, evt, true),
       dblclick: (evt) => this._onEvent(this._onDblclick, evt, false),
       click: (evt) => evt.stopImmediatePropagation(),
-      pointermove: (evt) => this._onEvent(this._onPointerMove, evt, true),
+      pointermove: (evt) => this._onEvent(this._onPointerMove, evt, false),
       pointerdown: (evt) => this._onEvent(this._onPointerDown, evt, true),
       pointerup: (evt) => this._onEvent(this._onPointerUp, evt, true),
       panmove: (evt) => this._onEvent(this._onPan, evt, false),
@@ -137,6 +135,7 @@ export default class ModeHandler extends React.PureComponent<EditorProps, Editor
       featuresDraggable: this.props.featuresDraggable,
       onEdit: this._onEdit,
       onUpdateCursor: this.props.onUpdateCursor,
+      modeConfig: this.props.modeConfig,
     };
   }
 
@@ -355,12 +354,14 @@ export default class ModeHandler extends React.PureComponent<EditorProps, Editor
   };
 
   _onPointerDown = (event: BaseEvent) => {
-    const isDragging = event.picks && event.picks[0];
+    const dragToDraw = this.props.modeConfig && this.props.modeConfig.dragToDraw;
+    const isDragging = Boolean(event.picks && event.picks[0]) || dragToDraw;
     const startDraggingEvent = {
       ...event,
       isDragging,
       pointerDownScreenCoords: event.screenCoords,
       pointerDownMapCoords: event.mapCoords,
+      cancelPan: event.sourceEvent.stopImmediatePropagation,
     };
 
     const newState = {
@@ -376,7 +377,7 @@ export default class ModeHandler extends React.PureComponent<EditorProps, Editor
     this._modeHandler.handleStartDragging(startDraggingEvent, modeProps);
   };
 
-  _onPointerUp = (event: MjolnirEvent) => {
+  _onPointerUp = (event: BaseEvent) => {
     const { didDrag, pointerDownPicks, pointerDownScreenCoords, pointerDownMapCoords } = this.state;
     const stopDraggingEvent = {
       ...event,
@@ -384,6 +385,7 @@ export default class ModeHandler extends React.PureComponent<EditorProps, Editor
       pointerDownPicks: didDrag ? pointerDownPicks : null,
       pointerDownScreenCoords: didDrag ? pointerDownScreenCoords : null,
       pointerDownMapCoords: didDrag ? pointerDownMapCoords : null,
+      cancelPan: event.sourceEvent.cancelPan,
     };
 
     const newState = {
@@ -413,15 +415,13 @@ export default class ModeHandler extends React.PureComponent<EditorProps, Editor
   };
 
   /* HELPERS */
-  project = (pt: Position) => {
+  project = (pt: [number, number]) => {
     const viewport = this._context && this._context.viewport;
-    // @ts-ignore
     return viewport && viewport.project(pt);
   };
 
-  unproject = (pt: Position) => {
+  unproject = (pt: [number, number]) => {
     const viewport = this._context && this._context.viewport;
-    // @ts-ignore
     return viewport && viewport.unproject(pt);
   };
 

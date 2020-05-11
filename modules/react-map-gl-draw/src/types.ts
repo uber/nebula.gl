@@ -33,19 +33,21 @@ export type ModeProps<TData> = BaseModeProps<TData> & {
 };
 
 export type EditorProps = {
-  mode: Record<string, any>;
-  style: Record<string, any> | null | undefined;
-  features: Feature[] | null | undefined;
-  selectedFeatureIndex: number | null | undefined;
-  clickRadius: number;
-  featureShape: Function | string;
-  editHandleShape: Function | string;
-  editHandleStyle: Function | any;
-  featureStyle: Function | any;
-  featuresDraggable: boolean | null | undefined;
-  onUpdate: Function;
-  onSelect: Function;
-  onUpdateCursor: Function;
+  mode?: Record<string, any>;
+  style?: Record<string, any> | null | undefined;
+  features?: Feature[] | null | undefined;
+  selectedFeatureIndex?: number | null | undefined;
+  selectable?: Boolean;
+  clickRadius?: number;
+  featureShape?: Function | string;
+  editHandleShape?: Function | string;
+  editHandleStyle?: Function | any;
+  featureStyle?: Function | any;
+  featuresDraggable?: boolean | null | undefined;
+  onUpdate?: Function;
+  onSelect?: Function;
+  onUpdateCursor?: Function;
+  modeConfig?: any;
 };
 
 export type EditorState = {

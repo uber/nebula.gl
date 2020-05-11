@@ -4,6 +4,14 @@ _All notable changes to this project will be documented in this file. This proje
 
 <!-- INSERT HERE -->
 
+## [0.18.4](https://github.com/uber/nebula.gl/compare/v0.18.3...v0.18.4) - 2020-05-10
+
+### Changes
+
+* v0.18.4
+* react-map-gl-draw: fix customize styling (#399)
+* chore: update react import style (#382)
+
 ## [0.18.3](https://github.com/uber/nebula.gl/compare/v0.18.2...v0.18.3) - 2020-05-07
 
 ### Changes

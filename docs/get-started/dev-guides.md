@@ -6,9 +6,11 @@
 
 With nebula.gl,  geometry editing is accomplished through editing modes. These modes instruct nebula.gl how it should handle user interactions in order to manipulate GeoJSON features and geometries. nebula.gl provides several modes for creating and manipulating points, lines, and polygons.
 
+If the functionality that nebula.gl provides out-of-the box doesn’t quite meet your use case, developers can extend or create their own editing mode with custom event handling logic without needing to make changes to nebula.gl itself.
+
 ### EditableGeoJsonLayer
 
-EditableGeoJsonLayer is a deck.gl layer that can be passed to deck.gl the same way as other deck.gl layers, and can even be used in conjunction with other deck.gl layers.
+EditableGeoJsonLayer is a deck.gl layer that can be passed to deck.gl the same way as other deck.gl layers, and can even be used in conjunction with other deck.gl layers. It exposes a reactive-style interface where data updates are provided through an onEdit callback, but the actual state of the geometries is owned and controlled by the application.
 
 ### react-map-gl-draw
 
@@ -38,6 +40,7 @@ All edits are done immutably. In other words, the data passed in to the data pro
 
 Below, we share an example of how to use the EditableGeoJsonLayer with deck.gl and React. Note that the EditableGeoJsonLayer is simply added to the list of layers passed to deck.gl.
 
+```js
 import DeckGL from "deck.gl";
 import { EditableGeoJsonLayer, DrawPolygonMode } from "nebula.gl";
 import { StaticMap } from "react-map-gl";
@@ -66,12 +69,19 @@ function GeometryEditor() {
     </DeckGL>
   );
 }
+```
 
 ### Editing modes
 
-With nebula.gl,  geometry editing is accomplished through editing modes. The mode prop instructs nebula.gl how it should handle user interactions in order to manipulate GeoJSON features and geometries. nebula.gl provides several modes for creating points, lines, and polygons.
+With nebula.gl, geometry editing is accomplished through editing modes. The mode prop instructs nebula.gl how it should handle user interactions in order to manipulate GeoJSON features and geometries. nebula.gl provides several modes for creating points, lines, and polygons.
 
-Further control of a particular mode can be accomplished through a modeConfig prop. For example, you can intersect, union, and difference polygons by passing modeConfig={booleanOperation: 'difference'}.
+Further control of a particular mode can be accomplished through a `modeConfig` prop. For example, you can intersect, union, and difference polygons by passing `modeConfig={booleanOperation: 'difference'}`.
+
+Demo showing the difference operation, one of the powerful editing modes that nebula.gl provides out-of-the-box
+
+Source image: https://imgur.com/a/yMMxoxR
+Should link to: https://codesandbox.io/s/nebulagl-difference-705vr
+
 
 ### Extensibility
 

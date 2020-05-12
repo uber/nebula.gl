@@ -46,7 +46,7 @@ export default class App extends React.Component {
       selectedFeatureIndex: null,
       selectable: false,
 
-      features: featureCollection
+      features: featureCollection,
     };
     this._editorRef = null;
   }

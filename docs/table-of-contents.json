@@ -34,6 +34,9 @@
       "entries": [
         {
           "entry": "docs/interactive-examples/world-heritage"
+        },
+        {
+          "entry": "docs/interactive-examples/react-map-gl-draw-example"
         }
       ]
     },

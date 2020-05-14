@@ -1,1 +1,4 @@
 dist
+dist-esm
+dist-es6
+dist-types

@@ -4,11 +4,10 @@ The Mesh Layer renders a number of arbitrary geometries. For example, a fleet of
 
 ```js
 import DeckGL from 'deck.gl';
-import {MeshLayer} from '@deck.gl/experimental-layers';
-import {CubeGeometry} from 'luma.gl'
+import { MeshLayer } from '@deck.gl/experimental-layers';
+import { CubeGeometry } from 'luma.gl';
 
-const App = ({data, viewport}) => {
-
+const App = ({ data, viewport }) => {
   /**
    * Data format:
    * [
@@ -30,10 +29,10 @@ const App = ({data, viewport}) => {
     data,
     sizeScale: 100,
     texture: 'texture.png',
-    mesh: new CubeGeometry()
+    mesh: new CubeGeometry(),
   });
 
-  return (<DeckGL {...viewport} layers={[layer]} />);
+  return <DeckGL {...viewport} layers={[layer]} />;
 };
 ```
 
@@ -45,10 +44,10 @@ The geometry to render for each data object.
 Can be a luma.gl [Geometry](http://uber.github.io/luma.gl/#/documentation/api-reference/geometry) instance, or an object of attributes.
 
 The following attributes are expected:
+
 - `positions` (Float32Array) - 3d vertex offset from the object center, in meters
 - `normals` (Float32Array) - 3d nomals
 - `texCoords` (Float32Array) - 2d texture coordinates
-
 
 ##### `texture` (Texture2D|Image|String, optional)
 
@@ -59,13 +58,11 @@ Can be either a luma.gl [Texture2D](http://uber.github.io/luma.gl/#/documentatio
 
 If `texture` is supplied, texture is used to render the geometries. Otherwise, object color obtained via the `getColor` accessor is used.
 
-
 ##### `sizeScale` (Number, optional)
 
 - Default `1`.
 
 Multiplier to scale each geometry by.
-
 
 ##### `getPosition` (Function, optional)
 
@@ -73,20 +70,17 @@ Multiplier to scale each geometry by.
 
 This accessor returns the center position corresponding to an object in the `data` stream.
 
-
 ##### `getYaw` (Function, optional)
 
 - Default: `object => object.yaw || object.angle || 0`
 
 The yaw (heading) in degrees of each object.
 
-
 ##### `getPitch` (Function, optional)
 
 - Default: `object => object.pitch || 0`
 
 The pitch (elevation) in degrees of each object.
-
 
 ##### `getRoll` (Function, optional)
 
@@ -115,13 +109,11 @@ Translation of the mesh along each axis. Offset from the center position given b
 Explicitly define a 4x4 column-major model matrix for the mesh. If provided, will override
 `getYaw`, `getPitch`, `getRoll`, `getScale`, `getTranslation`.
 
-
 ##### `getColor` (Function|Array, optional)
 
 - Default: `[0, 0, 0, 255]`
 
 The color of each object. Only used if `texture` is empty.
-
 
 ##### `fp64` (Boolean, optional)
 
@@ -134,4 +126,3 @@ Whether the layer should be rendered in high-precision 64-bit mode
 **TO BE REPLACED**
 
 With `@deck.gl/mesh-layers`
-

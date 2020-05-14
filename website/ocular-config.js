@@ -34,7 +34,7 @@ const ALIASES = {
   // Versions will be controlled by the deck.gl top level package.json
   'math.gl': resolve(LIB_DIR, './node_modules/math.gl'),
   seer: resolve(LIB_DIR, './node_modules/seer'),
-  react: resolve(LIB_DIR, './node_modules/react')
+  react: resolve(LIB_DIR, './node_modules/react'),
 };
 
 // When duplicating example dependencies in website, autogenerate
@@ -84,42 +84,42 @@ module.exports = {
     {
       text: 'High Performance Editing',
       desc: 'Can be used with deck.gl for performant rendering of 100K+ segment datasets',
-      img: 'images/icon-high-precision.svg'
+      img: 'images/icon-high-precision.svg',
     },
     {
       text: 'Full GeoJson Support',
       desc:
         'Supports corner cases like converting between Polygon and MultiPolygon features as points are added',
-      img: 'images/icon-high-precision.svg'
+      img: 'images/icon-high-precision.svg',
     },
     {
       text: '3D Editing',
       desc: 'Edit Volumes and Elevations.',
-      img: 'images/icon-high-precision.svg'
-    }
+      img: 'images/icon-high-precision.svg',
+    },
   ],
 
   PROJECTS: [
     {
       name: 'deck.gl',
       title: 'deck.gl',
-      url: 'https://deck.gl'
+      url: 'https://deck.gl',
     },
     {
       name: 'luma.gl',
       title: 'luma.gl',
-      url: 'https://luma.gl'
+      url: 'https://luma.gl',
     },
     {
       name: 'react-map-gl',
       title: 'react-map-gl',
-      url: 'https://uber.github.io/react-map-gl'
+      url: 'https://uber.github.io/react-map-gl',
     },
     {
       name: 'react-vis',
       title: 'react-vis',
-      url: 'https://uber.github.io/react-vis'
-    }
+      url: 'https://uber.github.io/react-vis',
+    },
   ],
 
   ADDITIONAL_LINKS: [{ name: 'GeoJSON Editor', href: '/geojson-editor', index: 0 }],
@@ -129,8 +129,8 @@ module.exports = {
   THEME_OVERRIDES: [
     {
       key: 'none',
-      value: 'none'
-    }
+      value: 'none',
+    },
   ],
 
   EXAMPLES: [
@@ -154,7 +154,7 @@ module.exports = {
         //   '@deck.gl/core': `${__dirname}/node_modules/@deck.gl/core/src`,
         //   '@deck.gl/layers': `${__dirname}/node_modules/@deck.gl/layers/src`,
         //   '@deck.gl/react': `${__dirname}/node_modules/@deck.gl/react/src`
-      })
-    }
-  }
+      }),
+    },
+  },
 };

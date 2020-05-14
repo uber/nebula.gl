@@ -1,12 +1,12 @@
 # Tentative Features
 
-* **Author**: Clay Anderson
-* **Date**: September, 2018
-* **Status**: Review
+- **Author**: Clay Anderson
+- **Date**: September, 2018
+- **Status**: Review
 
 References:
 
-* [Background conversation](https://github.com/uber/nebula.gl/pull/49#issuecomment-413948690)
+- [Background conversation](https://github.com/uber/nebula.gl/pull/49#issuecomment-413948690)
 
 ## Summary
 
@@ -22,7 +22,7 @@ There are 2 issues motivating this RFC:
 
 ## Marketing Pitch
 
-* Separate tentative features from the FeatureCollection being edited in the `data` prop.
+- Separate tentative features from the FeatureCollection being edited in the `data` prop.
 
 ## Proposal
 
@@ -38,34 +38,34 @@ For example, adding points in `drawPolygon` mode would update the `tentativeFeat
 
 ### Draw new line string
 
-* `selectedFeatureIndexes=[]`
-* `mode='drawLineString'`
-* user moves pointer around
-  * `tentativeFeature` is a point feature whose coordinates follow the mouse
-* user clicks
-  * `onEdit` is not called because it isn't a LineString yet
-  * `tentativeFeature` is a LineString with first coordinate where user clicked, second coordinate follows the mouse
-* user clicks
-  * `onEdit` called, `updatedData` has a new LineString feature, `featureIndexes` is the index of the new feature
-* user selects a `LineString`
-* user moves pointer around
-  * `tentativeFeature` is a LineString with first coordinate is the end of the selected `LineString`; second coordinate follows the mouse
+- `selectedFeatureIndexes=[]`
+- `mode='drawLineString'`
+- user moves pointer around
+  - `tentativeFeature` is a point feature whose coordinates follow the mouse
+- user clicks
+  - `onEdit` is not called because it isn't a LineString yet
+  - `tentativeFeature` is a LineString with first coordinate where user clicked, second coordinate follows the mouse
+- user clicks
+  - `onEdit` called, `updatedData` has a new LineString feature, `featureIndexes` is the index of the new feature
+- user selects a `LineString`
+- user moves pointer around
+  - `tentativeFeature` is a LineString with first coordinate is the end of the selected `LineString`; second coordinate follows the mouse
 
 ### Draw new line polygon
 
-* `selectedFeatureIndexes=[]`
-* `mode='drawPolygon'`
-* user moves pointer around
-  * `tentativeFeature` is a point feature whose coordinates follow the mouse
-* user clicks
-  * `onEdit` is not called because it isn't a Polygon yet
-  * `tentativeFeature` is a LineString with first coordinate where user clicked, second coordinate follows the mouse
-* user clicks
-  * `onEdit` is not called because it isn't a Polygon yet
-  * `tentativeFeature` is a Polygon (triangle) with first coordinate where user clicked the first time, the second coordinate where the user clicked the second time, the third coordinate follows the mouse, and the fourth coordinate loops back to the first coordinate (completing the triangle)
-* user clicks a few more times then clicks the starting point
-  * `onEdit` called, `updatedData` has a new Polygon feature, `featureIndexes` is the index of the new feature
-  * `tentativeFeature` is a new Point again following the mouse in order to add a new Polygon
+- `selectedFeatureIndexes=[]`
+- `mode='drawPolygon'`
+- user moves pointer around
+  - `tentativeFeature` is a point feature whose coordinates follow the mouse
+- user clicks
+  - `onEdit` is not called because it isn't a Polygon yet
+  - `tentativeFeature` is a LineString with first coordinate where user clicked, second coordinate follows the mouse
+- user clicks
+  - `onEdit` is not called because it isn't a Polygon yet
+  - `tentativeFeature` is a Polygon (triangle) with first coordinate where user clicked the first time, the second coordinate where the user clicked the second time, the third coordinate follows the mouse, and the fourth coordinate loops back to the first coordinate (completing the triangle)
+- user clicks a few more times then clicks the starting point
+  - `onEdit` called, `updatedData` has a new Polygon feature, `featureIndexes` is the index of the new feature
+  - `tentativeFeature` is a new Point again following the mouse in order to add a new Polygon
 
 ## Future
 
@@ -73,4 +73,4 @@ Tentative feature functionality is a pre-requisite to `MultiLineString` and `Mul
 
 ## Alternatives Considered
 
-Also considered using GeoJSON's [GeometryCollection](https://tools.ietf.org/html/rfc7946#section-3.1.8) to handle adding additional geometries to a Multi* geometry type. But that exacerbates the surprising factor for features being upgraded, downgraded, and converted to/from `GeometryCollection` as the user edits. This is because, for example, GeoJSON doesn't support a `MultiPolygon` with a `Polygon` and a `Point`.
+Also considered using GeoJSON's [GeometryCollection](https://tools.ietf.org/html/rfc7946#section-3.1.8) to handle adding additional geometries to a Multi\* geometry type. But that exacerbates the surprising factor for features being upgraded, downgraded, and converted to/from `GeometryCollection` as the user edits. This is because, for example, GeoJSON doesn't support a `MultiPolygon` with a `Polygon` and a `Point`.

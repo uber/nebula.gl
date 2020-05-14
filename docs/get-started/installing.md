@@ -1,6 +1,5 @@
 # Installation
 
-
 ```bash
 yarn add "@nebula.gl/layers"
 yarn add "@nebula.gl/overlays"

@@ -13,27 +13,27 @@ const embeddedCodesandbox = {
       codemirror: 1,
       fontsize: 12,
       hidenavigation: 1,
-      view: 'split'
+      view: 'split',
     },
-    getIframe: url =>
-      `<iframe src="${url}" style="width: 70vw; height: 70vh;" class="embedded-codesandbox" sandbox="allow-modals allow-forms allow-popups allow-scripts allow-same-origin"></iframe>`
-  }
+    getIframe: (url) =>
+      `<iframe src="${url}" style="width: 70vw; height: 70vh;" class="embedded-codesandbox" sandbox="allow-modals allow-forms allow-popups allow-scripts allow-same-origin"></iframe>`,
+  },
 };
 
 module.exports = {
   plugins: [
     {
       resolve: `gatsby-theme-ocular`,
-      options: ocularConfig
+      options: ocularConfig,
     },
     {
-      resolve: `gatsby-plugin-typescript`
+      resolve: `gatsby-plugin-typescript`,
     },
     {
       resolve: `gatsby-transformer-remark`,
       options: {
-        plugins: [embeddedCodesandbox]
-      }
-    }
-  ]
+        plugins: [embeddedCodesandbox],
+      },
+    },
+  ],
 };

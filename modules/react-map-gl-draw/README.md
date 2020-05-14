@@ -3,41 +3,45 @@
 `react-map-gl-draw` is a react based drawing library tailored for [`react-map-gl`](https://github.com/uber/react-map-gl).
 
 ## Options
-- `mode` (Object, Optional) - A mode instance. default to null. 
 
-Support the following modes from `@nebula.gl/edit-modes`. Note: Currently `react-map-gl-draw` does not support `modeConfig` in `@nebula.gl/edit-modes`.   
-  - `DrawCircleByDiameterMode`: Lets you draw a GeoJson `Circle` feature.
-  - `DrawCircleFromCenterMode`: Lets you draw a GeoJson `Circle` feature.
-  - `DrawPointMode`: Lets you draw a GeoJson `Point` feature.
-  - `DrawLineStringMode`: Lets you draw a GeoJson `LineString` feature.
-  - `DrawPolygonMode`: Lets you draw a GeoJson `Polygon` feature.
-  - `DrawRectangleMode`: Lets you draw a `Rectangle` (represented as GeoJson `Polygon` feature) with two clicks - start drawing on first click, and finish drawing on second click.
-    - If you'd like to starting drawing by mouse down and end drawing by mouse up, you can use `modeConfig: {dragToDraw: true}`. See `modeConfig` for more details.
+- `mode` (Object, Optional) - A mode instance. default to null.
+
+Support the following modes from `@nebula.gl/edit-modes`. Note: Currently `react-map-gl-draw` does not support `modeConfig` in `@nebula.gl/edit-modes`.
+
+- `DrawCircleByDiameterMode`: Lets you draw a GeoJson `Circle` feature.
+- `DrawCircleFromCenterMode`: Lets you draw a GeoJson `Circle` feature.
+- `DrawPointMode`: Lets you draw a GeoJson `Point` feature.
+- `DrawLineStringMode`: Lets you draw a GeoJson `LineString` feature.
+- `DrawPolygonMode`: Lets you draw a GeoJson `Polygon` feature.
+- `DrawRectangleMode`: Lets you draw a `Rectangle` (represented as GeoJson `Polygon` feature) with two clicks - start drawing on first click, and finish drawing on second click.
+  - If you'd like to starting drawing by mouse down and end drawing by mouse up, you can use `modeConfig: {dragToDraw: true}`. See `modeConfig` for more details.
 
 And an advanced
-  - `EditingMode`: Lets you select and drag vertices; and drag features.
+
+- `EditingMode`: Lets you select and drag vertices; and drag features.
 
 - `modeConfig` (Object, Optional) - Additional configuration for the provided mode.
-Check `nebula.gl` [doc](https://github.com/uber/nebula.gl/blob/master/docs/api-reference/modes/overview.md) to see mode details. 
+  Check `nebula.gl` [doc](https://github.com/uber/nebula.gl/blob/master/docs/api-reference/modes/overview.md) to see mode details.
 
+* `features` (Feature[], Optional) - List of features in GeoJson format. If `features` are provided from users, then `react-map-gl-draw` respect the users' input, and therefore ignore any internal `features`. But if `features` are not provided, then `react-map-gl-draw` manages `features` internally, and users can access and manipulate the features by calling `getFeatures`, `addFeatures`, and `deleteFeatures`.
+* `selectedFeatureIndex` (String, Optional) - Index of the selected feature.
+* `clickRadius` (Number, Optional) - Radius to detect features around a hovered or clicked point. Default value is `0`
 
-- `features` (Feature[], Optional) - List of features in GeoJson format. If `features` are provided from users, then `react-map-gl-draw` respect the users' input, and therefore ignore any internal `features`. But if `features` are not provided, then `react-map-gl-draw` manages `features` internally, and users can access and manipulate the features by calling `getFeatures`, `addFeatures`, and `deleteFeatures`.
-- `selectedFeatureIndex` (String, Optional) - Index of the selected feature.
-- `clickRadius` (Number, Optional) - Radius to detect features around a hovered or clicked point. Default value is `0`
+* `onSelect` (Function, Optional) - callback when clicking a position when `selectable` set to true. Receives an object containing the following parameters
 
-- `onSelect` (Function, Optional) - callback when clicking a position when `selectable` set to true. Receives an object containing the following parameters
   - `selectedFeature`: selected feature. `null` if clicked an empty space.
   - `selectedFeatureIndex`: selected feature index.`null` if clicked an empty space.
   - `editHandleIndex`: selected editHandle index. `null` if clicked an empty space.
   - `screenCoords`: screen coordinates of the clicked position.
   - `mapCoords`: map coordinates of the clicked position.
 
-- `onUpdate` (Function, Optional) - callback when any feature is updated. Receives an object containing the following parameters
+* `onUpdate` (Function, Optional) - callback when any feature is updated. Receives an object containing the following parameters
   - `data` (Feature[]) - the updated list of GeoJSON features.
-  - `editType` (String) -  `addFeature`, `addPosition`, `finishMovePosition`
+  - `editType` (String) - `addFeature`, `addPosition`, `finishMovePosition`
   - `editContext` (Array) - list of edit objects, depend on `editType`, each object may contain `featureIndexes`, `editHandleIndexes`, `screenCoords`, `mapCoords`.
 
 **Feature object structure:**
+
 ```js
 {
   id, // an unique identified generated inside react-map-gl-draw library
@@ -53,6 +57,7 @@ Check `nebula.gl` [doc](https://github.com/uber/nebula.gl/blob/master/docs/api-r
 ```
 
 ### Styling related options
+
 - `featureStyle` (Object|Function, Optional) : Object - Either a [style objects](https://reactjs.org/docs/dom-elements.html#style) or a function to style a feature, function parameters are
   - `feature`: feature to style.
   - `index`: index of the feature.
@@ -61,6 +66,7 @@ Check `nebula.gl` [doc](https://github.com/uber/nebula.gl/blob/master/docs/api-r
 Returns is a map of [style objects](https://reactjs.org/docs/dom-elements.html#style) passed to SVG `path` elements.
 
 - `featureShape` (String|Function, Optional): if is a string, should be one of `rect` or `circle`. If is a function, will receive the following parameters
+
   - `feature`: feature to style.
   - `index`: index of the feature.
   - `state`: one of `SELECTED`, `HOVERED`, `INACTIVE`, `UNCOMMITTED`, `CLOSING`.
@@ -79,10 +85,12 @@ Returns is a map of [style objects](https://reactjs.org/docs/dom-elements.html#s
   - `state`: one of `SELECTED`, `HOVERED`, `INACTIVE`, `UNCOMMITTED`, `CLOSING`.
 
 ## Explanations
+
 - `Feature`: any drawn shape, one of point, line, polygon or rectangle.
 - `EditHandle`: vertex of the feature being edited.
 
 ### State related concepts:
+
 - `INACTIVE`: neither selected nor hovered, default state of a complete `feature` or `editHandle`.
 - `SELECTED`: being clicked or dragged.
 - `HOVERED`: hovered over by the mouse pointer.
@@ -94,8 +102,9 @@ Returns is a map of [style objects](https://reactjs.org/docs/dom-elements.html#s
 ![img](https://raw.githubusercontent.com/uber-common/deck.gl-data/master/nebula.gl/react-map-gl-draw.png)
 
 As shown in the above image, for the feature currently being edited,
+
 - `featureStyle({feature, state: SELECTED})` will be applied to the committed parts of the feature. (Green strokes)
-- `editHandleStyle({state: SELECTED})` will be applied to the committed editHandle vertices.  (Vertices with black stroke)
+- `editHandleStyle({state: SELECTED})` will be applied to the committed editHandle vertices. (Vertices with black stroke)
 - `featureStyle({feature, state: UNCOMMITTED})` will be applied to the uncommitted parts of the feature. (Gray stroke)
 - `editHandleStyle({state: UNCOMMITTED})` will be applied to the uncommitted editHandle vertex. (Gray vertex)
 
@@ -113,14 +122,13 @@ As shown in the above image, for the feature currently being edited,
 
 - Delete a single or multiple GeoJson features to editor.
 
-
 ## Know Issues
 
-- `@turf/difference`: If you are seeing the below error, you can force `@turf/difference`'s version in your project `package.json` file and redo `yarn install`. 
+- `@turf/difference`: If you are seeing the below error, you can force `@turf/difference`'s version in your project `package.json` file and redo `yarn install`.
 
 ```bash
 ./node_modules/@turf/difference/index.mjs Can't import the named export 'diff' from non EcmaScript module (only default export is available)
-``` 
+```
 
 ```json
 {
@@ -129,16 +137,17 @@ As shown in the above image, for the feature currently being edited,
     ...
   },
   "resolutions": {
-    "@turf/difference": "6.0.1"  
+    "@turf/difference": "6.0.1"
   }
 }
 ```
 
 references:
- - [yarn](https://classic.yarnpkg.com/en/docs/selective-version-resolutions/)
- - [`@turf/difference` issue](https://github.com/Turfjs/turf/issues/1833)
- - related issues: [issues/335](https://github.com/uber/nebula.gl/issues/335) [issues/333](https://github.com/uber/nebula.gl/issues/333)
- 
+
+- [yarn](https://classic.yarnpkg.com/en/docs/selective-version-resolutions/)
+- [`@turf/difference` issue](https://github.com/Turfjs/turf/issues/1833)
+- related issues: [issues/335](https://github.com/uber/nebula.gl/issues/335) [issues/333](https://github.com/uber/nebula.gl/issues/333)
+
 ## Code Example
 
 **Basic example: Draw polygon**
@@ -146,10 +155,7 @@ references:
 ```js
 import React, { Component } from 'react';
 import MapGL from 'react-map-gl';
-import {
-  Editor,
-  DrawPolygonMode,
-} from 'react-map-gl-draw';
+import { Editor, DrawPolygonMode } from 'react-map-gl-draw';
 
 const DEFAULT_VIEWPORT = {
   width: 800,
@@ -203,29 +209,29 @@ This is continuous example extends from the `Basic Example`. Check default [styl
   // to make the lines/vertices easier to interact with
   clickRadius={12}
   mode={new DrawPolygonMode()}
-  featureStyle={({feature, state}) => {
-    if  (state === RENDER_STATE.SELECTED) {
-      return { 
-        stroke: 'rgb(38, 181, 242)',
-        fill: 'rgb(189,189,189)'
-     }
-    }
-    return {
-      stroke: 'rgb(189,189,189)',
-      strokeDasharray: '4,2',
-    }; 
-  }}
-  editHandleStyle={({feature, shape, state}) => {
+  featureStyle={({ feature, state }) => {
     if (state === RENDER_STATE.SELECTED) {
-      return { 
+      return {
         stroke: 'rgb(38, 181, 242)',
-        fill: 'rgb(189,189,189)'
-     }
+        fill: 'rgb(189,189,189)',
+      };
     }
     return {
       stroke: 'rgb(189,189,189)',
       strokeDasharray: '4,2',
-    }; 
+    };
+  }}
+  editHandleStyle={({ feature, shape, state }) => {
+    if (state === RENDER_STATE.SELECTED) {
+      return {
+        stroke: 'rgb(38, 181, 242)',
+        fill: 'rgb(189,189,189)',
+      };
+    }
+    return {
+      stroke: 'rgb(189,189,189)',
+      strokeDasharray: '4,2',
+    };
   }}
   editHandleShape={'circle'}
 />
@@ -238,12 +244,7 @@ This is continuous example extends from the `Basic Example`. Check default [styl
 ```js
 import * as React from 'react';
 import MapGL from 'react-map-gl';
-import {
-  Editor,
-  EditingMode,
-  DrawLineStringMode,
-  DrawPolygonMode,
-} from 'react-map-gl-draw';
+import { Editor, EditingMode, DrawLineStringMode, DrawPolygonMode } from 'react-map-gl-draw';
 
 const MODES = [
   { id: 'drawPolyline', text: 'Draw Polyline', handler: DrawLineStringMode },
@@ -269,19 +270,23 @@ class App extends React.Component {
     };
   }
 
-  _switchMode = evt => {
+  _switchMode = (evt) => {
     const modeId = evt.target.value === this.state.modeId ? null : evt.target.value;
-    const mode = MODES.find(m => m.id === modeId);
+    const mode = MODES.find((m) => m.id === modeId);
     const modeHandler = mode ? new mode.handler() : null;
-    this.setState({modeId, modeHandler});
+    this.setState({ modeId, modeHandler });
   };
 
   _renderToolbar = () => {
     return (
-      <div style={{position: 'absolute', top: 0, right: 0, maxWidth: '320px'}}>
+      <div style={{ position: 'absolute', top: 0, right: 0, maxWidth: '320px' }}>
         <select onChange={this._switchMode}>
           <option value="">--Please choose a draw mode--</option>
-          {MODES.map(mode => <option key={mode.id} value={mode.id}>{mode.text}</option>)}
+          {MODES.map((mode) => (
+            <option key={mode.id} value={mode.id}>
+              {mode.text}
+            </option>
+          ))}
         </select>
       </div>
     );

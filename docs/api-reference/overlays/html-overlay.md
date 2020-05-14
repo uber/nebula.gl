@@ -5,7 +5,6 @@ If you need clustering see [HtmlClusterOverlay](/docs/api-reference/overlays/htm
 You can subclass this class or provide [HtmlOverlayItem](/docs/api-reference/overlays/html-overlay-item) as children.
 Then use it as a `react component` inside `DeckGL`.
 
-
 ```jsx
 <DeckGL initialViewState={initialViewState} controller={true}>
   <StaticMap mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN} />
@@ -16,6 +15,7 @@ Then use it as a `react component` inside `DeckGL`.
 ```
 
 Or if you prefer to subclass:
+
 ```jsx
 class YourClassName extends HtmlOverlay {
   getItems() {
@@ -33,12 +33,14 @@ class YourClassName extends HtmlOverlay {
 ```
 
 ## Properties
+
 ### zIndex
 
 Default is `1`. Set to `0` to move items _under_ deck.gl layer.
 
 ## Methods to override
+
 ### getItems()
+
 Provide an array of [HtmlOverlayItem](/docs/api-reference/overlays/html-overlay-item)
 if not providing them as JSX children.
-

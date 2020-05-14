@@ -1,13 +1,13 @@
 # MultiLineString and MultiPolygon Editing
 
-* **Author**: Clay Anderson
-* **Date**: September, 2018
-* **Status**: Review
+- **Author**: Clay Anderson
+- **Date**: September, 2018
+- **Status**: Review
 
 References:
 
-* [Tentative Feature RFC](./tentative-feature.md): Tentative feature functionality must be implemented first
-* [Background conversation](https://github.com/uber/nebula.gl/pull/49#issuecomment-413948690)
+- [Tentative Feature RFC](./tentative-feature.md): Tentative feature functionality must be implemented first
+- [Background conversation](https://github.com/uber/nebula.gl/pull/49#issuecomment-413948690)
 
 ## Summary
 
@@ -23,7 +23,7 @@ There are 2 issues motivating this RFC:
 
 ## Marketing Pitch
 
-* Add ability to edit `MultiLineString` and `MultiPolygon` features.
+- Add ability to edit `MultiLineString` and `MultiPolygon` features.
 
 ## Proposal
 

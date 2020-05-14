@@ -32,7 +32,7 @@
     "test": "yarn run lint && yarn run build && yarn run types-check && yarn run jest",
     "test-r": "yarn run lint && yarn run build && yarn run test-node && (cd test/rendering-test && node node-rendering.js)",
     "test-fast": "yarn run test-node",
-    "test-ci": "yarn run lint && && yarn run prettier-diff && yarn run build && yarn run types-check && yarn run jest-cover",
+    "test-ci": "yarn run lint && yarn run prettier-diff && yarn run build && yarn run types-check && yarn run jest-cover",
     "test-node": "node test/node.js",
     "test-dist": "node test/node-dist.js",
     "test-browser": "webpack-dev-server --env.test --progress --hot --open",

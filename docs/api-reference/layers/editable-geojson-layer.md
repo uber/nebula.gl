@@ -10,14 +10,14 @@ const myFeatureCollection = {
   type: 'FeatureCollection',
   features: [
     /* insert features here */
-  ]
+  ],
 };
 
 const selectedFeatureIndexes = [];
 
 class App extends React.Component {
   state = {
-    data: myFeatureCollection
+    data: myFeatureCollection,
   };
 
   render() {
@@ -31,7 +31,7 @@ class App extends React.Component {
         this.setState({
           data: updatedData,
         });
-      }
+      },
     });
 
     return <DeckGL {...this.props.viewport} layers={[layer]} />;
@@ -45,23 +45,23 @@ Inherits all [deck.gl's Base Layer](https://uber.github.io/deck.gl/#/documentati
 
 #### `data` (Object, optional)
 
-* Default: `null`
+- Default: `null`
 
 A [GeoJSON](http://geojson.org) `FeatureCollection` object. The following types of geometry are supported:
 
-* `Point`
-* `LineString`
-* `Polygon`
-* `MultiPoint`
-* `MultiLineString`
-* `MultiPolygon`
-* `GeometryCollection` is not supported.
+- `Point`
+- `LineString`
+- `Polygon`
+- `MultiPoint`
+- `MultiLineString`
+- `MultiPolygon`
+- `GeometryCollection` is not supported.
 
 _Note: passing a single `Feature` is not supported. However, you can pass a `FeatureCollection` containing a single `Feature` and pass `selectedFeatureIndexes: [0]` to achieve the same result._
 
 #### `mode` (Function|Object, optional)
 
-* Default: `DrawPolygonMode`
+- Default: `DrawPolygonMode`
 
 The `mode` property defines the mode used to handle user interaction events (e.g. pointer events) in order to accomplish edits. This can either be a constructor for an `EditMode` or an instance of `EditMode`.
 
@@ -69,26 +69,26 @@ There are a extensive number of modes that come out-of-the-box with nebula.gl. S
 
 #### `modeConfig` (Object, optional)
 
-* Default: `null`
+- Default: `null`
 
 An arbitrary object used to further configure the current mode.
 
 Snapping-related `modeConfig` properties:
 
-* `enableSnapping` (Boolean, optional) - Enables snapping for modes that support snapping such as translate mode.
-* `additionalSnapTargets` (Object[], optional) - An array of GeoJSON Features that can be snapped to. This property only needs to be specified if you want to snap to features in other deck.gl layers. All features in this `EditableGeoJsonLayer` will be snap targets.
+- `enableSnapping` (Boolean, optional) - Enables snapping for modes that support snapping such as translate mode.
+- `additionalSnapTargets` (Object[], optional) - An array of GeoJSON Features that can be snapped to. This property only needs to be specified if you want to snap to features in other deck.gl layers. All features in this `EditableGeoJsonLayer` will be snap targets.
 
 #### `selectedFeatureIndexes` (Array, optional)
 
-* Default: `[]`
+- Default: `[]`
 
 The `selectedFeatureIndexes` property distinguishes which features to treat as selected.
 
-* Features are identified by their index in the collection.
+- Features are identified by their index in the collection.
 
-* Selection of a feature causes style accessors to render a different style, defined in function such as `getLineColor` and `getFillColor`.
+- Selection of a feature causes style accessors to render a different style, defined in function such as `getLineColor` and `getFillColor`.
 
-* Selected features in mode `modify` will render edit handles. Only one feature may be selected while in mode `drawLineString` or `drawPolygon` to draw a feature.
+- Selected features in mode `modify` will render edit handles. Only one feature may be selected while in mode `drawLineString` or `drawPolygon` to draw a feature.
 
 _Note: make sure to pass in the same array instance on each render if you are not changing selection. Otherwise, nebula.gl may clear state on every render (e.g. may clear a drawing in progress if the viewport changes)._
 
@@ -96,49 +96,49 @@ _Note: make sure to pass in the same array instance on each render if you are no
 
 The `onEdit` event is the core event provided by this layer and must be handled in order to accept and render edits. The `event` argument includes the following properties:
 
-* `updatedData` (Object): A new `FeatureCollection` with the edit applied.
+- `updatedData` (Object): A new `FeatureCollection` with the edit applied.
 
-  * To accept the edit as is, supply this object into the `data` prop on the next render cycle (e.g. by calling React's `setState` function)
+  - To accept the edit as is, supply this object into the `data` prop on the next render cycle (e.g. by calling React's `setState` function)
 
-  * To reject the edit, do nothing
+  - To reject the edit, do nothing
 
-  * You may also supply a modified version of this object into the `data` prop on the next render cycle (e.g. if you have your own snapping logic).
+  - You may also supply a modified version of this object into the `data` prop on the next render cycle (e.g. if you have your own snapping logic).
 
-* `editType` (String): The type of edit requested. One of:
+- `editType` (String): The type of edit requested. One of:
 
-  * `movePosition`: A position was moved.
+  - `movePosition`: A position was moved.
 
-  * `addPosition`: A position was added (either at the beginning, middle, or end of a feature's coordinates).
+  - `addPosition`: A position was added (either at the beginning, middle, or end of a feature's coordinates).
 
-  * `removePosition`: A position was removed. Note: it may result in multiple positions being removed in order to maintain valid GeoJSON (e.g. removing a point from a triangular hole will remove the hole entirely).
+  - `removePosition`: A position was removed. Note: it may result in multiple positions being removed in order to maintain valid GeoJSON (e.g. removing a point from a triangular hole will remove the hole entirely).
 
-  * `addFeature`: A new feature was added. Its index is reflected in `featureIndexes`
+  - `addFeature`: A new feature was added. Its index is reflected in `featureIndexes`
 
-  * `finishMovePosition`: A position finished moving (e.g. user finished dragging).
+  - `finishMovePosition`: A position finished moving (e.g. user finished dragging).
 
-  * `scaling`: A feature is being scaled.
+  - `scaling`: A feature is being scaled.
 
-  * `scaled`: A feature finished scaling (increase/decrease) (e.g. user finished dragging).
+  - `scaled`: A feature finished scaling (increase/decrease) (e.g. user finished dragging).
 
-  * `rotating`: A feature is being rotated.
+  - `rotating`: A feature is being rotated.
 
-  * `rotated`: A feature finished rotating (e.g. user finished dragging).
+  - `rotated`: A feature finished rotating (e.g. user finished dragging).
 
-  * `translating`: A feature is being translated.
+  - `translating`: A feature is being translated.
 
-  * `translated`: A feature finished translating (e.g. user finished dragging).
+  - `translated`: A feature finished translating (e.g. user finished dragging).
 
-  * `startExtruding`: An edge started extruding (e.g. user started dragging).
+  - `startExtruding`: An edge started extruding (e.g. user started dragging).
 
-  * `extruding`: An edge is extruding.
+  - `extruding`: An edge is extruding.
 
-  * `extruded`: An edge finished extruding (e.g. user finished dragging).
+  - `extruded`: An edge finished extruding (e.g. user finished dragging).
 
-  * `split`: A feature finished splitting.
+  - `split`: A feature finished splitting.
 
-* `featureIndexes` (Array&lt;number&gt;): The indexes of the edited/added features.
+- `featureIndexes` (Array&lt;number&gt;): The indexes of the edited/added features.
 
-* `editContext` (Object): `null` or an object containing additional context about the edit. This is populated by the active mode, see [modes overview](../modes/overview.md).
+- `editContext` (Object): `null` or an object containing additional context about the edit. This is populated by the active mode, see [modes overview](../modes/overview.md).
 
 ##### Example
 
@@ -158,19 +158,19 @@ Consider the user removed the third position from a `Polygon`'s first ring, and 
 
 #### `pickable` (Boolean, optional)
 
-* Default: `true`
+- Default: `true`
 
 Defaulted to `true` for interactivity.
 
 #### `pickingRadius` (Number, optional)
 
-* Default: `10`
+- Default: `10`
 
 Number of pixels around the mouse cursor used for picking. This value determines, for example, what feature is considered to be clicked and what is close enough to be snapped to.
 
 #### `pickingDepth` (Number, optional)
 
-* Default: `5`
+- Default: `5`
 
 Number of layers of overlapping features that will be picked. Useful in cases where features overlap.
 
@@ -178,11 +178,11 @@ Number of layers of overlapping features that will be picked. Useful in cases wh
 
 `EditableGeoJsonLayer` renders the following sub-layers:
 
-* `geojson`: a [GeoJsonLayer](https://deck.gl/#/documentation/deckgl-api-reference/layers/geojson-layer) that renders the GeoJSON features passed into the `data` property.
-* `guides`: a [GeoJsonLayer](https://deck.gl/#/documentation/deckgl-api-reference/layers/geojson-layer) that renders GeoJSON features that aid in editing.
-* `tooltips`: a [TextLayer](https://deck.gl/#/documentation/deckgl-api-reference/layers/text-layer) that renders tooltips used in some editing modes.
+- `geojson`: a [GeoJsonLayer](https://deck.gl/#/documentation/deckgl-api-reference/layers/geojson-layer) that renders the GeoJSON features passed into the `data` property.
+- `guides`: a [GeoJsonLayer](https://deck.gl/#/documentation/deckgl-api-reference/layers/geojson-layer) that renders GeoJSON features that aid in editing.
+- `tooltips`: a [TextLayer](https://deck.gl/#/documentation/deckgl-api-reference/layers/text-layer) that renders tooltips used in some editing modes.
 
-The styling and functionality of `EditableGeoJsonLayer` can be customized by providing the [_subLayerProps](https://deck.gl/#/documentation/deckgl-api-reference/layers/composite-layer?section=_sublayerprops-object-experimental) property. For example:
+The styling and functionality of `EditableGeoJsonLayer` can be customized by providing the [\_subLayerProps](https://deck.gl/#/documentation/deckgl-api-reference/layers/composite-layer?section=_sublayerprops-object-experimental) property. For example:
 
 ```js
 new EditableGeoJsonLayer({
@@ -191,9 +191,9 @@ new EditableGeoJsonLayer({
     geojson: {
       getFillColor: (feature) => getFillColorForFeature(feature),
       getLineColor: (feature) => getLineColorForFeature(feature),
-    }
-  }
-})
+    },
+  },
+});
 ```
 
 #### `geojson` Sub Layer
@@ -202,7 +202,7 @@ The features being edited are rendered in the `geojson` sub layer whether they a
 
 ```js
 const [data] = React.useState(/* some GeoJSON */);
-const [selectedFeatureIndexes] = React.useState(/* array of selected features */)
+const [selectedFeatureIndexes] = React.useState(/* array of selected features */);
 
 new EditableGeoJsonLayer({
   // ...
@@ -211,15 +211,15 @@ new EditableGeoJsonLayer({
   _subLayerProps: {
     geojson: {
       getFillColor: (feature) => {
-        if (selectedFeatureIndexes.some(i => data.features[i] === feature)) {
+        if (selectedFeatureIndexes.some((i) => data.features[i] === feature)) {
           return SELECTED_FILL_COLOR;
         } else {
           return UNSELECTED_FILL_COLOR;
         }
-      }
-    }
-  }
-})
+      },
+    },
+  },
+});
 ```
 
 #### `guides` Sub Layer
@@ -236,10 +236,10 @@ Edit handles are the points rendered on a feature to indicate interactive capabi
 
 There are also different types of edit handles differentiated by `properties.editHandleType`:
 
-* `existing`: this is an edit handle rendered at an existing position of a feature
-* `intermediate`: this is an edit handle rendered between existing positions (e.g. to add new positions)
-* `snap-source`: this is an edit handle being moved that can snap to a `snap-target` edit handle
-* `snap-target`: this is an edit handle that will be snapped to if the pointer moves close enough
+- `existing`: this is an edit handle rendered at an existing position of a feature
+- `intermediate`: this is an edit handle rendered between existing positions (e.g. to add new positions)
+- `snap-source`: this is an edit handle being moved that can snap to a `snap-target` edit handle
+- `snap-target`: this is an edit handle that will be snapped to if the pointer moves close enough
 
 ##### Example
 
@@ -256,10 +256,10 @@ new EditableGeoJsonLayer({
         } else {
           return EDIT_HANDLE_FILL_COLOR;
         }
-      }
-    }
-  }
-})
+      },
+    },
+  },
+});
 ```
 
 #### `tooltips` Sub Layer
@@ -272,7 +272,7 @@ new EditableGeoJsonLayer({
   _subLayerProps: {
     tooltips: {
       getSize: 32,
-    }
-  }
-})
+    },
+  },
+});
 ```

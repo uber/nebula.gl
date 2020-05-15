@@ -2,17 +2,19 @@
 
 ## Background
 
-[react-map-gl](https://uber.github.io/react-map-gl/) currently does not support drawing functions. However, we have got a couple of [users](https://github.com/uber/react-map-gl/issues/725) interested in this capability. Also it is one of P0 features on Kepler.gl 2019 [roadmap](https://github.com/uber/kepler.gl/wiki/Kepler.gl-2019-Roadmap#allow-drawing-on-map-to-create-paths-and-polygons--). 
+[react-map-gl](https://uber.github.io/react-map-gl/) currently does not support drawing functions. However, we have got a couple of [users](https://github.com/uber/react-map-gl/issues/725) interested in this capability. Also it is one of P0 features on Kepler.gl 2019 [roadmap](https://github.com/uber/kepler.gl/wiki/Kepler.gl-2019-Roadmap#allow-drawing-on-map-to-create-paths-and-polygons--).
 
-Although [Mapbox/mapbox-gl-draw](https://github.com/mapbox/mapbox-gl-draw) provides drawing and editing features, because of its manipulating internal states, it cannot work well with React / Redux  framework and therefore cannot be integrated with `react-map-gl`.
+Although [Mapbox/mapbox-gl-draw](https://github.com/mapbox/mapbox-gl-draw) provides drawing and editing features, because of its manipulating internal states, it cannot work well with React / Redux framework and therefore cannot be integrated with `react-map-gl`.
 Another `vis.gl` framework [Nebula.gl](http://nebula.gl) also provides geo editing functionality, but it heavily depends on [`deck.gl`](https://deck.gl/), which may not be suitable for non `deck.gl` use cases.
 
 ## Proposal
 
 `react-map-gl-draw` is a react based geo editing library, providing drawing primitives, specifically `points`, `lines`, `polygons`, and `rectangles`.
 
-## Options 
+## Options
+
 - `mode` (String, Optional) - `react-map-gl` is stateless, user has complete control of the `mode`.
+
   - `EditorModes.READ_ONLY` - Not interactive. This is the default mode.
   - `EditorModes.SELECT_FEATURE` - Lets you select, delete, and drag features.
   - `EditorModes.EDIT_VERTEX` - Lets you select, delete, and drag vertices; and drag features.
@@ -32,7 +34,7 @@ Feature object structure:
 
 ```js
 {
-  id, // an unique identified generated inside react-map-gl-draw library 
+  id, // an unique identified generated inside react-map-gl-draw library
   geometry: {
     coordinates, // latitude longitude pairs of the geometry points
     type // geojson type, one of `Point`, `LineString`, or `Polygon`
@@ -45,17 +47,20 @@ Feature object structure:
 ```
 
 ### Styling related Options
-- `getFeatureStyle` (Function, Optional) : Object - A function to style a feature, function parameters are 
+
+- `getFeatureStyle` (Function, Optional) : Object - A function to style a feature, function parameters are
+
   - `feature`: feature to style .
   - `state`: one of `SELECTED`, `HOVERED`, `INACTIVE`, `UNCOMMITTED`.
-  
+
 Returns is a map of [style objects](https://reactjs.org/docs/dom-elements.html#style) passed to SVG `path` elements.
 
-- `getEditHandleStyle` (Function, Optional) : Object - A function to style an `editHandle, function parameters are 
+- `getEditHandleStyle` (Function, Optional) : Object - A function to style an `editHandle, function parameters are
+
   - `feature`: feature to style.
   - `index`: index of the editHandle vertex in the feature.
   - `state`: one of `SELECTED`, `HOVERED`, `INACTIVE`, `UNCOMMITTED`.
-  
+
 Returns is a map of [style objects](https://reactjs.org/docs/dom-elements.html#style) passed to SVG `circle` or `rect` elements.
 
 - `getEditHandleShape` (String|Function, Optional): if is a string, should be one of `rect` or `circle`. If is a function, will receive the following parameters
@@ -64,12 +69,14 @@ Returns is a map of [style objects](https://reactjs.org/docs/dom-elements.html#s
   - `state`: one of `SELECTED`, `HOVERED`, `INACTIVE`, `UNCOMMITTED`.
 
 ## Explanations
+
 - `Feature`: any drawn shape, one of point, line, polygon or rectangle.
 - `EditHandle`: vertex of the feature being edited.
 
 ### State related concepts:
+
 - `INACTIVE`: neither selected nor hovered, default state of a complete `feature` or `editHandle`.
-- `SELECTED`: being clicked or dragged. 
+- `SELECTED`: being clicked or dragged.
 - `HOVERED`: hovered over by the mouse pointer.
 - `UNCOMMITTED`: in the middle of drawing, not yet added to the feature being edited.
 
@@ -77,25 +84,26 @@ Returns is a map of [style objects](https://reactjs.org/docs/dom-elements.html#s
 
 ![img](https://raw.githubusercontent.com/uber-common/deck.gl-data/master/nebula.gl/edit-handle.png)
 
-As shown in the above image, for the feature currently being edited, 
+As shown in the above image, for the feature currently being edited,
+
 - `getFeatureStyle({feature, state: SELECTED})` will be applied to the committed parts of the feature. (Green strokes)
-- `getEditHandleStyle({state: SELECTED})` will be applied to the committed editHandle vertices.  (Vertices with black stroke)
-- `getFeatureStyle({feature, state: UNCOMMITTED})` will be applied to the uncommitted parts of the feature. (Gray stroke) 
+- `getEditHandleStyle({state: SELECTED})` will be applied to the committed editHandle vertices. (Vertices with black stroke)
+- `getFeatureStyle({feature, state: UNCOMMITTED})` will be applied to the uncommitted parts of the feature. (Gray stroke)
 - `getEditHandleStyle({state: UNCOMMITTED})` will be applied to the uncommitted editHandle vertex. (Gray vertex)
 
-
 ## Code Example
+
 ```js
 import * as React from 'react';
-import MapGL, {_MapContext as MapContext} from 'react-map-gl';
+import MapGL, { _MapContext as MapContext } from 'react-map-gl';
 import MapGLDraw, { EditorModes } from 'react-map-gl-draw';
 
 const MODES = [
-  { id: EditorModes.EDIT_VERTEX, text: 'Select and Edit Feature'},
-  { id: EditorModes.DRAW_POINT, text: 'Draw Point'},
-  { id: EditorModes.DRAW_PATH, text: 'Draw Polyline'},
-  { id: EditorModes.DRAW_POLYGON, text: 'Draw Polygon'},
-  { id: EditorModes.DRAW_RECTANGLE, text: 'Draw Rectangle'}
+  { id: EditorModes.EDIT_VERTEX, text: 'Select and Edit Feature' },
+  { id: EditorModes.DRAW_POINT, text: 'Draw Point' },
+  { id: EditorModes.DRAW_PATH, text: 'Draw Polyline' },
+  { id: EditorModes.DRAW_POLYGON, text: 'Draw Polygon' },
+  { id: EditorModes.DRAW_RECTANGLE, text: 'Draw Rectangle' },
 ];
 
 class App extends React.Component {
@@ -107,61 +115,64 @@ class App extends React.Component {
         height: 600,
         longitude: -122.45,
         latitude: 37.78,
-        zoom: 14
+        zoom: 14,
       },
       selectedMode: EditorModes.READ_ONLY,
       features: [],
-      selectedFeatureId: null
+      selectedFeatureId: null,
     };
   }
-  
+
   _updateViewport = (viewport) => {
-    this.setState({viewport});
-  }
-  
+    this.setState({ viewport });
+  };
+
   _onSelect = ({ selectedFeatureId }) => {
     this.setState({ selectedFeatureId });
   };
-  
-  _onUpdate = features => {
+
+  _onUpdate = (features) => {
     this.setState({
-      features
+      features,
     });
   };
 
-  _switchMode = evt => {
-    const selectedMode = evt.target.id === this.state.selectedMode ? EditorModes.READ_ONLY : evt.target.id;
+  _switchMode = (evt) => {
+    const selectedMode =
+      evt.target.id === this.state.selectedMode ? EditorModes.READ_ONLY : evt.target.id;
     this.setState({
       selectedMode,
-      selectedFeatureId: null
+      selectedFeatureId: null,
     });
   };
-  
+
   _renderControlPanel = () => {
     return (
-      <div style={{position: absolute, top: 0, right: 0, maxWidth: '320px'}}>
+      <div style={{ position: absolute, top: 0, right: 0, maxWidth: '320px' }}>
         <select onChange={this._switchMode}>
           <option value="">--Please choose a mode--</option>
-          {MODES.map(mode => <option value={mode.id}>{mode.text}</option>)}
+          {MODES.map((mode) => (
+            <option value={mode.id}>{mode.text}</option>
+          ))}
         </select>
       </div>
     );
-  }
-  
-  _getEditHandleStyle = ({feature, featureState, vertexIndex, vertexState}) => {
+  };
+
+  _getEditHandleStyle = ({ feature, featureState, vertexIndex, vertexState }) => {
     return {
       fill: vertexState === `SELECTED` ? '#000' : '#aaa',
-      stroke: vertexState === `SELECTED` ? '#000' : 'none'
-    }
-  }
-  
-  _getFeatureStyle = ({feature, featureState}) => {
+      stroke: vertexState === `SELECTED` ? '#000' : 'none',
+    };
+  };
+
+  _getFeatureStyle = ({ feature, featureState }) => {
     return {
       stroke: featureState === `SELECTED` ? '#000' : 'none',
       fill: featureState === `SELECTED` ? '#080' : 'none',
-      fillOpacity: 0.8
-    }
-  }
+      fillOpacity: 0.8,
+    };
+  };
 
   render() {
     const { viewport, selectedMode, selectedFeatureId, features } = this.state;
@@ -190,6 +201,7 @@ class App extends React.Component {
 ```
 
 ## Compare with `mapbox-gl-draw`
+
 - react-map-gl-draw a stateless component. To manipulate the features, simply change the `features` prop. This is different from calling the class methods of `MapboxDraw`.
 - react-map-gl-draw does not contain UI for mode selection, giving user application the flexibility to control their user experience.
 - Features of `MapboxDraw` that are not planned for the initial release of `EditorModes`: keyboard navigation, box select.

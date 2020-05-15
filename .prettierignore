@@ -1,0 +1,9 @@
+dist
+dist-esm
+dist-es6
+dist-types
+
+modules/edit-modes/README.md
+modules/editor/README.md
+modules/layers/README.md
+modules/main/README.md

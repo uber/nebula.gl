@@ -1,6 +1,6 @@
 # Generic EditMode
 
-* **Author**: Clay Anderson
+- **Author**: Clay Anderson
 
 ## Summary
 
@@ -41,7 +41,7 @@ export type ModeProps<TData> = {
   onEdit: (editAction: EditAction<TData>) => void,
 
   // Callback used to update cursor
-  onUpdateCursor: (cursor: ?string) => void
+  onUpdateCursor: (cursor: ?string) => void,
 };
 
 export interface EditMode<TData, TGuides> {
@@ -70,17 +70,16 @@ An implementation of a mode is intended to override the `handle...` functions in
 
 `EditableGeoJsonLayer` will be responsible for the following:
 
-* Register event handlers with the browser and call the active `EditMode`'s functions
-* Pick objects (i.e. determining all objects that are under or near the cursor) and pass those to the active `EditMode`
-* Forward `onEdit` calls from the active edit mode to a consuming application
-* Render the data
-* Render the guides (which are obtained by calling `getGuides`)
+- Register event handlers with the browser and call the active `EditMode`'s functions
+- Pick objects (i.e. determining all objects that are under or near the cursor) and pass those to the active `EditMode`
+- Forward `onEdit` calls from the active edit mode to a consuming application
+- Render the data
+- Render the guides (which are obtained by calling `getGuides`)
 
 Pseudocode:
 
 ```js
 class EditableGeoJsonLayer {
-
   initialize() {
     window.addEventListener('click', this.onClick);
   }
@@ -90,9 +89,9 @@ class EditableGeoJsonLayer {
       data: this.props.data,
       onEdit: (editAction) => {
         this.props.onEdit(editAction);
-      }
+      },
       // ...
-    }
+    };
   }
 
   onClick(rawBrowserEvent) {
@@ -100,9 +99,9 @@ class EditableGeoJsonLayer {
     const clickEvent = {
       picks: this.pickObjectsUnderCursor(rawBrowserEvent), // this will utilize deck.gl's picking functionality
       screenCoords,
-      mapCoords: this.unproject(screenCoords)
-    }
-    this.activeMode.handleClick(clickEvent, this.getModeProps())
+      mapCoords: this.unproject(screenCoords),
+    };
+    this.activeMode.handleClick(clickEvent, this.getModeProps());
   }
 
   render() {
@@ -118,19 +117,19 @@ class EditableGeoJsonLayer {
 
 We will need a `@nebula.gl/edit-modes` module separate from the `nebula.gl` module. The reason is because this new `@nebula/edit-modes` should have no deck.gl dependency.
 
-* `nebula.gl`
-  * depends on `@nebula.gl/edit-modes`, `@nebula.gl/layers`, and all the other `@nebula/...` modules.
-  * doesn't have much in it, just basically imports from the others and re-exports them
-* `@nebula.gl/edit-modes`
-  * depends [turf.js](http://turfjs.org/), no (large) dependencies like deck.gl
-  * contains all the modes for editing GeoJSON (e.g. `DrawPolygonMode`)
-  * contains `EditMode` interface
-  * contains other general purpose types and classes (e.g. event types like `ClickEvent`)
-  * this module will be reused by `react-map-gl-draw`
-* `@nebula.gl/layers`
-  * depends on `@nebula.gl/edit-modes` and `deck.gl`
-  * contains `EditableGeoJsonLayer`, a deck.gl `CompositeLayer`
-* Other modules are unaffected (e.g. `@nebula.gl/overlays`)
+- `nebula.gl`
+  - depends on `@nebula.gl/edit-modes`, `@nebula.gl/layers`, and all the other `@nebula/...` modules.
+  - doesn't have much in it, just basically imports from the others and re-exports them
+- `@nebula.gl/edit-modes`
+  - depends [turf.js](http://turfjs.org/), no (large) dependencies like deck.gl
+  - contains all the modes for editing GeoJSON (e.g. `DrawPolygonMode`)
+  - contains `EditMode` interface
+  - contains other general purpose types and classes (e.g. event types like `ClickEvent`)
+  - this module will be reused by `react-map-gl-draw`
+- `@nebula.gl/layers`
+  - depends on `@nebula.gl/edit-modes` and `deck.gl`
+  - contains `EditableGeoJsonLayer`, a deck.gl `CompositeLayer`
+- Other modules are unaffected (e.g. `@nebula.gl/overlays`)
 
 ### Breaking changes
 
@@ -170,7 +169,9 @@ The `GeoJsonEditMode` will support 2 types of guides, tentative and edit handles
 Tentative features are intended to show you the tentative geometry that can be committed (e.g. by clicking). They will be represented with the following `properties` in the GeoJSON:
 
 ```js
-{ guideType: 'tentative' }
+{
+  guideType: 'tentative';
+}
 ```
 
 #### Edit handles
@@ -243,20 +244,20 @@ The following example demonstrates the `EditMode` interface. This `DrawPointsMod
 
 ```javascript
 class DrawPointsMode implements EditMode {
- handleClick(event, props) {
-   // props.data is an array of points and should not be mutated directly
-   // event.mapCoords is the coordinates on the map (lat/long) that the user clicked
-   const updatedData = [...props.data, event.mapCoords];
+  handleClick(event, props) {
+    // props.data is an array of points and should not be mutated directly
+    // event.mapCoords is the coordinates on the map (lat/long) that the user clicked
+    const updatedData = [...props.data, event.mapCoords];
 
-   // props.onEdit is the edit callback sent to the application using nebula.gl
-   // updatedData is the immutably-updated data
-   // nebula.gl will subsequently call updateState with the updated data
-   props.onEdit({ updatedData, editType: 'ADD_POINT' });
- }
+    // props.onEdit is the edit callback sent to the application using nebula.gl
+    // updatedData is the immutably-updated data
+    // nebula.gl will subsequently call updateState with the updated data
+    props.onEdit({ updatedData, editType: 'ADD_POINT' });
+  }
 
- // No special handling for dragging
- handlePointerMove(event) {}
- handleStartDragging(event) {}
- handleStopDragging(event) {}
+  // No special handling for dragging
+  handlePointerMove(event) {}
+  handleStartDragging(event) {}
+  handleStopDragging(event) {}
 }
 ```

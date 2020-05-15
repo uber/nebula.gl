@@ -16,9 +16,9 @@ User can move existing points, add intermediate points along lines, and remove p
 
 `editContext` argument to the `onEdit` callback contains the following properties:
 
-* `positionIndexes` (Array): An array of numbers representing the indexes of the edited position within the feature's `coordinates` array
+- `positionIndexes` (Array): An array of numbers representing the indexes of the edited position within the feature's `coordinates` array
 
-* `position` (Array): An array containing the ground coordinates (i.e. [lng, lat]) of the edited position
+- `position` (Array): An array containing the ground coordinates (i.e. [lng, lat]) of the edited position
 
 ## [ExtrudeMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/extrude-mode.ts)
 
@@ -62,16 +62,16 @@ User can extend an existing `LineString` feature by clicking positions to add. A
 
 The following options can be provided in the `modeConfig` object:
 
-* `drawAtFront` (optional):  `<boolean>`
-  * If `true`, will extend from the "beginning" of the line, i.e. relative to the start of the coordinates array.
+- `drawAtFront` (optional): `<boolean>`
+  - If `true`, will extend from the "beginning" of the line, i.e. relative to the start of the coordinates array.
 
 ### Edit Context
 
 `editContext` argument to the `onEdit` callback contains the following properties:
 
-* `positionIndexes` (Array): An array of numbers representing the indexes of the added position within the feature's `coordinates` array
+- `positionIndexes` (Array): An array of numbers representing the indexes of the added position within the feature's `coordinates` array
 
-* `position` (Array): An array containing the ground coordinates (i.e. [lng, lat]) of the added position
+- `position` (Array): An array containing the ground coordinates (i.e. [lng, lat]) of the added position
 
 ## [DrawPolygonMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/draw-polygon-mode.js)
 
@@ -81,9 +81,9 @@ User can draw a new `Polygon` feature by clicking positions to add then closing 
 
 `editContext` argument to the `onEdit` callback contains the following properties:
 
-* `positionIndexes` (Array): An array of numbers representing the indexes of the added position within the feature's `coordinates` array
+- `positionIndexes` (Array): An array of numbers representing the indexes of the added position within the feature's `coordinates` array
 
-* `position` (Array): An array containing the ground coordinates (i.e. [lng, lat]) of the added position
+- `position` (Array): An array containing the ground coordinates (i.e. [lng, lat]) of the added position
 
 ## [Draw90DegreePolygonMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/draw-90degree-polygon-mode.ts)
 
@@ -97,8 +97,8 @@ User can draw a new `Polygon` feature by dragging (similar to the lasso tool com
 
 The following options can be provided in the `modeConfig` object:
 
-* `throttleMs` (optional):  `number`
-  * If provided, the dragging function will be throttled by the specified number of milliseconds.
+- `throttleMs` (optional): `number`
+  - If provided, the dragging function will be throttled by the specified number of milliseconds.
 
 ## [DrawRectangleMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/draw-rectangle-mode.ts)
 
@@ -108,8 +108,8 @@ User can draw a new rectangular `Polygon` feature by clicking two opposing corne
 
 The following options can be provided in the `modeConfig` object:
 
-* `dragToDraw` (optional):  `boolean`
-  * If `true`, user can click and drag instead of clicking twice. Note however, that the user will not be able to pan the map while drawing.
+- `dragToDraw` (optional): `boolean`
+  - If `true`, user can click and drag instead of clicking twice. Note however, that the user will not be able to pan the map while drawing.
 
 ## [DrawRectangleUsingThreePointsMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/draw-rectangle-using-three-points-mode.ts)
 
@@ -123,10 +123,10 @@ User can draw a new circular `Polygon` feature by clicking the center then along
 
 The following options can be provided in the `modeConfig` object:
 
-* `steps` (optional):  `x <number>`
-  * If steps: `x` means the circle will be drawn using `x` number of points.
-* `dragToDraw` (optional):  `boolean`
-  * If `true`, user can click and drag instead of clicking twice. Note however, that the user will not be able to pan the map while drawing.
+- `steps` (optional): `x <number>`
+  - If steps: `x` means the circle will be drawn using `x` number of points.
+- `dragToDraw` (optional): `boolean`
+  - If `true`, user can click and drag instead of clicking twice. Note however, that the user will not be able to pan the map while drawing.
 
 ## [DrawCircleByDiameterMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/draw-circle-by-diameter-mode.ts)
 
@@ -136,10 +136,10 @@ User can draw a new circular `Polygon` feature by clicking the two ends of its d
 
 The following options can be provided in the `modeConfig` object:
 
-* `steps` (optional):  `x <number>`
-  * If steps: `x` means the circle will be drawn using `x` number of points.
-* `dragToDraw` (optional):  `boolean`
-  * If `true`, user can click and drag instead of clicking twice. Note however, that the user will not be able to pan the map while drawing.
+- `steps` (optional): `x <number>`
+  - If steps: `x` means the circle will be drawn using `x` number of points.
+- `dragToDraw` (optional): `boolean`
+  - If `true`, user can click and drag instead of clicking twice. Note however, that the user will not be able to pan the map while drawing.
 
 ## [DrawEllipseByBoundingBoxMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/draw-ellipse-by-bounding-box-mode.ts)
 
@@ -149,8 +149,8 @@ User can draw a new ellipse shape `Polygon` feature by clicking two corners of b
 
 The following options can be provided in the `modeConfig` object:
 
-* `dragToDraw` (optional):  `boolean`
-  * If `true`, user can click and drag instead of clicking twice. Note however, that the user will not be able to pan the map while drawing.
+- `dragToDraw` (optional): `boolean`
+  - If `true`, user can click and drag instead of clicking twice. Note however, that the user will not be able to pan the map while drawing.
 
 ## [DrawEllipseUsingThreePointsMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/draw-ellipse-using-three-points-mode.ts)
 
@@ -160,9 +160,9 @@ User can draw a new ellipse shape `Polygon` feature by clicking center and two c
 
 User can split a polygon by drawing a new `LineString` feature on top of the polygon.
 
-* If the first and the last click is outside the polygon, it will split the polygon
+- If the first and the last click is outside the polygon, it will split the polygon
 
-* If the clicked position is inside the polygon, it will not split the polygon
+- If the clicked position is inside the polygon, it will not split the polygon
 
 ## [MeasureDistanceMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/measure-distance-mode.ts)
 
@@ -172,17 +172,19 @@ User can measure a distance between two points.
 
 The following options can be provided in the `modeConfig` object:
 
-* `turfOptions` (Object, optional)
-  * `options` object passed to turf's [distance](https://turfjs.org/docs/#distance) function
-  * Default: `undefined`
+- `turfOptions` (Object, optional)
 
-* `formatTooltip` (Function, optional)
-  * Function to format tooltip text (argument is the numeric distance)
-  * Default: `(distance) => parseFloat(distance).toFixed(2) + units`
+  - `options` object passed to turf's [distance](https://turfjs.org/docs/#distance) function
+  - Default: `undefined`
 
-* `measurementCallback` (Function, optional)
-  * Function to call as measurements are calculated
-  * Default: `undefined`
+- `formatTooltip` (Function, optional)
+
+  - Function to format tooltip text (argument is the numeric distance)
+  - Default: `(distance) => parseFloat(distance).toFixed(2) + units`
+
+- `measurementCallback` (Function, optional)
+  - Function to call as measurements are calculated
+  - Default: `undefined`
 
 ## [MeasureAreaMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/measure-area-mode.ts)
 
@@ -192,13 +194,14 @@ User can measure an area by drawing an arbitrary polygon.
 
 The following options can be provided in the `modeConfig` object:
 
-* `formatTooltip` (Function, optional)
-  * Function to format tooltip text (argument is the numeric area)
-  * Default: `(distance) => parseFloat(distance).toFixed(2) + units`
+- `formatTooltip` (Function, optional)
 
-* `measurementCallback` (Function, optional)
-  * Function to call as measurements are calculated
-  * Default: `undefined`
+  - Function to format tooltip text (argument is the numeric area)
+  - Default: `(distance) => parseFloat(distance).toFixed(2) + units`
+
+- `measurementCallback` (Function, optional)
+  - Function to call as measurements are calculated
+  - Default: `undefined`
 
 ## [MeasureAngleMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/measure-angle-mode.ts)
 
@@ -208,13 +211,14 @@ User can measure an angle by drawing two lines.
 
 The following options can be provided in the `modeConfig` object:
 
-* `formatTooltip` (Function, optional)
-  * Function to format tooltip text (argument is the numeric area)
-  * Default: `(distance) => parseFloat(angle).toFixed(2) + units`
+- `formatTooltip` (Function, optional)
 
-* `measurementCallback` (Function, optional)
-  * Function to call as measurements are calculated
-  * Default: `undefined`
+  - Function to format tooltip text (argument is the numeric area)
+  - Default: `(distance) => parseFloat(angle).toFixed(2) + units`
+
+- `measurementCallback` (Function, optional)
+  - Function to call as measurements are calculated
+  - Default: `undefined`
 
 ## [ElevationMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/elevation-mode.ts)
 
@@ -224,18 +228,20 @@ User can move a point up and down.
 
 The following options can be provided in the `modeConfig` object:
 
-* `minElevation` (Number, optional)
-  * The minimum elevation to allow
-  * Default: `0`
+- `minElevation` (Number, optional)
 
-* `maxElevation` (Number, optional)
-  * The maximum elevation to allow
-  * Default: `20000`
+  - The minimum elevation to allow
+  - Default: `0`
 
-* `calculateElevationChange` (Function, optional)
-  * A function to use to calculate the elevation change in response to mouse movement
-  * Default: `10 * <vertical movement in pixels>`
-  * Configure to use movement based on viewport:
+- `maxElevation` (Number, optional)
+
+  - The maximum elevation to allow
+  - Default: `20000`
+
+- `calculateElevationChange` (Function, optional)
+  - A function to use to calculate the elevation change in response to mouse movement
+  - Default: `10 * <vertical movement in pixels>`
+  - Configure to use movement based on viewport:
 
 ```javascript
 if (mode === 'elevation') {
@@ -248,12 +254,12 @@ if (mode === 'elevation') {
 
 For all polygon drawing modes, the following options can be provided in the `modeConfig` object:
 
-* `booleanOperation` (optional):  `null|'union'|'difference'|'intersection'`
-  * If non-null, requires a single `Polygon` or `MultiPolygon` selection
-  * If `null`, the drawn `Polygon` is added as a new feature regardless of selection
-  * If `union`, the drawn `Polygon` is unioned with the selected geometry
-  * If `difference`, the drawn `Polygon` is subtracted from the selected geometry
-  * If `intersection`, the drawn `Polygon` is intersected with the selected geometry
+- `booleanOperation` (optional): `null|'union'|'difference'|'intersection'`
+  - If non-null, requires a single `Polygon` or `MultiPolygon` selection
+  - If `null`, the drawn `Polygon` is added as a new feature regardless of selection
+  - If `union`, the drawn `Polygon` is unioned with the selected geometry
+  - If `difference`, the drawn `Polygon` is subtracted from the selected geometry
+  - If `intersection`, the drawn `Polygon` is intersected with the selected geometry
 
 ## Composite Mode
 
@@ -264,8 +270,8 @@ _Not all combinations are guaranteed to work._
 
 `new CompositeMode(modes, options = {})`
 
-* `modes`: `Array<EditMode>` Modes you want to combine. **Order is very important.**
-* `options` (optional): Options to be added later.
+- `modes`: `Array<EditMode>` Modes you want to combine. **Order is very important.**
+- `options` (optional): Options to be added later.
 
 ### Example
 

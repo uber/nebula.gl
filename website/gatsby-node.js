@@ -11,7 +11,7 @@ module.exports.onCreateWebpackConfig = function onCreateWebpackConfigOverride(op
     // plugins, // Object (map): A set of preconfigured webpack config plugins
     getConfig, // Function that returns the current webpack config
     // loaders, // Object (map): set of preconfigured webpack config loaders
-    actions
+    actions,
   } = opts;
 
   console.log(`App rewriting gatsby webpack config ${stage}`); // eslint-disable-line

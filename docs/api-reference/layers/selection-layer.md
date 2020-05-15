@@ -8,18 +8,17 @@ layers.push(
     id: 'selection',
     selectionType: this.state.selectionTool,
     onSelect: ({ pickingInfos }) => {
-      this.setState({ selectedFeatureIndexes: pickingInfos.map(pi => pi.index) });
+      this.setState({ selectedFeatureIndexes: pickingInfos.map((pi) => pi.index) });
     },
     layerIds: ['geojson'],
 
     getTentativeFillColor: () => [255, 0, 255, 100],
     getTentativeLineColor: () => [0, 0, 255, 255],
     getTentativeLineDashArray: () => [0, 0],
-    lineWidthMinPixels: 3
+    lineWidthMinPixels: 3,
   })
 );
 ```
-
 
 ## Properties
 
@@ -31,7 +30,7 @@ Also inherites **some** EditableGeoJsonLayer properties.
 
 #### `selectionType` (String, required)
 
-* Default: `null`
+- Default: `null`
 
 SELECTION_TYPE.RECTANGLE or SELECTION_TYPE.POLYGON
 
@@ -42,4 +41,3 @@ Called when selection is completed.
 #### `layerIds` (String[], required)
 
 Array of layer ids where we will search.
-

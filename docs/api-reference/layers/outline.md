@@ -4,10 +4,10 @@ The `outline` module is useful when you are rendering 2D elements in the same pl
 
 Implementation note: This module works by rendering your graphics into a sample "outline" shadow map, and then darkens the color on pixels in your graphics when they are drawn close to another object with a higher "logical z order", giving a shadow outline effect.
 
-
 ## Usage
 
 Your vertex shader might look like:
+
 ```
 attribute vec3 position;
 attribute vec4 lineColor;
@@ -30,6 +30,7 @@ void main() {
 ```
 
 And in the fragment shader:
+
 ```
 varying vec4 vColor;
 
@@ -49,5 +50,5 @@ void main() {
 
 `getUniforms({outlineRender, outlineShadowMap})`
 
-* `outlineRender` (Boolean, `false`) - set to `true` during the "outline map" rendering pass (i.e. specifies whether to render into or from the shadowmap).
-* `outlineShadowmap` (`Texture`, required) -
+- `outlineRender` (Boolean, `false`) - set to `true` during the "outline map" rendering pass (i.e. specifies whether to render into or from the shadowmap).
+- `outlineShadowmap` (`Texture`, required) -

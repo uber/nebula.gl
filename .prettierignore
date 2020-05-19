@@ -3,6 +3,9 @@ dist-esm
 dist-es6
 dist-types
 
+.cache
+website/public/
+
 modules/edit-modes/README.md
 modules/editor/README.md
 modules/layers/README.md

@@ -28,7 +28,7 @@
     "lint-yarn": "!(grep -q unpm.u yarn.lock) && echo 'Lockfile valid.' || (echo 'Please rebuild yarn file using public npmrc' && false)",
     "types-check": "lerna run types-check --stream",
     "prepublish": "yarn run build",
-    "publish-prod": "yarn run bootstrap && yarn run build && yarn run test && lerna publish --exact && ./scripts/changelog.sh",
+    "publish-prod": "yarn run bootstrap && yarn run build && yarn run test && lerna publish --force-publish --exact && ./scripts/changelog.sh",
     "test": "yarn run lint && yarn run build && yarn run types-check && yarn run jest",
     "test-r": "yarn run lint && yarn run build && yarn run test-node && (cd test/rendering-test && node node-rendering.js)",
     "test-fast": "yarn run test-node",

@@ -7,19 +7,14 @@ import {
   StopDraggingEvent,
   DraggingEvent,
   PointerMoveEvent,
-  DoubleClickEvent,
 } from '@nebula.gl/edit-modes';
 
-const EVENT_TYPES = ['anyclick', 'pointermove', 'panstart', 'panmove', 'panend', 'dblclick'];
+const EVENT_TYPES = ['anyclick', 'pointermove', 'panstart', 'panmove', 'panend'];
 
 export default class EditableLayer extends CompositeLayer<any> {
   static layerName = 'EditableLayer';
   // Overridable interaction event handlers
   onLayerClick(event: ClickEvent) {
-    // default implementation - do nothing
-  }
-
-  onDoubleClick(event: DoubleClickEvent) {
     // default implementation - do nothing
   }
 
@@ -35,7 +30,9 @@ export default class EditableLayer extends CompositeLayer<any> {
     // default implementation - do nothing
   }
 
-  onPointerMove(event: PointerMoveEvent) {} // default implementation - do nothing
+  onPointerMove(event: PointerMoveEvent) {
+    // default implementation - do nothing
+  }
   // TODO: implement onCancelDragging (e.g. drag off screen)
 
   initializeState() {
@@ -105,21 +102,6 @@ export default class EditableLayer extends CompositeLayer<any> {
     const picks = this.getPicks(screenCoords);
 
     this.onLayerClick({
-      mapCoords,
-      // @ts-ignore
-      screenCoords,
-      picks,
-      sourceEvent: srcEvent,
-    });
-  }
-
-  _ondblclick({ srcEvent }: any) {
-    const screenCoords = this.getScreenCoords(srcEvent);
-    const mapCoords = this.getMapCoords(screenCoords);
-    // @ts-ignore
-    const picks = this.getPicks(screenCoords);
-
-    this.onDoubleClick({
       mapCoords,
       // @ts-ignore
       screenCoords,

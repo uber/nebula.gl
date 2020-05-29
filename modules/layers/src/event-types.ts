@@ -15,11 +15,6 @@ export type ClickEvent = {
   sourceEvent: any;
 };
 
-export type DoubleClickEvent = {
-  groundCoords: Position;
-  sourceEvent: any;
-};
-
 export type StartDraggingEvent = {
   picks: DeckGLPick[];
   screenCoords: Position;

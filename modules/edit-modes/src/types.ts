@@ -36,12 +36,6 @@ export type BasePointerEvent = {
 // Represents a click event
 export type ClickEvent = BasePointerEvent;
 
-// Represents a double-click event
-export type DoubleClickEvent = {
-  mapCoords: Position;
-  sourceEvent: any;
-};
-
 // Represents an event that occurs when the pointer goes down and the cursor starts moving
 export type StartDraggingEvent = BasePointerEvent & {
   pointerDownPicks?: Pick[] | null | undefined;

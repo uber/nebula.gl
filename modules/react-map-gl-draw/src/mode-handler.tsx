@@ -54,7 +54,6 @@ export default class ModeHandler extends React.PureComponent<EditorProps, Editor
 
     this._events = {
       anyclick: (evt) => this._onEvent(this._onClick, evt, true),
-      dblclick: (evt) => this._onEvent(this._onDblclick, evt, false),
       click: (evt) => evt.stopImmediatePropagation(),
       pointermove: (evt) => this._onEvent(this._onPointerMove, evt, false),
       pointerdown: (evt) => this._onEvent(this._onPointerDown, evt, true),
@@ -306,12 +305,6 @@ export default class ModeHandler extends React.PureComponent<EditorProps, Editor
     }
 
     this._modeHandler.handleClick(event, modeProps);
-  };
-
-  _onDblclick = (event: BaseEvent) => {
-    if (isNumeric(this._getSelectedFeatureIndex())) {
-      event.sourceEvent.stopImmediatePropagation();
-    }
   };
 
   _onPointerMove = (event: BaseEvent) => {

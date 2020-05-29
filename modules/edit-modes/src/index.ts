@@ -49,7 +49,6 @@ export type {
   StartDraggingEvent,
   StopDraggingEvent,
   DraggingEvent,
-  DoubleClickEvent,
   ModeProps,
   GuideFeatureCollection,
   Viewport,

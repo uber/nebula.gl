@@ -28,6 +28,8 @@ export default class BaseMode implements EditMode<FeatureCollection, GuideFeatur
 
   handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>) {}
 
+  handleDblClick(event: ClickEvent, props: ModeProps<FeatureCollection>) {}
+
   handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>) {}
 
   handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollection>) {}

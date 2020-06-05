@@ -15,15 +15,15 @@ export default class Nebula {
     this.props = props;
     this.wmViewport = new WebMercatorViewport(this.props.viewport);
 
-    // TODO: Properly use pointer events: ['click', 'dblclick', 'pointermove', 'pointerup', 'pointerdown']
-    ['click', 'dblclick', 'mousemove', 'mouseup', 'mousedown'].forEach((name) =>
+    // TODO: Properly use pointer events: ['click', 'pointermove', 'pointerup', 'pointerdown']
+    ['click', 'mousemove', 'mouseup', 'mousedown'].forEach((name) =>
       document.addEventListener(name, this._onMouseEvent, true)
     );
   }
 
   detach() {
-    // TODO: Properly use pointer events: ['click', 'dblclick', 'pointermove', 'pointerup', 'pointerdown']
-    ['click', 'dblclick', 'mousemove', 'mouseup', 'mousedown'].forEach((name) =>
+    // TODO: Properly use pointer events: ['click', 'pointermove', 'pointerup', 'pointerdown']
+    ['click', 'mousemove', 'mouseup', 'mousedown'].forEach((name) =>
       document.removeEventListener(name, this._onMouseEvent, true)
     );
   }

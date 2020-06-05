@@ -1021,8 +1021,7 @@ export default class Example extends React.Component<
               id: 'basemap',
               controller: {
                 type: MapController,
-                // @ts-ignore
-                doubleClickZoom: this.state.mode === 'view' && !this.state.selectionTool,
+                doubleClickZoom: false,
               },
             }),
           ]}

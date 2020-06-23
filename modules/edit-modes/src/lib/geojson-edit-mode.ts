@@ -223,6 +223,18 @@ export class GeoJsonEditMode implements EditMode<FeatureCollection, GuideFeature
   handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollection>): void {}
   handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollection>): void {}
   handleDragging(event: DraggingEvent, props: ModeProps<FeatureCollection>): void {}
+
+  handleKeyUp(event: KeyboardEvent, props: ModeProps<FeatureCollection>): void {
+    if (event.key === 'Escape') {
+      this.resetClickSequence();
+      props.onEdit({
+        // Because the new drawing feature is dropped, so the data will keep as the same.
+        updatedData: props.data,
+        editType: 'cancelFeature',
+        editContext: {},
+      });
+    }
+  }
 }
 
 export function getIntermediatePosition(position1: Position, position2: Position): Position {

@@ -251,7 +251,6 @@ export default class Example extends React.Component<
 
   _onLayerClick = (info: any) => {
     console.log('onLayerClick', info); // eslint-disable-line
-
     if (this.state.mode !== ViewMode || this.state.selectionTool) {
       // don't change selection while editing
       return;
@@ -784,22 +783,26 @@ export default class Example extends React.Component<
 
   onEdit = ({ updatedData, editType, editContext }) => {
     let updatedSelectedFeatureIndexes = this.state.selectedFeatureIndexes;
+
     if (!['movePosition', 'extruding', 'rotating', 'translating', 'scaling'].includes(editType)) {
       // Don't log edits that happen as the pointer moves since they're really chatty
       const updatedDataInfo = featuresToInfoString(updatedData);
       // eslint-disable-next-line
       console.log('onEdit', editType, editContext, updatedDataInfo);
     }
+
     if (editType === 'removePosition' && !this.state.pointsRemovable) {
       // This is a simple example of custom handling of edits
       // reject the edit
       return;
     }
+
     if (editType === 'addFeature' && this.state.mode !== DuplicateMode) {
       const { featureIndexes } = editContext;
       // Add the new feature to the selection
       updatedSelectedFeatureIndexes = [...this.state.selectedFeatureIndexes, ...featureIndexes];
     }
+
     this.setState({
       testFeatures: updatedData,
       selectedFeatureIndexes: updatedSelectedFeatureIndexes,

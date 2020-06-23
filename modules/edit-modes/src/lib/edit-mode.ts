@@ -21,6 +21,8 @@ export interface EditMode<TData, TGuides> {
   handleStopDragging(event: StopDraggingEvent, props: ModeProps<TData>): void;
   // Called when the pointer went down and is moving, regardless of whether something was picked
   handleDragging(event: DraggingEvent, props: ModeProps<TData>): void;
+  // Called when the key is up;
+  handleKeyUp(event: KeyboardEvent, props: ModeProps<TData>): void;
   // Return features that can be used as a guide for editing the data
   getGuides(props: ModeProps<TData>): TGuides | undefined;
   // Return tooltips

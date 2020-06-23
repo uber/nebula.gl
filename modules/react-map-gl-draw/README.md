@@ -180,6 +180,7 @@ class App extends Component {
 
   render() {
     const { viewport } = this.state;
+    const mode = React.useState(new DrawPolygonMode());
     return (
       <MapGL
         {...viewport}
@@ -191,7 +192,7 @@ class App extends Component {
         <Editor
           // to make the lines/vertices easier to interact with
           clickRadius={12}
-          mode={new DrawPolygonMode()}
+          mode={mode}
         />
         {this._renderToolbar()}
       </MapGL>
@@ -205,10 +206,12 @@ class App extends Component {
 This is continuous example extends from the `Basic Example`. Check default [style](https://github.com/uber/nebula.gl/blob/master/modules/react-map-gl-draw/src/style.ts) used in editor for more details.
 
 ```js
+const mode = React.useState(new DrawPolygonMode());
+
 <Editor
   // to make the lines/vertices easier to interact with
   clickRadius={12}
-  mode={new DrawPolygonMode()}
+  mode={mode}
   featureStyle={({ feature, state }) => {
     if (state === RENDER_STATE.SELECTED) {
       return {
@@ -234,7 +237,7 @@ This is continuous example extends from the `Basic Example`. Check default [styl
     };
   }}
   editHandleShape={'circle'}
-/>
+/>;
 ```
 
 **Advanced example: multiple draw modes and editing drawn features**

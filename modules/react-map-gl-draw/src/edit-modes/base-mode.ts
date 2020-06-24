@@ -36,6 +36,8 @@ export default class BaseMode implements EditMode<FeatureCollection, GuideFeatur
 
   handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollection>) {}
 
+  handleKeyUp(event: KeyboardEvent, props: ModeProps<FeatureCollection>): void {}
+
   getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection | null | undefined {
     return null;
   }

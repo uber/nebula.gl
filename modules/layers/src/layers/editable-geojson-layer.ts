@@ -448,6 +448,10 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     this.getActiveMode().handleClick(event, this.getModeProps(this.props));
   }
 
+  onLayerKeyUp(event: KeyboardEvent) {
+    this.getActiveMode().handleKeyUp(event, this.getModeProps(this.props));
+  }
+
   onStartDragging(event: StartDraggingEvent) {
     this.getActiveMode().handleStartDragging(event, this.getModeProps(this.props));
   }

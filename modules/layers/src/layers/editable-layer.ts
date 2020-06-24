@@ -9,7 +9,7 @@ import {
   PointerMoveEvent,
 } from '@nebula.gl/edit-modes';
 
-const EVENT_TYPES = ['anyclick', 'pointermove', 'panstart', 'panmove', 'panend'];
+const EVENT_TYPES = ['anyclick', 'pointermove', 'panstart', 'panmove', 'panend', 'keyup'];
 
 export default class EditableLayer extends CompositeLayer<any> {
   static layerName = 'EditableLayer';
@@ -33,6 +33,10 @@ export default class EditableLayer extends CompositeLayer<any> {
   onPointerMove(event: PointerMoveEvent) {
     // default implementation - do nothing
   }
+
+  onLayerKeyUp(event: KeyboardEvent): void {
+    // default implementation - do nothing;
+  }
   // TODO: implement onCancelDragging (e.g. drag off screen)
 
   initializeState() {
@@ -50,14 +54,14 @@ export default class EditableLayer extends CompositeLayer<any> {
       },
     });
 
-    this._addPointerHandlers();
+    this._addEventHandlers();
   }
 
   finalizeState() {
-    this._removePointerHandlers();
+    this._removeEventHandlers();
   }
 
-  _addPointerHandlers() {
+  _addEventHandlers() {
     // @ts-ignore
     const { eventManager } = this.context.deck;
     const { eventHandler } = this.state._editableLayerState;
@@ -70,7 +74,7 @@ export default class EditableLayer extends CompositeLayer<any> {
     }
   }
 
-  _removePointerHandlers() {
+  _removeEventHandlers() {
     // @ts-ignore
     const { eventManager } = this.context.deck;
     const { eventHandler } = this.state._editableLayerState;
@@ -108,6 +112,10 @@ export default class EditableLayer extends CompositeLayer<any> {
       picks,
       sourceEvent: srcEvent,
     });
+  }
+
+  _onkeyup({ srcEvent }: { srcEvent: KeyboardEvent }) {
+    this.onLayerKeyUp(srcEvent);
   }
 
   _onpanstart(event: any) {

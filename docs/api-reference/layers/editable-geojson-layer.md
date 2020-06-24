@@ -114,6 +114,8 @@ The `onEdit` event is the core event provided by this layer and must be handled 
 
   - `addFeature`: A new feature was added. Its index is reflected in `featureIndexes`
 
+  - `cancelFeature`: The new drawing was cancelled.
+
   - `finishMovePosition`: A position finished moving (e.g. user finished dragging).
 
   - `scaling`: A feature is being scaled.
@@ -229,6 +231,10 @@ There are two types of "guides" rendered in the `guides` sub layer differentiate
 ##### Tentative Features
 
 While creating a new feature in any of the `draw` modes, portion of a feature which has not been "committed" yet can hold its own props. For example, in `drawLineString` mode, the tentative feature is the last line segment moving under the mouse. For polygons and ellipses, this would be the whole feature during drawing. A tentative feature can be identified by checking if `properties.guideType === 'tentative'`.
+
+##### HotKey Support
+
+Only `Escape` hotkey is currently supported to drop the Tentative feature entirely. However, if the feature is already committed, the `Escape` will do nothing. For example, when a point is drawn, it is finalized and no in drawing status.
 
 ##### Edit Handles
 

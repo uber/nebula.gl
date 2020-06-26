@@ -4,7 +4,7 @@
 
 ```jsx
 import * as React from 'react';
-import DeckGL from '@deck.gl/react';
+import DeckGL from '@deck.gl';
 import { EditableGeoJsonLayer } from '@nebula.gl/layers';
 import { StaticMap } from 'react-map-gl';
 ```

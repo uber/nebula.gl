@@ -1,7 +1,7 @@
 import React from 'react';
 import Renderer from 'react-test-renderer';
 
-import DeckGL from '@deck.gl/react';
+import DeckGL from '@deck.gl';
 import HtmlOverlay from '../src/html-overlay';
 import HtmlOverlayItem from '../src/html-overlay-item';
 

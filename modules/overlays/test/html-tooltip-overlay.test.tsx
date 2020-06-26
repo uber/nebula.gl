@@ -1,7 +1,7 @@
 import React from 'react';
 import Renderer from 'react-test-renderer';
 
-import DeckGL from '@deck.gl/react';
+import DeckGL from '@deck.gl';
 import HtmlTooltipOverlay from '../src/html-tooltip-overlay';
 
 it('test HtmlTooltipOverlay no items shown', () => {

@@ -5,7 +5,7 @@ This layer can be used to select deck.gl objects using mouse drawing.
 ```js
 import * as React from 'react';
 import ReactDOM from 'react-dom';
-import DeckGL from '@deck.gl/react';
+import DeckGL from '@deck.gl';
 import { ScatterplotLayer } from '@deck.gl/layers';
 import { SelectionLayer } from '@nebula.gl/layers';
 import { StaticMap } from 'react-map-gl';

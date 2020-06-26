@@ -1,6 +1,6 @@
 import window from 'global/window';
 import * as React from 'react';
-import DeckGL from '@deck.gl/react';
+import DeckGL from '@deck.gl';
 import { StaticMap } from 'react-map-gl';
 
 import { HtmlOverlay, HtmlClusterOverlay, HtmlOverlayItem } from '@nebula.gl/overlays';

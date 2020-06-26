@@ -1,7 +1,7 @@
 /* global document, window */
 import React from "react";
 import ReactDOM from "react-dom";
-import DeckGL from "@deck.gl/react";
+import DeckGL from "@deck.gl";
 import { HtmlOverlayItem, HtmlClusterOverlay } from "@nebula.gl/overlays";
 import { StaticMap } from "react-map-gl";
 

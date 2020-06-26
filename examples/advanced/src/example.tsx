@@ -2,7 +2,7 @@
 
 import window from 'global/window';
 import * as React from 'react';
-import DeckGL from '@deck.gl/react';
+import DeckGL from '@deck.gl';
 import { MapView, MapController } from '@deck.gl/core';
 import { StaticMap } from 'react-map-gl';
 import GL from '@luma.gl/constants';

@@ -3,7 +3,7 @@
 The Mesh Layer renders a number of arbitrary geometries. For example, a fleet of 3d cars each with a position and an orientation over the map.
 
 ```js
-import DeckGL from 'deck.gl';
+import DeckGL from '@deck.gl/react';
 import { MeshLayer } from '@deck.gl/experimental-layers';
 import { CubeGeometry } from 'luma.gl';
 

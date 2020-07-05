@@ -65,7 +65,10 @@ export default class Editor extends ModeHandler {
       draggingEditHandleIndex = pickedObject.index;
     }
 
-    if (editHandleIndex === draggingEditHandleIndex) {
+    if (
+      editHandleIndex === draggingEditHandleIndex ||
+      this.state.selectedEditHandleIndexes.includes(editHandleIndex)
+    ) {
       return RENDER_STATE.SELECTED;
     }
     // @ts-ignore

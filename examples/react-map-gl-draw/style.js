@@ -2,6 +2,7 @@ import { RENDER_STATE, SHAPE } from 'react-map-gl-draw';
 
 const STROKE_COLOR = 'rgb(38, 181, 242)';
 const FILL_COLOR = 'rgb(189,189,189)';
+const SELECTED_FILL_COLOR = 'rgb(255, 0, 0)';
 
 const RECT_STYLE = {
   stroke: STROKE_COLOR,
@@ -100,7 +101,7 @@ export function getEditHandleStyle({ feature, shape, index, state }) {
   let style = {};
   switch (state) {
     case RENDER_STATE.SELECTED:
-      style = { ...SELECTED_STYLE };
+      style = { ...SELECTED_STYLE, fill: SELECTED_FILL_COLOR };
       break;
 
     case RENDER_STATE.HOVERED:

@@ -65,21 +65,21 @@ yarn add @deck.gl/layers
 [EditableGeoJsonLayer](/docs/api-reference/layers/editable-geojson-layer.md) is implemented as a [deck.gl](https://deck.gl) layer. It provides the ability to view and edit multiple types of geometry formatted as [GeoJSON](https://tools.ietf.org/html/rfc7946) (an open standard format for geometry) including polygons, lines, and points.
 
 ```js
-import DeckGL from 'deck.gl';
+import DeckGL from '@deck.gl/react';
 import { EditableGeoJsonLayer, DrawPolygonMode } from 'nebula.gl';
 
 const myFeatureCollection = {
   type: 'FeatureCollection',
   features: [
     /* insert features here */
-  ]
+  ],
 };
 
 const selectedFeatureIndexes = [];
 
 class App extends React.Component {
   state = {
-    data: myFeatureCollection
+    data: myFeatureCollection,
   };
 
   render() {
@@ -93,7 +93,7 @@ class App extends React.Component {
         this.setState({
           data: updatedData,
         });
-      }
+      },
     });
 
     return <DeckGL {...this.props.viewport} layers={[layer]} />;

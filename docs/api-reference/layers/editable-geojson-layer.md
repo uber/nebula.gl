@@ -3,7 +3,7 @@
 The Editable GeoJSON layer accepts a [GeoJSON](http://geojson.org) `FeatureCollection` and renders the features as editable polygons, lines, and points.
 
 ```js
-import DeckGL from 'deck.gl';
+import DeckGL from '@deck.gl/react';
 import { EditableGeoJsonLayer, DrawPolygonMode } from 'nebula.gl';
 
 const myFeatureCollection = {

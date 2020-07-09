@@ -250,9 +250,9 @@ export default class EditableLayer extends CompositeLayer<any> {
   getScreenCoords(pointerEvent: any) {
     return [
       pointerEvent.clientX -
-        (this.context.gl.canvas as HTMLCanvasElement).getBoundingClientRect().x,
+        (this.context.gl.canvas as HTMLCanvasElement).getBoundingClientRect().left,
       pointerEvent.clientY -
-        (this.context.gl.canvas as HTMLCanvasElement).getBoundingClientRect().y,
+        (this.context.gl.canvas as HTMLCanvasElement).getBoundingClientRect().top,
     ];
   }
 

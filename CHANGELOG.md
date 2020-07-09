@@ -4,6 +4,13 @@ _All notable changes to this project will be documented in this file. This proje
 
 <!-- INSERT HERE -->
 
+## [0.19.1](https://github.com/uber/nebula.gl/compare/v0.19.0...v0.19.1) - 2020-07-09
+
+### Changes
+
+- Fix getScreenCoords for Edge Browser (#437)
+- Correct the document for DeckGL import (#430)
+
 ## [0.19.0](https://github.com/uber/nebula.gl/compare/v0.18.4...v0.19.0) - 2020-06-24
 
 ### Changes

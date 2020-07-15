@@ -18,6 +18,6 @@ export class DrawEllipseUsingThreePointsMode extends ThreeClickPolygonMode {
     const ySemiAxis = Math.max(distance(coord1, coord2), 0.001) / 2;
     const options = { angle: bearing(coord1, coord2) };
     // @ts-ignore
-    return ellipse(centerCoordinates, xSemiAxis, ySemiAxis, options);
+    return super.rewind(ellipse(centerCoordinates, xSemiAxis, ySemiAxis, options));
   }
 }

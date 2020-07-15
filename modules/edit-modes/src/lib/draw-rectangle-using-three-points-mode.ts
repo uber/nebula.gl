@@ -1,4 +1,3 @@
-import rewind from '@turf/rewind';
 import { generatePointsParallelToLinePoints } from '../utils';
 import { Position, Polygon, FeatureOf } from '../geojson-types';
 import { ThreeClickPolygonMode } from './three-click-polygon-mode';
@@ -12,12 +11,12 @@ export class DrawRectangleUsingThreePointsMode extends ThreeClickPolygonMode {
   ): FeatureOf<Polygon> | null | undefined {
     const [p3, p4] = generatePointsParallelToLinePoints(coord1, coord2, coord3);
 
-    return {
+    return super.rewind({
       type: 'Feature',
       properties: {
         shape: 'Rectangle',
       },
-      geometry: rewind({
+      geometry: {
         type: 'Polygon',
         coordinates: [
           [
@@ -31,7 +30,7 @@ export class DrawRectangleUsingThreePointsMode extends ThreeClickPolygonMode {
             coord1,
           ],
         ],
-      }),
-    };
+      },
+    });
   }
 }

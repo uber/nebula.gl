@@ -20,6 +20,6 @@ export class DrawCircleFromCenterMode extends TwoClickPolygonMode {
     geometry.properties = geometry.properties || {};
     geometry.properties.shape = 'Circle';
 
-    return geometry;
+    return super.rewind(geometry);
   }
 }

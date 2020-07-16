@@ -1,5 +1,4 @@
 import throttle from 'lodash.throttle';
-import rewind from '@turf/rewind';
 import {
   ClickEvent,
   StartDraggingEvent,
@@ -40,10 +39,10 @@ export class DrawPolygonByDraggingMode extends DrawPolygonMode {
 
     if (clickSequence.length > 2) {
       // Complete the polygon.
-      const polygonToAdd: Polygon = rewind({
+      const polygonToAdd: Polygon = {
         type: 'Polygon',
         coordinates: [[...clickSequence, clickSequence[0]]],
-      });
+      };
 
       this.resetClickSequence();
 

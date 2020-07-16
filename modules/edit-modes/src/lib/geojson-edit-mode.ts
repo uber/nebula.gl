@@ -1,6 +1,7 @@
 import turfUnion from '@turf/union';
 import turfDifference from '@turf/difference';
 import turfIntersect from '@turf/intersect';
+import rewind from '@turf/rewind';
 
 import {
   EditAction,
@@ -95,6 +96,18 @@ export class GeoJsonEditMode implements EditMode<FeatureCollection, GuideFeature
     return props.selectedIndexes.some((index) => pickedIndexes.has(index));
   }
 
+  rewindPolygon(feature: Feature): Feature {
+    const { geometry } = feature;
+
+    const isPolygonal = geometry.type === 'Polygon' || geometry.type === 'MultiPolygon';
+    if (isPolygonal) {
+      // @ts-ignore
+      return rewind(feature);
+    }
+
+    return feature;
+  }
+
   getAddFeatureAction(
     featureOrGeometry: Geometry | Feature,
     features: FeatureCollection
@@ -111,7 +124,10 @@ export class GeoJsonEditMode implements EditMode<FeatureCollection, GuideFeature
             geometry: featureOrGeometryAsAny,
           };
 
-    const updatedData = new ImmutableFeatureCollection(features).addFeature(feature).getObject();
+    const rewindFeature = this.rewindPolygon(feature);
+    const updatedData = new ImmutableFeatureCollection(features)
+      .addFeature(rewindFeature)
+      .getObject();
 
     return {
       updatedData,

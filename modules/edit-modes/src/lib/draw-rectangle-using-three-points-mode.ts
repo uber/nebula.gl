@@ -11,7 +11,7 @@ export class DrawRectangleUsingThreePointsMode extends ThreeClickPolygonMode {
   ): FeatureOf<Polygon> | null | undefined {
     const [p3, p4] = generatePointsParallelToLinePoints(coord1, coord2, coord3);
 
-    return super.rewind({
+    return {
       type: 'Feature',
       properties: {
         shape: 'Rectangle',
@@ -31,6 +31,6 @@ export class DrawRectangleUsingThreePointsMode extends ThreeClickPolygonMode {
           ],
         ],
       },
-    });
+    };
   }
 }

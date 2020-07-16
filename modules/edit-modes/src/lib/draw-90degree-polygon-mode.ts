@@ -3,7 +3,6 @@ import bearing from '@turf/bearing';
 import lineIntersect from '@turf/line-intersect';
 import turfDistance from '@turf/distance';
 import { point, lineString as turfLineString } from '@turf/helpers';
-import rewind from '@turf/rewind';
 import {
   generatePointsParallelToLinePoints,
   getPickedEditHandle,
@@ -113,10 +112,10 @@ export class Draw90DegreePolygonMode extends GeoJsonEditMode {
           clickedEditHandle.properties.positionIndexes[1] === polygon.coordinates[0].length - 3)
       ) {
         // They clicked the first or last point (or double-clicked), so complete the polygon
-        const polygonToAdd: Polygon = rewind({
+        const polygonToAdd: Polygon = {
           type: 'Polygon',
           coordinates: this.finalizedCoordinates([...polygon.coordinates[0]]),
-        });
+        };
 
         this.resetClickSequence();
 

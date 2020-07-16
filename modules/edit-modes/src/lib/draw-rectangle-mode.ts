@@ -9,6 +9,6 @@ export class DrawRectangleMode extends TwoClickPolygonMode {
     rectangle.properties.shape = 'Rectangle';
 
     // @ts-ignore
-    return super.rewind(rectangle);
+    return rectangle;
   }
 }

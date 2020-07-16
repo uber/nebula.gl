@@ -23,6 +23,6 @@ export class DrawCircleByDiameterMode extends TwoClickPolygonMode {
     geometry.properties = geometry.properties || {};
     geometry.properties.shape = 'Circle';
 
-    return super.rewind(geometry);
+    return geometry;
   }
 }

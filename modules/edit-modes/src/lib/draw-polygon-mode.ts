@@ -1,4 +1,3 @@
-import rewind from '@turf/rewind';
 import { ClickEvent, PointerMoveEvent, ModeProps, GuideFeatureCollection } from '../types';
 import { Polygon, FeatureCollection } from '../geojson-types';
 import { getPickedEditHandle } from '../utils';
@@ -86,10 +85,10 @@ export class DrawPolygonMode extends GeoJsonEditMode {
       // They clicked the first or last point (or double-clicked), so complete the polygon
 
       // Remove the hovered position
-      const polygonToAdd: Polygon = rewind({
+      const polygonToAdd: Polygon = {
         type: 'Polygon',
         coordinates: [[...clickSequence, clickSequence[0]]],
-      });
+      };
 
       this.resetClickSequence();
 

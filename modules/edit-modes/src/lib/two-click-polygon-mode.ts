@@ -1,4 +1,3 @@
-import rewind from '@turf/rewind';
 import {
   ClickEvent,
   StartDraggingEvent,
@@ -109,11 +108,6 @@ export class TwoClickPolygonMode extends GeoJsonEditMode {
     modeConfig: any
   ): FeatureOf<Polygon> | null | undefined {
     return null;
-  }
-
-  rewind(feature: FeatureOf<Polygon>): FeatureOf<Polygon> {
-    // @ts-ignore
-    return rewind(feature);
   }
 
   handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>) {

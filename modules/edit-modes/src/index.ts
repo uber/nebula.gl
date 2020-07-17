@@ -79,3 +79,6 @@ export type {
   FeatureCollection,
   AnyGeoJson,
 } from './geojson-types';
+
+// Utils
+export * as utils from './utils';

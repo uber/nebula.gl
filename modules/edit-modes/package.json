@@ -71,6 +71,7 @@
     "@turf/transform-scale": ">=4.0.0",
     "@turf/transform-translate": ">=4.0.0",
     "@turf/union": ">=4.0.0",
+    "@turf/rewind": ">=4.0.0",
     "geojson": "0.5.0",
     "lodash.throttle": "^4.1.1",
     "viewport-mercator-project": ">=6.0.0"

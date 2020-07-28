@@ -4,6 +4,12 @@ _All notable changes to this project will be documented in this file. This proje
 
 <!-- INSERT HERE -->
 
+## [0.19.2](https://github.com/uber/nebula.gl/compare/v0.19.1...v0.19.2) - 2020-07-28
+
+### Changes
+
+- Change the geometry of polygons and rectangles ring directions. Outer rings use CCW and inner rings follow CW. (#434)
+
 ## [0.19.1](https://github.com/uber/nebula.gl/compare/v0.19.0...v0.19.1) - 2020-07-09
 
 ### Changes

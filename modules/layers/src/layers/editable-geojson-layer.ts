@@ -32,6 +32,7 @@ import {
   DraggingEvent,
   PointerMoveEvent,
   GeoJsonEditModeType,
+  GeoJsonEditModeConstructor,
   FeatureCollection,
 } from '@nebula.gl/edit-modes';
 
@@ -98,7 +99,7 @@ function getEditHandleRadius(handle) {
 }
 
 const defaultProps = {
-  mode: DrawPolygonMode,
+  mode: DEFAULT_EDIT_MODE,
 
   // Edit and interaction events
   onEdit: () => {},
@@ -187,7 +188,7 @@ const modeNameMapping = {
 };
 
 type Props = {
-  mode: string | GeoJsonEditModeType;
+  mode: string | GeoJsonEditModeConstructor | GeoJsonEditModeType;
   onEdit: (arg0: EditAction<FeatureCollection>) => void;
   // TODO: type the rest
 
@@ -285,11 +286,17 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     // @ts-ignore
     super.updateState({ props, changeFlags });
 
-    let mode = this.state.mode;
     if (changeFlags.propsOrDataChanged) {
-      if (props.mode !== oldProps.mode) {
-        if (typeof props.mode === 'string') {
-          // Lookup the mode based on its name (for legacy purposes)
+      const modePropChanged = Object.keys(oldProps).length === 0 || props.mode !== oldProps.mode;
+      if (modePropChanged) {
+        let mode = this.state.mode;
+
+        if (typeof props.mode === 'function') {
+          // They passed a constructor/class, so new it up
+          const ModeConstructor = props.mode;
+          mode = new ModeConstructor();
+        } else if (typeof props.mode === 'string') {
+          // Lookup the mode based on its name (for backwards compatibility)
           mode = modeNameMapping[props.mode];
           // eslint-disable-next-line no-console
           console.warn(
@@ -299,15 +306,10 @@ export default class EditableGeoJsonLayer extends EditableLayer {
           mode = props.mode;
         }
 
-        if (typeof mode === 'function') {
-          const ModeConstructor = mode;
-          mode = new ModeConstructor();
-        }
-
         if (!mode) {
           console.warn(`No mode configured for ${String(props.mode)}`); // eslint-disable-line no-console,no-undef
           // Use default mode
-          mode = DEFAULT_EDIT_MODE;
+          mode = new DEFAULT_EDIT_MODE();
         }
 
         if (mode !== this.state.mode) {

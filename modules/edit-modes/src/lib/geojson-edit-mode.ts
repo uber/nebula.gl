@@ -32,6 +32,10 @@ const DEFAULT_TOOLTIPS: Tooltip[] = [];
 // Main interface for `EditMode`s that edit GeoJSON
 export type GeoJsonEditModeType = EditMode<FeatureCollection, FeatureCollection>;
 
+export interface GeoJsonEditModeConstructor {
+  new (): GeoJsonEditModeType;
+}
+
 export class GeoJsonEditMode implements EditMode<FeatureCollection, GuideFeatureCollection> {
   _clickSequence: Position[] = [];
 

@@ -1,5 +1,6 @@
 export type { EditMode } from './lib/edit-mode';
 export type { GeoJsonEditModeType } from './lib/geojson-edit-mode';
+export type { GeoJsonEditModeConstructor } from './lib/geojson-edit-mode';
 
 export { GeoJsonEditMode } from './lib/geojson-edit-mode';
 

@@ -289,8 +289,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     if (changeFlags.propsOrDataChanged) {
       const modePropChanged = Object.keys(oldProps).length === 0 || props.mode !== oldProps.mode;
       if (modePropChanged) {
-        let mode = this.state.mode;
-
+        let mode;
         if (typeof props.mode === 'function') {
           // They passed a constructor/class, so new it up
           const ModeConstructor = props.mode;

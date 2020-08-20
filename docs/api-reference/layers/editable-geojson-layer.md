@@ -282,3 +282,11 @@ new EditableGeoJsonLayer({
   },
 });
 ```
+
+### Using without React
+
+It is possible to use EditableGeoJsonLayer without react. Here's a working CodeSandbox:
+
+https://codesandbox.io/s/deckgl-and-nebulagl-editablegeojsonlayer-no-react-p9yrs
+
+Credit: [Graham Bates](https://github.com/mogmog) and [Andy Baker](https://github.com/andybak)

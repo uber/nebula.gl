@@ -1,6 +1,7 @@
 import turfBearing from '@turf/bearing';
 import turfDistance from '@turf/distance';
 import turfTransformTranslate from '@turf/transform-translate';
+import { featureReduce, coordReduce, coordEach } from '@turf/meta';
 import { point } from '@turf/helpers';
 import { FeatureCollection, Position } from '../geojson-types';
 import {
@@ -90,26 +91,62 @@ export class TranslateMode extends GeoJsonEditMode {
     if (!this._geometryBeforeTranslate) {
       return null;
     }
-    const p1 = point(startDragPoint);
-    const p2 = point(currentPoint);
 
-    const distanceMoved = turfDistance(p1, p2);
-    const direction = turfBearing(p1, p2);
+    const lngOffset = currentPoint[0] - startDragPoint[0];
+    const latOffset = currentPoint[1] - startDragPoint[1];
+    // const p1 = point(startDragPoint);
+    // const p2 = point(currentPoint);
 
-    const movedFeatures = turfTransformTranslate(
-      // @ts-ignore
-      this._geometryBeforeTranslate,
-      distanceMoved,
-      direction
-    );
+    // const distanceMoved = turfDistance(p1, p2);
+    // const direction = turfBearing(p1, p2);
 
-    let updatedData = new ImmutableFeatureCollection(props.data);
+    // const movedFeatures = turfTransformTranslate(
+    //   // @ts-ignore
+    //   this._geometryBeforeTranslate,
+    //   distanceMoved,
+    //   direction,
+    //   { mutate: false }
+    // );
 
-    const selectedIndexes = props.selectedIndexes;
-    for (let i = 0; i < selectedIndexes.length; i++) {
-      const selectedIndex = selectedIndexes[i];
-      const movedFeature = movedFeatures.features[i];
-      updatedData = updatedData.replaceGeometry(selectedIndex, movedFeature.geometry);
+    const updatedData = new ImmutableFeatureCollection(props.data);
+    try {
+      const selectedIndexes = props.selectedIndexes;
+      for (let i = 0; i < selectedIndexes.length; i++) {
+        const selectedIndex = selectedIndexes[i];
+        // const movedFeature = movedFeatures.features[i];
+        // updatedData = updatedData.replaceGeometry(selectedIndex, movedFeature.geometry);
+
+        const currentGeometry = this._geometryBeforeTranslate.features[i].geometry;
+
+        const movedCoordinates = [];
+        coordEach(
+          currentGeometry,
+          (coord, coordIndex, featureIndex, multiFeatureIndex, geometryIndex) => {
+            const movedCoordinate = [coord[0] + lngOffset, coord[1] + latOffset];
+
+            let coordArray;
+            if (typeof multiFeatureIndex === 'number' && multiFeatureIndex > -1) {
+              if (movedCoordinates.length <= multiFeatureIndex) {
+                movedCoordinates.push([]);
+              }
+              coordArray = movedCoordinates[multiFeatureIndex];
+            } else {
+              coordArray = movedCoordinates;
+            }
+            coordArray.push(movedCoordinate);
+          }
+        );
+        const movedGeometry = {
+          ...currentGeometry,
+          coordinates: movedCoordinates,
+        };
+
+        console.log(JSON.stringify(movedGeometry));
+
+        updatedData = updatedData.replaceGeometry(selectedIndex, movedGeometry);
+      }
+    } catch (crap) {
+      console.error(crap);
     }
 
     return {

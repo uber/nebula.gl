@@ -261,6 +261,13 @@ export default class EditingMode extends BaseMode {
   }
 
   _getCursorEditHandle = (event: PointerMoveEvent, feature: Feature) => {
+    // event can be null when the user has not interacted with the map whatsoever
+    // and therefore props.lastPointerMoveEvent is still null
+    // returning null here means we can e.g. set a featureIndex without requiring an event
+    if (!event) {
+      return null;
+    }
+
     // @ts-ignore
     const { isDragging, picks } = event;
     // if not pick segment

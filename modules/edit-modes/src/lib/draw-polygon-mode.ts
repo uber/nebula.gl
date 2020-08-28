@@ -109,8 +109,7 @@ export class DrawPolygonMode extends GeoJsonEditMode {
     }
   }
   handleKeyUp(event: KeyboardEvent, props: ModeProps<FeatureCollection>) {
-    const {key} = event;
-    if (key === 'Enter') {
+    if (event.key === 'Enter') {
       const clickSequence = this.getClickSequence();
       if (clickSequence.length > 2) {
         const polygonToAdd: Polygon = {

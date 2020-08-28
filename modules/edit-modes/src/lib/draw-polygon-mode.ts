@@ -108,7 +108,24 @@ export class DrawPolygonMode extends GeoJsonEditMode {
       });
     }
   }
+  handleKeyUp(event: KeyboardEvent, props: ModeProps<FeatureCollection>) {
+    const {key} = event;
+    if (key === 'Enter') {
+      const clickSequence = this.getClickSequence();
+      if (clickSequence.length > 2) {
+        const polygonToAdd: Polygon = {
+          type: 'Polygon',
+          coordinates: [[...clickSequence, clickSequence[0]]],
+        };
+        this.resetClickSequence();
 
+        const editAction = this.getAddFeatureOrBooleanPolygonAction(polygonToAdd, props);
+        if (editAction) {
+          props.onEdit(editAction);
+        }
+      }
+    }
+  }
   handlePointerMove({ mapCoords }: PointerMoveEvent, props: ModeProps<FeatureCollection>) {
     props.onUpdateCursor('cell');
   }

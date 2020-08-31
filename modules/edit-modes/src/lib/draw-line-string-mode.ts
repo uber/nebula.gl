@@ -47,7 +47,23 @@ export class DrawLineStringMode extends GeoJsonEditMode {
       });
     }
   }
-
+  handleKeyUp(event: KeyboardEvent, props: ModeProps<FeatureCollection>) {
+    const { key } = event;
+    if (key === 'Enter') {
+      const clickSequence = this.getClickSequence();
+      if (clickSequence.length > 1) {
+        const lineStringToAdd: LineString = {
+          type: 'LineString',
+          coordinates: [...clickSequence],
+        };
+        this.resetClickSequence();
+        const editAction = this.getAddFeatureAction(lineStringToAdd, props.data);
+        if (editAction) {
+          props.onEdit(editAction);
+        }
+      }
+    }
+  }
   getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
     const { lastPointerMoveEvent } = props;
     const clickSequence = this.getClickSequence();

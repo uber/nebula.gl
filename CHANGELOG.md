@@ -4,6 +4,12 @@ _All notable changes to this project will be documented in this file. This proje
 
 <!-- INSERT HERE -->
 
+## [0.20.0](https://github.com/uber/nebula.gl/compare/v0.19.3...v0.20.0) - 2020-08-31
+
+### Changes
+
+- Add finish drawing after pressing Enter (#463)
+
 ## [0.19.3](https://github.com/uber/nebula.gl/compare/v0.19.2...v0.19.3) - 2020-08-20
 
 ### Changes

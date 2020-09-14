@@ -43,7 +43,7 @@ export class TransformMode extends CompositeMode {
       }
     });
 
-    if (scaleMode instanceof ScaleMode && !scaleMode.isEditHandleSelcted()) {
+    if (scaleMode instanceof ScaleMode && !scaleMode.isEditHandleSelected()) {
       filteredModes.push(translateMode);
     }
 

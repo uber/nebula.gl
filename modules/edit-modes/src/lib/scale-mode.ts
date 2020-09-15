@@ -70,7 +70,7 @@ export class ScaleMode extends GeoJsonEditMode {
     return updatedData.getObject();
   };
 
-  isEditHandleSelcted = (): boolean => Boolean(this._selectedEditHandle);
+  isEditHandleSelected = (): boolean => Boolean(this._selectedEditHandle);
 
   getScaleAction = (
     startDragPoint: Position,

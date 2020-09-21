@@ -8,22 +8,20 @@ import {
   getPickedEditHandle,
   getEditHandlesForGeometry,
 } from '../utils';
-import { ClickEvent, PointerMoveEvent, ModeProps, GuideFeatureCollection } from '../types';
+import {
+  ClickEvent,
+  PointerMoveEvent,
+  ModeProps,
+  GuideFeatureCollection,
+  TentativeFeature,
+} from '../types';
 import { Polygon, LineString, Position, FeatureCollection } from '../geojson-types';
 import { GeoJsonEditMode } from './geojson-edit-mode';
 
 export class Draw90DegreePolygonMode extends GeoJsonEditMode {
-  getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
-    const guides: GuideFeatureCollection = {
-      type: 'FeatureCollection',
-      features: [],
-    };
-
+  createTentativeFeature(props: ModeProps<FeatureCollection>): TentativeFeature {
     const clickSequence = this.getClickSequence();
 
-    if (clickSequence.length === 0 || !props.lastPointerMoveEvent) {
-      return guides;
-    }
     const { mapCoords } = props.lastPointerMoveEvent;
 
     let p3;
@@ -63,6 +61,22 @@ export class Draw90DegreePolygonMode extends GeoJsonEditMode {
       };
     }
 
+    return tentativeFeature;
+  }
+
+  getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
+    const guides: GuideFeatureCollection = {
+      type: 'FeatureCollection',
+      features: [],
+    };
+
+    const clickSequence = this.getClickSequence();
+
+    if (clickSequence.length === 0 || !props.lastPointerMoveEvent) {
+      return guides;
+    }
+    const tentativeFeature = this.createTentativeFeature(props);
+
     guides.features.push(tentativeFeature);
 
     guides.features = guides.features.concat(
@@ -75,8 +89,9 @@ export class Draw90DegreePolygonMode extends GeoJsonEditMode {
     return guides;
   }
 
-  handlePointerMove({ mapCoords }: PointerMoveEvent, props: ModeProps<FeatureCollection>) {
+  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>) {
     props.onUpdateCursor('cell');
+    super.handlePointerMove(event, props);
   }
 
   handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>) {

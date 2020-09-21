@@ -55,6 +55,7 @@
     "@babel/preset-typescript": "7.9.0",
     "@babel/register": "7.9.0",
     "@deck.gl/core": "^8.0.6",
+    "@deck.gl/geo-layers": "^8.2.8",
     "@deck.gl/layers": "^8.0.6",
     "@deck.gl/mesh-layers": "^8.0.6",
     "@deck.gl/react": "^8.0.6",

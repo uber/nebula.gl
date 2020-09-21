@@ -1,4 +1,10 @@
-import { ClickEvent, PointerMoveEvent, ModeProps, GuideFeatureCollection } from '../types';
+import {
+  ClickEvent,
+  PointerMoveEvent,
+  ModeProps,
+  GuideFeatureCollection,
+  TentativeFeature,
+} from '../types';
 import { Position, Polygon, FeatureOf, FeatureCollection } from '../geojson-types';
 import { GeoJsonEditMode } from './geojson-edit-mode';
 
@@ -81,5 +87,25 @@ export class ThreeClickPolygonMode extends GeoJsonEditMode {
 
   handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>) {
     props.onUpdateCursor('cell');
+    super.handlePointerMove(event, props);
+  }
+
+  createTentativeFeature(props: ModeProps<FeatureCollection>): TentativeFeature {
+    const { lastPointerMoveEvent } = props;
+    const clickSequence = this.getClickSequence();
+
+    const lastCoords = lastPointerMoveEvent ? [lastPointerMoveEvent.mapCoords] : [];
+
+    let tentativeFeature;
+    if (clickSequence.length === 2) {
+      tentativeFeature = this.getThreeClickPolygon(
+        clickSequence[0],
+        clickSequence[1],
+        lastCoords[0],
+        props.modeConfig
+      );
+    }
+
+    return tentativeFeature;
   }
 }

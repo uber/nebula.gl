@@ -1,10 +1,10 @@
 /* eslint-disable prettier/prettier */
-import turfBuffer from '@turf/buffer';
 import bbox from '@turf/bbox';
 import turfCentroid from '@turf/centroid';
 import turfBearing from '@turf/bearing';
 import bboxPolygon from '@turf/bbox-polygon';
 import { point, featureCollection } from '@turf/helpers';
+import polygonToLine from '@turf/polygon-to-line';
 import { coordEach } from '@turf/meta';
 import turfDistance from '@turf/distance';
 import turfTransformScale from '@turf/transform-scale';
@@ -17,6 +17,7 @@ import {
   StopDraggingEvent,
   DraggingEvent,
   EditHandleFeature,
+  GuideFeatureCollection,
 } from '../types';
 import { getPickedEditHandle } from '../utils';
 import { GeoJsonEditMode } from './geojson-edit-mode';
@@ -78,10 +79,7 @@ export class ScaleMode extends GeoJsonEditMode {
     editType: string,
     props: ModeProps<FeatureCollection>
   ) => {
-    if (
-      !this._selectedEditHandle ||
-      this._isSinglePointGeometrySelected(this._geometryBeingScaled)
-    ) {
+    if (!this._selectedEditHandle) {
       return null;
     }
 
@@ -90,7 +88,7 @@ export class ScaleMode extends GeoJsonEditMode {
     // @ts-ignore
     const scaleFactor = getScaleFactor(origin, startDragPoint, currentPoint);
     // @ts-ignore
-    const scaledFeatures = turfTransformScale(this._geometryBeingScaled, scaleFactor, {
+    const scaledFeatures: FeatureCollection = turfTransformScale(this._geometryBeingScaled, scaleFactor, {
       origin,
     });
 
@@ -137,9 +135,11 @@ export class ScaleMode extends GeoJsonEditMode {
         selectedEditHandle && selectedEditHandle.properties.editHandleType === 'scale'
           ? selectedEditHandle
           : null;
-    }
 
-    this.updateCursor(props);
+      if (selectedEditHandle) {
+        this.updateCursor(props);
+      }
+    }
   }
 
   handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollection>) {
@@ -153,6 +153,8 @@ export class ScaleMode extends GeoJsonEditMode {
     if (!this._isScaling) {
       return;
     }
+
+    props.onUpdateCursor(this._cursor);
 
     const scaleAction = this.getScaleAction(
       event.pointerDownMapCoords,
@@ -180,6 +182,8 @@ export class ScaleMode extends GeoJsonEditMode {
         props.onEdit(scaleAction);
       }
 
+      props.onUpdateCursor(null);
+
       this._geometryBeingScaled = null;
       this._selectedEditHandle = null;
       this._cursor = null;
@@ -187,18 +191,16 @@ export class ScaleMode extends GeoJsonEditMode {
     }
   }
 
-  getGuides(props: ModeProps<FeatureCollection>) {
+  getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
     this._cornerGuidePoints = [];
     const selectedGeometry = this.getSelectedFeaturesAsFeatureCollection(props);
 
     // Add buffer to the enveloping box if a single Point feature is selected
-    const featureWithBuffer = this._isSinglePointGeometrySelected(selectedGeometry)
-      ? // eslint-disable-next-line
-        // @ts-ignore
-        turfBuffer(selectedGeometry, 1)
-      : selectedGeometry;
+    if (this._isSinglePointGeometrySelected(selectedGeometry)) {
+      return { type: 'FeatureCollection', features: [] };
+    }
 
-    const boundingBox = bboxPolygon(bbox(featureWithBuffer));
+    const boundingBox = bboxPolygon(bbox(selectedGeometry));
     boundingBox.properties.mode = 'scale';
     const cornerGuidePoints = [];
 
@@ -216,7 +218,7 @@ export class ScaleMode extends GeoJsonEditMode {
 
     this._cornerGuidePoints = cornerGuidePoints;
     // @ts-ignore
-    return featureCollection([boundingBox, ...this._cornerGuidePoints]);
+    return featureCollection([polygonToLine(boundingBox), ...this._cornerGuidePoints]);
   }
 }
 

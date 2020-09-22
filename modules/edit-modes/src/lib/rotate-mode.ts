@@ -1,5 +1,4 @@
 /* eslint-disable prettier/prettier */
-import turfBuffer from '@turf/buffer';
 import bbox from '@turf/bbox';
 import turfCentroid from '@turf/centroid';
 import turfBearing from '@turf/bearing';
@@ -9,6 +8,7 @@ import { coordEach } from '@turf/meta';
 import { getGeom } from '@turf/invariant';
 import { point, featureCollection, lineString } from '@turf/helpers';
 import turfTransformRotate from '@turf/transform-rotate';
+import polygonToLine from '@turf/polygon-to-line';
 import {
   PointerMoveEvent,
   StartDraggingEvent,
@@ -16,6 +16,7 @@ import {
   DraggingEvent,
   ModeProps,
   EditHandleFeature,
+  GuideFeatureCollection,
 } from '../types';
 import { getPickedEditHandle } from '../utils';
 import { FeatureCollection, Position } from '../geojson-types';
@@ -39,29 +40,26 @@ export class RotateMode extends GeoJsonEditMode {
 
   getIsRotating = () => this._isRotating;
 
-  getGuides(props: ModeProps<FeatureCollection>) {
+  getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
     const selectedGeometry =
       this._geometryBeingRotated || this.getSelectedFeaturesAsFeatureCollection(props);
 
-    if (this._isRotating) {
-      // Display rotate pivot
-      return featureCollection([turfCentroid(selectedGeometry)]);
+    if (this._isSinglePointGeometrySelected(selectedGeometry)) {
+      return { type: 'FeatureCollection', features: [] };
     }
 
-    // Add buffer to the enveloping box if a single Point feature is selected
-    const featureWithBuffer = this._isSinglePointGeometrySelected(selectedGeometry)
-      ? // eslint-disable-next-line
-        // @ts-ignore
-        turfBuffer(selectedGeometry, 1)
-      : selectedGeometry;
+    if (this._isRotating) {
+      // Display rotate pivot
+      return featureCollection([turfCentroid(selectedGeometry)]) as GuideFeatureCollection;
+    }
 
-    const boundingBox = bboxPolygon(bbox(featureWithBuffer));
+    const boundingBox = bboxPolygon(bbox(selectedGeometry));
 
     let previousCoord = null;
     let topEdgeMidpointCoords = null;
     let longestEdgeLength = 0;
 
-    coordEach(boundingBox, (coord, coordIndex) => {
+    coordEach(boundingBox, coord => {
       if (previousCoord) {
         // @ts-ignore
         const edgeMidpoint = getIntermediatePosition(coord, previousCoord);
@@ -89,7 +87,7 @@ export class RotateMode extends GeoJsonEditMode {
       editHandleType: 'rotate',
     });
     // @ts-ignore
-    return featureCollection([boundingBox, rotateHandle, lineFromEnvelopeToRotateHandle]);
+    return featureCollection([polygonToLine(boundingBox), rotateHandle, lineFromEnvelopeToRotateHandle]);
   }
 
   handleDragging(event: DraggingEvent, props: ModeProps<FeatureCollection>) {
@@ -171,7 +169,7 @@ export class RotateMode extends GeoJsonEditMode {
     const centroid = turfCentroid(this._geometryBeingRotated);
     const angle = getRotationAngle(centroid, startDragPoint, currentPoint);
     // @ts-ignore
-    const rotatedFeatures = turfTransformRotate(this._geometryBeingRotated, angle, {
+    const rotatedFeatures: FeatureCollection = turfTransformRotate(this._geometryBeingRotated, angle, {
       pivot: centroid,
     });
 

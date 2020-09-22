@@ -88,9 +88,12 @@ export class ScaleMode extends GeoJsonEditMode {
     // @ts-ignore
     const scaleFactor = getScaleFactor(origin, startDragPoint, currentPoint);
     // @ts-ignore
-    const scaledFeatures: FeatureCollection = turfTransformScale(this._geometryBeingScaled, scaleFactor, {
-      origin,
-    });
+    const scaledFeatures: FeatureCollection = turfTransformScale(
+      // @ts-ignore
+      this._geometryBeingScaled,
+      scaleFactor,
+      { origin }
+    );
 
     return {
       updatedData: this._getUpdatedData(props, scaledFeatures),

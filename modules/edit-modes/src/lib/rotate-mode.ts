@@ -59,7 +59,7 @@ export class RotateMode extends GeoJsonEditMode {
     let topEdgeMidpointCoords = null;
     let longestEdgeLength = 0;
 
-    coordEach(boundingBox, coord => {
+    coordEach(boundingBox, (coord) => {
       if (previousCoord) {
         // @ts-ignore
         const edgeMidpoint = getIntermediatePosition(coord, previousCoord);
@@ -87,7 +87,13 @@ export class RotateMode extends GeoJsonEditMode {
       editHandleType: 'rotate',
     });
     // @ts-ignore
-    return featureCollection([polygonToLine(boundingBox), rotateHandle, lineFromEnvelopeToRotateHandle]);
+    return featureCollection([
+      // @ts-ignore
+      polygonToLine(boundingBox),
+      // @ts-ignore
+      rotateHandle,
+      lineFromEnvelopeToRotateHandle,
+    ]);
   }
 
   handleDragging(event: DraggingEvent, props: ModeProps<FeatureCollection>) {
@@ -169,9 +175,14 @@ export class RotateMode extends GeoJsonEditMode {
     const centroid = turfCentroid(this._geometryBeingRotated);
     const angle = getRotationAngle(centroid, startDragPoint, currentPoint);
     // @ts-ignore
-    const rotatedFeatures: FeatureCollection = turfTransformRotate(this._geometryBeingRotated, angle, {
-      pivot: centroid,
-    });
+    const rotatedFeatures: FeatureCollection = turfTransformRotate(
+      // @ts-ignore
+      this._geometryBeingRotated,
+      angle,
+      {
+        pivot: centroid,
+      }
+    );
 
     let updatedData = new ImmutableFeatureCollection(props.data);
 

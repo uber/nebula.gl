@@ -4,6 +4,12 @@ _All notable changes to this project will be documented in this file. This proje
 
 <!-- INSERT HERE -->
 
+## [0.20.2](https://github.com/uber/nebula.gl/compare/v0.20.0...v0.20.2) - 2020-09-22
+
+### Changes
+
+* Remove polygon fill from bounding guide in rotate and scale edit modes and fix scale mode cursor (#480)
+
 ## [0.20.0](https://github.com/uber/nebula.gl/compare/v0.19.3...v0.20.0) - 2020-08-31
 
 ### Changes

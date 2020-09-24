@@ -53,33 +53,29 @@ function getCleanedFeatures(geojson: AnyGeoJson): Feature[] {
 }
 
 function getCleanedFeature(feature: Feature): Feature {
-  let geometry = feature.geometry;
+  const { id } = feature;
   // reduce null-checking
   const properties = feature.properties || {};
-  // @ts-ignore
+
+  let geometry = feature.geometry;
   if (geometry.type === 'GeometryCollection' && geometry.geometries.length === 1) {
     // There's only one geometry
-    // @ts-ignore
     geometry = geometry.geometries[0];
-    // @ts-ignore
   } else if (geometry.type === 'GeometryCollection' && geometry.geometries.length > 1) {
-    // @ts-ignore
     const types = new Set(geometry.geometries.map((g) => g.type));
     if (types.size === 1) {
       // See if it can be combined into a Multi* geometry
       const type = types.values().next().value;
       if (type === 'Polygon') {
-        // Combine all the polygons into a single MultiPolygon
+        // Combine all the Polygons into a single MultiPolygon
         geometry = {
           type: 'MultiPolygon',
-          // @ts-ignore
           coordinates: geometry.geometries.map((g) => g.coordinates),
         };
       } else if (type === 'LineString') {
-        // Combine all the polygons into a single MultiPolygon
+        // Combine all the LineStrings into a single MultiLineString
         geometry = {
           type: 'MultiLineString',
-          // @ts-ignore
           coordinates: geometry.geometries.map((g) => g.coordinates),
         };
       }
@@ -88,9 +84,10 @@ function getCleanedFeature(feature: Feature): Feature {
       throw Error('GeometryCollection geometry type not yet supported');
     }
   }
-  // @ts-ignore
+
   return {
     type: 'Feature',
+    id,
     geometry,
     properties,
   };

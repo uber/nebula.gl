@@ -1,6 +1,14 @@
 import * as React from 'react';
-import { ViewMode, DrawPointMode, DrawPolygonMode } from '@nebula.gl/edit-modes';
+import {
+  ViewMode,
+  DrawPointMode,
+  DrawPolygonMode,
+  DrawCircleFromCenterMode,
+  DrawRectangleMode,
+} from '@nebula.gl/edit-modes';
 import styled from 'styled-components';
+import { Icon } from './icon';
+
 import { ImportModal } from './import-modal';
 import { ExportModal } from './export-modal';
 
@@ -29,22 +37,39 @@ const Button = styled.button<{ active?: boolean }>`
   }
 `;
 
+const ConfigContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+`;
+
 export type Props = {
   mode: any;
+  modeConfig: any;
   geoJson: any;
   onSetMode: (mode: any) => unknown;
+  onSetModeConfig: (modeConfig: any) => unknown;
+  onSetGeoJson: (geojson: any) => unknown;
   onImport: (imported: any) => unknown;
 };
 
 const MODE_BUTTONS = [
-  // TODO: change these to icons
-  { mode: ViewMode, content: 'View' },
-  { mode: DrawPointMode, content: 'Draw Point' },
-  { mode: DrawPolygonMode, content: 'Draw Polygon' },
+  { mode: ViewMode, content: <Icon name="pointer" /> },
+  { mode: DrawPointMode, content: <Icon name="radio-circle-marked" /> },
+  { mode: DrawPolygonMode, content: <Icon name="shape-polygon" /> },
+  { mode: DrawRectangleMode, content: <Icon name="rectangle" /> },
+  { mode: DrawCircleFromCenterMode, content: <Icon name="circle" /> },
 ];
 
-export function Toolbox({ mode, geoJson, onSetMode, onImport }: Props) {
-  // Initialize to zero index on load as nothing is active.
+export function Toolbox({
+  mode,
+  modeConfig,
+  geoJson,
+  onSetMode,
+  onSetModeConfig,
+  onSetGeoJson,
+  onImport,
+}: Props) {
+  const [showConfig, setShowConfig] = React.useState(false);
   const [showImport, setShowImport] = React.useState(false);
   const [showExport, setShowExport] = React.useState(false);
 
@@ -62,9 +87,43 @@ export function Toolbox({ mode, geoJson, onSetMode, onImport }: Props) {
             {modeButton.content}
           </Button>
         ))}
-        <Button onClick={() => setShowImport(true)}>Import Geometry</Button>
-        <Button onClick={() => setShowExport(true)}>Export Geometry</Button>
+
+        {/* <box-icon name='current-location' ></box-icon> */}
+        <Button onClick={() => setShowExport(true)} title="Export">
+          <Icon name="export" />
+        </Button>
+        <Button onClick={() => setShowImport(true)} title="Import">
+          <Icon name="import" />
+        </Button>
+        <Button
+          onClick={() => onSetGeoJson({ type: 'FeatureCollection', features: [] })}
+          title="Clear"
+        >
+          <Icon name="trash" />
+        </Button>
+        <ConfigContainer>
+          {showConfig && (
+            <>
+              <Button
+                onClick={() => onSetModeConfig({ booleanOperation: 'union' })}
+                active={modeConfig && modeConfig.booleanOperation === 'union'}
+              >
+                <Icon name="plus" />
+              </Button>
+              <Button
+                onClick={() => onSetModeConfig({ booleanOperation: 'difference' })}
+                active={modeConfig && modeConfig.booleanOperation === 'difference'}
+              >
+                <Icon name="minus" />
+              </Button>
+            </>
+          )}
+          <Button onClick={() => setShowConfig(!showConfig)}>
+            <Icon name="cog" />
+          </Button>
+        </ConfigContainer>
       </Tools>
+
       {showImport && (
         <ImportModal
           onImport={(imported) => {
@@ -74,6 +133,7 @@ export function Toolbox({ mode, geoJson, onSetMode, onImport }: Props) {
           onClose={() => setShowImport(false)}
         />
       )}
+
       {showExport && <ExportModal geoJson={geoJson} onClose={() => setShowExport(false)} />}
     </>
   );

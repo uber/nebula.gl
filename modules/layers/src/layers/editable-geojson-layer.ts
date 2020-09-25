@@ -38,10 +38,12 @@ import {
 
 import EditableLayer from './editable-layer';
 
-const DEFAULT_LINE_COLOR = [0x0, 0x0, 0x0, 0xff];
+const DEFAULT_LINE_COLOR = [0x0, 0x0, 0x0, 0x99];
 const DEFAULT_FILL_COLOR = [0x0, 0x0, 0x0, 0x90];
-const DEFAULT_SELECTED_LINE_COLOR = [0x90, 0x90, 0x90, 0xff];
-const DEFAULT_SELECTED_FILL_COLOR = [0x90, 0x90, 0x90, 0x90];
+const DEFAULT_SELECTED_LINE_COLOR = [0x0, 0x0, 0x0, 0xff];
+const DEFAULT_SELECTED_FILL_COLOR = [0x0, 0x0, 0x90, 0x90];
+const DEFAULT_TENTATIVE_LINE_COLOR = [0x90, 0x90, 0x90, 0xff];
+const DEFAULT_TENTATIVE_FILL_COLOR = [0x90, 0x90, 0x90, 0x90];
 const DEFAULT_EDITING_EXISTING_POINT_COLOR = [0xc0, 0x0, 0x0, 0xff];
 const DEFAULT_EDITING_INTERMEDIATE_POINT_COLOR = [0x0, 0x0, 0x0, 0x80];
 const DEFAULT_EDITING_SNAP_POINT_COLOR = [0x7c, 0x00, 0xc0, 0xff];
@@ -128,8 +130,8 @@ const defaultProps = {
   getLineWidth: (f) => (f && f.properties && f.properties.lineWidth) || 3,
 
   // Tentative feature rendering
-  getTentativeLineColor: (f) => DEFAULT_SELECTED_LINE_COLOR,
-  getTentativeFillColor: (f) => DEFAULT_SELECTED_FILL_COLOR,
+  getTentativeLineColor: (f) => DEFAULT_TENTATIVE_LINE_COLOR,
+  getTentativeFillColor: (f) => DEFAULT_TENTATIVE_FILL_COLOR,
   getTentativeLineWidth: (f) => (f && f.properties && f.properties.lineWidth) || 3,
 
   editHandleType: 'point',

@@ -48,8 +48,6 @@ export function Toolbox({ mode, geoJson, onSetMode, onImport }: Props) {
   const [showImport, setShowImport] = React.useState(false);
   const [showExport, setShowExport] = React.useState(false);
 
-  const [whatToExport, setWhatToExport] = React.useState(geoJson);
-
   return (
     <>
       <Tools>
@@ -65,22 +63,7 @@ export function Toolbox({ mode, geoJson, onSetMode, onImport }: Props) {
           </Button>
         ))}
         <Button onClick={() => setShowImport(true)}>Import Geometry</Button>
-        <Button
-          onClick={() => {
-            setWhatToExport(geoJson);
-            setShowExport(true);
-          }}
-        >
-          Export Geometry
-        </Button>
-        <Button
-          onClick={() => {
-            setWhatToExport(geoJson.features[0]);
-            setShowExport(true);
-          }}
-        >
-          Export First Geometry
-        </Button>
+        <Button onClick={() => setShowExport(true)}>Export Geometry</Button>
       </Tools>
       {showImport && (
         <ImportModal
@@ -91,7 +74,7 @@ export function Toolbox({ mode, geoJson, onSetMode, onImport }: Props) {
           onClose={() => setShowImport(false)}
         />
       )}
-      {showExport && <ExportModal geoJson={whatToExport} onClose={() => setShowExport(false)} />}
+      {showExport && <ExportModal geoJson={geoJson} onClose={() => setShowExport(false)} />}
     </>
   );
 }

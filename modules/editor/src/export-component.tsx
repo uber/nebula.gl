@@ -49,9 +49,20 @@ export type ExportComponentProps = {
 
 export function ExportComponent(props: ExportComponentProps) {
   const geojson = props.features;
-  const [exportParams, setExportParams] = React.useState(toGeoJson(geojson));
   const [format, setFormat] = React.useState('geoJson');
 
+  const exportParams = React.useMemo(() => {
+    switch (format) {
+      case 'geoJson':
+        return toGeoJson(geojson);
+      case 'kml':
+        return toKml(geojson);
+      case 'wkt':
+        return toWkt(geojson);
+      default:
+        throw Error(`Unsupported format ${format}`);
+    }
+  }, [geojson, format]);
   const tooMuch = exportParams.data.length > 500000;
 
   function copyData() {
@@ -73,10 +84,7 @@ export function ExportComponent(props: ExportComponentProps) {
           style={{
             backgroundColor: format === 'geoJson' ? 'rgb(0, 105, 217)' : 'rgb(90, 98, 94)',
           }}
-          onClick={() => {
-            setExportParams(toGeoJson(geojson));
-            setFormat('geoJson');
-          }}
+          onClick={() => setFormat('geoJson')}
         >
           GeoJson
         </Button>
@@ -84,10 +92,7 @@ export function ExportComponent(props: ExportComponentProps) {
           style={{
             backgroundColor: format === 'kml' ? 'rgb(0, 105, 217)' : 'rgb(90, 98, 94)',
           }}
-          onClick={() => {
-            setExportParams(toKml(geojson));
-            setFormat('kml');
-          }}
+          onClick={() => setFormat('kml')}
         >
           KML
         </Button>
@@ -95,10 +100,7 @@ export function ExportComponent(props: ExportComponentProps) {
           style={{
             backgroundColor: format === 'wkt' ? 'rgb(0, 105, 217)' : 'rgb(90, 98, 94)',
           }}
-          onClick={() => {
-            setExportParams(toWkt(geojson));
-            setFormat('wkt');
-          }}
+          onClick={() => setFormat('wkt')}
         >
           WKT
         </Button>

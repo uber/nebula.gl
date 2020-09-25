@@ -5,8 +5,10 @@ import { EditorModal } from './editor-modal';
 import { ExportComponent } from './export-component';
 
 export type ExportModalProps = {
-  features: AnyGeoJson;
+  geoJson: AnyGeoJson;
   onClose: () => unknown;
+  filename?: string;
+  additionalInputs?: React.ReactNode;
 };
 
 export function ExportModal(props: ExportModalProps) {
@@ -14,7 +16,7 @@ export function ExportModal(props: ExportModalProps) {
     <EditorModal
       onClose={props.onClose}
       title={'Export'}
-      content={<ExportComponent features={props.features} onClose={props.onClose} />}
+      content={<ExportComponent {...props} />}
     />
   );
 }

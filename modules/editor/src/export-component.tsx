@@ -42,38 +42,53 @@ const FooterRow = styled.div`
 `;
 
 export type ExportComponentProps = {
-  features: any;
+  geoJson: any;
   onClose: () => unknown;
+  filename?: string;
   additionalInputs?: React.ReactNode;
 };
 
-export function ExportComponent(props: ExportComponentProps) {
-  const geojson = props.features;
+export function ExportComponent({
+  geoJson,
+  onClose,
+  filename,
+  additionalInputs,
+}: ExportComponentProps) {
   const [format, setFormat] = React.useState('geoJson');
+
+  let filenameValue = filename;
+  if (!filenameValue) {
+    if (geoJson.type === 'FeatureCollection') {
+      filenameValue = 'features';
+    } else {
+      // single feature
+      filenameValue = geoJson.properties.name || geoJson.id || 'feature';
+    }
+  }
 
   const exportParams = React.useMemo(() => {
     switch (format) {
       case 'geoJson':
-        return toGeoJson(geojson);
+        return toGeoJson(geoJson, filenameValue);
       case 'kml':
-        return toKml(geojson);
+        return toKml(geoJson, filenameValue);
       case 'wkt':
-        return toWkt(geojson);
+        return toWkt(geoJson, filenameValue);
       default:
         throw Error(`Unsupported format ${format}`);
     }
-  }, [geojson, format]);
+  }, [geoJson, format, filenameValue]);
   const tooMuch = exportParams.data.length > 500000;
 
   function copyData() {
-    copy(exportParams.data).then(() => props.onClose());
+    copy(exportParams.data).then(() => onClose());
     // TODO Design and add in a notifications banner for errors in the modal.
     //   .catch(err => {alert(`Error copying to clipboard: `, err)})
   }
 
   function downloadData() {
     downloadjs(new Blob([exportParams.data]), exportParams.filename, exportParams.mimetype);
-    props.onClose();
+    onClose();
   }
 
   return (
@@ -86,7 +101,7 @@ export function ExportComponent(props: ExportComponentProps) {
           }}
           onClick={() => setFormat('geoJson')}
         >
-          GeoJson
+          GeoJSON
         </Button>
         <Button
           style={{
@@ -116,7 +131,7 @@ export function ExportComponent(props: ExportComponentProps) {
           }
         />
       </ExportArea>
-      {props.additionalInputs || null}
+      {additionalInputs || null}
       <FooterRow>
         <Button style={{ backgroundColor: 'rgb(0, 105, 217)' }} onClick={downloadData}>
           Download
@@ -124,7 +139,7 @@ export function ExportComponent(props: ExportComponentProps) {
         <Button style={{ backgroundColor: 'rgb(0, 105, 217)' }} onClick={copyData}>
           Copy
         </Button>
-        <Button onClick={props.onClose}>Cancel</Button>
+        <Button onClick={onClose}>Cancel</Button>
       </FooterRow>
     </>
   );

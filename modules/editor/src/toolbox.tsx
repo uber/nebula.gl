@@ -12,9 +12,9 @@ const Tools = styled.div`
   right: 10px;
 `;
 
-const Button = styled.span`
+const Button = styled.button<{ active?: boolean }>`
   color: #fff;
-  background-color: rgb(90, 98, 94);
+  background: ${({ active }) => (active ? 'rgb(0, 105, 217)' : 'rgb(90, 98, 94)')};
   font-size: 1em;
   font-weight: 400;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
@@ -24,13 +24,16 @@ const Button = styled.span`
   border-radius: 0.25em;
   margin: 0.05em;
   padding: 0.1em 0.2em;
+  :hover {
+    background: rgb(128, 137, 133);
+  }
 `;
 
 export type Props = {
   mode: any;
-  features: any;
-  onSetMode: (arg0: any) => unknown;
-  onImport: (arg0: any) => unknown;
+  geoJson: any;
+  onSetMode: (mode: any) => unknown;
+  onImport: (imported: any) => unknown;
 };
 
 const MODE_BUTTONS = [
@@ -40,10 +43,12 @@ const MODE_BUTTONS = [
   { mode: DrawPolygonMode, content: 'Draw Polygon' },
 ];
 
-export function Toolbox(props: Props) {
+export function Toolbox({ mode, geoJson, onSetMode, onImport }: Props) {
   // Initialize to zero index on load as nothing is active.
   const [showImport, setShowImport] = React.useState(false);
   const [showExport, setShowExport] = React.useState(false);
+
+  const [whatToExport, setWhatToExport] = React.useState(geoJson);
 
   return (
     <>
@@ -51,30 +56,42 @@ export function Toolbox(props: Props) {
         {MODE_BUTTONS.map((modeButton, i) => (
           <Button
             key={i}
-            style={{
-              backgroundColor:
-                props.mode === modeButton.mode ? 'rgb(0, 105, 217)' : 'rgb(90, 98, 94)',
-            }}
+            active={mode === modeButton.mode}
             onClick={() => {
-              props.onSetMode(() => modeButton.mode);
+              onSetMode(() => modeButton.mode);
             }}
           >
             {modeButton.content}
           </Button>
         ))}
-        <Button onClick={() => setShowImport(true)}> Import Geometry </Button>
-        <Button onClick={() => setShowExport(true)}> Export Geometry </Button>
+        <Button onClick={() => setShowImport(true)}>Import Geometry</Button>
+        <Button
+          onClick={() => {
+            setWhatToExport(geoJson);
+            setShowExport(true);
+          }}
+        >
+          Export Geometry
+        </Button>
+        <Button
+          onClick={() => {
+            setWhatToExport(geoJson.features[0]);
+            setShowExport(true);
+          }}
+        >
+          Export First Geometry
+        </Button>
       </Tools>
       {showImport && (
         <ImportModal
-          onImport={(geojson) => {
-            props.onImport(geojson);
+          onImport={(imported) => {
+            onImport(imported);
             setShowImport(false);
           }}
           onClose={() => setShowImport(false)}
         />
       )}
-      {showExport && <ExportModal features={props.features} onClose={() => setShowExport(false)} />}
+      {showExport && <ExportModal geoJson={whatToExport} onClose={() => setShowExport(false)} />}
     </>
   );
 }

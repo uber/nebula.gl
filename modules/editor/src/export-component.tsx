@@ -44,6 +44,7 @@ const FooterRow = styled.div`
 export type ExportComponentProps = {
   features: any;
   onClose: () => unknown;
+  additionalInputs?: React.ReactNode;
 };
 
 export function ExportComponent(props: ExportComponentProps) {
@@ -113,6 +114,7 @@ export function ExportComponent(props: ExportComponentProps) {
           }
         />
       </ExportArea>
+      {props.additionalInputs || null}
       <FooterRow>
         <Button style={{ backgroundColor: 'rgb(0, 105, 217)' }} onClick={downloadData}>
           Download

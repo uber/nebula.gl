@@ -2,6 +2,7 @@ import * as React from 'react';
 import {
   ViewMode,
   DrawPointMode,
+  DrawLineStringMode,
   DrawPolygonMode,
   DrawCircleFromCenterMode,
   DrawRectangleMode,
@@ -20,9 +21,10 @@ const Tools = styled.div`
   right: 10px;
 `;
 
-const Button = styled.button<{ active?: boolean }>`
+const Button = styled.button<{ active?: boolean; kind?: string }>`
   color: #fff;
-  background: ${({ active }) => (active ? 'rgb(0, 105, 217)' : 'rgb(90, 98, 94)')};
+  background: ${({ kind, active }) =>
+    kind === 'danger' ? 'rgb(180, 40, 40)' : active ? 'rgb(0, 105, 217)' : 'rgb(90, 98, 94)'};
   font-size: 1em;
   font-weight: 400;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
@@ -37,9 +39,16 @@ const Button = styled.button<{ active?: boolean }>`
   }
 `;
 
-const ConfigContainer = styled.div`
+const SubToolsContainer = styled.div`
+  position: relative;
+`;
+
+const SubTools = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: row-reverse;
+  position: absolute;
+  top: 0;
+  right: 0;
 `;
 
 export type Props = {
@@ -52,13 +61,79 @@ export type Props = {
   onImport: (imported: any) => unknown;
 };
 
-const MODE_BUTTONS = [
-  { mode: ViewMode, content: <Icon name="pointer" /> },
-  { mode: DrawPointMode, content: <Icon name="radio-circle-marked" /> },
-  { mode: DrawPolygonMode, content: <Icon name="shape-polygon" /> },
-  { mode: DrawRectangleMode, content: <Icon name="rectangle" /> },
-  { mode: DrawCircleFromCenterMode, content: <Icon name="circle" /> },
+const MODE_GROUPS = [
+  {
+    modes: [{ mode: ViewMode, content: <Icon name="pointer" /> }],
+  },
+  {
+    modes: [{ mode: DrawPointMode, content: <Icon name="map-pin" /> }],
+  },
+  {
+    modes: [
+      {
+        mode: DrawLineStringMode,
+        content: <Icon name="stats" />,
+      },
+    ],
+  },
+  {
+    modes: [
+      { mode: DrawPolygonMode, content: <Icon name="shape-polygon" /> },
+      { mode: DrawRectangleMode, content: <Icon name="rectangle" /> },
+      { mode: DrawCircleFromCenterMode, content: <Icon name="circle" /> },
+    ],
+  },
 ];
+
+function ModeButton({ buttonConfig, mode, onClick }: any) {
+  return (
+    <Button active={buttonConfig.mode === mode} onClick={onClick}>
+      {buttonConfig.content}
+    </Button>
+  );
+}
+function ModeGroupButtons({ modeGroup, mode, onSetMode }: any) {
+  const [expanded, setExpanded] = React.useState(false);
+
+  const { modes } = modeGroup;
+
+  let subTools = null;
+
+  if (expanded) {
+    subTools = (
+      <SubTools>
+        {modes.map((buttonConfig, i) => (
+          <ModeButton
+            key={i}
+            buttonConfig={buttonConfig}
+            mode={mode}
+            onClick={() => {
+              onSetMode(() => buttonConfig.mode);
+              setExpanded(false);
+            }}
+          />
+        ))}
+      </SubTools>
+    );
+  }
+
+  // Get the button config if it is active otherwise, choose the first
+  const buttonConfig = modes.find((m) => m.mode === mode) || modes[0];
+
+  return (
+    <SubToolsContainer>
+      {subTools}
+      <ModeButton
+        buttonConfig={buttonConfig}
+        mode={mode}
+        onClick={() => {
+          onSetMode(() => buttonConfig.mode);
+          setExpanded(true);
+        }}
+      />
+    </SubToolsContainer>
+  );
+}
 
 export function Toolbox({
   mode,
@@ -72,20 +147,13 @@ export function Toolbox({
   const [showConfig, setShowConfig] = React.useState(false);
   const [showImport, setShowImport] = React.useState(false);
   const [showExport, setShowExport] = React.useState(false);
+  const [showClearConfirmation, setShowClearConfirmation] = React.useState(false);
 
   return (
     <>
       <Tools>
-        {MODE_BUTTONS.map((modeButton, i) => (
-          <Button
-            key={i}
-            active={mode === modeButton.mode}
-            onClick={() => {
-              onSetMode(() => modeButton.mode);
-            }}
-          >
-            {modeButton.content}
-          </Button>
+        {MODE_GROUPS.map((modeGroup, i) => (
+          <ModeGroupButtons key={i} modeGroup={modeGroup} mode={mode} onSetMode={onSetMode} />
         ))}
 
         {/* <box-icon name='current-location' ></box-icon> */}
@@ -95,20 +163,12 @@ export function Toolbox({
         <Button onClick={() => setShowImport(true)} title="Import">
           <Icon name="import" />
         </Button>
-        <Button
-          onClick={() => onSetGeoJson({ type: 'FeatureCollection', features: [] })}
-          title="Clear"
-        >
-          <Icon name="trash" />
-        </Button>
-        <ConfigContainer>
+
+        <SubToolsContainer>
           {showConfig && (
-            <>
-              <Button
-                onClick={() => onSetModeConfig({ booleanOperation: 'union' })}
-                active={modeConfig && modeConfig.booleanOperation === 'union'}
-              >
-                <Icon name="plus" />
+            <SubTools>
+              <Button onClick={() => setShowConfig(false)}>
+                <Icon name="chevron-right" />
               </Button>
               <Button
                 onClick={() => onSetModeConfig({ booleanOperation: 'difference' })}
@@ -116,12 +176,44 @@ export function Toolbox({
               >
                 <Icon name="minus" />
               </Button>
-            </>
+              <Button
+                onClick={() => onSetModeConfig({ booleanOperation: 'union' })}
+                active={modeConfig && modeConfig.booleanOperation === 'union'}
+              >
+                <Icon name="plus" />
+              </Button>
+              {/* <Button onClick={() => setShowConfig(false)}>
+                <Icon name="x" />
+              </Button> */}
+            </SubTools>
           )}
-          <Button onClick={() => setShowConfig(!showConfig)}>
+          <Button onClick={() => setShowConfig(true)}>
             <Icon name="cog" />
           </Button>
-        </ConfigContainer>
+        </SubToolsContainer>
+
+        <SubToolsContainer>
+          {showClearConfirmation && (
+            <SubTools>
+              <Button
+                onClick={() => {
+                  onSetGeoJson({ type: 'FeatureCollection', features: [] });
+                  setShowClearConfirmation(false);
+                }}
+                kind="danger"
+                title="Clear all features"
+              >
+                Clear all features <Icon name="trash" />
+              </Button>
+              <Button onClick={() => setShowClearConfirmation(false)}>Cancel</Button>
+            </SubTools>
+          )}
+          <Button onClick={() => setShowClearConfirmation(true)} title="Clear">
+            <Icon name="trash" />
+          </Button>
+        </SubToolsContainer>
+
+        {/* zoom in and out */}
       </Tools>
 
       {showImport && (

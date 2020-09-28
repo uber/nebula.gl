@@ -6,6 +6,9 @@ import {
   DrawPolygonMode,
   DrawCircleFromCenterMode,
   DrawRectangleMode,
+  MeasureDistanceMode,
+  MeasureAngleMode,
+  MeasureAreaMode,
 } from '@nebula.gl/edit-modes';
 import styled from 'styled-components';
 import { Icon } from './icon';
@@ -81,6 +84,13 @@ const MODE_GROUPS = [
       { mode: DrawPolygonMode, content: <Icon name="shape-polygon" /> },
       { mode: DrawRectangleMode, content: <Icon name="rectangle" /> },
       { mode: DrawCircleFromCenterMode, content: <Icon name="circle" /> },
+    ],
+  },
+  {
+    modes: [
+      { mode: MeasureDistanceMode, content: <Icon name="ruler" /> },
+      { mode: MeasureAngleMode, content: <Icon name="shape-triangle" /> },
+      { mode: MeasureAreaMode, content: <Icon name="shape-square" /> },
     ],
   },
 ];
@@ -174,13 +184,19 @@ export function Toolbox({
                 onClick={() => onSetModeConfig({ booleanOperation: 'difference' })}
                 active={modeConfig && modeConfig.booleanOperation === 'difference'}
               >
-                <Icon name="minus" />
+                <Icon name="minus-front" />
               </Button>
               <Button
                 onClick={() => onSetModeConfig({ booleanOperation: 'union' })}
                 active={modeConfig && modeConfig.booleanOperation === 'union'}
               >
-                <Icon name="plus" />
+                <Icon name="unite" />
+              </Button>
+              <Button
+                onClick={() => onSetModeConfig({ booleanOperation: 'intersection' })}
+                active={modeConfig && modeConfig.booleanOperation === 'intersection'}
+              >
+                <Icon name="intersect" />
               </Button>
               {/* <Button onClick={() => setShowConfig(false)}>
                 <Icon name="x" />

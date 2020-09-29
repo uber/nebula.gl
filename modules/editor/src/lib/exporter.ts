@@ -3,9 +3,7 @@
 import tokml from '@maphubs/tokml';
 import { stringify as stringifyWkt } from 'wellknown';
 // @ts-ignore
-import { Feature, AnyGeoJson, Geometry, PolygonalGeometry } from '@nebula.gl/edit-modes';
-
-export const UNNAMED = '__unnamed_feature__';
+import { AnyGeoJson, Geometry, PolygonalGeometry } from '@nebula.gl/edit-modes';
 
 export type ExportParameters = {
   data: string;
@@ -13,52 +11,43 @@ export type ExportParameters = {
   mimetype: string;
 };
 
-export function toGeoJson(geojson: AnyGeoJson): ExportParameters {
-  const filename = `${getFilename(geojson)}.geojson`;
-  const prepped = prepareGeoJsonForExport(geojson);
-
+export function toGeoJson(geoJson: AnyGeoJson, filename: string): ExportParameters {
   return {
-    data: JSON.stringify(prepped, null, 2),
-    filename,
+    data: JSON.stringify(geoJson, null, 2),
+    filename: `${filename}.geojson`,
     mimetype: 'application/json',
   };
 }
 
-export function toKml(geojson: AnyGeoJson): ExportParameters {
-  const filename = `${getFilename(geojson)}.kml`;
-  const prepped = prepareGeoJsonForExport(geojson);
-
+export function toKml(geoJson: AnyGeoJson, filename: string): ExportParameters {
   // For some reason, google maps doesn't surface id unless it is in the properties
   // So, put it also in properties
-  if (prepped.type === 'FeatureCollection') {
-    prepped.features.forEach((f) => {
+  if (geoJson.type === 'FeatureCollection') {
+    geoJson.features.forEach((f) => {
       f.properties = f.properties || {};
     });
   }
 
-  const kmlString = tokml(prepped);
+  const kmlString = tokml(geoJson);
 
-  // kmlString = addIdToKml(prepped, kmlString);
+  // kmlString = addIdToKml(geoJson, kmlString);
 
   return {
     data: kmlString,
-    filename,
+    filename: `${filename}.kml`,
     mimetype: 'application/xml',
   };
 }
 
-export function toWkt(geojson: AnyGeoJson): ExportParameters {
-  const filename = `${getFilename(geojson)}.wkt`;
-  const prepped = prepareGeoJsonForExport(geojson);
-
+export function toWkt(geoJson: AnyGeoJson, filename: string): ExportParameters {
   let wkt = '';
-  if (prepped.type === 'Feature') {
+  if (geoJson.type === 'Feature') {
     // @ts-ignore
-    wkt = stringifyWkt(prepped);
+    wkt = stringifyWkt(geoJson);
   } else {
     // feature collection
     wkt = '';
-    for (const feature of prepped.features) {
+    for (const feature of geoJson.features) {
       // @ts-ignore
       wkt += `${stringifyWkt(feature)}\n`;
     }
@@ -69,26 +58,23 @@ export function toWkt(geojson: AnyGeoJson): ExportParameters {
 
   return {
     data: wkt,
-    filename,
+    filename: `${filename}.wkt`,
     mimetype: 'text/plain',
   };
 }
 
-export function toStats(geojson: AnyGeoJson): ExportParameters {
-  const filename = `${getFilename(geojson)}.txt`;
-  const prepped = prepareGeoJsonForExport(geojson);
-
+export function toStats(geoJson: AnyGeoJson, filename: string): ExportParameters {
   let pointCount = 0;
   let ringCount = 0;
   let polygonCount = 0;
   let featureCount = 0;
 
-  if (prepped.type === 'Feature') {
-    const polygonStats = getPolygonalStats(prepped.geometry);
+  if (geoJson.type === 'Feature') {
+    const polygonStats = getPolygonalStats(geoJson.geometry);
     ({ pointCount, ringCount, polygonCount } = polygonStats);
     featureCount = 1;
   } else {
-    for (const feature of prepped.features) {
+    for (const feature of geoJson.features) {
       const polygonStats = getPolygonalStats(feature.geometry);
       pointCount += polygonStats.pointCount;
       ringCount += polygonStats.ringCount;
@@ -104,7 +90,7 @@ Points: ${pointCount}`;
 
   return {
     data: stats,
-    filename,
+    filename: `${filename}.txt`,
     mimetype: 'text/plain',
   };
 }
@@ -141,39 +127,4 @@ function getPolygonalStats(geometry: Geometry) {
     ringCount,
     polygonCount,
   };
-}
-
-function getFilename(geojson) {
-  let filename = 'geojsonFeatures';
-  if (geojson.type === 'Feature') {
-    filename = geojson.properties.name || UNNAMED;
-  }
-  return filename;
-}
-
-function prepareGeoJsonForExport(geojson: AnyGeoJson): AnyGeoJson {
-  let forExport;
-  if (geojson.type === 'FeatureCollection') {
-    forExport = {
-      ...geojson,
-      features: geojson.features.map(prepareFeatureForExport),
-    };
-  } else {
-    forExport = prepareFeatureForExport(geojson);
-  }
-
-  return forExport;
-}
-
-function prepareFeatureForExport(feature: Feature): Feature {
-  const prepped = {
-    ...feature,
-    properties: {
-      ...feature.properties,
-      name: feature.properties.name || UNNAMED,
-      description: feature.properties.description || '',
-    },
-  };
-
-  return prepped;
 }

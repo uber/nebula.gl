@@ -53,9 +53,11 @@ function getCleanedFeatures(geojson: AnyGeoJson): Feature[] {
 }
 
 function getCleanedFeature(feature: Feature): Feature {
-  let geometry = feature.geometry;
+  const { id } = feature;
   // reduce null-checking
   const properties = feature.properties || {};
+
+  let geometry = feature.geometry;
   // @ts-ignore
   if (geometry.type === 'GeometryCollection' && geometry.geometries.length === 1) {
     // There's only one geometry
@@ -69,14 +71,14 @@ function getCleanedFeature(feature: Feature): Feature {
       // See if it can be combined into a Multi* geometry
       const type = types.values().next().value;
       if (type === 'Polygon') {
-        // Combine all the polygons into a single MultiPolygon
+        // Combine all the Polygons into a single MultiPolygon
         geometry = {
           type: 'MultiPolygon',
           // @ts-ignore
           coordinates: geometry.geometries.map((g) => g.coordinates),
         };
       } else if (type === 'LineString') {
-        // Combine all the polygons into a single MultiPolygon
+        // Combine all the LineStrings into a single MultiLineString
         geometry = {
           type: 'MultiLineString',
           // @ts-ignore
@@ -88,9 +90,11 @@ function getCleanedFeature(feature: Feature): Feature {
       throw Error('GeometryCollection geometry type not yet supported');
     }
   }
+
   // @ts-ignore
   return {
     type: 'Feature',
+    id,
     geometry,
     properties,
   };

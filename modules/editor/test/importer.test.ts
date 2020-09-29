@@ -4,7 +4,7 @@
 import sinon from 'sinon';
 import { Feature, FeatureCollection } from '@nebula.gl/edit-modes';
 import { parseImport } from '../src/lib/importer';
-import { toKml, UNNAMED } from '../src/lib/exporter';
+import { toKml } from '../src/lib/exporter';
 
 import {
   createRandomFeature,
@@ -14,16 +14,16 @@ import {
   createRandomMultiLineString,
 } from './utils/test-features';
 
-let unsavedFeature: Feature;
+let feature: Feature;
 let featureCollection: FeatureCollection;
 
 beforeEach(() => {
-  unsavedFeature = createRandomFeature();
+  feature = createRandomFeature();
 
   featureCollection = {
     type: 'FeatureCollection',
     properties: {},
-    features: [unsavedFeature],
+    features: [feature],
   };
 });
 
@@ -31,13 +31,13 @@ describe('parseImport()', () => {
   describe('GeoJSON Feature string', () => {
     let importData: any;
     beforeEach(async () => {
-      importData = await parseImport(JSON.stringify(unsavedFeature));
+      importData = await parseImport(JSON.stringify(feature));
     });
 
     test('parses feature', () => {
       expect(importData.valid).toEqual(true);
       expect(importData.type).toEqual('GeoJSON');
-      expect(importData.features[0].properties.name).toEqual(unsavedFeature.properties.name);
+      expect(importData.features[0].properties.name).toEqual(feature.properties.name);
     });
   });
 
@@ -58,27 +58,17 @@ describe('parseImport()', () => {
         featureCollection.features.map((f) => f.geometry)
       );
     });
-
-    test('removes protected properties', () => {
-      for (const feature of importData.features) {
-        expect(feature.properties.entity_type).toBeUndefined();
-      }
-    });
   });
 
   describe('KML string', () => {
     let importData: any;
     beforeEach(async () => {
-      importData = await parseImport(toKml(featureCollection).data);
+      importData = await parseImport(toKml(featureCollection, 'filename').data);
     });
 
     test('parses features', () => {
       expect(importData.valid).toEqual(true);
       expect(importData.type).toEqual('KML');
-
-      expect(importData.features.map((f) => f.properties.name)).toEqual(
-        featureCollection.features.map((f) => f.properties.name || UNNAMED)
-      );
 
       expect(importData.features.map((f) => f.geometry)).toEqual(
         featureCollection.features.map((f) => f.geometry)
@@ -116,7 +106,7 @@ describe('parseImport()', () => {
   describe('GeoJSON file', () => {
     let importData: any;
     beforeEach(async () => {
-      const file = new File([JSON.stringify(unsavedFeature)], 'my.geojson', {
+      const file = new File([JSON.stringify(feature)], 'my.geojson', {
         type: 'text/plain;charset=utf-8;',
       });
       importData = await parseImport(file);
@@ -125,7 +115,7 @@ describe('parseImport()', () => {
     test('parses feature', () => {
       expect(importData.valid).toEqual(true);
       expect(importData.type).toEqual('GeoJSON');
-      expect(importData.features[0].properties.name).toEqual(unsavedFeature.properties.name);
+      expect(importData.features[0].properties.name).toEqual(feature.properties.name);
     });
   });
 

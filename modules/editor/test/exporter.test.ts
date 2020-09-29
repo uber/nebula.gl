@@ -1,63 +1,45 @@
 /* eslint-env jest */
 
 import { Feature, FeatureCollection } from '@nebula.gl/edit-modes';
-import { toGeoJson, toKml, toWkt, toStats, UNNAMED } from '../src/lib/exporter';
+import { toGeoJson, toKml, toWkt, toStats } from '../src/lib/exporter';
 import { createRandomFeature } from './utils/test-features';
 
-let unsavedNamedFeature: Feature;
-let unsavedUnnamedFeature: Feature;
+let feature: Feature;
 let featureCollection: FeatureCollection;
 
 beforeEach(() => {
-  unsavedNamedFeature = createRandomFeature();
-  unsavedNamedFeature.properties.name = 'hamster';
-  unsavedNamedFeature.properties.description = 'i am a hamster geofence';
+  feature = createRandomFeature();
+  feature.properties.name = 'My Feature';
 
-  unsavedUnnamedFeature = createRandomFeature();
-  delete unsavedUnnamedFeature.properties.name;
+  const feature2 = createRandomFeature();
+  feature2.properties.name = 'My Other Feature';
 
   featureCollection = {
     type: 'FeatureCollection',
     properties: {},
-    features: [unsavedNamedFeature, unsavedUnnamedFeature],
+    features: [feature, feature2],
   };
 });
 
 describe('toGeoJson()', () => {
-  test('when unsaved, named Feature', () => {
-    const expectedFilename = `${unsavedNamedFeature.properties.name}.geojson`;
+  test('feature', () => {
+    const expectedFilename = `myfile.geojson`;
     const expectedMimeType = 'application/json';
 
-    const actual = toGeoJson(unsavedNamedFeature);
+    const actual = toGeoJson(feature, 'myfile');
     const actualParsed = JSON.parse(actual.data);
 
     expect(actual.filename).toEqual(expectedFilename);
     expect(actual.mimetype).toEqual(expectedMimeType);
 
-    expect(actualParsed.properties.name).toEqual(unsavedNamedFeature.properties.name);
-    expect(actualParsed.properties.description).toEqual(unsavedNamedFeature.properties.description);
+    expect(actualParsed.properties.name).toEqual(feature.properties.name);
   });
 
-  test('when unsaved, unnamed Feature', () => {
-    const expectedFilename = `${UNNAMED}.geojson`;
-    const expectedMimeType = 'application/json';
-
-    const actual = toGeoJson(unsavedUnnamedFeature);
-    const actualParsed = JSON.parse(actual.data);
-
-    expect(actual.filename).toEqual(expectedFilename);
-    expect(actual.mimetype).toEqual(expectedMimeType);
-
-    expect(actualParsed.properties.name).toEqual(UNNAMED);
-    expect(actualParsed.properties.description).toEqual('');
-    expect(actualParsed.id).toBeUndefined();
-  });
-
-  test('when feature collection', () => {
+  test('feature collection', () => {
     const expectedFilename = `geojsonFeatures.geojson`;
     const expectedMimeType = 'application/json';
 
-    const actual = toGeoJson(featureCollection);
+    const actual = toGeoJson(featureCollection, 'geojsonFeatures');
     const actualParsed: FeatureCollection = JSON.parse(actual.data);
 
     expect(actual.filename).toEqual(expectedFilename);
@@ -66,132 +48,117 @@ describe('toGeoJson()', () => {
     expect(actualParsed.features[0].properties.name).toEqual(
       featureCollection.features[0].properties.name
     );
-
-    expect(actualParsed.features[1].properties.name).toEqual(UNNAMED);
   });
 });
 
 describe('toKml()', () => {
-  test('when unsaved, named Feature', () => {
-    const expectedFilename = `${unsavedNamedFeature.properties.name}.kml`;
+  test('feature', () => {
+    const expectedFilename = `myfile.kml`;
     const expectedMimeType = 'application/xml';
 
-    const actual = toKml(unsavedNamedFeature);
+    const actual = toKml(feature, 'myfile');
 
     expect(actual.filename).toEqual(expectedFilename);
     expect(actual.mimetype).toEqual(expectedMimeType);
 
-    expect(actual.data).toContain(`<name>${unsavedNamedFeature.properties.name}</name>`);
-
-    expect(actual.data).toContain(
-      `<description>${unsavedNamedFeature.properties.description}</description>`
-    );
-  });
-
-  test('when unsaved, unnamed Feature', () => {
-    const expectedFilename = `${UNNAMED}.kml`;
-    const expectedMimeType = 'application/xml';
-
-    const actual = toKml(unsavedUnnamedFeature);
-
-    expect(actual.filename).toEqual(expectedFilename);
-    expect(actual.mimetype).toEqual(expectedMimeType);
-
-    expect(actual.data).toContain(`<name>${UNNAMED}</name>`);
+    expect(actual.data).toContain(`<name>${feature.properties.name}</name>`);
   });
 });
 
 describe('toWkt()', () => {
-  test('when feature', () => {
+  test('feature', () => {
     const expectedFilename = `llamallama.wkt`;
     const expectedMimeType = 'text/plain';
     const expectedData = 'POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))';
 
-    const actual = toWkt({
-      type: 'Feature',
-      properties: { name: 'llamallama' },
-      id: 'abc',
-      geometry: {
-        type: 'Polygon',
-        coordinates: [
-          [
-            [30, 10],
-            [40, 40],
-            [20, 40],
-            [10, 20],
-            [30, 10],
+    const actual = toWkt(
+      {
+        type: 'Feature',
+        geometry: {
+          type: 'Polygon',
+          coordinates: [
+            [
+              [30, 10],
+              [40, 40],
+              [20, 40],
+              [10, 20],
+              [30, 10],
+            ],
           ],
-        ],
+        },
       },
-    });
+      'llamallama'
+    );
 
     expect(actual.filename).toEqual(expectedFilename);
     expect(actual.mimetype).toEqual(expectedMimeType);
     expect(actual.data).toEqual(expectedData);
   });
 
-  test('when feature collection', () => {
+  test('feature collection', () => {
     const expectedFilename = `geojsonFeatures.wkt`;
     const expectedMimeType = 'text/plain';
     const expectedData =
       'POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))\nPOLYGON ((3 1, 4 4, 2 4, 1 2, 3 1))';
 
-    const actual = toWkt({
-      type: 'FeatureCollection',
-      properties: {},
-      features: [
-        {
-          type: 'Feature',
-          properties: { name: 'llamallama1' },
-          id: 'abc',
-          geometry: {
-            type: 'Polygon',
-            coordinates: [
-              [
-                [30, 10],
-                [40, 40],
-                [20, 40],
-                [10, 20],
-                [30, 10],
+    const actual = toWkt(
+      {
+        type: 'FeatureCollection',
+        properties: {},
+        features: [
+          {
+            type: 'Feature',
+            geometry: {
+              type: 'Polygon',
+              coordinates: [
+                [
+                  [30, 10],
+                  [40, 40],
+                  [20, 40],
+                  [10, 20],
+                  [30, 10],
+                ],
               ],
-            ],
+            },
           },
-        },
-        {
-          type: 'Feature',
-          properties: { name: 'llamallama2' },
-          id: 'def',
-          geometry: {
-            type: 'Polygon',
-            coordinates: [
-              [
-                [3, 1],
-                [4, 4],
-                [2, 4],
-                [1, 2],
-                [3, 1],
+          {
+            type: 'Feature',
+            geometry: {
+              type: 'Polygon',
+              coordinates: [
+                [
+                  [3, 1],
+                  [4, 4],
+                  [2, 4],
+                  [1, 2],
+                  [3, 1],
+                ],
               ],
-            ],
+            },
           },
-        },
-      ],
-    });
+        ],
+      },
+      'geojsonFeatures'
+    );
 
     expect(actual.filename).toEqual(expectedFilename);
     expect(actual.mimetype).toEqual(expectedMimeType);
     expect(actual.data).toEqual(expectedData);
   });
 
-  test('when empty feature collection', () => {
+  test('empty feature collection', () => {
     const expectedFilename = `geojsonFeatures.wkt`;
     const expectedMimeType = 'text/plain';
     const expectedData = '';
 
-    const actual = toWkt({
-      type: 'FeatureCollection',
-      properties: {},
-      features: [],
-    });
+    const actual = toWkt(
+      {
+        type: 'FeatureCollection',
+        properties: {},
+        features: [],
+      },
+      'geojsonFeatures'
+    );
 
     expect(actual.filename).toEqual(expectedFilename);
     expect(actual.mimetype).toEqual(expectedMimeType);
@@ -201,96 +168,95 @@ describe('toWkt()', () => {
 
 describe('toStats()', () => {
   test('when feature', () => {
-    const expectedFilename = `llamallama.txt`;
+    const expectedFilename = `mystats.txt`;
     const expectedMimeType = 'text/plain';
     const expectedData = 'Features: 1\nPolygons: 1\nRings: 1\nPoints: 5';
 
-    const actual = toStats({
-      type: 'Feature',
-      properties: { name: 'llamallama' },
-      id: 'abc',
-      geometry: {
-        type: 'Polygon',
-        coordinates: [
-          [
-            [30, 10],
-            [40, 40],
-            [20, 40],
-            [10, 20],
-            [30, 10],
+    const actual = toStats(
+      {
+        type: 'Feature',
+        geometry: {
+          type: 'Polygon',
+          coordinates: [
+            [
+              [30, 10],
+              [40, 40],
+              [20, 40],
+              [10, 20],
+              [30, 10],
+            ],
           ],
-        ],
+        },
       },
-    });
+      'mystats'
+    );
 
     expect(actual.filename).toEqual(expectedFilename);
     expect(actual.mimetype).toEqual(expectedMimeType);
     expect(actual.data).toEqual(expectedData);
   });
 
-  test('when feature collection', () => {
-    const expectedFilename = `geojsonFeatures.txt`;
+  test('feature collection', () => {
+    const expectedFilename = `mystats.txt`;
     const expectedMimeType = 'text/plain';
     const expectedData = 'Features: 2\nPolygons: 3\nRings: 4\nPoints: 20';
 
-    const actual = toStats({
-      type: 'FeatureCollection',
-      properties: {},
-      features: [
-        {
-          type: 'Feature',
-          properties: { name: 'llamallama1' },
-          id: 'abc',
-          geometry: {
-            type: 'Polygon',
-            coordinates: [
-              [
-                [30, 10],
-                [40, 40],
-                [20, 40],
-                [10, 20],
-                [30, 10],
+    const actual = toStats(
+      {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            geometry: {
+              type: 'Polygon',
+              coordinates: [
+                [
+                  [30, 10],
+                  [40, 40],
+                  [20, 40],
+                  [10, 20],
+                  [30, 10],
+                ],
               ],
-            ],
+            },
           },
-        },
-        {
-          type: 'Feature',
-          properties: { name: 'llamallama2' },
-          id: 'def',
-          geometry: {
-            type: 'MultiPolygon',
-            coordinates: [
-              [
+          {
+            type: 'Feature',
+            geometry: {
+              type: 'MultiPolygon',
+              coordinates: [
                 [
-                  [3, 1],
-                  [4, 4],
-                  [2, 4],
-                  [1, 2],
-                  [3, 1],
+                  [
+                    [3, 1],
+                    [4, 4],
+                    [2, 4],
+                    [1, 2],
+                    [3, 1],
+                  ],
+                  [
+                    [3.5, 3.5],
+                    [2, 3.5],
+                    [1.5, 2],
+                    [2.5, 1.5],
+                    [3.5, 3.5],
+                  ],
                 ],
                 [
-                  [3.5, 3.5],
-                  [2, 3.5],
-                  [1.5, 2],
-                  [2.5, 1.5],
-                  [3.5, 3.5],
-                ],
-              ],
-              [
-                [
-                  [13, 11],
-                  [14, 14],
-                  [12, 14],
-                  [11, 12],
-                  [13, 11],
+                  [
+                    [13, 11],
+                    [14, 14],
+                    [12, 14],
+                    [11, 12],
+                    [13, 11],
+                  ],
                 ],
               ],
-            ],
+            },
           },
-        },
-      ],
-    });
+        ],
+      },
+      'mystats'
+    );
 
     expect(actual.filename).toEqual(expectedFilename);
     expect(actual.mimetype).toEqual(expectedMimeType);

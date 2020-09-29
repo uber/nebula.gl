@@ -17,7 +17,7 @@ const initialViewState = {
 };
 
 export function Example() {
-  const [features, setFeatures] = React.useState({
+  const [geoJson, setGeoJson] = React.useState({
     type: 'FeatureCollection',
     features: [],
   });
@@ -25,11 +25,11 @@ export function Example() {
   const [mode, setMode] = React.useState(() => ViewMode);
 
   const layer = new EditableGeoJsonLayer({
-    data: features,
+    data: geoJson,
     mode,
     selectedFeatureIndexes,
     onEdit: ({ updatedData }) => {
-      setFeatures(updatedData);
+      setGeoJson(updatedData);
     },
   });
 
@@ -47,12 +47,12 @@ export function Example() {
       </DeckGL>
       <Toolbox
         mode={mode}
-        features={features}
+        geoJson={geoJson}
         onSetMode={setMode}
-        onImport={(featureCollection) =>
-          setFeatures({
-            ...features,
-            features: [...features.features, ...featureCollection.features],
+        onImport={(imported) =>
+          setGeoJson({
+            ...geoJson,
+            features: [...geoJson.features, ...imported.features],
           })
         }
       />

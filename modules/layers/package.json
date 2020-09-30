@@ -76,6 +76,7 @@
     "cubic-hermite-spline": "^1.0.1",
     "geojson-types": "^2.0.1",
     "global": ">=4.3.0",
+    "h3-js": "^3.6.4",
     "viewport-mercator-project": ">=6.0.0"
   },
   "peerDependencies": {

@@ -1,19 +1,20 @@
-import { ClickEvent, PointerMoveEvent, ModeProps, GuideFeatureCollection } from '../types';
+import {
+  ClickEvent,
+  PointerMoveEvent,
+  ModeProps,
+  GuideFeatureCollection,
+  TentativeFeature,
+} from '../types';
 import { Polygon, FeatureCollection } from '../geojson-types';
 import { getPickedEditHandle } from '../utils';
 import { GeoJsonEditMode } from './geojson-edit-mode';
 
 export class DrawPolygonMode extends GeoJsonEditMode {
-  getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
+  createTentativeFeature(props: ModeProps<FeatureCollection>): TentativeFeature {
     const { lastPointerMoveEvent } = props;
     const clickSequence = this.getClickSequence();
 
     const lastCoords = lastPointerMoveEvent ? [lastPointerMoveEvent.mapCoords] : [];
-
-    const guides = {
-      type: 'FeatureCollection',
-      features: [],
-    };
 
     let tentativeFeature;
     if (clickSequence.length === 1 || clickSequence.length === 2) {
@@ -40,6 +41,18 @@ export class DrawPolygonMode extends GeoJsonEditMode {
       };
     }
 
+    return tentativeFeature;
+  }
+
+  getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
+    const clickSequence = this.getClickSequence();
+
+    const guides = {
+      type: 'FeatureCollection',
+      features: [],
+    };
+
+    const tentativeFeature = this.createTentativeFeature(props);
     if (tentativeFeature) {
       guides.features.push(tentativeFeature);
     }
@@ -125,7 +138,8 @@ export class DrawPolygonMode extends GeoJsonEditMode {
       }
     }
   }
-  handlePointerMove({ mapCoords }: PointerMoveEvent, props: ModeProps<FeatureCollection>) {
+  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>) {
     props.onUpdateCursor('cell');
+    super.handlePointerMove(event, props);
   }
 }

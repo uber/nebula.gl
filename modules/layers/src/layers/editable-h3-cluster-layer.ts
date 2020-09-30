@@ -17,7 +17,6 @@ const defaultProps = {
   mode: DEFAULT_EDIT_MODE,
 
   // EditableGeoJsonLayer
-  geoJsonData: {},
   ...EditableGeoJsonLayer.defaultProps,
 
   // h3 layer
@@ -30,6 +29,17 @@ const defaultProps = {
   lineWidthMaxPixels: Number.MAX_SAFE_INTEGER,
   lineWidthUnits: 'pixels',
   getHexagons: (d) => d.hexIds,
+  getEditedCluster: (updatedHexagons, existingCluster) => {
+    if (existingCluster) {
+      return {
+        ...existingCluster,
+        hexIds: updatedHexagons,
+      };
+    }
+    return {
+      hexIds: updatedHexagons,
+    };
+  },
   resolution: DEFAULT_H3_RESOLUTION,
 };
 
@@ -87,13 +97,9 @@ export default class EditableH3ClusterLayer extends EditableLayer {
                 // once the shape is finished drawing, calculate final hexagons
 
                 // get selected h3 cluster to act upon
-                // if there is more than 1 or 0 selected,
+                // if there is more than 1 selected,
                 // throw an error, since it is ambiguous how to proceed
-                // TODO: Add support for getNewH3Cluster prop to create a new cluster if none exist
-                if (
-                  this.props.selectedIndexes.length > 1 ||
-                  this.props.selectedIndexes.length === 0
-                ) {
+                if (this.props.selectedIndexes.length > 1) {
                   // eslint-disable-next-line no-console,no-undef
                   console.warn('booleanOperation only supported for single cluster selection');
                 } else {
@@ -120,7 +126,22 @@ export default class EditableH3ClusterLayer extends EditableLayer {
                       );
                       break;
                   }
-                  this.props.onEdit({ updatedData: finalHexagonIDs });
+
+                  // if no clusters selected, create new cluster
+                  // else, update selected cluster
+                  const updatedData = [...this.props.data];
+                  if (this.props.selectedIndexes.length === 0) {
+                    updatedData.push(this.props.getEditedCluster(finalHexagonIDs, null));
+                  } else {
+                    const selectedIndex = this.props.selectedIndexes[0];
+                    const existingCluster = this.props.data[selectedIndex];
+                    updatedData[selectedIndex] = this.props.getEditedCluster(
+                      finalHexagonIDs,
+                      existingCluster
+                    );
+                  }
+
+                  this.props.onEdit({ updatedData });
                 }
 
                 this.setState({

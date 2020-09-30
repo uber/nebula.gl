@@ -44,7 +44,7 @@ function Toolbar({
   setMode,
   booleanOperation,
   setBooleanOperation,
-  h3Clusters,
+  data,
   selectedIndexes,
   setSelectedIndexes,
 }) {
@@ -82,13 +82,13 @@ function Toolbar({
         Intersection
       </Button>
       <div style={{ height: '7px' }} />
-      {renderClusterSelectors(h3Clusters, selectedIndexes, setSelectedIndexes)}
+      {renderClusterSelectors(data, selectedIndexes, setSelectedIndexes)}
     </div>
   );
 }
 
-function renderClusterSelectors(h3Clusters, selectedIndexes, setSelectedIndexes) {
-  return h3Clusters.map((cluster, i) => (
+function renderClusterSelectors(data, selectedIndexes, setSelectedIndexes) {
+  return data.map((cluster, i) => (
     <div>
       <Button
         key={i}
@@ -108,7 +108,7 @@ function renderClusterSelectors(h3Clusters, selectedIndexes, setSelectedIndexes)
 }
 
 export function Example() {
-  const [h3Clusters, setH3Clusters] = React.useState([
+  const [data, setData] = React.useState([
     {
       hexIds: hexagonCluster1,
     },
@@ -124,8 +124,20 @@ export function Example() {
   const [selectedIndexes, setSelectedIndexes] = React.useState([0]);
 
   const layer = new EditableH3ClusterLayer({
-    data: h3Clusters,
+    data,
     getHexagons: (x) => x.hexIds,
+    getEditedCluster: (updatedHexagonIDs, existingCluster) => {
+      if (existingCluster) {
+        return {
+          ...existingCluster,
+          hexIds: updatedHexagonIDs,
+        };
+      } else {
+        return {
+          hexIds: updatedHexagonIDs,
+        };
+      }
+    },
     selectedIndexes,
     resolution: 9,
     modeConfig: {
@@ -133,11 +145,9 @@ export function Example() {
     },
     mode,
     onEdit: ({ updatedData }) => {
-      const newH3Clusters = [...h3Clusters];
-      newH3Clusters[selectedIndexes[0]] = {
-        hexIds: updatedData,
-      };
-      setH3Clusters(newH3Clusters);
+      if (updatedData !== data) {
+        setData(updatedData);
+      }
     },
     _subLayerProps: {
       'tentative-hexagons': {
@@ -145,7 +155,7 @@ export function Example() {
       },
       hexagons: {
         getFillColor: (cluster) => {
-          if (selectedIndexes.some((i) => h3Clusters[i] === cluster)) {
+          if (selectedIndexes.some((i) => data[i] === cluster)) {
             return SELECTED_FILL_COLOR;
           }
           return UNSELECTED_FILL_COLOR;
@@ -175,7 +185,7 @@ export function Example() {
           setMode,
           booleanOperation,
           setBooleanOperation,
-          h3Clusters,
+          data,
           selectedIndexes,
           setSelectedIndexes,
         }}

@@ -9,7 +9,7 @@ import {
   DrawRectangleMode,
 } from '@nebula.gl/edit-modes';
 import { StaticMap } from 'react-map-gl';
-import { hexagonCluster1, hexagonCluster2, hexagonCluster3, hexagonCluster4 } from './data';
+import { hexagonCluster1, hexagonCluster2, hexagonCluster3 } from './data.js';
 
 const MAPBOX_ACCESS_TOKEN =
   'pk.eyJ1IjoiZ2Vvcmdpb3MtdWJlciIsImEiOiJjanZidTZzczAwajMxNGVwOGZrd2E5NG90In0.gdsRu_UeU_uPi9IulBruXA';
@@ -118,9 +118,6 @@ export function Example() {
     {
       hexIds: hexagonCluster3,
     },
-    {
-      hexIds: hexagonCluster4,
-    },
   ]);
   const [mode, setMode] = React.useState(() => DrawPolygonMode);
   const [booleanOperation, setBooleanOperation] = React.useState('union');
@@ -129,14 +126,14 @@ export function Example() {
   const layer = new EditableH3ClusterLayer({
     data: h3Clusters,
     getHexagons: (x) => x.hexIds,
-    selectedIndexes: selectedIndexes,
+    selectedIndexes,
     resolution: 9,
     modeConfig: {
       booleanOperation,
     },
     mode,
     onEdit: ({ updatedData }) => {
-      let newH3Clusters = [...h3Clusters];
+      const newH3Clusters = [...h3Clusters];
       newH3Clusters[selectedIndexes[0]] = {
         hexIds: updatedData,
       };
@@ -148,14 +145,13 @@ export function Example() {
       },
       hexagons: {
         getFillColor: (cluster) => {
-          // TODO: The selected colors only update when this component re-renders, when hexes
-          // are added. Because it's a nested component, it does not re-render on state changes.
-          // Find a way to force re-render this so it stays in sync with selectedIndexes.
           if (selectedIndexes.some((i) => h3Clusters[i] === cluster)) {
             return SELECTED_FILL_COLOR;
-          } else {
-            return UNSELECTED_FILL_COLOR;
           }
+          return UNSELECTED_FILL_COLOR;
+        },
+        updateTriggers: {
+          getFillColor: selectedIndexes,
         },
       },
     },

@@ -82,6 +82,7 @@
   "peerDependencies": {
     "@deck.gl/core": "^8.0.3",
     "@deck.gl/layers": "^8.0.3",
+    "@deck.gl/geo-layers": "^8.0.3",
     "@luma.gl/constants": "^8.0.1",
     "@luma.gl/core": "^8.0.1"
   }

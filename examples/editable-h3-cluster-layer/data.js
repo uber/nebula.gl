@@ -231,9 +231,7 @@ const hexagonCluster2 = [
   '8928308288bffff',
   '89283082c63ffff',
   '89283082c1bffff',
-];
 
-const hexagonCluster3 = [
   '892830958c7ffff',
   '89283095c4bffff',
   '8928309426bffff',
@@ -356,6 +354,6 @@ const hexagonCluster3 = [
   '89283095eafffff',
 ];
 
-const hexagonCluster4 = ['89283087087ffff'];
+const hexagonCluster3 = ['89283087087ffff'];
 
-export { hexagonCluster1, hexagonCluster2, hexagonCluster3, hexagonCluster4 };
+export { hexagonCluster1, hexagonCluster2, hexagonCluster3 };

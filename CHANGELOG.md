@@ -4,6 +4,13 @@ _All notable changes to this project will be documented in this file. This proje
 
 <!-- INSERT HERE -->
 
+## [0.21.0](https://github.com/uber/nebula.gl/compare/v0.20.2...v0.21.0) - 2020-10-01
+
+### Changes
+
+* Create EditableH3ClusterLayer && Refactor Edit Modes to support updateTentativeFeature edit type (#483)
+* Updates to import and export components (#481)
+
 ## [0.20.2](https://github.com/uber/nebula.gl/compare/v0.20.0...v0.20.2) - 2020-09-22
 
 ### Changes

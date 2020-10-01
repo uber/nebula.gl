@@ -2,6 +2,7 @@ export { ArrowStyles, DEFAULT_ARROWS, MAX_ARROWS } from './style';
 
 // Layers
 export { default as EditableGeoJsonLayer } from './layers/editable-geojson-layer';
+export { default as EditableH3ClusterLayer } from './layers/editable-h3-cluster-layer';
 export { default as SelectionLayer } from './layers/selection-layer';
 export { default as ElevatedEditHandleLayer } from './layers/elevated-edit-handle-layer';
 

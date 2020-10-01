@@ -238,8 +238,23 @@ export class GeoJsonEditMode implements EditMode<FeatureCollection, GuideFeature
     return this.getAddFeatureAction(featureOrGeometry, props.data);
   }
 
+  createTentativeFeature(props: ModeProps<FeatureCollection>): TentativeFeature {
+    return null;
+  }
+
   handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>): void {}
-  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>): void {}
+  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>): void {
+    const tentativeFeature = this.createTentativeFeature(props);
+    if (tentativeFeature) {
+      props.onEdit({
+        updatedData: props.data,
+        editType: 'updateTentativeFeature',
+        editContext: {
+          feature: tentativeFeature,
+        },
+      });
+    }
+  }
   handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollection>): void {}
   handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollection>): void {}
   handleDragging(event: DraggingEvent, props: ModeProps<FeatureCollection>): void {}

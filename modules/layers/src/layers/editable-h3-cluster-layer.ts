@@ -94,21 +94,24 @@ export default class EditableH3ClusterLayer extends EditableLayer {
                 }
                 break;
               case 'addFeature':
-                // once the shape is finished drawing, calculate final hexagons
+                const updatedData = [...this.props.data];
+                const { modeConfig } = this.props;
 
-                // get selected h3 cluster to act upon
-                // if there is more than 1 selected,
-                // throw an error, since it is ambiguous how to proceed
-                if (this.props.selectedIndexes.length > 1) {
+                if (!modeConfig || !modeConfig.booleanOperation) {
+                  // add new h3 cluster
+                  updatedData.push(
+                    this.props.getEditedCluster(this.state.tentativeHexagonIDs, null)
+                  );
+                } else if (this.props.selectedIndexes.length !== 1) {
                   // eslint-disable-next-line no-console,no-undef
                   console.warn('booleanOperation only supported for single cluster selection');
                 } else {
+                  // they're affecting a selected cluster
                   let finalHexagonIDs;
                   const committedHexagonIDs = new Set(this.getSelectedHexIDs());
                   const tentativeHexagonIDs = new Set(this.state.tentativeHexagonIDs);
 
-                  const { modeConfig } = this.props;
-                  switch (modeConfig && modeConfig.booleanOperation) {
+                  switch (modeConfig.booleanOperation) {
                     case 'union':
                     default:
                       finalHexagonIDs = [
@@ -127,26 +130,19 @@ export default class EditableH3ClusterLayer extends EditableLayer {
                       break;
                   }
 
-                  // if no clusters selected, create new cluster
-                  // else, update selected cluster
-                  const updatedData = [...this.props.data];
-                  if (this.props.selectedIndexes.length === 0) {
-                    updatedData.push(this.props.getEditedCluster(finalHexagonIDs, null));
-                  } else {
-                    const selectedIndex = this.props.selectedIndexes[0];
-                    const existingCluster = this.props.data[selectedIndex];
-                    updatedData[selectedIndex] = this.props.getEditedCluster(
-                      finalHexagonIDs,
-                      existingCluster
-                    );
-                  }
-
-                  this.props.onEdit({ updatedData });
+                  const selectedIndex = this.props.selectedIndexes[0];
+                  const existingCluster = this.props.data[selectedIndex];
+                  updatedData[selectedIndex] = this.props.getEditedCluster(
+                    finalHexagonIDs,
+                    existingCluster
+                  );
                 }
 
                 this.setState({
                   tentativeHexagonIDs: [],
                 });
+
+                this.props.onEdit({ updatedData });
 
                 break;
               default:

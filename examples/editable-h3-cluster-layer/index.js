@@ -66,17 +66,38 @@ function Toolbar({
         Point
       </Button>
       <div style={{ height: '7px' }} />
-      <Button onClick={() => setBooleanOperation('union')} active={booleanOperation === 'union'}>
+      <Button
+        onClick={() => {
+          if (booleanOperation === 'union') {
+            setBooleanOperation(null);
+          } else {
+            setBooleanOperation('union');
+          }
+        }}
+        active={booleanOperation === 'union'}
+      >
         Union
       </Button>
       <Button
-        onClick={() => setBooleanOperation('difference')}
+        onClick={() => {
+          if (booleanOperation === 'difference') {
+            setBooleanOperation(null);
+          } else {
+            setBooleanOperation('difference');
+          }
+        }}
         active={booleanOperation === 'difference'}
       >
         Difference
       </Button>
       <Button
-        onClick={() => setBooleanOperation('intersection')}
+        onClick={() => {
+          if (booleanOperation === 'intersection') {
+            setBooleanOperation(null);
+          } else {
+            setBooleanOperation('intersection');
+          }
+        }}
         active={booleanOperation === 'intersection'}
       >
         Intersection

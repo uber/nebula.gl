@@ -55,6 +55,7 @@ export { ImmutableFeatureCollection } from '@nebula.gl/edit-modes';
 
 // Other modes
 export { ViewMode } from '@nebula.gl/edit-modes';
+export { SelectMode } from '@nebula.gl/edit-modes';
 export { MeasureDistanceMode } from '@nebula.gl/edit-modes';
 export { MeasureAreaMode } from '@nebula.gl/edit-modes';
 export { MeasureAngleMode } from '@nebula.gl/edit-modes';

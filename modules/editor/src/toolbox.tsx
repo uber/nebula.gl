@@ -1,11 +1,12 @@
 import * as React from 'react';
 import {
-  ViewMode,
+  SelectMode,
   DrawPointMode,
   DrawLineStringMode,
   DrawPolygonMode,
   DrawCircleFromCenterMode,
   DrawRectangleMode,
+  ModifyMode,
   MeasureDistanceMode,
   MeasureAngleMode,
   MeasureAreaMode,
@@ -58,15 +59,17 @@ export type Props = {
   mode: any;
   modeConfig: any;
   geoJson: any;
+  selectedIndexes: number[];
   onSetMode: (mode: any) => unknown;
   onSetModeConfig: (modeConfig: any) => unknown;
   onSetGeoJson: (geojson: any) => unknown;
+  onSetSelectedIndexes: (selectedIndexes: number[]) => unknown;
   onImport: (imported: any) => unknown;
 };
 
 const MODE_GROUPS = [
   {
-    modes: [{ mode: ViewMode, content: <Icon name="pointer" /> }],
+    modes: [{ mode: SelectMode, content: <Icon name="pointer" /> }],
   },
   {
     modes: [{ mode: DrawPointMode, content: <Icon name="map-pin" /> }],
@@ -85,6 +88,9 @@ const MODE_GROUPS = [
       { mode: DrawRectangleMode, content: <Icon name="rectangle" /> },
       { mode: DrawCircleFromCenterMode, content: <Icon name="circle" /> },
     ],
+  },
+  {
+    modes: [{ mode: ModifyMode, content: <Icon name="edit" /> }],
   },
   {
     modes: [

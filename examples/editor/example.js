@@ -3,8 +3,8 @@
 import * as React from 'react';
 import DeckGL from '@deck.gl/react';
 import { EditableGeoJsonLayer } from '@nebula.gl/layers';
-import { Toolbox } from '@nebula.gl/editor';
-import { ViewMode } from '@nebula.gl/edit-modes';
+import { Toolbox, OverlappingSelection } from '@nebula.gl/editor';
+import { SelectMode } from '@nebula.gl/edit-modes';
 import { StaticMap } from 'react-map-gl';
 
 const MAPBOX_ACCESS_TOKEN =
@@ -22,7 +22,9 @@ export function Example() {
     features: [
       {
         type: 'Feature',
-        properties: {},
+        properties: {
+          name: 'My feature 1',
+        },
         geometry: {
           type: 'Polygon',
           coordinates: [
@@ -38,7 +40,9 @@ export function Example() {
       },
       {
         type: 'Feature',
-        properties: {},
+        properties: {
+          name: 'My feature 2',
+        },
         geometry: {
           type: 'Polygon',
           coordinates: [
@@ -54,18 +58,19 @@ export function Example() {
       },
     ],
   });
-  const [selectedFeatureIndexes, setSelectedFeatureIndexes] = React.useState([0]);
-  const [mode, setMode] = React.useState(() => ViewMode);
+  const [selection, setSelection] = React.useState({ selectedIndexes: [0] });
+  const [mode, setMode] = React.useState(() => SelectMode);
   const [modeConfig, setModeConfig] = React.useState({});
 
   const layer = new EditableGeoJsonLayer({
     data: geoJson,
     mode,
     modeConfig,
-    selectedFeatureIndexes,
+    selectedFeatureIndexes: selection.selectedIndexes,
     onEdit: ({ updatedData }) => {
       setGeoJson(updatedData);
     },
+    onSelectionChanged: setSelection,
   });
 
   return (
@@ -77,14 +82,6 @@ export function Example() {
         }}
         layers={[layer]}
         getCursor={layer.getCursor.bind(layer)}
-        onClick={(info) => {
-          if (mode === ViewMode)
-            if (info) {
-              setSelectedFeatureIndexes([info.index]);
-            } else {
-              setSelectedFeatureIndexes([]);
-            }
-        }}
       >
         <StaticMap mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN} />
       </DeckGL>
@@ -103,6 +100,8 @@ export function Example() {
         }
         onSetGeoJson={setGeoJson}
       />
+
+      <OverlappingSelection data={geoJson} selection={selection} onSetSelection={setSelection} />
     </>
   );
 }

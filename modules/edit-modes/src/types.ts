@@ -9,6 +9,13 @@ export type EditAction<TData> = {
   editContext: any;
 };
 
+export type SelectionContext = {
+  selectedIndexes: number[];
+  selectContext?: {
+    screenCoords: ScreenCoordinates;
+  };
+};
+
 // Represents an object "picked" from the screen. This usually reflects an object under the cursor
 export type Pick = {
   object: any;
@@ -128,4 +135,6 @@ export type ModeProps<TData> = {
 
   // Callback used to update cursor
   onUpdateCursor: (cursor: string | null | undefined) => void;
+
+  onSelectionChanged: (event: SelectionContext) => void;
 };

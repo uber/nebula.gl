@@ -1,3 +1,6 @@
+// Utils
+import * as utils from './utils';
+
 export type { EditMode } from './lib/edit-mode';
 export type { GeoJsonEditModeType } from './lib/geojson-edit-mode';
 export type { GeoJsonEditModeConstructor } from './lib/geojson-edit-mode';
@@ -32,6 +35,7 @@ export { ImmutableFeatureCollection } from './lib/immutable-feature-collection';
 
 // Other modes
 export { ViewMode } from './lib/view-mode';
+export { SelectMode } from './lib/select-mode';
 export { MeasureDistanceMode } from './lib/measure-distance-mode';
 export { MeasureAreaMode } from './lib/measure-area-mode';
 export { MeasureAngleMode } from './lib/measure-angle-mode';
@@ -44,6 +48,7 @@ export { default as _memoize } from './memoize';
 export type {
   ScreenCoordinates,
   EditAction,
+  SelectionContext,
   Pick,
   ClickEvent,
   PointerMoveEvent,
@@ -81,6 +86,4 @@ export type {
   AnyGeoJson,
 } from './geojson-types';
 
-// Utils
-import * as utils from './utils';
 export { utils };

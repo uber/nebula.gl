@@ -26,6 +26,7 @@ import {
   SnappableMode,
   TransformMode,
   EditAction,
+  SelectionContext,
   ClickEvent,
   StartDraggingEvent,
   StopDraggingEvent,
@@ -105,6 +106,8 @@ const defaultProps = {
 
   // Edit and interaction events
   onEdit: () => {},
+
+  onSelectionChanged: () => {},
 
   pickable: true,
   pickingRadius: 10,
@@ -191,7 +194,8 @@ const modeNameMapping = {
 
 type Props = {
   mode: string | GeoJsonEditModeConstructor | GeoJsonEditModeType;
-  onEdit: (arg0: EditAction<FeatureCollection>) => void;
+  onEdit: (event: EditAction<FeatureCollection>) => unknown;
+  onSelectionChanged?: (event: SelectionContext) => unknown;
   // TODO: type the rest
 
   [key: string]: any;
@@ -345,6 +349,11 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       },
       onUpdateCursor: (cursor: string | null | undefined) => {
         this.setState({ cursor });
+      },
+      onSelectionChanged: (selectedIndexes) => {
+        if (props.onSelectionChanged) {
+          props.onSelectionChanged(selectedIndexes);
+        }
       },
     };
   }

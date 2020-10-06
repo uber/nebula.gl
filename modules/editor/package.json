@@ -57,17 +57,14 @@
     "@types/downloadjs": "1.4.1",
     "@types/styled-react-modal": "1.2.0",
     "@types/wellknown": "0.5.1",
+    "boxicons": "^2.0.5",
     "clipboard-copy": "^3.1.0",
     "downloadjs": "^1.4.7",
     "react": "^16.8.0",
     "react-dropzone": "^10.2.1",
     "styled-components": "^4.3.2",
     "styled-react-modal": "1.2.4",
-    "wellknown": "^0.5.0",
-    "@fortawesome/fontawesome-svg-core": "^1.2.30",
-    "@fortawesome/free-solid-svg-icons": "^5.14.0",
-    "@fortawesome/react-fontawesome": "^0.1.11",
-    "boxicons": "^2.0.5"
+    "wellknown": "^0.5.0"
   },
   "devDependencies": {
     "sinon": "^9.0.1"

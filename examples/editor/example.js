@@ -66,11 +66,6 @@ export function Example() {
     onEdit: ({ updatedData }) => {
       setGeoJson(updatedData);
     },
-    // _subLayerProps: {
-    //   geojson: {
-    //     getFillColor: (feature) => [255, 0, 0],
-    //   },
-    // },
   });
 
   return (

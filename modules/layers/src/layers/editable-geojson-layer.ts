@@ -286,7 +286,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     changeFlags: any;
   }) {
     // @ts-ignore
-    super.updateState({ props, changeFlags });
+    super.updateState({ oldProps, props, changeFlags });
 
     if (changeFlags.propsOrDataChanged) {
       const modePropChanged = Object.keys(oldProps).length === 0 || props.mode !== oldProps.mode;

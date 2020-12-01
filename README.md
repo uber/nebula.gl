@@ -101,4 +101,9 @@ class App extends React.Component {
 }
 ```
 
-[CodeSandbox](https://codesandbox.io/s/admiring-shape-4dkyt)
+### Useful examples (Codesandbox)
+
+* [Hello World (using deck.gl)](https://codesandbox.io/s/hello-world-nebulagl-csvsm)
+* [With Toolbox](https://codesandbox.io/s/hello-nebulagl-with-toolbox-oelkr)
+* [No React](https://codesandbox.io/s/deckgl-and-nebulagl-editablegeojsonlayer-no-react-p9yrs)
+* [Custom EditMode](https://codesandbox.io/s/connect-the-dots-mode-yow65)

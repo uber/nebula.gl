@@ -564,15 +564,33 @@ export default class Example extends React.Component<
                 this.state.modeConfig.turfOptions.units) ||
               'kilometers'
             }
-            onChange={(event) =>
-              this.setState({ modeConfig: { turfOptions: { units: event.target.value } } })
-            }
+            onChange={(event) => {
+              const modeConfig = {
+                ...this.state.modeConfig,
+                turfOptions: { units: event.target.value },
+              };
+              this.setState({ modeConfig });
+            }}
           >
             <option value="kilometers">kilometers</option>
             <option value="miles">miles</option>
             <option value="degrees">degrees</option>
             <option value="radians">radians</option>
           </select>
+        </ToolboxControl>
+        <ToolboxTitle>Multipoint</ToolboxTitle>
+        <ToolboxControl>
+          <input
+            type="checkbox"
+            checked={Boolean(this.state.modeConfig && this.state.modeConfig.multipoint)}
+            onChange={(event) => {
+              const modeConfig = {
+                ...this.state.modeConfig,
+                multipoint: Boolean(event.target.checked),
+              };
+              this.setState({ modeConfig });
+            }}
+          />
         </ToolboxControl>
       </ToolboxRow>
     );

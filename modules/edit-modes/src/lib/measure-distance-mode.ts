@@ -71,7 +71,7 @@ export class MeasureDistanceMode extends GeoJsonEditMode {
         this._currentDistance += this._calculateDistanceForTooltip({
           positionA: clickSequence[clickSequence.length - 2],
           positionB: clickSequence[clickSequence.length - 1],
-          modeConfig: modeConfig,
+          modeConfig,
         });
         this._currentTooltips.push({
           position: event.mapCoords,

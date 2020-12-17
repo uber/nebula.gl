@@ -2,8 +2,8 @@ import turfDistance from '@turf/distance';
 import { FeatureCollection } from '../geojson-types';
 import { ClickEvent, PointerMoveEvent, ModeProps, GuideFeatureCollection, Tooltip } from '../types';
 import { getPickedEditHandle } from '../utils';
-import { GeoJsonEditMode } from './geojson-edit-mode';
 import memoize from '../memoize';
+import { GeoJsonEditMode } from './geojson-edit-mode';
 
 export class MeasureDistanceMode extends GeoJsonEditMode {
   _isMeasuringSessionFinished = false;
@@ -173,8 +173,8 @@ export class MeasureDistanceMode extends GeoJsonEditMode {
           text: this._formatTooltip(this._currentDistance + distance, modeConfig),
         },
       ];
-    } else {
-      return this._currentTooltips;
     }
+
+    return this._currentTooltips;
   }
 }

@@ -7,7 +7,6 @@ import { Position, Polygon, FeatureOf, FeatureCollection } from '../geojson-type
 import { TwoClickPolygonMode } from './two-click-polygon-mode';
 
 export class DrawCircleFromCenterMode extends TwoClickPolygonMode {
-  // declaration of variables for the calculation of the area of ​​the circle
   radius: number | null | undefined = null;
   position: Position;
   areaCircle: number | null | undefined = null;
@@ -15,8 +14,8 @@ export class DrawCircleFromCenterMode extends TwoClickPolygonMode {
     // Default turf value for circle is 64
     const { steps = 64 } = modeConfig || {};
     const options = { steps };
-     // setting with position of center of circle
-     this.position = coord2;
+    // setting with position of center of circle
+    this.position = coord2;
 
     if (steps < 4) {
       console.warn(`Minimum steps to draw a circle is 4 `); // eslint-disable-line no-console,no-undef
@@ -36,13 +35,13 @@ export class DrawCircleFromCenterMode extends TwoClickPolygonMode {
   }
 
   /**
-   * define the default function to display the tooltip for 
+   * define the default function to display the tooltip for
    * nebula geometry mode type
    * @param props properties of geometry nebula mode
    */
   getTooltips(props: ModeProps<FeatureCollection>): Tooltip[] {
     return this._getTooltips({
-      modeConfig: props.modeConfig,
+      modeConfig: props?.modeConfig,
       radius: this.radius,
       areaCircle: this.areaCircle,
     });
@@ -50,14 +49,14 @@ export class DrawCircleFromCenterMode extends TwoClickPolygonMode {
 
   /**
    * redefine the tooltip of geometry
-   * @param modeConfig 
+   * @param modeConfig
    * @param radius
    * @param areaCircle
    */
   _getTooltips = memoize(({ modeConfig, radius, areaCircle }) => {
     let tooltips = [];
     const { formatTooltip } = modeConfig || {};
-    let text;
+    let text: string;
     if (radius && areaCircle) {
       if (formatTooltip) {
         text = formatTooltip(radius);

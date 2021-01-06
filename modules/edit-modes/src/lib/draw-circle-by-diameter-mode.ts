@@ -1,14 +1,13 @@
 import circle from '@turf/circle';
 import distance from '@turf/distance';
-import { Position, Polygon, FeatureOf, FeatureCollection } from '../geojson-types';
-import { getIntermediatePosition } from './geojson-edit-mode';
-import { TwoClickPolygonMode } from './two-click-polygon-mode';
 import area from '@turf/area';
 import memoize from '../memoize';
 import { ModeProps, Tooltip } from '../types';
+import { Position, Polygon, FeatureOf, FeatureCollection } from '../geojson-types';
+import { getIntermediatePosition } from './geojson-edit-mode';
+import { TwoClickPolygonMode } from './two-click-polygon-mode';
 
 export class DrawCircleByDiameterMode extends TwoClickPolygonMode {
-  // declaration of variables for the calculation of the area of ​​the circle
   radius: number | null | undefined = null;
   position: Position;
   areaCircle: number | null | undefined = null;
@@ -42,7 +41,7 @@ export class DrawCircleByDiameterMode extends TwoClickPolygonMode {
   }
 
   /**
-   * define the default function to display the tooltip for 
+   * define the default function to display the tooltip for
    * nebula geometry mode type
    * @param props properties of geometry nebula mode
    */
@@ -57,9 +56,10 @@ export class DrawCircleByDiameterMode extends TwoClickPolygonMode {
 
   /**
    * redefine the tooltip of geometry
-   * @param modeConfig 
+   * @param modeConfig
    * @param radius
    * @param areaCircle
+   * @param diameter
    */
   _getTooltips = memoize(({ modeConfig, radius, areaCircle, diameter }) => {
     let tooltips = [];

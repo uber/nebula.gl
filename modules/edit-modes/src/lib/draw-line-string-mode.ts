@@ -1,9 +1,9 @@
+import distance from '@turf/distance';
+import memoize from '../memoize';
 import { LineString, FeatureCollection } from '../geojson-types';
 import { ClickEvent, PointerMoveEvent, ModeProps, GuideFeatureCollection, Tooltip } from '../types';
 import { getPickedEditHandle } from '../utils';
 import { GeoJsonEditMode } from './geojson-edit-mode';
-import distance from '@turf/distance';
-import memoize from '../memoize';
 
 export class DrawLineStringMode extends GeoJsonEditMode {
   // declaration of variables for the calculation of the distance of linestring

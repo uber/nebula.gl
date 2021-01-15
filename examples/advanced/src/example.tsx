@@ -748,12 +748,9 @@ export default class Example extends React.Component<
   }
 
   renderStaticMap(viewport: Record<string, any>) {
-    // @ts-ignore
     return (
-      <StaticMap
-        {...viewport}
-        mapStyle={'mapbox://styles/mapbox/dark-v10'}
-      />
+      // @ts-ignore
+      <StaticMap {...viewport} mapStyle={'mapbox://styles/mapbox/dark-v10'} />
     );
   }
 

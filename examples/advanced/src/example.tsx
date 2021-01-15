@@ -751,7 +751,6 @@ export default class Example extends React.Component<
     // @ts-ignore
     return (
       <StaticMap
-        mapboxApiAccessToken="pk.eyJ1IjoiYWtpeWFta2EiLCJhIjoiY2p3aG4zY2Y2MDFyNjQ2bjZ1bTNldjQyOCJ9.uM8bC4cSVnYETymmoonsEg"
         {...viewport}
         mapStyle={'mapbox://styles/mapbox/dark-v10'}
       />

@@ -2,7 +2,6 @@ import turfDistance from '@turf/distance';
 import { FeatureCollection } from '../geojson-types';
 import { ClickEvent, PointerMoveEvent, ModeProps, GuideFeatureCollection, Tooltip } from '../types';
 import { getPickedEditHandle } from '../utils';
-import memoize from '../memoize';
 import { GeoJsonEditMode } from './geojson-edit-mode';
 
 export class MeasureDistanceMode extends GeoJsonEditMode {
@@ -10,7 +9,7 @@ export class MeasureDistanceMode extends GeoJsonEditMode {
   _currentTooltips = [];
   _currentDistance = 0;
 
-  _calculateDistanceForTooltip = memoize(({ positionA, positionB, modeConfig }) => {
+  _calculateDistanceForTooltip = ({ positionA, positionB, modeConfig }) => {
     const { turfOptions, measurementCallback } = modeConfig || {};
     const distance = turfDistance(positionA, positionB, turfOptions);
 
@@ -19,7 +18,7 @@ export class MeasureDistanceMode extends GeoJsonEditMode {
     }
 
     return distance;
-  });
+  };
 
   _formatTooltip(distance, modeConfig?) {
     const { formatTooltip, turfOptions } = modeConfig || {};
@@ -77,11 +76,6 @@ export class MeasureDistanceMode extends GeoJsonEditMode {
           position: event.mapCoords,
           text: this._formatTooltip(this._currentDistance, modeConfig),
         });
-
-        // finish measuring session on second click if multipoint is not specified
-        if (clickSequence.length === 2 && !modeConfig?.multipoint) {
-          this._isMeasuringSessionFinished = true;
-        }
       }
 
       // new tentative point
@@ -97,12 +91,29 @@ export class MeasureDistanceMode extends GeoJsonEditMode {
   }
 
   handleKeyUp(event: KeyboardEvent, props: ModeProps<FeatureCollection>) {
+    if (this._isMeasuringSessionFinished) return;
+
+    event.stopPropagation();
     const { key } = event;
-    if (key === 'Enter') {
-      const clickSequence = this.getClickSequence();
-      if (clickSequence.length > 1) {
+
+    const clickSequenceLength = this.getClickSequence().length;
+
+    switch (key) {
+      case 'Escape':
         this._isMeasuringSessionFinished = true;
-      }
+        if (clickSequenceLength === 1) {
+          this.resetClickSequence();
+          this._currentTooltips = [];
+        }
+        // force update drawings
+        props.onUpdateCursor('cell');
+        break;
+      case 'Enter':
+        this.handleClick(props.lastPointerMoveEvent, props);
+        this._isMeasuringSessionFinished = true;
+        break;
+      default:
+        break;
     }
   }
 

@@ -578,20 +578,6 @@ export default class Example extends React.Component<
             <option value="radians">radians</option>
           </select>
         </ToolboxControl>
-        <ToolboxTitle>Multipoint</ToolboxTitle>
-        <ToolboxControl>
-          <input
-            type="checkbox"
-            checked={Boolean(this.state.modeConfig && this.state.modeConfig.multipoint)}
-            onChange={(event) => {
-              const modeConfig = {
-                ...this.state.modeConfig,
-                multipoint: Boolean(event.target.checked),
-              };
-              this.setState({ modeConfig });
-            }}
-          />
-        </ToolboxControl>
       </ToolboxRow>
     );
   }
@@ -763,7 +749,13 @@ export default class Example extends React.Component<
 
   renderStaticMap(viewport: Record<string, any>) {
     // @ts-ignore
-    return <StaticMap {...viewport} mapStyle={'mapbox://styles/mapbox/dark-v10'} />;
+    return (
+      <StaticMap
+        mapboxApiAccessToken="pk.eyJ1IjoiYWtpeWFta2EiLCJhIjoiY2p3aG4zY2Y2MDFyNjQ2bjZ1bTNldjQyOCJ9.uM8bC4cSVnYETymmoonsEg"
+        {...viewport}
+        mapStyle={'mapbox://styles/mapbox/dark-v10'}
+      />
+    );
   }
 
   _featureMenuClick(action: string) {

@@ -303,7 +303,11 @@ export function getMockFeatureDetails(featureType: string) {
   return featureDetails;
 }
 
+let lastCoords: Position = null;
+
 export function createClickEvent(mapCoords: Position, picks: Pick[] = []): ClickEvent {
+  lastCoords = mapCoords;
+
   return {
     screenCoords: [-1, -1],
     mapCoords,
@@ -312,11 +316,18 @@ export function createClickEvent(mapCoords: Position, picks: Pick[] = []): Click
   };
 }
 
+export function createKeyboardEvent(key: string): KeyboardEvent {
+  // eslint-disable-next-line no-undef
+  return new KeyboardEvent('keyup', { key });
+}
+
 export function createStartDraggingEvent(
   mapCoords: Position,
   pointerDownMapCoords: Position,
   picks: Pick[] = []
 ): StartDraggingEvent {
+  lastCoords = mapCoords;
+
   return {
     screenCoords: [-1, -1],
     mapCoords,
@@ -334,6 +345,8 @@ export function createStopDraggingEvent(
   pointerDownMapCoords: Position,
   picks: Pick[] = []
 ): StopDraggingEvent {
+  lastCoords = mapCoords;
+
   return {
     screenCoords: [-1, -1],
     mapCoords,
@@ -346,6 +359,12 @@ export function createStopDraggingEvent(
 }
 
 export function createPointerMoveEvent(mapCoords?: Position, picks?: Pick[]): PointerMoveEvent {
+  if (!mapCoords) {
+    mapCoords = lastCoords;
+  } else {
+    lastCoords = mapCoords;
+  }
+
   return {
     screenCoords: [-1, -1],
     mapCoords,

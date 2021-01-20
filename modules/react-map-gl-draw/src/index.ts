@@ -13,4 +13,5 @@ export {
   DrawLineStringMode,
   DrawPolygonMode,
   DrawRectangleMode,
+  DrawPolygonByDraggingMode,
 } from '@nebula.gl/edit-modes';

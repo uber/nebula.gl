@@ -339,11 +339,16 @@ export default class ModeHandler extends React.PureComponent<EditorProps, Editor
       pointerDownPicks,
       pointerDownScreenCoords,
       pointerDownMapCoords,
+      cancelPan: event.sourceEvent.stopImmediatePropagation,
     };
 
     if (this.state.didDrag) {
       const modeProps = this.getModeProps();
-      this._modeHandler.handlePointerMove(pointerMoveEvent, modeProps);
+      if (this._modeHandler.handleDragging) {
+        this._modeHandler.handleDragging(pointerMoveEvent, modeProps);
+      } else {
+        this._modeHandler.handlePointerMove(pointerMoveEvent, modeProps);
+      }
     }
 
     this.setState({

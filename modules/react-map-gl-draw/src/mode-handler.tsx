@@ -3,15 +3,17 @@ import * as React from 'react';
 import {
   ImmutableFeatureCollection,
   Feature,
+  FeatureCollection,
   EditAction,
   _memoize as memoize,
 } from '@nebula.gl/edit-modes';
+
 import { MjolnirEvent } from 'mjolnir.js';
 import { BaseEvent, EditorProps, EditorState, SelectAction } from './types';
 
 import EditingMode from './edit-modes/editing-mode';
 import { getScreenCoords, parseEventElement, isNumeric } from './edit-modes/utils';
-import { EDIT_TYPE, ELEMENT_TYPE } from './constants';
+import { EDIT_TYPE, ELEMENT_TYPE, GEOJSON_TYPE } from './constants';
 
 const defaultProps = {
   selectable: true,
@@ -29,6 +31,7 @@ const defaultState = {
   }),
 
   selectedFeatureIndex: null,
+  selectedEditHandleIndexes: [],
 
   // index, isGuide, mapCoords, screenCoords
   hovered: null,
@@ -115,9 +118,53 @@ export default class ModeHandler extends React.PureComponent<EditorProps, Editor
       const newState: any = { featureCollection };
       if (featureIndexes.findIndex((index) => selectedFeatureIndex === index) >= 0) {
         newState.selectedFeatureIndex = null;
+        newState.selectedEditHandleIndexes = [];
       }
       this.setState(newState);
     }
+  };
+
+  deleteHandles = (
+    featureIndex: number | undefined,
+    handleIndexes: number[] | undefined
+  ): FeatureCollection => {
+    let featureCollection = this._getFeatureCollection();
+    if (!featureIndex) {
+      featureIndex = this._getSelectedFeatureIndex();
+    }
+    if (!handleIndexes) {
+      if (!this.state.selectedEditHandleIndexes.length) {
+        return featureCollection;
+      }
+      handleIndexes = this.state.selectedEditHandleIndexes;
+    }
+    const features = featureCollection.getObject().features;
+    // It seems currently only POLYGON and LINE_STRING are supported
+    // see handleClick event in editing-mode.ts
+    const allowedTypes = [GEOJSON_TYPE.LINE_STRING, GEOJSON_TYPE.POLYGON];
+    if (
+      featureIndex !== null &&
+      features[featureIndex] &&
+      allowedTypes.includes(features[featureIndex].geometry.type)
+    ) {
+      // Remove first indexes in DESC order
+      handleIndexes.sort((n1, n2) => n2 - n1);
+      let positionIndexes;
+      if (features[featureIndex].geometry.type === GEOJSON_TYPE.LINE_STRING) {
+        positionIndexes = handleIndexes.map((pos) => [pos]);
+      } else {
+        // Currently only spport to handle simple polygons, thus pos 0
+        positionIndexes = handleIndexes.map((pos) => [0, pos]);
+      }
+      positionIndexes.forEach((pos) => {
+        featureCollection = featureCollection.removePosition(featureIndex, pos);
+      });
+      const selectedEditHandleIndexes = this.state.selectedEditHandleIndexes.filter(
+        (handleIndex) => !handleIndexes.includes(handleIndex)
+      );
+      this.setState({ featureCollection, selectedEditHandleIndexes });
+    }
+    return featureCollection;
   };
 
   getModeProps() {
@@ -125,11 +172,13 @@ export default class ModeHandler extends React.PureComponent<EditorProps, Editor
 
     const { lastPointerMoveEvent } = this.state;
     const selectedFeatureIndex = this._getSelectedFeatureIndex();
+    const selectedEditHandleIndexes = this.state.selectedEditHandleIndexes;
     const viewport = this._context && this._context.viewport;
 
     return {
       data: featureCollection && featureCollection.featureCollection,
       selectedIndexes: isNumeric(selectedFeatureIndex) ? [selectedFeatureIndex] : [],
+      selectedEditHandleIndexes,
       lastPointerMoveEvent,
       viewport,
       featuresDraggable: this.props.featuresDraggable,
@@ -183,6 +232,7 @@ export default class ModeHandler extends React.PureComponent<EditorProps, Editor
   _clearEditingState = () => {
     this.setState({
       selectedFeatureIndex: null,
+      selectedEditHandleIndexes: [],
 
       hovered: null,
 
@@ -203,7 +253,13 @@ export default class ModeHandler extends React.PureComponent<EditorProps, Editor
   };
 
   _onSelect = (selected: SelectAction) => {
-    this.setState({ selectedFeatureIndex: selected && selected.selectedFeatureIndex });
+    const { selectedFeatureIndex } = selected;
+    const { selectedEditHandleIndexes } = this.state;
+    const newState = { selectedFeatureIndex, selectedEditHandleIndexes };
+    if (this.state.selectedFeatureIndex !== selectedFeatureIndex) {
+      newState.selectedEditHandleIndexes = [];
+    }
+    this.setState(newState);
     if (this.props.onSelect) {
       this.props.onSelect(selected);
     }
@@ -211,7 +267,12 @@ export default class ModeHandler extends React.PureComponent<EditorProps, Editor
 
   _onEdit = (editAction: EditAction<any>) => {
     const { editType, updatedData, editContext } = editAction;
-    this.setState({ featureCollection: new ImmutableFeatureCollection(updatedData) });
+    const newState = { featureCollection: new ImmutableFeatureCollection(updatedData) };
+    if (editType === EDIT_TYPE.ADD_POSITION) {
+      // @ts-ignore
+      newState.selectedEditHandleIndexes = [];
+    }
+    this.setState(newState);
 
     switch (editType) {
       case EDIT_TYPE.ADD_FEATURE:
@@ -219,6 +280,7 @@ export default class ModeHandler extends React.PureComponent<EditorProps, Editor
           selectedFeature: null,
           selectedFeatureIndex: null,
           selectedEditHandleIndex: null,
+          selectedEditHandleIndexes: [],
           screenCoords: editContext && editContext.screenCoords,
           mapCoords: editContext && editContext.mapCoords,
         });
@@ -279,16 +341,28 @@ export default class ModeHandler extends React.PureComponent<EditorProps, Editor
     if (this._modeHandler instanceof EditingMode || this.props.selectable) {
       const { mapCoords, screenCoords } = event;
       const pickedObject = event.picks && event.picks[0];
+      const selectedEditHandleIndexes = [...this.state.selectedEditHandleIndexes];
       // @ts-ignore
       if (pickedObject && isNumeric(pickedObject.featureIndex)) {
+        const handleIndex =
+          // @ts-ignore
+          pickedObject.type === ELEMENT_TYPE.EDIT_HANDLE ? pickedObject.index : null;
+        const index = selectedEditHandleIndexes.indexOf(handleIndex);
+        if (handleIndex !== null) {
+          if (index !== -1) {
+            selectedEditHandleIndexes.splice(index, 1);
+          } else {
+            selectedEditHandleIndexes.push(handleIndex);
+          }
+          this.setState({ selectedEditHandleIndexes });
+        }
         // @ts-ignore
         const selectedFeatureIndex = pickedObject.featureIndex;
         this._onSelect({
           selectedFeature: pickedObject.object,
           selectedFeatureIndex,
-          selectedEditHandleIndex:
-            // @ts-ignore
-            pickedObject.type === ELEMENT_TYPE.EDIT_HANDLE ? pickedObject.index : null,
+          selectedEditHandleIndex: handleIndex,
+          selectedEditHandleIndexes,
           // @ts-ignore
           mapCoords,
           screenCoords,
@@ -298,6 +372,7 @@ export default class ModeHandler extends React.PureComponent<EditorProps, Editor
           selectedFeature: null,
           selectedFeatureIndex: null,
           selectedEditHandleIndex: null,
+          selectedEditHandleIndexes,
           // @ts-ignore
           mapCoords,
           screenCoords,

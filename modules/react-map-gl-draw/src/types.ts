@@ -21,6 +21,7 @@ export type SelectAction = {
   selectedFeature: Feature | null | undefined;
   selectedFeatureIndex?: number | null | undefined;
   selectedEditHandleIndex?: number | null | undefined;
+  selectedEditHandleIndexes: number[];
   screenCoords: ScreenCoordinates | null | undefined;
   mapCoords: Position | null | undefined;
 };
@@ -54,6 +55,7 @@ export type EditorState = {
   featureCollection: ImmutableFeatureCollection | null | undefined;
 
   selectedFeatureIndex: number | null | undefined;
+  selectedEditHandleIndexes: number[];
 
   hovered: Pick | null | undefined;
   lastPointerMoveEvent: PointerMoveEvent;

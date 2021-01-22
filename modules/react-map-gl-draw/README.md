@@ -32,6 +32,7 @@ And an advanced
   - `selectedFeature`: selected feature. `null` if clicked an empty space.
   - `selectedFeatureIndex`: selected feature index.`null` if clicked an empty space.
   - `editHandleIndex`: selected editHandle index. `null` if clicked an empty space.
+  - `selectedEditHandleIndexes`: current selected editHandle indexes, empty array if no selection.
   - `screenCoords`: screen coordinates of the clicked position.
   - `mapCoords`: map coordinates of the clicked position.
 
@@ -121,6 +122,12 @@ As shown in the above image, for the feature currently being edited,
 ##### `deleteFeatures` (Feature | Feature[])
 
 - Delete a single or multiple GeoJson features to editor.
+
+##### `deleteHandlers` (featureIndex: number | undefined, handleIndexes: number[] | undefined)
+
+- Delete the passed handleIndexes from a feature index, if both parameters are ignored, current selection respectively will be used.
+
+- Returns a feature collection with the modified features. See the example for more details.
 
 ## Know Issues
 

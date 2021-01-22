@@ -39,11 +39,15 @@ test('Transform mode correctly renders composited guides', () => {
   expect(rotateGuide.length).toEqual(1);
   expect(rotateGuide).toMatchSnapshot();
 
-  const envelopingBox = guides.filter((guide) => guide.geometry.type === 'Polygon');
-  expect(envelopingBox.length).toEqual(1);
-  expect(envelopingBox).toMatchSnapshot();
+  const lineGuides = guides.filter((guide) => guide.geometry.type === 'LineString');
+  expect(lineGuides.length).toEqual(2);
 
-  const rotateLineGuide = guides.filter((guide) => guide.geometry.type === 'LineString');
-  expect(rotateLineGuide.length).toEqual(1);
-  expect(rotateLineGuide).toMatchSnapshot();
+  // scale bounding box
+  expect(lineGuides[0].geometry.coordinates.length).toEqual(5);
+  expect(lineGuides[0].geometry.coordinates[0]).toEqual(lineGuides[0].geometry.coordinates[4]);
+
+  // rotation handle
+  expect(lineGuides[1].geometry.coordinates.length).toEqual(2);
+
+  expect(lineGuides).toMatchSnapshot();
 });

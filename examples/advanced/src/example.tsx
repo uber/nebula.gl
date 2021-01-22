@@ -564,9 +564,13 @@ export default class Example extends React.Component<
                 this.state.modeConfig.turfOptions.units) ||
               'kilometers'
             }
-            onChange={(event) =>
-              this.setState({ modeConfig: { turfOptions: { units: event.target.value } } })
-            }
+            onChange={(event) => {
+              const modeConfig = {
+                ...this.state.modeConfig,
+                turfOptions: { units: event.target.value },
+              };
+              this.setState({ modeConfig });
+            }}
           >
             <option value="kilometers">kilometers</option>
             <option value="miles">miles</option>
@@ -744,8 +748,10 @@ export default class Example extends React.Component<
   }
 
   renderStaticMap(viewport: Record<string, any>) {
-    // @ts-ignore
-    return <StaticMap {...viewport} mapStyle={'mapbox://styles/mapbox/dark-v10'} />;
+    return (
+      // @ts-ignore
+      <StaticMap {...viewport} mapStyle={'mapbox://styles/mapbox/dark-v10'} />
+    );
   }
 
   _featureMenuClick(action: string) {

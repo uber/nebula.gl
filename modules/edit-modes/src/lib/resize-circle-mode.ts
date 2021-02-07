@@ -39,7 +39,8 @@ export class ResizeCircleMode extends GeoJsonEditMode {
       // is the feature in the pick selected
       if (
         featureAsPick &&
-        !featureAsPick.object.geometry.type.includes('Point') &&
+        featureAsPick.object.properties.shape &&
+        featureAsPick.object.properties.shape.includes('Circle') &&
         props.selectedIndexes.includes(featureAsPick.index)
       ) {
         let intermediatePoint: NearestPointType | null | undefined = null;

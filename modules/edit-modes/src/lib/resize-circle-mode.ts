@@ -135,10 +135,7 @@ export class ResizeCircleMode extends GeoJsonEditMode {
       const geometry = updatedFeature.geometry;
 
       const updatedData = new ImmutableFeatureCollection(props.data)
-        .replaceGeometry(
-          editHandleProperties.featureIndex,
-          geometry
-        )
+        .replaceGeometry(editHandleProperties.featureIndex, geometry)
         .getObject();
 
       props.onEdit({

@@ -128,10 +128,10 @@ export class ResizeCircleMode extends GeoJsonEditMode {
 
       const feature = this.getSelectedFeature(props);
       const center = turfCenter(feature).geometry.coordinates;
-
+      const numberOfSteps = Object.entries(feature.geometry.coordinates[0]).length - 1;
       const radius = Math.max(distance(center, event.mapCoords), 0.001);
 
-      const { steps = 64 } = {};
+      const { steps = numberOfSteps } = {};
       const options = { steps };
       const updatedFeature = circle(center, radius, options);
       const geometry = updatedFeature.geometry;

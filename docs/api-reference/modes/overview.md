@@ -73,6 +73,10 @@ The following options can be provided in the `modeConfig` object:
 
 - `position` (Array): An array containing the ground coordinates (i.e. [lng, lat]) of the added position
 
+## [ResizeCircleMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/resize-circle-mode.js)
+
+User can resize an existing circular Polygon feature by clicking and dragging along the ring.
+
 ## [DrawPolygonMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/draw-polygon-mode.js)
 
 User can draw a new `Polygon` feature by clicking positions to add then closing the polygon (or double-clicking).

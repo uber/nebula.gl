@@ -25,16 +25,18 @@ import { ImmutableFeatureCollection } from './immutable-feature-collection';
 export class ResizeCircleMode extends GeoJsonEditMode {
   getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
     const handles = [];
+    const selectedFeatureIndexes = props.selectedIndexes;
 
     const { lastPointerMoveEvent } = props;
     const picks = lastPointerMoveEvent && lastPointerMoveEvent.picks;
     const mapCoords = lastPointerMoveEvent && lastPointerMoveEvent.mapCoords;
 
     // intermediate edit handle
-    if (picks && picks.length && mapCoords) {
+    if (picks && picks.length && mapCoords && selectedFeatureIndexes.length === 1) {
       const existingEditHandle = getPickedExistingEditHandle(picks);
       // don't show intermediate point when too close to an existing edit handle
       const featureAsPick = !existingEditHandle && picks.find((pick) => !pick.isGuide);
+      console.log(featureAsPick);
 
       // is the feature in the pick selected
       if (

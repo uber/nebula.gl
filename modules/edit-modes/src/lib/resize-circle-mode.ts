@@ -8,7 +8,6 @@ import {
   nearestPointOnProjectedLine,
   getPickedEditHandles,
   getPickedEditHandle,
-  getPickedExistingEditHandle,
   NearestPointType,
 } from '../utils';
 import { LineString, Point, FeatureCollection, FeatureOf } from '../geojson-types';
@@ -33,9 +32,7 @@ export class ResizeCircleMode extends GeoJsonEditMode {
 
     // intermediate edit handle
     if (picks && picks.length && mapCoords && selectedFeatureIndexes.length === 1) {
-      const existingEditHandle = getPickedExistingEditHandle(picks);
-      // don't show intermediate point when too close to an existing edit handle
-      const featureAsPick = !existingEditHandle && picks.find((pick) => !pick.isGuide);
+      const featureAsPick = picks.find((pick) => !pick.isGuide);
 
       // is the feature in the pick selected
       if (

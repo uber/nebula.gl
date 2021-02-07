@@ -36,7 +36,6 @@ export class ResizeCircleMode extends GeoJsonEditMode {
       const existingEditHandle = getPickedExistingEditHandle(picks);
       // don't show intermediate point when too close to an existing edit handle
       const featureAsPick = !existingEditHandle && picks.find((pick) => !pick.isGuide);
-      console.log(featureAsPick);
 
       // is the feature in the pick selected
       if (

@@ -6,6 +6,7 @@ export { GeoJsonEditMode } from './lib/geojson-edit-mode';
 
 // Alter modes
 export { ModifyMode } from './lib/modify-mode';
+export { ResizeCircleMode } from './lib/resize-circle-mode';
 export { TranslateMode } from './lib/translate-mode';
 export { ScaleMode } from './lib/scale-mode';
 export { RotateMode } from './lib/rotate-mode';

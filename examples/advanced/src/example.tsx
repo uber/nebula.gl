@@ -12,6 +12,7 @@ import {
   EditableGeoJsonLayer,
   SelectionLayer,
   ModifyMode,
+  ResizeCircleMode,
   TranslateMode,
   TransformMode,
   ScaleMode,
@@ -110,6 +111,7 @@ const ALL_MODES: any = [
     category: 'Alter',
     modes: [
       { label: 'Modify', mode: ModifyMode },
+      { label: 'Resize Circle', mode: ResizeCircleMode },
       { label: 'Elevation', mode: ElevationMode },
       { label: 'Translate', mode: new SnappableMode(new TranslateMode()) },
       { label: 'Rotate', mode: RotateMode },

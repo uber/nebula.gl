@@ -162,7 +162,7 @@ export class ResizeCircleMode extends GeoJsonEditMode {
           ? selectedEditHandle
           : null;
     }
-    
+
     const cursor = this.getCursor(event);
     props.onUpdateCursor(cursor);
   }

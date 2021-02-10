@@ -29,6 +29,7 @@ export { GeoJsonEditMode } from '@nebula.gl/edit-modes';
 
 // Alter modes
 export { ModifyMode } from '@nebula.gl/edit-modes';
+export { ResizeCircleMode } from '@nebula.gl/edit-modes';
 export { TranslateMode } from '@nebula.gl/edit-modes';
 export { ScaleMode } from '@nebula.gl/edit-modes';
 export { RotateMode } from '@nebula.gl/edit-modes';

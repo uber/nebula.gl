@@ -43,7 +43,7 @@ export class ResizeCircleMode extends GeoJsonEditMode {
       mapCoords &&
       selectedFeatureIndexes.length === 1 &&
       !this._isResizing
-      ) {
+    ) {
       const featureAsPick = picks.find((pick) => !pick.isGuide);
 
       // is the feature in the pick selected

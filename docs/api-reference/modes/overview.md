@@ -75,7 +75,14 @@ The following options can be provided in the `modeConfig` object:
 
 ## [ResizeCircleMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/resize-circle-mode.js)
 
-User can resize an existing circular Polygon feature by clicking and dragging along the ring.
+User can resize an existing circular Polygon feature by clicking along the ring.
+
+### ModeConfig
+
+The following options can be provided in the `modeConfig` object:
+
+- `dragToDraw` (optional): `boolean`
+  - If `true`, user can click and drag instead of clicking twice. Note however, that the user will not be able to pan the map while drawing.
 
 ## [DrawPolygonMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/draw-polygon-mode.js)
 

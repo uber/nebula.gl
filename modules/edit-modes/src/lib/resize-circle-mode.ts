@@ -14,14 +14,20 @@ import { LineString, Point, FeatureCollection, FeatureOf } from '../geojson-type
 import {
   ModeProps,
   PointerMoveEvent,
+  StartDraggingEvent,
+  StopDraggingEvent,
   DraggingEvent,
   Viewport,
+  EditHandleFeature,
   GuideFeatureCollection,
 } from '../types';
 import { GeoJsonEditMode } from './geojson-edit-mode';
 import { ImmutableFeatureCollection } from './immutable-feature-collection';
 
 export class ResizeCircleMode extends GeoJsonEditMode {
+  _selectedEditHandle: EditHandleFeature | null | undefined;
+  _isResizing = false;
+
   getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
     const handles = [];
     const selectedFeatureIndexes = props.selectedIndexes;
@@ -31,7 +37,13 @@ export class ResizeCircleMode extends GeoJsonEditMode {
     const mapCoords = lastPointerMoveEvent && lastPointerMoveEvent.mapCoords;
 
     // intermediate edit handle
-    if (picks && picks.length && mapCoords && selectedFeatureIndexes.length === 1) {
+    if (
+      picks &&
+      picks.length &&
+      mapCoords &&
+      selectedFeatureIndexes.length === 1 &&
+      !this._isResizing
+    ) {
       const featureAsPick = picks.find((pick) => !pick.isGuide);
 
       // is the feature in the pick selected
@@ -149,8 +161,29 @@ export class ResizeCircleMode extends GeoJsonEditMode {
   }
 
   handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>): void {
+    if (!this._isResizing) {
+      const selectedEditHandle = getPickedEditHandle(event.picks);
+      this._selectedEditHandle =
+        selectedEditHandle && selectedEditHandle.properties.editHandleType === 'intermediate'
+          ? selectedEditHandle
+          : null;
+    }
+
     const cursor = this.getCursor(event);
     props.onUpdateCursor(cursor);
+  }
+
+  handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollection>) {
+    if (this._selectedEditHandle) {
+      this._isResizing = true;
+    }
+  }
+
+  handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollection>) {
+    if (this._isResizing) {
+      this._selectedEditHandle = null;
+      this._isResizing = false;
+    }
   }
 
   getCursor(event: PointerMoveEvent): string | null | undefined {

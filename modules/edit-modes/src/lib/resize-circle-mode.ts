@@ -177,7 +177,7 @@ export class ResizeCircleMode extends GeoJsonEditMode {
           : null;
     }
 
-    const cursor = this.getCursor(event);
+    const cursor = this.getCursor(event, props);
     props.onUpdateCursor(cursor);
   }
 
@@ -194,11 +194,16 @@ export class ResizeCircleMode extends GeoJsonEditMode {
     }
   }
 
-  getCursor(event: PointerMoveEvent): string | null | undefined {
+  getCursor(
+    event: PointerMoveEvent,
+    props: ModeProps<FeatureCollection>
+  ): string | null | undefined {
     const picks = (event && event.picks) || [];
 
     const handlesPicked = getPickedEditHandles(picks);
-    if (handlesPicked.length) {
+    const isResizingByClickingTwice =
+      props.modeConfig && !props.modeConfig.dragToDraw && this._isResizing;
+    if (handlesPicked.length || isResizingByClickingTwice) {
       return 'cell';
     }
     return null;

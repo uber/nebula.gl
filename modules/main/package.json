@@ -80,9 +80,9 @@
     "viewport-mercator-project": ">=6.0.0"
   },
   "peerDependencies": {
-    "@deck.gl/core": "^8.0.3",
-    "@deck.gl/geo-layers": "^8.0.3",
-    "@deck.gl/layers": "^8.0.3",
+    "@deck.gl/core": "^8.4.6",
+    "@deck.gl/geo-layers": "^8.4.6",
+    "@deck.gl/layers": "^8.4.6",
     "@luma.gl/constants": "^8.4.3",
     "@luma.gl/core": "^8.4.3"
   }

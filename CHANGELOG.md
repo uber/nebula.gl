@@ -4,6 +4,21 @@ _All notable changes to this project will be documented in this file. This proje
 
 <!-- INSERT HERE -->
 
+## [0.22.2](https://github.com/uber/nebula.gl/compare/v0.21.0...v0.22.2) - 2021-02-18
+
+### Changes
+
+* [path-marker-layer] Fix arrow direction for deck.gl version > 8.0 (#527)
+* Hide the intermediate edit handle when resizing a circle (#524)
+* Add resize circle mode (#521)
+* Remove handles / vertices  (#433)
+* feat: Convert class properties to overridable methods. (#458)
+* fix: add support for DrawPolygonByDragging mode (#516)
+* feat(measure-distance-mode): Add multipoint support (#504)
+* Add missing @turf/helpers depenedency to overlays module (#488)
+* fix: issue with updateState when autoHighlight and pickable on (#486)
+* Flesh out the Toolbox component (#484)
+
 ## [0.21.0](https://github.com/uber/nebula.gl/compare/v0.20.2...v0.21.0) - 2020-10-01
 
 ### Changes

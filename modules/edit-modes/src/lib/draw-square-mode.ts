@@ -30,7 +30,7 @@ export class DrawSquareMode extends TwoClickPolygonMode {
 
     // get the coordinates of the second square vertex
     const newPoint = turfAlong(line, shortestDistance);
-    var corner = newPoint.geometry.coordinates;
+    const corner = newPoint.geometry.coordinates;
 
     const square = bboxPolygon([coord1[0], coord1[1], corner[0], corner[1]]);
     square.properties = square.properties || {};

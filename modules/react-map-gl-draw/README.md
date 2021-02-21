@@ -14,6 +14,7 @@ Support the following modes from `@nebula.gl/edit-modes`. Note: Currently `react
 - `DrawLineStringMode`: Lets you draw a GeoJson `LineString` feature.
 - `DrawPolygonMode`: Lets you draw a GeoJson `Polygon` feature.
 - `DrawRectangleMode`: Lets you draw a `Rectangle` (represented as GeoJson `Polygon` feature) with two clicks - start drawing on first click, and finish drawing on second click.
+- `DrawRectangleFromCenterMode`: Lets you draw a `Rectangle` (represented as GeoJson `Polygon` feature) with two clicks - start drawing on first click, and finish drawing on second click.
   - If you'd like to starting drawing by mouse down and end drawing by mouse up, you can use `modeConfig: {dragToDraw: true}`. See `modeConfig` for more details.
 
 And an advanced

@@ -7,23 +7,17 @@ import { TwoClickPolygonMode } from './two-click-polygon-mode';
 
 export class DrawSquareMode extends TwoClickPolygonMode {
   getTwoClickPolygon(coord1: Position, coord2: Position, modeConfig: any): FeatureOf<Polygon> {
-    const x1 = coord1[0];
-    const y1 = coord1[1];
-
-    const x2 = coord2[0];
-    const y2 = coord2[1];
-
     // get the coordinates of the other two rectangle vertices
-    const coordA = [x2, y1];
-    const coordB = [x1, y2];
+    const coord3 = [coord2[0], coord1[1]];
+    const coord4 = [coord1[0], coord2[1]];
 
     // determine the shortest distance to the origin, which will be the length of each square side
-    const distanceA = turfDistance(point(coordA), point(coord1));
-    const distanceB = turfDistance(point(coordB), point(coord1));
-    const shortestDistance = distanceA <= distanceB ? distanceA : distanceB;
+    const distance1 = turfDistance(point(coord3), point(coord1));
+    const distance2 = turfDistance(point(coord4), point(coord1));
+    const shortestDistance = distance1 <= distance2 ? distance1 : distance2;
 
     // determine which coordinate pair of the two is closest to the origin
-    const closestPoint = distanceA <= distanceB ? coordA : coordB;
+    const closestPoint = distance1 <= distance2 ? coord3 : coord4;
 
     // create a linestring which will used to locate the second square vertex
     const line = turfLineString([closestPoint, coord2]);

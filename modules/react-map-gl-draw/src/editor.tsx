@@ -279,8 +279,10 @@ export default class Editor extends ModeHandler {
     const { featureStyle } = this.props;
     const {
       geometry: { type: geojsonType },
-      properties: { shape },
+      properties,
     } = feature;
+
+    const shape = properties?.shape;
 
     const coordinates = getFeatureCoordinates(feature);
     if (!coordinates || !Array.isArray(coordinates) || coordinates.length < 2) {
@@ -545,9 +547,11 @@ export default class Editor extends ModeHandler {
       return null;
     }
     const {
-      properties: { shape },
+      properties,
       geometry: { type: geojsonType },
     } = feature;
+
+    const shape = properties?.shape;
     // @ts-ignore
     const path = this._getPathInScreenCoords(coordinates, geojsonType);
     if (!path) {

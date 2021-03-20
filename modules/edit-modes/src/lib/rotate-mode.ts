@@ -92,6 +92,7 @@ export class RotateMode extends GeoJsonEditMode {
       polygonToLine(boundingBox),
       // @ts-ignore
       rotateHandle,
+      // @ts-ignore
       lineFromEnvelopeToRotateHandle,
     ]);
   }

@@ -26,6 +26,7 @@ import {
   DrawLineStringMode,
   DrawPolygonMode,
   DrawRectangleMode,
+  DrawSquareFromCenterMode,
   DrawCircleByDiameterMode,
   DrawCircleFromCenterMode,
   DrawEllipseByBoundingBoxMode,
@@ -101,6 +102,7 @@ const ALL_MODES: any = [
       { label: 'Draw Polygon By Dragging', mode: DrawPolygonByDraggingMode },
       { label: 'Draw Rectangle', mode: DrawRectangleMode },
       { label: 'Draw Rectangle Using 3 Points', mode: DrawRectangleUsingThreePointsMode },
+      { label: 'Draw Square From Center', mode: DrawSquareFromCenterMode },
       { label: 'Draw Circle From Center', mode: DrawCircleFromCenterMode },
       { label: 'Draw Circle By Diameter', mode: DrawCircleByDiameterMode },
       { label: 'Draw Ellipse By Bounding Box', mode: DrawEllipseByBoundingBoxMode },
@@ -135,6 +137,7 @@ const POLYGON_DRAWING_MODES = [
   DrawPolygonByDraggingMode,
   DrawRectangleMode,
   DrawRectangleUsingThreePointsMode,
+  DrawSquareFromCenterMode,
   DrawCircleFromCenterMode,
   DrawCircleByDiameterMode,
   DrawEllipseByBoundingBoxMode,
@@ -143,6 +146,7 @@ const POLYGON_DRAWING_MODES = [
 
 const TWO_CLICK_POLYGON_MODES = [
   DrawRectangleMode,
+  DrawSquareFromCenterMode,
   DrawCircleFromCenterMode,
   DrawCircleByDiameterMode,
   DrawEllipseByBoundingBoxMode,

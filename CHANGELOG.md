@@ -4,6 +4,12 @@ _All notable changes to this project will be documented in this file. This proje
 
 <!-- INSERT HERE -->
 
+## [0.22.3](https://github.com/uber/nebula.gl/compare/v0.22.2...v0.22.3) - 2021-02-22
+
+### Changes
+
+* [path-marker-layer] Fix arrow direction (#533)
+
 ## [0.22.2](https://github.com/uber/nebula.gl/compare/v0.21.0...v0.22.2) - 2021-02-18
 
 ### Changes

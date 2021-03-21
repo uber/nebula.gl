@@ -119,6 +119,17 @@ The following options can be provided in the `modeConfig` object:
 
 User can draw a new rectangular `Polygon` feature by clicking three corners of the rectangle.
 
+## [DrawSquareFromCenterMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/draw-square-from-center-mode.ts)
+
+User can draw a new square-shaped `Polygon` feature by clicking the center and then along one of the corners of the square.
+
+### ModeConfig
+
+The following options can be provided in the `modeConfig` object:
+
+- `dragToDraw` (optional): `boolean`
+  - If `true`, user can click and drag instead of clicking twice. Note however, that the user will not be able to pan the map while drawing.
+
 ## [DrawCircleFromCenterMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/draw-circle-from-center-mode.ts)
 
 User can draw a new circular `Polygon` feature by clicking the center then along the ring.

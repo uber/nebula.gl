@@ -1,3 +1,5 @@
+import lineIntersect from '@turf/line-intersect';
+import { lineString as turfLineString } from '@turf/helpers';
 import {
   ClickEvent,
   PointerMoveEvent,
@@ -5,8 +7,6 @@ import {
   GuideFeatureCollection,
   TentativeFeature,
 } from '../types';
-import lineIntersect from '@turf/line-intersect';
-import { lineString as turfLineString } from '@turf/helpers';
 import { Polygon, FeatureCollection } from '../geojson-types';
 import { getPickedEditHandle } from '../utils';
 import { GeoJsonEditMode } from './geojson-edit-mode';

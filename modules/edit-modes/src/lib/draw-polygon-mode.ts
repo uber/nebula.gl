@@ -84,7 +84,7 @@ export class DrawPolygonMode extends GeoJsonEditMode {
     const clickSequence = this.getClickSequence();
 
     let currentLineOverlapsOtherLines = false;
-    if (clickSequence.length > 2) {
+    if (clickSequence.length > 2 && props.modeConfig && props.modeConfig.preventOverlappingLines) {
       const line1 = turfLineString([clickSequence[clickSequence.length - 1], event.mapCoords]);
       const line2 = turfLineString([...clickSequence.slice(0, clickSequence.length - 1)]);
       const intersectingPoints = lineIntersect(line1, line2);

@@ -83,18 +83,21 @@ export class DrawPolygonMode extends GeoJsonEditMode {
     const clickedEditHandle = getPickedEditHandle(picks);
     const clickSequence = this.getClickSequence();
 
-    let currentLineOverlapsOtherLines = false;
+    let overlappingLines = false;
     if (clickSequence.length > 2 && props.modeConfig && props.modeConfig.preventOverlappingLines) {
-      const line1 = turfLineString([clickSequence[clickSequence.length - 1], event.mapCoords]);
-      const line2 = turfLineString([...clickSequence.slice(0, clickSequence.length - 1)]);
-      const intersectingPoints = lineIntersect(line1, line2);
+      const currentLine = turfLineString([
+        clickSequence[clickSequence.length - 1],
+        event.mapCoords,
+      ]);
+      const otherLines = turfLineString([...clickSequence.slice(0, clickSequence.length - 1)]);
+      const intersectingPoints = lineIntersect(currentLine, otherLines);
       if (intersectingPoints.features.length > 0) {
-        currentLineOverlapsOtherLines = true;
+        overlappingLines = true;
       }
     }
 
     let positionAdded = false;
-    if (!clickedEditHandle && !currentLineOverlapsOtherLines) {
+    if (!clickedEditHandle && !overlappingLines) {
       // Don't add another point right next to an existing one
       this.addClickSequence(event);
       positionAdded = true;

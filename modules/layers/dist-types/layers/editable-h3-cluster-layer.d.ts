@@ -1,0 +1,61 @@
+import EditableLayer from './editable-layer';
+export default class EditableH3ClusterLayer extends EditableLayer {
+    static layerName: string;
+    static defaultProps: {
+        data: any[];
+        selectedIndexes: any[];
+        filled: boolean;
+        stroked: boolean;
+        lineWidthScale: number;
+        lineWidthMinPixels: number;
+        lineWidthMaxPixels: number;
+        lineWidthUnits: string;
+        getHexagons: (d: any) => any;
+        getEditedCluster: (updatedHexagons: any, existingCluster: any) => any;
+        resolution: number;
+        mode: typeof import("@nebula.gl/edit-modes").DrawPolygonMode;
+        onEdit: () => void;
+        pickable: boolean;
+        pickingRadius: number;
+        pickingDepth: number;
+        fp64: boolean;
+        lineJointRounded: boolean;
+        lineMiterLimit: number;
+        pointRadiusScale: number;
+        pointRadiusMinPixels: number;
+        pointRadiusMaxPixels: number;
+        getLineColor: (feature: any, isSelected: any, mode: any) => number[];
+        getFillColor: (feature: any, isSelected: any, mode: any) => number[];
+        getRadius: (f: any) => any;
+        getLineWidth: (f: any) => any;
+        getTentativeLineColor: (f: any) => number[];
+        getTentativeFillColor: (f: any) => number[];
+        getTentativeLineWidth: (f: any) => any;
+        editHandleType: string;
+        editHandlePointRadiusScale: number;
+        editHandlePointOutline: boolean;
+        editHandlePointStrokeWidth: number;
+        editHandlePointRadiusMinPixels: number;
+        editHandlePointRadiusMaxPixels: number;
+        getEditHandlePointColor: (handle: any) => number[];
+        getEditHandlePointOutlineColor: (handle: any) => number[];
+        getEditHandlePointRadius: (handle: any) => 3 | 5 | 7;
+        editHandleIconAtlas: any;
+        editHandleIconMapping: any;
+        editHandleIconSizeScale: number;
+        getEditHandleIcon: (handle: any) => any;
+        getEditHandleIconSize: number;
+        getEditHandleIconColor: (handle: any) => number[];
+        getEditHandleIconAngle: number;
+        billboard: boolean;
+    };
+    initializeState(): void;
+    getDerivedHexagonIDs(coords: any): string[];
+    getDerivedHexagonID(coords: any): string;
+    renderLayers(): any;
+    getSelectedHexIDs(): any[];
+    getCursor({ isDragging }: {
+        isDragging: boolean;
+    }): any;
+}
+//# sourceMappingURL=editable-h3-cluster-layer.d.ts.map

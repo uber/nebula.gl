@@ -1,0 +1,1 @@
+{"version":3,"file":"elevated-edit-handle-layer.d.ts","sourceRoot":"","sources":["../../src/layers/elevated-edit-handle-layer.ts"],"names":[],"mappings":";AAEA,OAAO,EAAE,cAAc,EAAE,MAAM,eAAe,CAAC;AAC/C,OAAO,EAAE,gBAAgB,EAAE,SAAS,EAAE,MAAM,iBAAiB,CAAC;AAI9D,MAAM,CAAC,OAAO,OAAO,uBAAwB,SAAQ,cAAc,CAAC,GAAG,CAAC;IACtE,MAAM,CAAC,SAAS,SAA6B;IAC7C,MAAM,CAAC,YAAY,KAAgB;IACnC,YAAY;CAsBb"}

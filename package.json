@@ -1,6 +1,6 @@
 {
   "name": "nebula.gl",
-  "version": "0.22.3-dev",
+  "version": "0.22.4",
   "description": "A suite of 3D-enabled data editing layers for deck.gl",
   "license": "MIT",
   "private": true,

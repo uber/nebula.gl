@@ -17,6 +17,7 @@ export { DrawPointMode } from './lib/draw-point-mode';
 export { DrawLineStringMode } from './lib/draw-line-string-mode';
 export { DrawPolygonMode } from './lib/draw-polygon-mode';
 export { DrawRectangleMode } from './lib/draw-rectangle-mode';
+export { DrawSquareFromCenterMode } from './lib/draw-square-from-center-mode';
 export { DrawCircleByDiameterMode } from './lib/draw-circle-by-diameter-mode';
 export { DrawCircleFromCenterMode } from './lib/draw-circle-from-center-mode';
 export { DrawEllipseByBoundingBoxMode } from './lib/draw-ellipse-by-bounding-box-mode';

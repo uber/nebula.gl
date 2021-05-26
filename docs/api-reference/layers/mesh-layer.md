@@ -41,7 +41,7 @@ const App = ({ data, viewport }) => {
 ##### `mesh` (Geometry|Object)
 
 The geometry to render for each data object.
-Can be a luma.gl [Geometry](http://uber.github.io/luma.gl/#/documentation/api-reference/geometry) instance, or an object of attributes.
+Can be a luma.gl [Geometry](https://luma.gl/docs/api-reference/engine/geometry) instance, or an object of attributes.
 
 The following attributes are expected:
 
@@ -54,7 +54,7 @@ The following attributes are expected:
 - Default `null`.
 
 The texture of the geometries.
-Can be either a luma.gl [Texture2D](http://uber.github.io/luma.gl/#/documentation/api-reference/texture-2) instance, an HTMLImageElement, or a url string to the texture image.
+Can be either a luma.gl [Texture2D](https://luma.gl/docs/api-reference/webgl/texture-2d\) instance, an HTMLImageElement, or a url string to the texture image.
 
 If `texture` is supplied, texture is used to render the geometries. Otherwise, object color obtained via the `getColor` accessor is used.
 

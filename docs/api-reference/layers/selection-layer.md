@@ -65,7 +65,7 @@ const App = function () {
 
 ## Properties
 
-Inherits all [deck.gl's Base Layer](https://uber.github.io/deck.gl/#/documentation/deckgl-api-reference/layers/layer) properties.
+Inherits all [deck.gl's Base Layer](https://deck.gl/docs/api-reference/core/layer) properties.
 
 Also inherites **some** EditableGeoJsonLayer properties.
 

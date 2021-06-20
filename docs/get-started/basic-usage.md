@@ -3,48 +3,65 @@
 ## Imports
 
 ```jsx
-import * as React from 'react';
-import DeckGL from '@deck.gl/react';
-import { EditableGeoJsonLayer } from '@nebula.gl/layers';
-import { StaticMap } from 'react-map-gl';
+import React from "react";
+import DeckGL from "deck.gl";
+import {
+  EditableGeoJsonLayer,
+  DrawLineStringMode,
+  DrawPolygonMode
+} from "nebula.gl";
+import { StaticMap } from "react-map-gl";
 ```
 
 ## Inside your React component
 
-### Initialize
-
 ```jsx
-constructor(props) {
-  super(props);
-  this.state = {
-    geojson: {
-      type: 'FeatureCollection',
-      features: []
-    }
-  };
-}
-```
+function GeometryEditor() {
+  const [features, setFeatures] = React.useState({
+    type: "FeatureCollection",
+    features: []
+  });
+  const [mode, setMode] = React.useState(() => DrawPolygonMode);
+  const [selectedFeatureIndexes] = React.useState([]);
 
-### Render
+  const layer = new EditableGeoJsonLayer({
+    // id: "geojson-layer",
+    data: features,
+    mode,
+    selectedFeatureIndexes,
 
-```jsx
-render() {
-  const editableLayer = new EditableGeoJsonLayer({
-    id: 'geojson',
-    data: this.state.geojson,
-    mode: 'drawPoint',
     onEdit: ({ updatedData }) => {
-      this.setState({ geojson: updatedData });
+      setFeatures(updatedData);
     }
   });
+
   return (
-    <DeckGL
-      initialViewState={initialViewState}
-      controller={true}
-      layers={[editableLayer]}
-    >
-      <StaticMap mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN} />
-    </DeckGL>
+    <>
+      <DeckGL
+        initialViewState={initialViewState}
+        controller={{
+          doubleClickZoom: false
+        }}
+        layers={[layer]}
+        getCursor={layer.getCursor.bind(layer)}
+      >
+        <StaticMap mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN} />
+      </DeckGL>
+      <div style={{ position: "absolute", top: 0, right: 0, color: "white" }}>
+        <button
+          onClick={() => setMode(() => DrawLineStringMode)}
+          style={{ background: mode === DrawLineStringMode ? "#3090e0" : null }}
+        >
+          Line
+        </button>
+        <button
+          onClick={() => setMode(() => DrawPolygonMode)}
+          style={{ background: mode === DrawPolygonMode ? "#3090e0" : null }}
+        >
+          Polygon
+        </button>
+      </div>
+    </>
   );
 }
 ```

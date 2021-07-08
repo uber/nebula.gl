@@ -44,6 +44,7 @@ export enum EDIT_TYPE {
   ADD_FEATURE = 'addFeature',
   ADD_POSITION = 'addPosition',
   REMOVE_POSITION = 'removePosition',
+  ADD_TENTATIVE_POSITION = 'addTentativePosition',
   MOVE_POSITION = 'movePosition',
   FINISH_MOVE_POSITION = 'finishMovePosition',
 }

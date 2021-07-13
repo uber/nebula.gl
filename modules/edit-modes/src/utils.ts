@@ -1,7 +1,9 @@
 import destination from '@turf/destination';
 import bearing from '@turf/bearing';
 import pointToLineDistance from '@turf/point-to-line-distance';
-import { point } from '@turf/helpers';
+import { flattenEach } from '@turf/meta';
+import { point, MultiLineString } from '@turf/helpers';
+import { getCoords } from '@turf/invariant';
 import WebMercatorViewport from 'viewport-mercator-project';
 import { Viewport, Pick, EditHandleFeature, EditHandleType } from './types';
 import {
@@ -116,7 +118,7 @@ export function nearestPointOnProjectedLine(
   // Project the line to viewport, then find the nearest point
   const coordinates: Array<Array<number>> = line.geometry.coordinates as any;
   const projectedCoords = coordinates.map(([x, y, z = 0]) => wmViewport.project([x, y, z]));
-  //@ts-ignore
+  // @ts-ignore
   const [x, y] = wmViewport.project(inPoint.geometry.coordinates);
   // console.log('projectedCoords', JSON.stringify(projectedCoords));
 
@@ -151,7 +153,7 @@ export function nearestPointOnProjectedLine(
       };
     }
   });
-  //@ts-ignore
+  // @ts-ignore
   const { index, x0, y0 } = minPointInfo;
   const [x1, y1, z1 = 0] = projectedCoords[index - 1];
   const [x2, y2, z2 = 0] = projectedCoords[index];
@@ -174,6 +176,136 @@ export function nearestPointOnProjectedLine(
       index: index - 1,
     },
   };
+}
+
+export function nearestPointOnLine<G extends LineString | MultiLineString>(
+  lines: FeatureOf<LineString>,
+  inPoint: FeatureOf<Point>,
+  viewport?: Viewport
+): NearestPointType {
+  let mercator;
+
+  if (viewport) {
+    mercator = new WebMercatorViewport(viewport);
+  }
+  let closestPoint: any = point([Infinity, Infinity], {
+    dist: Infinity,
+  });
+
+  // @ts-ignore
+  flattenEach(lines, (line: any) => {
+    const coords: any = getCoords(line);
+    // @ts-ignore
+    const pointCoords: any = getCoords(inPoint);
+
+    let minDist;
+    let to;
+    let from;
+    let x;
+    let y;
+    let segmentIdx;
+    let dist;
+
+    if (coords.length > 1 && pointCoords.length) {
+      let lineCoordinates;
+      let pointCoordinate;
+
+      // If viewport is given, then translate these coordinates to pixels to increase precision
+      if (mercator) {
+        lineCoordinates = coords.map((lineCoordinate) => mercator.project(lineCoordinate));
+        pointCoordinate = mercator.project(pointCoords);
+      } else {
+        lineCoordinates = coords;
+        pointCoordinate = pointCoords;
+      }
+
+      for (let n = 1; n < lineCoordinates.length; n++) {
+        if (lineCoordinates[n][0] !== lineCoordinates[n - 1][0]) {
+          const slope =
+            (lineCoordinates[n][1] - lineCoordinates[n - 1][1]) /
+            (lineCoordinates[n][0] - lineCoordinates[n - 1][0]);
+          const inverseSlope = lineCoordinates[n][1] - slope * lineCoordinates[n][0];
+
+          dist =
+            Math.abs(slope * pointCoordinate[0] + inverseSlope - pointCoordinate[1]) /
+            Math.sqrt(slope * slope + 1);
+        } else dist = Math.abs(pointCoordinate[0] - lineCoordinates[n][0]);
+
+        // length^2 of line segment
+        const rl2 =
+          Math.pow(lineCoordinates[n][1] - lineCoordinates[n - 1][1], 2) +
+          Math.pow(lineCoordinates[n][0] - lineCoordinates[n - 1][0], 2);
+
+        // distance^2 of pt to end line segment
+        const ln2 =
+          Math.pow(lineCoordinates[n][1] - pointCoordinate[1], 2) +
+          Math.pow(lineCoordinates[n][0] - pointCoordinate[0], 2);
+
+        // distance^2 of pt to begin line segment
+        const lnm12 =
+          Math.pow(lineCoordinates[n - 1][1] - pointCoordinate[1], 2) +
+          Math.pow(lineCoordinates[n - 1][0] - pointCoordinate[0], 2);
+
+        // minimum distance^2 of pt to infinite line
+        const dist2 = Math.pow(dist, 2);
+
+        // calculated length^2 of line segment
+        const calcrl2 = ln2 - dist2 + lnm12 - dist2;
+
+        // redefine minimum distance to line segment (not infinite line) if necessary
+        if (calcrl2 > rl2) {
+          dist = Math.sqrt(Math.min(ln2, lnm12));
+        }
+
+        if (minDist === null || minDist === undefined || minDist > dist) {
+          // eslint-disable-next-line max-depth
+          if (calcrl2 > rl2) {
+            // eslint-disable-next-line max-depth
+            if (lnm12 < ln2) {
+              to = 0; // nearer to previous point
+              from = 1;
+            } else {
+              from = 0; // nearer to current point
+              to = 1;
+            }
+          } else {
+            // perpendicular from point intersects line segment
+            to = Math.sqrt(lnm12 - dist2) / Math.sqrt(rl2);
+            from = Math.sqrt(ln2 - dist2) / Math.sqrt(rl2);
+          }
+          minDist = dist;
+          segmentIdx = n;
+        }
+      }
+
+      const dx = lineCoordinates[segmentIdx - 1][0] - lineCoordinates[segmentIdx][0];
+      const dy = lineCoordinates[segmentIdx - 1][1] - lineCoordinates[segmentIdx][1];
+
+      x = lineCoordinates[segmentIdx - 1][0] - dx * to;
+      y = lineCoordinates[segmentIdx - 1][1] - dy * to;
+    }
+
+    // index needs to be -1 because we have to account for the shift from initial backscan
+    let snapPoint = { x, y, idx: segmentIdx - 1, to, from };
+
+    if (mercator) {
+      const pixelToLatLong = mercator.unproject([snapPoint.x, snapPoint.y]);
+      snapPoint = {
+        x: pixelToLatLong[0],
+        y: pixelToLatLong[1],
+        idx: segmentIdx - 1,
+        to,
+        from,
+      };
+    }
+
+    closestPoint = point([snapPoint.x, snapPoint.y], {
+      dist: Math.abs(snapPoint.from - snapPoint.to),
+      index: snapPoint.idx,
+    });
+  });
+
+  return closestPoint;
 }
 
 export function getPickedEditHandle(
@@ -289,7 +421,7 @@ export function getEditHandlesForGeometry(
 
       break;
     default:
-      //@ts-ignore
+      // @ts-ignore
       throw Error(`Unhandled geometry type: ${geometry.type}`);
   }
 

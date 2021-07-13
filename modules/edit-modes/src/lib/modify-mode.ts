@@ -1,8 +1,8 @@
-import nearestPointOnLine from '@turf/nearest-point-on-line';
 import { point, lineString as toLineString } from '@turf/helpers';
 import {
   recursivelyTraverseNestedArrays,
   nearestPointOnProjectedLine,
+  nearestPointOnLine,
   getEditHandlesForGeometry,
   getPickedEditHandles,
   getPickedEditHandle,
@@ -124,8 +124,7 @@ export class ModifyMode extends GeoJsonEditMode {
         'Editing 3D point but modeConfig.viewport not provided. Falling back to 2D logic.'
       );
     }
-
-    return nearestPointOnLine(line, inPoint);
+    return nearestPointOnLine(line, inPoint, viewport);
   }
 
   handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>) {

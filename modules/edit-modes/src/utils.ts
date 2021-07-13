@@ -192,6 +192,10 @@ export function nearestPointOnLine<G extends LineString | MultiLineString>(
     dist: Infinity,
   });
 
+  if (!lines.geometry?.coordinates.length || lines.geometry?.coordinates.length < 2) {
+    return closestPoint;
+  }
+
   // @ts-ignore
   flattenEach(lines, (line: any) => {
     const coords: any = getCoords(line);

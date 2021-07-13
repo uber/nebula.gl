@@ -5,6 +5,7 @@ import {
   distance2d,
   mix,
   nearestPointOnProjectedLine,
+  nearestPointOnLine,
 } from '../../src/utils';
 import { Position } from '../../src/geojson-types';
 
@@ -207,6 +208,40 @@ describe('nearestPointOnProjectedLine() and related functions', () => {
     expect(result.geometry.coordinates[0]).toBeCloseTo(0.5, 3);
     expect(result.geometry.coordinates[1]).toBeCloseTo(0.5, 3);
     expect(result.geometry.coordinates[2]).toBeCloseTo(0.5, 3);
+    expect(result.properties.index).toEqual(0);
+  });
+});
+
+describe('nearestPointOnLine()', () => {
+  const viewport = {
+    project: (x) => x,
+    unproject: (x) => x,
+  };
+
+  it('Correctly intersects line normal to slope of line', () => {
+    // @ts-ignore
+    const result = nearestPointOnLine(LineString, Point, viewport);
+    expect(result.geometry.type).toEqual('Point');
+    expect(result.geometry.coordinates.length).toEqual(2);
+    expect(result.geometry.coordinates[0]).toBeCloseTo(102.25, 3);
+    expect(result.geometry.coordinates[1]).toBeCloseTo(0.25, 3);
+    expect(result.properties.index).toEqual(0);
+  });
+
+  it('Snaps to the end when the point is past the end of the LineString', () => {
+    const point = {
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: [100.0, -4.0],
+      },
+    };
+    // @ts-ignore
+    const result = nearestPointOnLine(LineString, point, viewport);
+    expect(result.geometry.type).toEqual('Point');
+    expect(result.geometry.coordinates.length).toEqual(2);
+    expect(result.geometry.coordinates[0]).toBeCloseTo(102.0, 3);
+    expect(result.geometry.coordinates[1]).toBeCloseTo(0.0, 3);
     expect(result.properties.index).toEqual(0);
   });
 });

@@ -63,7 +63,7 @@ export class ModifyMode extends GeoJsonEditMode {
           [],
           (lineString, prefix) => {
             const lineStringFeature = toLineString(lineString);
-            const candidateIntermediatePoint = this.nearestPointOnLine(
+            const candidateIntermediatePoint = this.getNearestPoint(
               // @ts-ignore
               lineStringFeature,
               referencePoint,
@@ -108,7 +108,7 @@ export class ModifyMode extends GeoJsonEditMode {
   }
 
   // turf.js does not support elevation for nearestPointOnLine
-  nearestPointOnLine(
+  getNearestPoint(
     line: FeatureOf<LineString>,
     inPoint: FeatureOf<Point>,
     viewport: Viewport | null | undefined

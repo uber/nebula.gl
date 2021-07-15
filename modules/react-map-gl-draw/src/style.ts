@@ -130,3 +130,8 @@ export function editHandleStyle({ feature, shape, index, state }) {
 
   return style;
 }
+
+export const tooltipStyle = {
+  fill: 'black',
+  fontSize: 14,
+};

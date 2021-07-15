@@ -14,4 +14,7 @@ export {
   DrawPolygonMode,
   DrawRectangleMode,
   DrawPolygonByDraggingMode,
+  MeasureDistanceMode,
+  MeasureAreaMode,
+  MeasureAngleMode,
 } from '@nebula.gl/edit-modes';

@@ -417,13 +417,11 @@ export default class ModeHandler extends React.PureComponent<EditorProps, Editor
       cancelPan: event.sourceEvent.stopImmediatePropagation,
     };
 
+    const modeProps = this.getModeProps();
+
+    this._modeHandler.handlePointerMove(pointerMoveEvent, modeProps);
     if (this.state.didDrag) {
-      const modeProps = this.getModeProps();
-      if (this._modeHandler.handleDragging) {
-        this._modeHandler.handleDragging(pointerMoveEvent, modeProps);
-      } else {
-        this._modeHandler.handlePointerMove(pointerMoveEvent, modeProps);
-      }
+      this._modeHandler.handleDragging(pointerMoveEvent, modeProps);
     }
 
     this.setState({

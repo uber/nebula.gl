@@ -10,8 +10,9 @@ import {
   getPickedEditHandle,
   NearestPointType,
 } from '../utils';
-import { LineString, Point, FeatureCollection, FeatureOf } from '../geojson-types';
+import { LineString, Point, Position, FeatureCollection, FeatureOf } from '../geojson-types';
 import {
+  ClickEvent,
   ModeProps,
   PointerMoveEvent,
   StartDraggingEvent,
@@ -128,6 +129,10 @@ export class ResizeCircleMode extends GeoJsonEditMode {
   }
 
   handleDragging(event: DraggingEvent, props: ModeProps<FeatureCollection>): void {
+    if (props.modeConfig && !props.modeConfig.dragToDraw) {
+      return;
+    }
+
     const editHandle = getPickedEditHandle(event.pointerDownPicks);
 
     if (editHandle) {
@@ -135,32 +140,35 @@ export class ResizeCircleMode extends GeoJsonEditMode {
       event.cancelPan();
 
       const editHandleProperties = editHandle.properties;
+      const featureIndex = editHandleProperties.featureIndex;
+      const pointerPosition = event.mapCoords;
+      this.drawCircle(featureIndex, pointerPosition, props);
+    }
+  }
 
-      const feature = this.getSelectedFeature(props);
-      const center = turfCenter(feature).geometry.coordinates;
-      const numberOfSteps = Object.entries(feature.geometry.coordinates[0]).length - 1;
-      const radius = Math.max(distance(center, event.mapCoords), 0.001);
+  handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>) {
+    if (props.modeConfig && props.modeConfig.dragToDraw) {
+      // handled in drag handlers
+      return;
+    }
 
-      const { steps = numberOfSteps } = {};
-      const options = { steps };
-      const updatedFeature = circle(center, radius, options);
-      const geometry = updatedFeature.geometry;
-
-      const updatedData = new ImmutableFeatureCollection(props.data)
-        .replaceGeometry(editHandleProperties.featureIndex, geometry)
-        .getObject();
-
-      props.onEdit({
-        updatedData,
-        editType: 'unionGeometry',
-        editContext: {
-          featureIndexes: [editHandleProperties.featureIndex],
-        },
-      });
+    this.addClickSequence(event);
+    const clickSequence = this.getClickSequence();
+    if (clickSequence.length > 1) {
+      this._isResizing = false;
+      this.resetClickSequence();
+    } else {
+      this._isResizing = true;
     }
   }
 
   handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>): void {
+    if (props.modeConfig && !props.modeConfig.dragToDraw && this._isResizing) {
+      const featureIndex = props.selectedIndexes[0];
+      const pointerPosition = event.mapCoords;
+      this.drawCircle(featureIndex, pointerPosition, props);
+    }
+
     if (!this._isResizing) {
       const selectedEditHandle = getPickedEditHandle(event.picks);
       this._selectedEditHandle =
@@ -169,30 +177,59 @@ export class ResizeCircleMode extends GeoJsonEditMode {
           : null;
     }
 
-    const cursor = this.getCursor(event);
+    const cursor = this.getCursor(event, props);
     props.onUpdateCursor(cursor);
   }
 
   handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollection>) {
-    if (this._selectedEditHandle) {
+    if (props.modeConfig && props.modeConfig.dragToDraw && this._selectedEditHandle) {
       this._isResizing = true;
     }
   }
 
   handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollection>) {
-    if (this._isResizing) {
+    if (props.modeConfig && props.modeConfig.dragToDraw && this._isResizing) {
       this._selectedEditHandle = null;
       this._isResizing = false;
     }
   }
 
-  getCursor(event: PointerMoveEvent): string | null | undefined {
+  getCursor(
+    event: PointerMoveEvent,
+    props: ModeProps<FeatureCollection>
+  ): string | null | undefined {
     const picks = (event && event.picks) || [];
 
     const handlesPicked = getPickedEditHandles(picks);
-    if (handlesPicked.length) {
+    const isResizingByClickingTwice =
+      props.modeConfig && !props.modeConfig.dragToDraw && this._isResizing;
+    if (handlesPicked.length || isResizingByClickingTwice) {
       return 'cell';
     }
     return null;
+  }
+
+  drawCircle(featureIndex: number, pointerPosition: Position, props: ModeProps<FeatureCollection>) {
+    const feature = this.getSelectedFeature(props);
+    const center = turfCenter(feature).geometry.coordinates;
+    const numberOfSteps = Object.entries(feature.geometry.coordinates[0]).length - 1;
+    const radius = Math.max(distance(center, pointerPosition), 0.001);
+
+    const { steps = numberOfSteps } = {};
+    const options = { steps };
+    const updatedFeature = circle(center, radius, options);
+    const geometry = updatedFeature.geometry;
+
+    const updatedData = new ImmutableFeatureCollection(props.data)
+      .replaceGeometry(featureIndex, geometry)
+      .getObject();
+
+    props.onEdit({
+      updatedData,
+      editType: 'unionGeometry',
+      editContext: {
+        featureIndexes: [featureIndex],
+      },
+    });
   }
 }

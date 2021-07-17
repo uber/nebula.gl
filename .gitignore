@@ -1,7 +1,7 @@
-**/dist/*
-**/dist-esm/*
-**/dist-es6/*
-**/dist-types/*
+#**/dist/*
+#**/dist-esm/*
+#**/dist-es6/*
+#**/dist-types/*
 
 node_modules/
 coverage/

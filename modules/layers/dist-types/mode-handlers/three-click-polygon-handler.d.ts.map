@@ -1,0 +1,1 @@
+{"version":3,"file":"three-click-polygon-handler.d.ts","sourceRoot":"","sources":["../../src/mode-handlers/three-click-polygon-handler.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,UAAU,EAAE,MAAM,gBAAgB,CAAC;AAC5C,OAAO,EAAE,WAAW,EAAE,UAAU,EAAE,MAAM,gBAAgB,CAAC;AAGzD,qBAAa,wBAAyB,SAAQ,WAAW;IACvD,WAAW,CAAC,KAAK,EAAE,UAAU,GAAG,UAAU,GAAG,IAAI,GAAG,SAAS;CAmB9D"}

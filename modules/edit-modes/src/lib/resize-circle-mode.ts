@@ -152,7 +152,7 @@ export class ResizeCircleMode extends GeoJsonEditMode {
 
       props.onEdit({
         updatedData,
-        editType: 'unionGeometry',
+        editType: 'circleResize',
         editContext: {
           featureIndexes: [editHandleProperties.featureIndex],
         },
@@ -181,6 +181,14 @@ export class ResizeCircleMode extends GeoJsonEditMode {
 
   handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollection>) {
     if (this._isResizing) {
+      props.onEdit({
+        updatedData: props.data,
+        editType: 'circleResizeEnd',
+        editContext: {
+          featureIndexes: props.selectedIndexes,
+        },
+      });
+
       this._selectedEditHandle = null;
       this._isResizing = false;
     }

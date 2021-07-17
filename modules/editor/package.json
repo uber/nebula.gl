@@ -60,7 +60,7 @@
     "boxicons": "^2.0.5",
     "clipboard-copy": "^3.1.0",
     "downloadjs": "^1.4.7",
-    "react": "^16.8.0",
+    "react": "^16.8.0 || ^17.0.1",
     "react-dropzone": "^10.2.1",
     "styled-components": "^4.3.2",
     "styled-react-modal": "1.2.4",

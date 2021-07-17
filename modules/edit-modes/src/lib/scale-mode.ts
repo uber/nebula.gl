@@ -139,9 +139,7 @@ export class ScaleMode extends GeoJsonEditMode {
           ? selectedEditHandle
           : null;
 
-      if (selectedEditHandle) {
-        this.updateCursor(props);
-      }
+      this.updateCursor(props);
     }
   }
 

@@ -476,6 +476,11 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }
 
   getCursor({ isDragging }: { isDragging: boolean }) {
+    if (this.state === null) {
+      // Layer in 'Awaiting state'
+      return;
+    };
+    
     let { cursor } = this.state;
     if (!cursor) {
       // default cursor

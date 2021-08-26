@@ -381,10 +381,10 @@ Number of layers of overlapping features that will be picked. Useful in cases wh
 `EditableGeoJsonLayer` renders the following sub-layers:
 
 - `geojson`: a [GeoJsonLayer](https://deck.gl/docs/api-reference/layers/geojson-layer) that renders the GeoJSON features passed into the `data` property.
-- `guides`: a [GeoJsonLayer]((https://deck.gl/docs/api-reference/layers/geojson-layer) that renders GeoJSON features that aid in editing.
+- `guides`: a [GeoJsonLayer](https://deck.gl/docs/api-reference/layers/geojson-layer) that renders GeoJSON features that aid in editing.
 - `tooltips`: a [TextLayer](https://deck.gl/docs/api-reference/layers/text-layer) that renders tooltips used in some editing modes.
 
-The styling and functionality of `EditableGeoJsonLayer` can be customized by providing the [\_subLayerProps]((https://deck.gl/docs/api-reference/core/composite-layer#_sublayerprops) property. For example:
+The styling and functionality of `EditableGeoJsonLayer` can be customized by providing the [\_subLayerProps](https://deck.gl/docs/api-reference/core/composite-layer#_sublayerprops) property. For example:
 
 ```js
 new EditableGeoJsonLayer({

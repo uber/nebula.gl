@@ -2,7 +2,7 @@
   "name": "@nebula.gl/layers",
   "description": "A suite of 3D-enabled data editing layers, suitable for deck.gl",
   "license": "MIT",
-  "version": "0.22.3",
+  "version": "0.23.3",
   "author": "Georgios Karnas <georgios@uber.com>",
   "repository": {
     "type": "git",
@@ -50,7 +50,7 @@
   },
   "dependencies": {
     "@danmarshall/deckgl-typings": "^3.4.8",
-    "@nebula.gl/edit-modes": "0.22.3",
+    "@nebula.gl/edit-modes": "0.23.3",
     "@turf/bbox": ">=4.0.0",
     "@turf/bbox-polygon": ">=4.0.0",
     "@turf/bearing": ">=4.0.0",
@@ -86,5 +86,6 @@
     "@deck.gl/mesh-layers": "^8.4.6",
     "@luma.gl/constants": "^8.4.3",
     "@luma.gl/core": "^8.4.3"
-  }
+  },
+  "gitHead": "3522b6af58dc6b01c98dc8685dc1b7740b7437be"
 }

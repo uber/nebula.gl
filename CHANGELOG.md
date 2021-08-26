@@ -4,39 +4,49 @@ _All notable changes to this project will be documented in this file. This proje
 
 <!-- INSERT HERE -->
 
+## [0.23.3](https://github.com/uber/nebula.gl/compare/v0.22.3...v0.23.3) - 2021-07-14
+
+### Changes
+
+- Nearest point on line (#611)
+- Update EditableGeoJSONLayer docs and update outdated links (#587)
+- chore: Bump to deck/luma v8.4 (#529)
+- Add 'Draw Square From Center' mode (#531)
+- fix for optional properties (#546)
+
 ## [0.22.3](https://github.com/uber/nebula.gl/compare/v0.22.2...v0.22.3) - 2021-02-22
 
 ### Changes
 
-* [path-marker-layer] Fix arrow direction (#533)
+- [path-marker-layer] Fix arrow direction (#533)
 
 ## [0.22.2](https://github.com/uber/nebula.gl/compare/v0.21.0...v0.22.2) - 2021-02-18
 
 ### Changes
 
-* [path-marker-layer] Fix arrow direction for deck.gl version > 8.0 (#527)
-* Hide the intermediate edit handle when resizing a circle (#524)
-* Add resize circle mode (#521)
-* Remove handles / vertices  (#433)
-* feat: Convert class properties to overridable methods. (#458)
-* fix: add support for DrawPolygonByDragging mode (#516)
-* feat(measure-distance-mode): Add multipoint support (#504)
-* Add missing @turf/helpers depenedency to overlays module (#488)
-* fix: issue with updateState when autoHighlight and pickable on (#486)
-* Flesh out the Toolbox component (#484)
+- [path-marker-layer] Fix arrow direction for deck.gl version > 8.0 (#527)
+- Hide the intermediate edit handle when resizing a circle (#524)
+- Add resize circle mode (#521)
+- Remove handles / vertices (#433)
+- feat: Convert class properties to overridable methods. (#458)
+- fix: add support for DrawPolygonByDragging mode (#516)
+- feat(measure-distance-mode): Add multipoint support (#504)
+- Add missing @turf/helpers depenedency to overlays module (#488)
+- fix: issue with updateState when autoHighlight and pickable on (#486)
+- Flesh out the Toolbox component (#484)
 
 ## [0.21.0](https://github.com/uber/nebula.gl/compare/v0.20.2...v0.21.0) - 2020-10-01
 
 ### Changes
 
-* Create EditableH3ClusterLayer && Refactor Edit Modes to support updateTentativeFeature edit type (#483)
-* Updates to import and export components (#481)
+- Create EditableH3ClusterLayer && Refactor Edit Modes to support updateTentativeFeature edit type (#483)
+- Updates to import and export components (#481)
 
 ## [0.20.2](https://github.com/uber/nebula.gl/compare/v0.20.0...v0.20.2) - 2020-09-22
 
 ### Changes
 
-* Remove polygon fill from bounding guide in rotate and scale edit modes and fix scale mode cursor (#480)
+- Remove polygon fill from bounding guide in rotate and scale edit modes and fix scale mode cursor (#480)
 
 ## [0.20.0](https://github.com/uber/nebula.gl/compare/v0.19.3...v0.20.0) - 2020-08-31
 

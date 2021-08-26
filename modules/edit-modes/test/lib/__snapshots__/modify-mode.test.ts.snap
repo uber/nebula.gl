@@ -762,8 +762,8 @@ exports[`getGuides() includes an intermediate edit handle 1`] = `
 Object {
   "geometry": Object {
     "coordinates": Array [
-      -122.43850292231143,
-      37.777692666558565,
+      -122.4385053241134,
+      37.77770362630828,
     ],
     "type": "Point",
   },

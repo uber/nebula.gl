@@ -1,0 +1,1 @@
+{"version":3,"file":"two-click-polygon-handler.d.ts","sourceRoot":"","sources":["../../src/mode-handlers/two-click-polygon-handler.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,UAAU,EAAE,MAAM,gBAAgB,CAAC;AAC5C,OAAO,EAAE,WAAW,EAAE,UAAU,EAAE,MAAM,gBAAgB,CAAC;AAGzD,qBAAa,sBAAuB,SAAQ,WAAW;IACrD,WAAW,CAAC,KAAK,EAAE,UAAU,GAAG,UAAU,GAAG,IAAI,GAAG,SAAS;CAmB9D"}

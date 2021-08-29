@@ -1,0 +1,1 @@
+{"version":3,"file":"junction-scatterplot-layer.d.ts","sourceRoot":"","sources":["../../src/layers/junction-scatterplot-layer.ts"],"names":[],"mappings":";AAAA,OAAO,EAAE,cAAc,EAAE,MAAM,eAAe,CAAC;AAC/C,OAAO,EAAE,gBAAgB,EAAE,MAAM,iBAAiB,CAAC;AAEnD,MAAM,CAAC,OAAO,OAAO,wBAAyB,SAAQ,cAAc,CAAC,GAAG,CAAC;IACvE,MAAM,CAAC,SAAS,SAA8B;IAC9C,MAAM,CAAC,YAAY,MAMjB;IAEF,YAAY;CA+Bb"}

@@ -1,5 +1,15 @@
 # Contributing
 
+## Install and configure npmrc
+
+```
+npm install -g npmrc
+npmrc -c public
+npm login
+```
+
+Login using your npm credentials
+
 ## Publishing to npm
 
 To publish to npm, make sure you're using the public registry (`npmrc public`) and publish using `publish-prod`:

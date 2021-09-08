@@ -4,6 +4,13 @@ _All notable changes to this project will be documented in this file. This proje
 
 <!-- INSERT HERE -->
 
+## [0.23.6](https://github.com/uber/nebula.gl/compare/v0.23.3...v0.23.6) - 2021-09-08
+
+### Changes
+
+* Update outdated links (#631)
+* fix: "this.state is null" error (#628)
+
 ## [0.23.3](https://github.com/uber/nebula.gl/compare/v0.22.3...v0.23.3) - 2021-07-14
 
 ### Changes

@@ -87,10 +87,8 @@ const ALL_MODES: any = [
     category: 'View',
     modes: [
       { label: 'View', mode: ViewMode },
-      // @ts-ignore
       {
         label: 'Measure Distance',
-        // @ts-ignore
         mode: MeasureDistanceMode,
       },
       { label: 'Measure Area', mode: MeasureAreaMode },

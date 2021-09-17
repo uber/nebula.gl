@@ -203,6 +203,7 @@ The following options can be provided in the `modeConfig` object:
   - Default: `undefined`
 
 - `centerTooltipsOnLine` (Boolean, optional)
+
   - If true, the measurement tooltips appear on the middle of their respective line segments rather than at the end
   - Default: `false`
 

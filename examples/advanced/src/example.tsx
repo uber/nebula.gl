@@ -87,7 +87,12 @@ const ALL_MODES: any = [
     category: 'View',
     modes: [
       { label: 'View', mode: ViewMode },
-      { label: 'Measure Distance', mode: MeasureDistanceMode },
+      // @ts-ignore
+      {
+        label: 'Measure Distance',
+        // @ts-ignore
+        mode: MeasureDistanceMode,
+      },
       { label: 'Measure Area', mode: MeasureAreaMode },
       { label: 'Measure Angle', mode: MeasureAngleMode },
     ],
@@ -559,6 +564,7 @@ export default class Example extends React.Component<
   }
 
   _renderMeasureDistanceControls() {
+    console.log('hiiiiii');
     return (
       <ToolboxRow key="measure-distance">
         <ToolboxTitle>Units</ToolboxTitle>
@@ -583,6 +589,21 @@ export default class Example extends React.Component<
             <option value="degrees">degrees</option>
             <option value="radians">radians</option>
           </select>
+        </ToolboxControl>
+
+        <ToolboxTitle>Center Tooltips</ToolboxTitle>
+        <ToolboxControl>
+          <input
+            type="checkbox"
+            checked={Boolean(this.state.modeConfig && this.state.modeConfig.centerTooltips)}
+            onChange={(event) => {
+              const modeConfig = {
+                ...this.state.modeConfig,
+                centerTooltips: Boolean(event.target.checked),
+              };
+              this.setState({ modeConfig });
+            }}
+          />
         </ToolboxControl>
       </ToolboxRow>
     );

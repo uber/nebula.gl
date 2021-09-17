@@ -38,7 +38,7 @@ export class MeasureDistanceMode extends GeoJsonEditMode {
 
   handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>) {
     const { modeConfig, data, onEdit } = props;
-    const { centerTooltipsOnLine } = modeConfig;
+    const { centerTooltipsOnLine = false } = modeConfig || {};
 
     // restart measuring session
     if (this._isMeasuringSessionFinished) {
@@ -179,7 +179,7 @@ export class MeasureDistanceMode extends GeoJsonEditMode {
 
   getTooltips(props: ModeProps<FeatureCollection>): Tooltip[] {
     const { lastPointerMoveEvent, modeConfig } = props;
-    const { centerTooltipsOnLine } = modeConfig;
+    const { centerTooltipsOnLine = false } = modeConfig || {};
     const positions = this.getClickSequence();
 
     if (positions.length > 0 && lastPointerMoveEvent && !this._isMeasuringSessionFinished) {

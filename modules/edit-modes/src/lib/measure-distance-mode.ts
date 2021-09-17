@@ -38,7 +38,7 @@ export class MeasureDistanceMode extends GeoJsonEditMode {
 
   handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>) {
     const { modeConfig, data, onEdit } = props;
-    const { centerTooltips } = modeConfig;
+    const { centerTooltipsOnLine } = modeConfig;
 
     // restart measuring session
     if (this._isMeasuringSessionFinished) {
@@ -75,7 +75,7 @@ export class MeasureDistanceMode extends GeoJsonEditMode {
           modeConfig,
         });
 
-        const tooltipPosition = centerTooltips
+        const tooltipPosition = centerTooltipsOnLine
           ? turfMidpoint(
               clickSequence[clickSequence.length - 2],
               clickSequence[clickSequence.length - 1]
@@ -179,7 +179,7 @@ export class MeasureDistanceMode extends GeoJsonEditMode {
 
   getTooltips(props: ModeProps<FeatureCollection>): Tooltip[] {
     const { lastPointerMoveEvent, modeConfig } = props;
-    const { centerTooltips } = modeConfig;
+    const { centerTooltipsOnLine } = modeConfig;
     const positions = this.getClickSequence();
 
     if (positions.length > 0 && lastPointerMoveEvent && !this._isMeasuringSessionFinished) {
@@ -189,7 +189,7 @@ export class MeasureDistanceMode extends GeoJsonEditMode {
         modeConfig: props.modeConfig,
       });
 
-      const tooltipPosition = centerTooltips
+      const tooltipPosition = centerTooltipsOnLine
         ? turfMidpoint(positions[positions.length - 1], lastPointerMoveEvent.mapCoords).geometry
             .coordinates
         : lastPointerMoveEvent.mapCoords;

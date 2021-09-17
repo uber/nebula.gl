@@ -562,7 +562,6 @@ export default class Example extends React.Component<
   }
 
   _renderMeasureDistanceControls() {
-    console.log('hiiiiii');
     return (
       <ToolboxRow key="measure-distance">
         <ToolboxTitle>Units</ToolboxTitle>
@@ -589,15 +588,15 @@ export default class Example extends React.Component<
           </select>
         </ToolboxControl>
 
-        <ToolboxTitle>Center Tooltips</ToolboxTitle>
+        <ToolboxTitle>Center Tooltips on Line</ToolboxTitle>
         <ToolboxControl>
           <input
             type="checkbox"
-            checked={Boolean(this.state.modeConfig && this.state.modeConfig.centerTooltips)}
+            checked={Boolean(this.state.modeConfig && this.state.modeConfig.centerTooltipsOnLine)}
             onChange={(event) => {
               const modeConfig = {
                 ...this.state.modeConfig,
-                centerTooltips: Boolean(event.target.checked),
+                centerTooltipsOnLine: Boolean(event.target.checked),
               };
               this.setState({ modeConfig });
             }}

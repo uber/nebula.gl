@@ -2885,6 +2885,16 @@
   dependencies:
     "@turf/helpers" "^6.3.0"
 
+"@turf/midpoint@>=4.0.0":
+  version "6.5.0"
+  resolved "https://registry.yarnpkg.com/@turf/midpoint/-/midpoint-6.5.0.tgz#5f9428959309feccaf3f55873a8de70d4121bdce"
+  integrity sha512-MyTzV44IwmVI6ec9fB2OgZ53JGNlgOpaYl9ArKoF49rXpL84F9rNATndbe0+MQIhdkw8IlzA6xVP4lZzfMNVCw==
+  dependencies:
+    "@turf/bearing" "^6.5.0"
+    "@turf/destination" "^6.5.0"
+    "@turf/distance" "^6.5.0"
+    "@turf/helpers" "^6.5.0"
+
 "@turf/nearest-point-on-line@>=4.0.0":
   version "6.0.2"
   resolved "https://registry.yarnpkg.com/@turf/nearest-point-on-line/-/nearest-point-on-line-6.0.2.tgz"
@@ -7652,13 +7662,13 @@ imurmurhash@^0.1.4:
   resolved "https://registry.yarnpkg.com/imurmurhash/-/imurmurhash-0.1.4.tgz"
   integrity sha1-khi5srkoojixPcT7a21XbyMUU+o=
 
-indefinitely-typed@1.0.2, indefinitely-typed@^1.0.3:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/indefinitely-typed/-/indefinitely-typed-1.0.2.tgz#b577044fceb8f7c151e1a851b034b643eafdb14e"
-  integrity sha512-BGnhwdPmpGDCvKQ4EnhfcPkE3tHbwodkmLLPIWjDINHjD5WFj0C0lGMLzObZC9yyaVoqwJRzYJxe0X1XYXxcDQ==
+indefinitely-typed@^1.0.3:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/indefinitely-typed/-/indefinitely-typed-1.1.0.tgz#d0acd3645445e89ae1c70129be21609a0aa5a114"
+  integrity sha512-giaI0hCj+wWZIZZLsmWHI+LrM4Hwc+rEZ/VrgCafKePcnE42fLnQTFt4xspqLin8fCjI5WnQr2fep/0EFqjaxw==
   dependencies:
     fs-extra "^7.0.0"
-    minimist "^1.2.0"
+    minimist "^1.2.5"
 
 indent-string@^2.1.0:
   version "2.1.0"

@@ -172,8 +172,7 @@ export class SplitPolygonMode extends GeoJsonEditMode {
       updatedCoordinates = coordinates.map((c) => [c]);
     } else {
       // Handle Case when Multipolygon has holes
-      // @ts-expect-error ts-migrate(2349) FIXME: This expression is not callable.
-      updatedCoordinates = coordinates.reduce((agg, prev) => {
+      updatedCoordinates = [...coordinates].reduce((agg, prev) => {
         prev.forEach((p) => {
           agg.push([p]);
         });

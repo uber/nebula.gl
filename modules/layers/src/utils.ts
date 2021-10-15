@@ -117,7 +117,7 @@ export function nearestPointOnProjectedLine(
   // Project the line to viewport, then find the nearest point
   const coordinates: Array<Array<number>> = line.geometry.coordinates as any;
   const projectedCoords = coordinates.map(([x, y, z = 0]) => wmViewport.project([x, y, z]));
-  // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
+  // @ts-expect-error ts-migrate(2488) FIXME: Type 'never' must have a '[Symbol.iterator]()' met... Remove this comment to see the full error message
   const [x, y] = wmViewport.project(inPoint.geometry.coordinates);
   // console.log('projectedCoords', JSON.stringify(projectedCoords));
 

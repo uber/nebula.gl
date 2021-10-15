@@ -17,7 +17,6 @@ export default class ElevatedEditHandleLayer extends CompositeLayer<any> {
     );
 
     const lines = new LineLayer(
-      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'CompositeLayerProps<any> & { id:... Remove this comment to see the full error message
       Object.assign({}, this.props, {
         id: `${this.props.id}-LineLayer`,
         data: this.props.data,

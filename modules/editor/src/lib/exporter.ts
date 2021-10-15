@@ -42,11 +42,13 @@ export function toKml(geoJson: AnyGeoJson, filename: string): ExportParameters {
 export function toWkt(geoJson: AnyGeoJson, filename: string): ExportParameters {
   let wkt = '';
   if (geoJson.type === 'Feature') {
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'Feature' is not assignable to pa... Remove this comment to see the full error message
     wkt = stringifyWkt(geoJson);
   } else {
     // feature collection
     wkt = '';
     for (const feature of geoJson.features) {
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'Feature' is not assignable to pa... Remove this comment to see the full error message
       wkt += `${stringifyWkt(feature)}\n`;
     }
     if (wkt.length > 0) {

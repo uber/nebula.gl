@@ -62,7 +62,7 @@ export default class EditableLayer extends CompositeLayer<any> {
   }
 
   _addEventHandlers() {
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'eventManager' does not exist on type 'De... Remove this comment to see the full error message
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'deck' does not exist on type '{ gl: WebG... Remove this comment to see the full error message
     const { eventManager } = this.context.deck;
     const { eventHandler } = this.state._editableLayerState;
 
@@ -75,7 +75,7 @@ export default class EditableLayer extends CompositeLayer<any> {
   }
 
   _removeEventHandlers() {
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'eventManager' does not exist on type 'De... Remove this comment to see the full error message
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'deck' does not exist on type '{ gl: WebG... Remove this comment to see the full error message
     const { eventManager } = this.context.deck;
     const { eventHandler } = this.state._editableLayerState;
 
@@ -106,7 +106,6 @@ export default class EditableLayer extends CompositeLayer<any> {
     const picks = this.getPicks(screenCoords);
 
     this.onLayerClick({
-      // @ts-expect-error ts-migrate(2322) FIXME: Type 'any[]' is not assignable to type 'Position'.
       mapCoords,
       // @ts-expect-error ts-migrate(2322) FIXME: Type 'number[]' is not assignable to type 'ScreenC... Remove this comment to see the full error message
       screenCoords,
@@ -138,11 +137,9 @@ export default class EditableLayer extends CompositeLayer<any> {
       picks,
       // @ts-expect-error ts-migrate(2322) FIXME: Type 'number[]' is not assignable to type 'ScreenC... Remove this comment to see the full error message
       screenCoords,
-      // @ts-expect-error ts-migrate(2322) FIXME: Type 'any[]' is not assignable to type 'Position'.
       mapCoords,
       // @ts-expect-error ts-migrate(2322) FIXME: Type 'number[]' is not assignable to type 'ScreenC... Remove this comment to see the full error message
       pointerDownScreenCoords: screenCoords,
-      // @ts-expect-error ts-migrate(2322) FIXME: Type 'any[]' is not assignable to type 'Position'.
       pointerDownMapCoords: mapCoords,
       cancelPan: event.stopImmediatePropagation,
       sourceEvent: event.srcEvent,
@@ -165,7 +162,6 @@ export default class EditableLayer extends CompositeLayer<any> {
     this.onDragging({
       // @ts-expect-error ts-migrate(2322) FIXME: Type 'number[]' is not assignable to type 'ScreenC... Remove this comment to see the full error message
       screenCoords,
-      // @ts-expect-error ts-migrate(2322) FIXME: Type 'any[]' is not assignable to type 'Position'.
       mapCoords,
       picks,
       pointerDownPicks,
@@ -197,7 +193,6 @@ export default class EditableLayer extends CompositeLayer<any> {
       picks,
       // @ts-expect-error ts-migrate(2322) FIXME: Type 'number[]' is not assignable to type 'ScreenC... Remove this comment to see the full error message
       screenCoords,
-      // @ts-expect-error ts-migrate(2322) FIXME: Type 'any[]' is not assignable to type 'Position'.
       mapCoords,
       pointerDownPicks,
       pointerDownScreenCoords,
@@ -231,7 +226,6 @@ export default class EditableLayer extends CompositeLayer<any> {
     this.onPointerMove({
       // @ts-expect-error ts-migrate(2322) FIXME: Type 'number[]' is not assignable to type 'ScreenC... Remove this comment to see the full error message
       screenCoords,
-      // @ts-expect-error ts-migrate(2322) FIXME: Type 'any[]' is not assignable to type 'Position'.
       mapCoords,
       picks,
       pointerDownPicks,
@@ -242,13 +236,12 @@ export default class EditableLayer extends CompositeLayer<any> {
   }
 
   getPicks(screenCoords: [number, number]) {
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'deck' does not exist on type '{ gl: WebG... Remove this comment to see the full error message
     return this.context.deck.pickMultipleObjects({
       x: screenCoords[0],
       y: screenCoords[1],
       layerIds: [this.props.id],
-      // @ts-expect-error ts-migrate(2339) FIXME: Property 'pickingRadius' does not exist on type 'C... Remove this comment to see the full error message
       radius: this.props.pickingRadius,
-      // @ts-expect-error ts-migrate(2339) FIXME: Property 'pickingDepth' does not exist on type 'Co... Remove this comment to see the full error message
       depth: this.props.pickingDepth,
     });
   }
@@ -263,6 +256,7 @@ export default class EditableLayer extends CompositeLayer<any> {
   }
 
   getMapCoords(screenCoords: number[]) {
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'viewport' does not exist on type '{ gl: ... Remove this comment to see the full error message
     return this.context.viewport.unproject([screenCoords[0], screenCoords[1]]);
   }
 }

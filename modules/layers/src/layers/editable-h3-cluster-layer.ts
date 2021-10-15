@@ -57,13 +57,11 @@ export default class EditableH3ClusterLayer extends EditableLayer {
 
   // convert array of (lng, lat) coords to cluster of hexes
   getDerivedHexagonIDs(coords) {
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'resolution' does not exist on type 'Comp... Remove this comment to see the full error message
     return polyfill(coords, this.props.resolution, true);
   }
 
   // convert pair of (lng, lat) coords into single hex
   getDerivedHexagonID(coords) {
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'resolution' does not exist on type 'Comp... Remove this comment to see the full error message
     return geoToH3(coords[1], coords[0], this.props.resolution);
   }
 
@@ -73,7 +71,6 @@ export default class EditableH3ClusterLayer extends EditableLayer {
         this.getSubLayerProps({
           id: 'editable-geojson',
 
-          // @ts-expect-error ts-migrate(2339) FIXME: Property 'mode' does not exist on type 'CompositeL... Remove this comment to see the full error message
           mode: this.props.mode,
           data: EMPTY_FEATURE_COLLECTION,
           selectedFeatureIndexes: [],
@@ -98,16 +95,13 @@ export default class EditableH3ClusterLayer extends EditableLayer {
                 break;
               case 'addFeature':
                 const updatedData = [...this.props.data];
-                // @ts-expect-error ts-migrate(2339) FIXME: Property 'modeConfig' does not exist on type 'Comp... Remove this comment to see the full error message
                 const { modeConfig } = this.props;
 
                 if (!modeConfig || !modeConfig.booleanOperation) {
                   // add new h3 cluster
                   updatedData.push(
-                    // @ts-expect-error ts-migrate(2339) FIXME: Property 'getEditedCluster' does not exist on type... Remove this comment to see the full error message
                     this.props.getEditedCluster(this.state.tentativeHexagonIDs, null)
                   );
-                  // @ts-expect-error ts-migrate(2339) FIXME: Property 'selectedIndexes' does not exist on type ... Remove this comment to see the full error message
                 } else if (this.props.selectedIndexes.length !== 1) {
                   // eslint-disable-next-line no-console,no-undef
                   console.warn('booleanOperation only supported for single cluster selection');
@@ -136,10 +130,8 @@ export default class EditableH3ClusterLayer extends EditableLayer {
                       break;
                   }
 
-                  // @ts-expect-error ts-migrate(2339) FIXME: Property 'selectedIndexes' does not exist on type ... Remove this comment to see the full error message
                   const selectedIndex = this.props.selectedIndexes[0];
                   const existingCluster = this.props.data[selectedIndex];
-                  // @ts-expect-error ts-migrate(2339) FIXME: Property 'getEditedCluster' does not exist on type... Remove this comment to see the full error message
                   updatedData[selectedIndex] = this.props.getEditedCluster(
                     finalHexagonIDs,
                     existingCluster
@@ -150,7 +142,6 @@ export default class EditableH3ClusterLayer extends EditableLayer {
                   tentativeHexagonIDs: [],
                 });
 
-                // @ts-expect-error ts-migrate(2339) FIXME: Property 'onEdit' does not exist on type 'Composit... Remove this comment to see the full error message
                 this.props.onEdit({ updatedData });
 
                 break;
@@ -165,7 +156,6 @@ export default class EditableH3ClusterLayer extends EditableLayer {
         this.getSubLayerProps({
           id: 'hexagons',
           data: this.props.data,
-          // @ts-expect-error ts-migrate(2339) FIXME: Property 'getHexagons' does not exist on type 'Com... Remove this comment to see the full error message
           getHexagons: this.props.getHexagons,
         })
       ),
@@ -188,10 +178,8 @@ export default class EditableH3ClusterLayer extends EditableLayer {
   // using props.getHexagons to support multiple data types
   getSelectedHexIDs() {
     let cumulativeHexIDs = [];
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'selectedIndexes' does not exist on type ... Remove this comment to see the full error message
     this.props.selectedIndexes.forEach((index) => {
       const selectedCluster = this.props.data[index];
-      // @ts-expect-error ts-migrate(2339) FIXME: Property 'getHexagons' does not exist on type 'Com... Remove this comment to see the full error message
       const hexIDs = this.props.getHexagons(selectedCluster);
       cumulativeHexIDs = cumulativeHexIDs.concat(hexIDs);
     });

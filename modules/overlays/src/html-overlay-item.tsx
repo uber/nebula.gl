@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-const styles = {
+const styles: { item: React.CSSProperties } = {
   item: {
     position: 'absolute',
     userSelect: 'none',
@@ -21,10 +21,10 @@ type Props = {
 export default class HtmlOverlayItem extends React.Component<Props> {
   render() {
     const { x, y, children, style, coordinates, ...props } = this.props;
+    const overlayStyle: React.CSSProperties = { ...styles.item, ...style, left: x, top: y };
 
     return (
-      // @ts-expect-error ts-migrate(2322) FIXME: Type '{ left: number; top: number; position: strin... Remove this comment to see the full error message
-      <div style={{ ...styles.item, ...style, left: x, top: y }} {...props}>
+      <div style={overlayStyle} {...props}>
         {children}
       </div>
     );

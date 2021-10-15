@@ -47,6 +47,7 @@ export default class PathMarkerLayer extends CompositeLayer<any> {
       closestPoint: null,
     };
   }
+  // @ts-expect-error ts-migrate(2416) FIXME: Property 'projectFlat' in type 'PathMarkerLayer' i... Remove this comment to see the full error message
   projectFlat(xyz, viewport, coordinateSystem, coordinateOrigin) {
     if (coordinateSystem === COORDINATE_SYSTEM.METER_OFFSETS) {
       const [dx, dy] = viewport.metersToLngLatDelta(xyz);
@@ -65,17 +66,14 @@ export default class PathMarkerLayer extends CompositeLayer<any> {
     if (changeFlags.dataChanged || changeFlags.updateTriggersChanged) {
       const {
         data,
-        // @ts-expect-error ts-migrate(2339) FIXME: Property 'getPath' does not exist on type 'Composi... Remove this comment to see the full error message
         getPath,
-        // @ts-expect-error ts-migrate(2339) FIXME: Property 'getDirection' does not exist on type 'Co... Remove this comment to see the full error message
         getDirection,
-        // @ts-expect-error ts-migrate(2339) FIXME: Property 'getMarkerColor' does not exist on type '... Remove this comment to see the full error message
         getMarkerColor,
-        // @ts-expect-error ts-migrate(2339) FIXME: Property 'getMarkerPercentages' does not exist on ... Remove this comment to see the full error message
         getMarkerPercentages,
         coordinateSystem,
         coordinateOrigin,
       } = this.props;
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'viewport' does not exist on type '{ gl: ... Remove this comment to see the full error message
       const { viewport } = this.context;
       const projectFlat = (o) => this.projectFlat(o, viewport, coordinateSystem, coordinateOrigin);
       this.state.markers = createPathMarkers({
@@ -96,11 +94,9 @@ export default class PathMarkerLayer extends CompositeLayer<any> {
   }
 
   _recalculateClosestPoint() {
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'highlightPoint' does not exist on type '... Remove this comment to see the full error message
     const { highlightPoint, highlightIndex } = this.props;
     if (highlightPoint && highlightIndex >= 0) {
       const object = this.props.data[highlightIndex];
-      // @ts-expect-error ts-migrate(2339) FIXME: Property 'getPath' does not exist on type 'Composi... Remove this comment to see the full error message
       const points = this.props.getPath(object);
       const { point } = getClosestPointOnPolyline({ points, p: highlightPoint });
       this.state.closestPoints = [
@@ -131,18 +127,14 @@ export default class PathMarkerLayer extends CompositeLayer<any> {
           data: this.props.data,
         })
       ),
-      // @ts-expect-error ts-migrate(2339) FIXME: Property 'MarkerLayer' does not exist on type 'Com... Remove this comment to see the full error message
       new this.props.MarkerLayer(
         this.getSubLayerProps(
-          // @ts-expect-error ts-migrate(2339) FIXME: Property 'markerLayerProps' does not exist on type... Remove this comment to see the full error message
           Object.assign({}, this.props.markerLayerProps, {
             id: 'markers',
             data: this.state.markers,
             getOrientation: (x) => [0, -x.angle, 0],
             getColor: (x) => x.color,
-            // @ts-expect-error ts-migrate(2339) FIXME: Property 'sizeScale' does not exist on type 'Compo... Remove this comment to see the full error message
             sizeScale: this.props.sizeScale,
-            // @ts-expect-error ts-migrate(2339) FIXME: Property 'fp64' does not exist on type 'CompositeL... Remove this comment to see the full error message
             fp64: this.props.fp64,
             pickable: false,
             parameters: {
@@ -156,7 +148,7 @@ export default class PathMarkerLayer extends CompositeLayer<any> {
         new ScatterplotLayer({
           id: `${this.props.id}-highlight`,
           data: this.state.closestPoints,
-          // @ts-expect-error ts-migrate(2339) FIXME: Property 'fp64' does not exist on type 'CompositeL... Remove this comment to see the full error message
+          // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ id: string; data: any; fp64: a... Remove this comment to see the full error message
           fp64: this.props.fp64,
         }),
     ];

@@ -65,7 +65,7 @@ export class TransformMode extends CompositeMode {
         }
         return !guidesToFilterOut.includes('scale');
       });
-      // @ts-ignore
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'Readonly<GuideFeature>[]' is not... Remove this comment to see the full error message
       compositeGuides = featureCollection(nonEnvelopeGuides);
     }
     return compositeGuides;

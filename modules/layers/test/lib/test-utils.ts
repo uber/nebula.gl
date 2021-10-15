@@ -314,7 +314,7 @@ export function createPointerDragEvent(
     screenCoords: [-1, -1],
     groundCoords,
     picks,
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2322) FIXME: Type '{ screenCoords: [number, number]; groundCoor... Remove this comment to see the full error message
     isDragging: true,
     pointerDownPicks: null,
     pointerDownScreenCoords: [-1, -1],

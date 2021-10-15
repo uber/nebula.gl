@@ -119,7 +119,7 @@ export function editHandleStyle({ feature, shape, index, state }) {
 
   switch (shape) {
     case 'circle':
-      //@ts-ignore
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'r' does not exist on type '{}'.
       style.r = CIRCLE_RADIUS;
       break;
     case 'rect':

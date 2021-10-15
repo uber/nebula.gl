@@ -62,7 +62,7 @@ export default class EditableLayer extends CompositeLayer<any> {
   }
 
   _addEventHandlers() {
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'deck' does not exist on type '{ gl: WebG... Remove this comment to see the full error message
     const { eventManager } = this.context.deck;
     const { eventHandler } = this.state._editableLayerState;
 
@@ -75,7 +75,7 @@ export default class EditableLayer extends CompositeLayer<any> {
   }
 
   _removeEventHandlers() {
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'deck' does not exist on type '{ gl: WebG... Remove this comment to see the full error message
     const { eventManager } = this.context.deck;
     const { eventHandler } = this.state._editableLayerState;
 
@@ -102,12 +102,12 @@ export default class EditableLayer extends CompositeLayer<any> {
   _onanyclick({ srcEvent }: any) {
     const screenCoords = this.getScreenCoords(srcEvent);
     const mapCoords = this.getMapCoords(screenCoords);
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'number[]' is not assignable to p... Remove this comment to see the full error message
     const picks = this.getPicks(screenCoords);
 
     this.onLayerClick({
       mapCoords,
-      // @ts-ignore
+      // @ts-expect-error ts-migrate(2322) FIXME: Type 'number[]' is not assignable to type 'ScreenC... Remove this comment to see the full error message
       screenCoords,
       picks,
       sourceEvent: srcEvent,
@@ -121,7 +121,7 @@ export default class EditableLayer extends CompositeLayer<any> {
   _onpanstart(event: any) {
     const screenCoords = this.getScreenCoords(event.srcEvent);
     const mapCoords = this.getMapCoords(screenCoords);
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'number[]' is not assignable to p... Remove this comment to see the full error message
     const picks = this.getPicks(screenCoords);
 
     this.setState({
@@ -135,11 +135,10 @@ export default class EditableLayer extends CompositeLayer<any> {
 
     this.onStartDragging({
       picks,
-      // @ts-ignore
+      // @ts-expect-error ts-migrate(2322) FIXME: Type 'number[]' is not assignable to type 'ScreenC... Remove this comment to see the full error message
       screenCoords,
-      // @ts-ignore
       mapCoords,
-      // @ts-ignore
+      // @ts-expect-error ts-migrate(2322) FIXME: Type 'number[]' is not assignable to type 'ScreenC... Remove this comment to see the full error message
       pointerDownScreenCoords: screenCoords,
       pointerDownMapCoords: mapCoords,
       cancelPan: event.stopImmediatePropagation,
@@ -157,11 +156,11 @@ export default class EditableLayer extends CompositeLayer<any> {
       pointerDownScreenCoords,
       pointerDownMapCoords,
     } = this.state._editableLayerState;
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'number[]' is not assignable to p... Remove this comment to see the full error message
     const picks = this.getPicks(screenCoords);
 
     this.onDragging({
-      // @ts-ignore
+      // @ts-expect-error ts-migrate(2322) FIXME: Type 'number[]' is not assignable to type 'ScreenC... Remove this comment to see the full error message
       screenCoords,
       mapCoords,
       picks,
@@ -187,12 +186,12 @@ export default class EditableLayer extends CompositeLayer<any> {
       pointerDownScreenCoords,
       pointerDownMapCoords,
     } = this.state._editableLayerState;
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'number[]' is not assignable to p... Remove this comment to see the full error message
     const picks = this.getPicks(screenCoords);
 
     this.onStopDragging({
       picks,
-      // @ts-ignore
+      // @ts-expect-error ts-migrate(2322) FIXME: Type 'number[]' is not assignable to type 'ScreenC... Remove this comment to see the full error message
       screenCoords,
       mapCoords,
       pointerDownPicks,
@@ -221,11 +220,11 @@ export default class EditableLayer extends CompositeLayer<any> {
       pointerDownScreenCoords,
       pointerDownMapCoords,
     } = this.state._editableLayerState;
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'number[]' is not assignable to p... Remove this comment to see the full error message
     const picks = this.getPicks(screenCoords);
 
     this.onPointerMove({
-      // @ts-ignore
+      // @ts-expect-error ts-migrate(2322) FIXME: Type 'number[]' is not assignable to type 'ScreenC... Remove this comment to see the full error message
       screenCoords,
       mapCoords,
       picks,
@@ -237,7 +236,7 @@ export default class EditableLayer extends CompositeLayer<any> {
   }
 
   getPicks(screenCoords: [number, number]) {
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'deck' does not exist on type '{ gl: WebG... Remove this comment to see the full error message
     return this.context.deck.pickMultipleObjects({
       x: screenCoords[0],
       y: screenCoords[1],
@@ -257,7 +256,7 @@ export default class EditableLayer extends CompositeLayer<any> {
   }
 
   getMapCoords(screenCoords: number[]) {
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'viewport' does not exist on type '{ gl: ... Remove this comment to see the full error message
     return this.context.viewport.unproject([screenCoords[0], screenCoords[1]]);
   }
 }

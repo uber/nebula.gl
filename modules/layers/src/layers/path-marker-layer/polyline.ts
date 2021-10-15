@@ -8,7 +8,7 @@ export function getClosestPointOnLine({ p, p1, p2, clampToLine = true }) {
   if (clampToLine) {
     dotProduct = clamp(dotProduct, 0, 1);
   }
-  // @ts-ignore
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 3 arguments, but got 1.
   return lineVector.lerp(dotProduct);
 }
 

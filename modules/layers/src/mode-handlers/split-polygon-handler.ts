@@ -23,7 +23,7 @@ export class SplitPolygonHandler extends ModeHandler {
       // if first point is clicked, then find closest polygon point and build ~90deg vector
       const firstPoint = clickSequence[0];
       const selectedGeometry = this.getSelectedGeometry();
-      // @ts-ignore
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'Geometry' is not assignable to p... Remove this comment to see the full error message
       const feature = turfPolygonToLine(selectedGeometry);
 
       const lines = feature.type === 'FeatureCollection' ? feature.features : [feature];
@@ -82,11 +82,11 @@ export class SplitPolygonHandler extends ModeHandler {
       type: 'Point',
       coordinates: clickSequence[clickSequence.length - 1],
     };
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ type: string; coordinates: Pos... Remove this comment to see the full error message
     const isPointInPolygon = booleanPointInPolygon(pt, selectedGeometry);
     if (clickSequence.length > 1 && tentativeFeature && !isPointInPolygon) {
       this.resetClickSequence();
-      // @ts-ignore
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'Feature' is not assignable to pa... Remove this comment to see the full error message
       const isLineInterectingWithPolygon = lineIntersect(tentativeFeature, selectedGeometry);
       if (isLineInterectingWithPolygon.features.length === 0) {
         this._setTentativeFeature(null);
@@ -132,9 +132,9 @@ export class SplitPolygonHandler extends ModeHandler {
       gap = 0.1;
       units = 'centimeters';
     }
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
     const buffer = turfBuffer(tentativeFeature, gap, { units });
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'Geometry' is not assignable to p... Remove this comment to see the full error message
     const updatedGeometry = turfDifference(selectedGeometry, buffer);
     this._setTentativeFeature(null);
     if (!updatedGeometry) {
@@ -147,11 +147,10 @@ export class SplitPolygonHandler extends ModeHandler {
     let updatedCoordinates = [];
     if (type === 'Polygon') {
       // Update the coordinates as per Multipolygon
-      // @ts-ignore
       updatedCoordinates = coordinates.map((c) => [c]);
     } else {
       // Handle Case when Multipolygon has holes
-      // @ts-ignore
+      // @ts-expect-error ts-migrate(2349) FIXME: This expression is not callable.
       updatedCoordinates = coordinates.reduce((agg, prev) => {
         prev.forEach((p) => {
           agg.push([p]);

@@ -62,7 +62,7 @@ export class ModifyHandler extends ModeHandler {
             const lineStringFeature = toLineString(lineString);
 
             const candidateIntermediatePoint = this.nearestPointOnLine(
-              // @ts-ignore
+              // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'Feature<LineString, { [name: str... Remove this comment to see the full error message
               lineStringFeature,
               referencePoint
             );

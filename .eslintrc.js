@@ -1,15 +1,13 @@
-
 module.exports = {
-
-  "parser": "@typescript-eslint/parser",
-  plugins: ['prettier', 'babel', 'import', "@typescript-eslint", 'react', "react-hooks"],
+  parser: '@typescript-eslint/parser',
+  plugins: ['prettier', 'babel', 'import', '@typescript-eslint', 'react', 'react-hooks'],
   extends: [
     'eslint-config-uber-jsx',
     'eslint-config-uber-es2015',
-    "plugin:@typescript-eslint/recommended",
-    "plugin:react/recommended",
-    "plugin:react-hooks/recommended",
-    'prettier'
+    'plugin:@typescript-eslint/recommended',
+    'plugin:react/recommended',
+    'plugin:react-hooks/recommended',
+    'prettier',
   ],
   rules: {
     'callback-return': 'off',
@@ -25,7 +23,7 @@ module.exports = {
 
     /* This is needed for class property function declarations */
     'no-invalid-this': 'off',
-    'babel/no-invalid-this': 'error',
+    'babel/no-invalid-this': 'warn',
 
     /* Style guide */
     'import/first': 'error',
@@ -36,14 +34,14 @@ module.exports = {
     'import/extensions': 'off',
 
     // Those are rules for typescript migration
-    "@typescript-eslint/interface-name-prefix": 0,
-    "@typescript-eslint/no-empty-function": 0,
-    "@typescript-eslint/explicit-function-return-type": 0,
-    "no-inline-comments": 0,
+    '@typescript-eslint/interface-name-prefix': 0,
+    '@typescript-eslint/no-empty-function': 0,
+    '@typescript-eslint/explicit-function-return-type': 0,
+    'no-inline-comments': 0,
     // TODO: Please remove these rules and fix eslint error when possible
-    "@typescript-eslint/no-use-before-define": 0,
-    "@typescript-eslint/ban-ts-ignore": 0,
-    "@typescript-eslint/camelcase": 0,
+    '@typescript-eslint/no-use-before-define': 0,
+    '@typescript-eslint/ban-ts-ignore': 0,
+    '@typescript-eslint/camelcase': 0,
 
     /* Ignore rules conflicting with prettier */
     'react/jsx-wrap-multilines': 'off',
@@ -53,19 +51,19 @@ module.exports = {
     /* Use the 'query-string' module instead */
     'no-restricted-imports': ['error', 'querystring'],
 
-    'no-unused-vars': ['error', { args: 'none', 'ignoreRestSiblings': true }]
+    'no-unused-vars': ['error', { args: 'none', ignoreRestSiblings: true }],
   },
   globals: {
     Buffer: true,
-    window: true
+    window: true,
   },
   env: {
     // Support global Jest variables (test, expect, etc.)
-    jest: true
+    jest: true,
   },
-  "settings": {
-    "react": {
-      "version": "detect"
-    }
-  }
+  settings: {
+    react: {
+      version: 'detect',
+    },
+  },
 };

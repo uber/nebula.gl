@@ -35,7 +35,7 @@ export class SnappableHandler extends ModeHandler {
   }
 
   _getSnappedMouseEvent(event: Record<string, any>, snapPoint: Position): PointerMoveEvent {
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2740) FIXME: Type 'Record<string, any> & { groundCoords: Positi... Remove this comment to see the full error message
     return Object.assign({}, event, {
       groundCoords: snapPoint,
       pointerDownGroundCoords: this._startDragSnapHandlePosition,
@@ -152,7 +152,7 @@ export class SnappableHandler extends ModeHandler {
   }
 
   handleStopDragging(event: StopDraggingEvent): EditAction | null | undefined {
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'Record<string, any>' is not assi... Remove this comment to see the full error message
     const modeActionSummary = this._handler.handleStopDragging(this._getSnapAwareEvent(event));
 
     this._editHandlePicks = null;
@@ -171,7 +171,7 @@ export class SnappableHandler extends ModeHandler {
     if (enableSnapping) {
       this._editHandlePicks = this._getEditHandlePicks(event);
     }
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'Record<string, any>' is not assi... Remove this comment to see the full error message
     const modeActionSummary = this._handler.handlePointerMove(this._getSnapAwareEvent(event));
     const { editAction } = modeActionSummary;
     if (editAction) {

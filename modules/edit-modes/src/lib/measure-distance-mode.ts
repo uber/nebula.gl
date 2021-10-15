@@ -159,7 +159,7 @@ export class MeasureDistanceMode extends GeoJsonEditMode {
     }));
 
     guides.features.push(...editHandles);
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2322) FIXME: Type '{ type: string; features: any[]; }' is not a... Remove this comment to see the full error message
     return guides;
   }
 

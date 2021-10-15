@@ -54,7 +54,7 @@ export class ExtendLineStringMode extends GeoJsonEditMode {
     const selectedLineString = this.getSingleSelectedLineString(props);
     if (!selectedLineString) {
       // nothing to do
-      // @ts-ignore
+      // @ts-expect-error ts-migrate(2322) FIXME: Type '{ type: string; features: any[]; }' is not a... Remove this comment to see the full error message
       return guides;
     }
 
@@ -79,7 +79,7 @@ export class ExtendLineStringMode extends GeoJsonEditMode {
         coordinates: [startPosition, mapCoords],
       },
     });
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2322) FIXME: Type '{ type: string; features: any[]; }' is not a... Remove this comment to see the full error message
     return guides;
   }
 

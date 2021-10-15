@@ -229,10 +229,10 @@ export class ModeHandler {
       if (modeConfig.booleanOperation === 'union') {
         updatedGeometry = turfUnion(selectedFeature, feature);
       } else if (modeConfig.booleanOperation === 'difference') {
-        // @ts-ignore
+        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'Feature' is not assignable to pa... Remove this comment to see the full error message
         updatedGeometry = turfDifference(selectedFeature, feature);
       } else if (modeConfig.booleanOperation === 'intersection') {
-        // @ts-ignore
+        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'Feature' is not assignable to pa... Remove this comment to see the full error message
         updatedGeometry = turfIntersect(selectedFeature, feature);
       } else {
         // eslint-disable-next-line no-console,no-undef
@@ -302,7 +302,7 @@ export function getIntermediatePosition(position1: Position, position2: Position
     (position1[0] + position2[0]) / 2.0,
     (position1[1] + position2[1]) / 2.0,
   ];
-  // @ts-ignore
+  // @ts-expect-error ts-migrate(2322) FIXME: Type 'number[]' is not assignable to type 'Positio... Remove this comment to see the full error message
   return intermediatePosition;
 }
 
@@ -365,7 +365,7 @@ export function getEditHandlesForGeometry(
 
       break;
     default:
-      // @ts-ignore
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'type' does not exist on type 'never'.
       throw Error(`Unhandled geometry type: ${geometry.type}`);
   }
 

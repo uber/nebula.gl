@@ -17,7 +17,7 @@ export class DrawEllipseUsingThreePointsMode extends ThreeClickPolygonMode {
     const xSemiAxis = Math.max(distance(centerCoordinates, point(coord3)), 0.001);
     const ySemiAxis = Math.max(distance(coord1, coord2), 0.001) / 2;
     const options = { angle: bearing(coord1, coord2) };
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2322) FIXME: Type 'Feature<Polygon, { [name: string]: any; }>' ... Remove this comment to see the full error message
     return ellipse(centerCoordinates, xSemiAxis, ySemiAxis, options);
   }
 }

@@ -67,7 +67,7 @@ export class ScaleHandler extends ModeHandler {
     const startPosition = startDragPoint;
     const centroid = turfCentroid(this._geometryBeingScaled);
     const factor = getScaleFactor(centroid, startPosition, currentPoint);
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'FeatureCollection' is not assign... Remove this comment to see the full error message
     const scaledFeatures = turfTransformScale(this._geometryBeingScaled, factor, {
       origin: centroid,
     });
@@ -77,6 +77,7 @@ export class ScaleHandler extends ModeHandler {
     const selectedIndexes = this.getSelectedFeatureIndexes();
     for (let i = 0; i < selectedIndexes.length; i++) {
       const selectedIndex = selectedIndexes[i];
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'features' does not exist on type 'AllGeo... Remove this comment to see the full error message
       const movedFeature = scaledFeatures.features[i];
       updatedData = updatedData.replaceGeometry(selectedIndex, movedFeature.geometry);
     }

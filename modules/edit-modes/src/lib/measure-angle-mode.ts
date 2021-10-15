@@ -1,7 +1,5 @@
 import turfBearing from '@turf/bearing';
-// @ts-ignore
 import turfCenter from '@turf/center';
-// @ts-ignore
 import memoize from '../memoize';
 
 import { ClickEvent, PointerMoveEvent, Tooltip, ModeProps, GuideFeatureCollection } from '../types';
@@ -30,7 +28,7 @@ export class MeasureAngleMode extends GeoJsonEditMode {
         text = formatTooltip(angle);
       } else {
         // By default, round to 2 decimal places and append units
-        // @ts-ignore
+        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'number' is not assignable to par... Remove this comment to see the full error message
         text = `${parseFloat(angle).toFixed(2)} ${units}`;
       }
 

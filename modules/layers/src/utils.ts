@@ -94,7 +94,7 @@ export function generatePointsParallelToLinePoints(
   // Add the distance as the current position moves away from the lineString
   const p3 = destination(p2, ddistance, orthogonalBearing);
   const p4 = destination(p1, ddistance, orthogonalBearing);
-  //@ts-ignore
+  // @ts-expect-error ts-migrate(2322) FIXME: Type 'import("/Users/adam.thomann/dev/nebula.gl/no... Remove this comment to see the full error message
   return [p3.geometry.coordinates, p4.geometry.coordinates];
 }
 
@@ -117,7 +117,7 @@ export function nearestPointOnProjectedLine(
   // Project the line to viewport, then find the nearest point
   const coordinates: Array<Array<number>> = line.geometry.coordinates as any;
   const projectedCoords = coordinates.map(([x, y, z = 0]) => wmViewport.project([x, y, z]));
-  //@ts-ignore
+  // @ts-expect-error ts-migrate(2488) FIXME: Type 'never' must have a '[Symbol.iterator]()' met... Remove this comment to see the full error message
   const [x, y] = wmViewport.project(inPoint.geometry.coordinates);
   // console.log('projectedCoords', JSON.stringify(projectedCoords));
 
@@ -152,7 +152,7 @@ export function nearestPointOnProjectedLine(
       };
     }
   });
-  //@ts-ignore
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'index' does not exist on type '{}'.
   const { index, x0, y0 } = minPointInfo;
   const [x1, y1, z1 = 0] = projectedCoords[index - 1];
   const [x2, y2, z2 = 0] = projectedCoords[index];

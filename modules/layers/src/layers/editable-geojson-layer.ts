@@ -287,7 +287,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     oldProps: Props;
     changeFlags: any;
   }) {
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ oldProps: Props; props: Props;... Remove this comment to see the full error message
     super.updateState({ oldProps, props, changeFlags });
 
     if (changeFlags.propsOrDataChanged) {

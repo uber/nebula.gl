@@ -4,7 +4,7 @@ import { ScatterplotLayer } from '@deck.gl/layers';
 export default class JunctionScatterplotLayer extends CompositeLayer<any> {
   static layerName = 'JunctionScatterplotLayer';
   static defaultProps = {
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'defaultProps' does not exist on type 'ty... Remove this comment to see the full error message
     ...ScatterplotLayer.defaultProps,
     getFillColor: (d) => [0, 0, 0, 255],
     getStrokeColor: (d) => [255, 255, 255, 255],

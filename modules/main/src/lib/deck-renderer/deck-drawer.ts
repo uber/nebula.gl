@@ -99,7 +99,7 @@ export default class DeckDrawer {
   ): { redraw: boolean; deactivate: boolean } {
     // capture all events (mouse-up is needed to prevent us stuck in moving map)
     if (event.type !== 'mouseup') event.stopPropagation();
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2367) FIXME: This condition will always return 'false' since th... Remove this comment to see the full error message
     this.usePolygon = selectionType === SELECTION_TYPE.POLYGON;
 
     let redraw = false;
@@ -158,7 +158,7 @@ export default class DeckDrawer {
 
   _makeStartPointHighlight(center: [number, number]): number[] {
     const buffer = turfBuffer(point(center), POLYGON_THRESHOLD / 4.0);
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2322) FIXME: Type 'Position[][]' is not assignable to type 'num... Remove this comment to see the full error message
     return turfBboxPolygon(turfBbox(buffer)).geometry.coordinates;
   }
 
@@ -230,7 +230,6 @@ export default class DeckDrawer {
       new PolygonLayer({
         id: LAYER_ID_VIEW,
         data,
-        // @ts-ignore
         fp64: false,
         opacity: 1.0,
         pickable: false,
@@ -238,26 +237,25 @@ export default class DeckDrawer {
         lineWidthMaxPixels: POLYGON_LINE_WIDTH,
         lineDashJustified: true,
         getLineDashArray: (x) => POLYGON_DASHES,
-        // @ts-ignore
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'lineColor' does not exist on type 'unkno... Remove this comment to see the full error message
         getLineColor: (obj) => obj.lineColor || [0, 0, 0, 255],
-        // @ts-ignore
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'fillColor' does not exist on type 'unkno... Remove this comment to see the full error message
         getFillColor: (obj) => obj.fillColor || [0, 0, 0, 255],
-        // @ts-ignore
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'polygon' does not exist on type 'unknown... Remove this comment to see the full error message
         getPolygon: (o) => o.polygon,
       }),
       new PolygonLayer({
         id: LAYER_ID_PICK,
         data: dataPick,
-        // @ts-ignore
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'lineColor' does not exist on type 'unkno... Remove this comment to see the full error message
         getLineColor: (obj) => obj.lineColor || [0, 0, 0, 255],
-        // @ts-ignore
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'fillColor' does not exist on type 'unkno... Remove this comment to see the full error message
         getFillColor: (obj) => obj.fillColor || [0, 0, 0, 255],
-        // @ts-ignore
         fp64: false,
         opacity: 1.0,
         stroked: false,
         pickable: true,
-        // @ts-ignore
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'polygon' does not exist on type 'unknown... Remove this comment to see the full error message
         getPolygon: (o) => o.polygon,
       }),
     ];

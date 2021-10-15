@@ -58,14 +58,14 @@ function getCleanedFeature(feature: Feature): Feature {
   const properties = feature.properties || {};
 
   let geometry = feature.geometry;
-  // @ts-ignore
+  // @ts-expect-error ts-migrate(2367) FIXME: This condition will always return 'false' since th... Remove this comment to see the full error message
   if (geometry.type === 'GeometryCollection' && geometry.geometries.length === 1) {
     // There's only one geometry
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'geometries' does not exist on type 'neve... Remove this comment to see the full error message
     geometry = geometry.geometries[0];
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2367) FIXME: This condition will always return 'false' since th... Remove this comment to see the full error message
   } else if (geometry.type === 'GeometryCollection' && geometry.geometries.length > 1) {
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'geometries' does not exist on type 'neve... Remove this comment to see the full error message
     const types = new Set(geometry.geometries.map((g) => g.type));
     if (types.size === 1) {
       // See if it can be combined into a Multi* geometry
@@ -74,14 +74,14 @@ function getCleanedFeature(feature: Feature): Feature {
         // Combine all the Polygons into a single MultiPolygon
         geometry = {
           type: 'MultiPolygon',
-          // @ts-ignore
+          // @ts-expect-error ts-migrate(2339) FIXME: Property 'geometries' does not exist on type 'neve... Remove this comment to see the full error message
           coordinates: geometry.geometries.map((g) => g.coordinates),
         };
       } else if (type === 'LineString') {
         // Combine all the LineStrings into a single MultiLineString
         geometry = {
           type: 'MultiLineString',
-          // @ts-ignore
+          // @ts-expect-error ts-migrate(2339) FIXME: Property 'geometries' does not exist on type 'neve... Remove this comment to see the full error message
           coordinates: geometry.geometries.map((g) => g.coordinates),
         };
       }
@@ -91,7 +91,7 @@ function getCleanedFeature(feature: Feature): Feature {
     }
   }
 
-  // @ts-ignore
+  // @ts-expect-error ts-migrate(2322) FIXME: Type '{ type: "Feature"; id: string | number; geom... Remove this comment to see the full error message
   return {
     type: 'Feature',
     id,

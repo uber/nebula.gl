@@ -78,7 +78,7 @@ export class DrawPolygonHandler extends ModeHandler {
       pointerDownGroundCoords: null,
       sourceEvent: null,
     };
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ screenCoords: number[]; ground... Remove this comment to see the full error message
     this.handlePointerMove(fakePointerMoveEvent);
 
     return editAction;

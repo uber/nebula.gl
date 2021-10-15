@@ -25,9 +25,11 @@ export default class TextsLayer extends NebulaLayer {
       fp64: false,
       pickable: false,
 
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'style' does not exist on type 'unknown'.
       getText: (nf) => nf.style.text,
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'geoJson' does not exist on type 'unknown... Remove this comment to see the full error message
       getPosition: (nf) => nf.geoJson.geometry.coordinates,
-      // @ts-ignore
+      // @ts-expect-error ts-migrate(2322) FIXME: Type '(nf: unknown) => number[]' is not assignable... Remove this comment to see the full error message
       getColor: (nf) => toDeckColor(nf.style.fillColor) || defaultColor,
 
       // TODO: layer should offer option to scale with zoom

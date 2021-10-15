@@ -19,7 +19,7 @@ export class DrawEllipseByBoundingBoxMode extends TwoClickPolygonMode {
     const xSemiAxis = Math.max(distance(point(polygonPoints[0]), point(polygonPoints[1])), 0.001);
     const ySemiAxis = Math.max(distance(point(polygonPoints[0]), point(polygonPoints[3])), 0.001);
 
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2322) FIXME: Type 'Feature<Polygon, { [name: string]: any; }>' ... Remove this comment to see the full error message
     return ellipse(centerCoordinates, xSemiAxis, ySemiAxis);
   }
 }

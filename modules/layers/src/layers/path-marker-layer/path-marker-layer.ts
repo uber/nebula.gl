@@ -47,7 +47,7 @@ export default class PathMarkerLayer extends CompositeLayer<any> {
       closestPoint: null,
     };
   }
-  // @ts-ignore
+  // @ts-expect-error ts-migrate(2416) FIXME: Property 'projectFlat' in type 'PathMarkerLayer' i... Remove this comment to see the full error message
   projectFlat(xyz, viewport, coordinateSystem, coordinateOrigin) {
     if (coordinateSystem === COORDINATE_SYSTEM.METER_OFFSETS) {
       const [dx, dy] = viewport.metersToLngLatDelta(xyz);
@@ -73,7 +73,7 @@ export default class PathMarkerLayer extends CompositeLayer<any> {
         coordinateSystem,
         coordinateOrigin,
       } = this.props;
-      // @ts-ignore
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'viewport' does not exist on type '{ gl: ... Remove this comment to see the full error message
       const { viewport } = this.context;
       const projectFlat = (o) => this.projectFlat(o, viewport, coordinateSystem, coordinateOrigin);
       this.state.markers = createPathMarkers({
@@ -120,7 +120,7 @@ export default class PathMarkerLayer extends CompositeLayer<any> {
     return [
       new PathOutlineLayer(
         this.props,
-        // @ts-ignore
+        // @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 2.
         this.getSubLayerProps({
           id: 'paths',
           // Note: data has to be passed explicitly like this to avoid being empty
@@ -148,7 +148,7 @@ export default class PathMarkerLayer extends CompositeLayer<any> {
         new ScatterplotLayer({
           id: `${this.props.id}-highlight`,
           data: this.state.closestPoints,
-          // @ts-ignore
+          // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ id: string; data: any; fp64: a... Remove this comment to see the full error message
           fp64: this.props.fp64,
         }),
     ];

@@ -66,11 +66,11 @@ export default class SelectionLayer extends CompositeLayer<any> {
 
   _selectRectangleObjects(coordinates: any) {
     const { layerIds, onSelect } = this.props;
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'viewport' does not exist on type '{ gl: ... Remove this comment to see the full error message
     const [x1, y1] = this.context.viewport.project(coordinates[0][0]);
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'viewport' does not exist on type '{ gl: ... Remove this comment to see the full error message
     const [x2, y2] = this.context.viewport.project(coordinates[0][2]);
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'deck' does not exist on type '{ gl: WebG... Remove this comment to see the full error message
     const pickingInfos = this.context.deck.pickObjects({
       x: Math.min(x1, x2),
       y: Math.min(y1, y2),
@@ -84,7 +84,7 @@ export default class SelectionLayer extends CompositeLayer<any> {
 
   _selectPolygonObjects(coordinates: any) {
     const { layerIds, onSelect } = this.props;
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'viewport' does not exist on type '{ gl: ... Remove this comment to see the full error message
     const mousePoints = coordinates[0].map((c) => this.context.viewport.project(c));
 
     const allX = mousePoints.map((mousePoint) => mousePoint[0]);
@@ -119,7 +119,7 @@ export default class SelectionLayer extends CompositeLayer<any> {
 
     // HACK, find a better way
     setTimeout(() => {
-      // @ts-ignore
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'deck' does not exist on type '{ gl: WebG... Remove this comment to see the full error message
       const pickingInfos = this.context.deck.pickObjects({
         x,
         y,
@@ -173,8 +173,9 @@ export default class SelectionLayer extends CompositeLayer<any> {
     if (pendingPolygonSelection) {
       const { bigPolygon } = pendingPolygonSelection;
       layers.push(
+        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'PolygonLayer<unknown>' is not as... Remove this comment to see the full error message
         new PolygonLayer(
-          // @ts-ignore
+          // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ opacity: any; pickable: any; v... Remove this comment to see the full error message
           this.getSubLayerProps({
             id: LAYER_ID_BLOCKER,
             pickable: true,

@@ -7,6 +7,7 @@ import { createRandomFeature } from './utils/test-features';
 let feature: Feature;
 let featureCollection: FeatureCollection;
 
+// @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'beforeEach'.
 beforeEach(() => {
   feature = createRandomFeature();
   feature.properties.name = 'My Feature';
@@ -21,7 +22,9 @@ beforeEach(() => {
   };
 });
 
+// @ts-expect-error ts-migrate(2593) FIXME: Cannot find name 'describe'. Do you need to instal... Remove this comment to see the full error message
 describe('toGeoJson()', () => {
+  // @ts-expect-error ts-migrate(2593) FIXME: Cannot find name 'test'. Do you need to install ty... Remove this comment to see the full error message
   test('feature', () => {
     const expectedFilename = `myfile.geojson`;
     const expectedMimeType = 'application/json';
@@ -29,12 +32,16 @@ describe('toGeoJson()', () => {
     const actual = toGeoJson(feature, 'myfile');
     const actualParsed = JSON.parse(actual.data);
 
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
     expect(actual.filename).toEqual(expectedFilename);
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
     expect(actual.mimetype).toEqual(expectedMimeType);
 
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
     expect(actualParsed.properties.name).toEqual(feature.properties.name);
   });
 
+  // @ts-expect-error ts-migrate(2593) FIXME: Cannot find name 'test'. Do you need to install ty... Remove this comment to see the full error message
   test('feature collection', () => {
     const expectedFilename = `geojsonFeatures.geojson`;
     const expectedMimeType = 'application/json';
@@ -42,30 +49,40 @@ describe('toGeoJson()', () => {
     const actual = toGeoJson(featureCollection, 'geojsonFeatures');
     const actualParsed: FeatureCollection = JSON.parse(actual.data);
 
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
     expect(actual.filename).toEqual(expectedFilename);
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
     expect(actual.mimetype).toEqual(expectedMimeType);
 
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
     expect(actualParsed.features[0].properties.name).toEqual(
       featureCollection.features[0].properties.name
     );
   });
 });
 
+// @ts-expect-error ts-migrate(2593) FIXME: Cannot find name 'describe'. Do you need to instal... Remove this comment to see the full error message
 describe('toKml()', () => {
+  // @ts-expect-error ts-migrate(2593) FIXME: Cannot find name 'test'. Do you need to install ty... Remove this comment to see the full error message
   test('feature', () => {
     const expectedFilename = `myfile.kml`;
     const expectedMimeType = 'application/xml';
 
     const actual = toKml(feature, 'myfile');
 
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
     expect(actual.filename).toEqual(expectedFilename);
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
     expect(actual.mimetype).toEqual(expectedMimeType);
 
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
     expect(actual.data).toContain(`<name>${feature.properties.name}</name>`);
   });
 });
 
+// @ts-expect-error ts-migrate(2593) FIXME: Cannot find name 'describe'. Do you need to instal... Remove this comment to see the full error message
 describe('toWkt()', () => {
+  // @ts-expect-error ts-migrate(2593) FIXME: Cannot find name 'test'. Do you need to install ty... Remove this comment to see the full error message
   test('feature', () => {
     const expectedFilename = `llamallama.wkt`;
     const expectedMimeType = 'text/plain';
@@ -90,11 +107,15 @@ describe('toWkt()', () => {
       'llamallama'
     );
 
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
     expect(actual.filename).toEqual(expectedFilename);
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
     expect(actual.mimetype).toEqual(expectedMimeType);
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
     expect(actual.data).toEqual(expectedData);
   });
 
+  // @ts-expect-error ts-migrate(2593) FIXME: Cannot find name 'test'. Do you need to install ty... Remove this comment to see the full error message
   test('feature collection', () => {
     const expectedFilename = `geojsonFeatures.wkt`;
     const expectedMimeType = 'text/plain';
@@ -141,11 +162,15 @@ describe('toWkt()', () => {
       'geojsonFeatures'
     );
 
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
     expect(actual.filename).toEqual(expectedFilename);
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
     expect(actual.mimetype).toEqual(expectedMimeType);
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
     expect(actual.data).toEqual(expectedData);
   });
 
+  // @ts-expect-error ts-migrate(2593) FIXME: Cannot find name 'test'. Do you need to install ty... Remove this comment to see the full error message
   test('empty feature collection', () => {
     const expectedFilename = `geojsonFeatures.wkt`;
     const expectedMimeType = 'text/plain';
@@ -160,13 +185,18 @@ describe('toWkt()', () => {
       'geojsonFeatures'
     );
 
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
     expect(actual.filename).toEqual(expectedFilename);
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
     expect(actual.mimetype).toEqual(expectedMimeType);
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
     expect(actual.data).toEqual(expectedData);
   });
 });
 
+// @ts-expect-error ts-migrate(2593) FIXME: Cannot find name 'describe'. Do you need to instal... Remove this comment to see the full error message
 describe('toStats()', () => {
+  // @ts-expect-error ts-migrate(2593) FIXME: Cannot find name 'test'. Do you need to install ty... Remove this comment to see the full error message
   test('when feature', () => {
     const expectedFilename = `mystats.txt`;
     const expectedMimeType = 'text/plain';
@@ -191,11 +221,15 @@ describe('toStats()', () => {
       'mystats'
     );
 
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
     expect(actual.filename).toEqual(expectedFilename);
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
     expect(actual.mimetype).toEqual(expectedMimeType);
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
     expect(actual.data).toEqual(expectedData);
   });
 
+  // @ts-expect-error ts-migrate(2593) FIXME: Cannot find name 'test'. Do you need to install ty... Remove this comment to see the full error message
   test('feature collection', () => {
     const expectedFilename = `mystats.txt`;
     const expectedMimeType = 'text/plain';
@@ -258,8 +292,11 @@ describe('toStats()', () => {
       'mystats'
     );
 
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
     expect(actual.filename).toEqual(expectedFilename);
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
     expect(actual.mimetype).toEqual(expectedMimeType);
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
     expect(actual.data).toEqual(expectedData);
   });
 });

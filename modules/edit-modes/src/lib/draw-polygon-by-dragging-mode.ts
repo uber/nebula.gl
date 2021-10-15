@@ -31,9 +31,9 @@ export class DrawPolygonByDraggingMode extends DrawPolygonMode {
   handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollection>) {
     this.addClickSequence(event);
     const clickSequence = this.getClickSequence();
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'cancel' does not exist on type 'Dragging... Remove this comment to see the full error message
     if (this.handleDraggingThrottled && this.handleDraggingThrottled.cancel) {
-      // @ts-ignore
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'cancel' does not exist on type 'Dragging... Remove this comment to see the full error message
       this.handleDraggingThrottled.cancel();
     }
 

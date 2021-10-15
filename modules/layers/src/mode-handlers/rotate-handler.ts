@@ -71,7 +71,7 @@ export class RotateHandler extends ModeHandler {
     const startPosition = startDragPoint;
     const centroid = turfCentroid(this._geometryBeingRotated);
     const angle = getRotationAngle(centroid, startPosition, currentPoint);
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'FeatureCollection' is not assign... Remove this comment to see the full error message
     const rotatedFeatures = turfTransformRotate(this._geometryBeingRotated, angle);
 
     let updatedData = this.getImmutableFeatureCollection();
@@ -79,6 +79,7 @@ export class RotateHandler extends ModeHandler {
     const selectedIndexes = this.getSelectedFeatureIndexes();
     for (let i = 0; i < selectedIndexes.length; i++) {
       const selectedIndex = selectedIndexes[i];
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'features' does not exist on type 'AllGeo... Remove this comment to see the full error message
       const movedFeature = rotatedFeatures.features[i];
       updatedData = updatedData.replaceGeometry(selectedIndex, movedFeature.geometry);
     }

@@ -24,7 +24,7 @@ export class DrawPointMode extends GeoJsonEditMode {
       type: 'Point',
       coordinates: mapCoords,
     };
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ type: string; coordinates: Pos... Remove this comment to see the full error message
     props.onEdit(this.getAddFeatureAction(geometry, props.data));
   }
 

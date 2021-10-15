@@ -36,7 +36,7 @@ export class DrawEllipseUsingThreePointsHandler extends ThreeClickPolygonHandler
       const xSemiAxis = Math.max(distance(centerCoordinates, point(groundCoords)), 0.001);
       const ySemiAxis = Math.max(distance(p1, p2), 0.001) / 2;
       const options = { angle: bearing(p1, p2) };
-      // @ts-ignore
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'Feature<Polygon, { [name: string... Remove this comment to see the full error message
       this._setTentativeFeature(ellipse(centerCoordinates, xSemiAxis, ySemiAxis, options));
     }
 

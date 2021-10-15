@@ -32,7 +32,7 @@ export class DrawEllipseByBoundingBoxHandler extends TwoClickPolygonHandler {
 
     const xSemiAxis = Math.max(distance(point(polygonPoints[0]), point(polygonPoints[1])), 0.001);
     const ySemiAxis = Math.max(distance(point(polygonPoints[0]), point(polygonPoints[3])), 0.001);
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'Feature<Polygon, { [name: string... Remove this comment to see the full error message
     this._setTentativeFeature(ellipse(centerCoordinates, xSemiAxis, ySemiAxis));
 
     return result;

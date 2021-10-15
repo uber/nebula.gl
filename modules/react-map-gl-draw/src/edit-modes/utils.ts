@@ -102,7 +102,7 @@ export function updateRectanglePosition(
   if (!coordinates) {
     return null;
   }
-  // @ts-ignore
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'slice' does not exist on type 'number | ... Remove this comment to see the full error message
   const points = coordinates.slice(0, 4);
   points[editHandleIndex % 4] = mapCoords;
 

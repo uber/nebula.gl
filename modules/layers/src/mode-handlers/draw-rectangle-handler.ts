@@ -18,7 +18,7 @@ export class DrawRectangleHandler extends TwoClickPolygonHandler {
 
     const corner1 = clickSequence[0];
     const corner2 = event.groundCoords;
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'Feature<Polygon, { [key: string]... Remove this comment to see the full error message
     this._setTentativeFeature(bboxPolygon([corner1[0], corner1[1], corner2[0], corner2[1]]));
 
     return result;

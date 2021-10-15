@@ -22,7 +22,7 @@ export default class Feature {
   }
 
   getCoords(): any {
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'coordinates' does not exist on type 'Geo... Remove this comment to see the full error message
     return this.geoJson.geometry.coordinates;
   }
 }

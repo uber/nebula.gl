@@ -8,7 +8,7 @@ export class DrawRectangleMode extends TwoClickPolygonMode {
     rectangle.properties = rectangle.properties || {};
     rectangle.properties.shape = 'Rectangle';
 
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2322) FIXME: Type 'Feature<Polygon, { [name: string]: any; }>' ... Remove this comment to see the full error message
     return rectangle;
   }
 }

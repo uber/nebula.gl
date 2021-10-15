@@ -123,7 +123,7 @@ export function getEditHandleStyle({ feature, shape, index, state }) {
 
   switch (shape) {
     case 'circle':
-      //@ts-ignore
+      // @ts-ignore
       style.r = CIRCLE_RADIUS;
       break;
     case 'rect':

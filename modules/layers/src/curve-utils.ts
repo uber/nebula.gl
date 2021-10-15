@@ -36,14 +36,14 @@ export function generateCurveFromControlPoints(
   const tangents = [];
 
   // first tangent
-  // @ts-ignore
+  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'Position[]' is not assignable to... Remove this comment to see the full error message
   tangents.push(calculateSingleTangent(coords[0], coords[1], knots[1] - knots[0]));
 
   // second to before last
   for (let i = 1; i < coords.length - 1; i++) {
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'Position[]' is not assignable to... Remove this comment to see the full error message
     const A = calculateSingleTangent(coords[i], coords[i + 1], knots[i + 1] - knots[i]);
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'Position[]' is not assignable to... Remove this comment to see the full error message
     const B = calculateSingleTangent(coords[i - 1], coords[i], knots[i] - knots[i - 1]);
     const x = (A[0] + B[0]) / 2.0;
     const y = (A[1] + B[1]) / 2.0;
@@ -53,7 +53,7 @@ export function generateCurveFromControlPoints(
   // last tangent
   const last = coords.length - 1;
   tangents.push(
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'Position[]' is not assignable to... Remove this comment to see the full error message
     calculateSingleTangent(coords[last - 1], coords[last], knots[last] - knots[last - 1])
   );
 

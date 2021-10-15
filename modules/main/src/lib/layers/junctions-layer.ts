@@ -20,7 +20,7 @@ export default class JunctionsLayer extends NebulaLayer {
       id: `junctions-${this.id}`,
       data: objects,
       opacity: 1,
-      // @ts-ignore
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ id: string; data: any[]; opaci... Remove this comment to see the full error message
       fp64: false,
       pickable: true,
       getPosition: (nf) => nf.geoJson.geometry.coordinates,

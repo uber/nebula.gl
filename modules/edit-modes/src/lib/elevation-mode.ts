@@ -48,14 +48,14 @@ export class ElevationMode extends ModifyMode {
   handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>) {
     const editHandle = getPickedEditHandle(event.pointerDownPicks);
     const position = editHandle ? editHandle.geometry.coordinates : event.mapCoords;
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'Record<string, any>' is not assi... Remove this comment to see the full error message
     super.handlePointerMove(this.makeElevatedEvent(event, position, props), props);
   }
 
   handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollection>) {
     const editHandle = getPickedEditHandle(event.picks);
     const position = editHandle ? editHandle.geometry.coordinates : event.mapCoords;
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'Record<string, any>' is not assi... Remove this comment to see the full error message
     super.handleStopDragging(this.makeElevatedEvent(event, position, props), props);
   }
 

@@ -33,8 +33,7 @@ export class ScaleMode extends GeoJsonEditMode {
   _isSinglePointGeometrySelected = (geometry: FeatureCollection | null | undefined): boolean => {
     const { features } = geometry || {};
     if (Array.isArray(features) && features.length === 1) {
-      // @ts-ignore
-      const { type } = getGeom(features[0]);
+      const { type } = getGeom<any>(features[0]);
       return type === 'Point';
     }
     return false;
@@ -85,11 +84,11 @@ export class ScaleMode extends GeoJsonEditMode {
 
     const oppositeHandle = this._getOppositeScaleHandle(this._selectedEditHandle);
     const origin = getCoord(oppositeHandle);
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'number[]' is not assignable to p... Remove this comment to see the full error message
     const scaleFactor = getScaleFactor(origin, startDragPoint, currentPoint);
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2322) FIXME: Type 'AllGeoJSON' is not assignable to type 'Featu... Remove this comment to see the full error message
     const scaledFeatures: FeatureCollection = turfTransformScale(
-      // @ts-ignore
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'FeatureCollection' is not assign... Remove this comment to see the full error message
       this._geometryBeingScaled,
       scaleFactor,
       { origin }
@@ -220,7 +219,7 @@ export class ScaleMode extends GeoJsonEditMode {
     });
 
     this._cornerGuidePoints = cornerGuidePoints;
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2322) FIXME: Type 'FeatureCollection<Point, { [name: string]: a... Remove this comment to see the full error message
     return featureCollection([polygonToLine(boundingBox), ...this._cornerGuidePoints]);
   }
 }

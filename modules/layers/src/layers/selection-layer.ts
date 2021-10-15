@@ -65,12 +65,10 @@ export default class SelectionLayer extends CompositeLayer<any> {
   static defaultProps = defaultProps;
 
   _selectRectangleObjects(coordinates: any) {
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'layerIds' does not exist on type 'Compos... Remove this comment to see the full error message
     const { layerIds, onSelect } = this.props;
-    // @ts-ignore
     const [x1, y1] = this.context.viewport.project(coordinates[0][0]);
-    // @ts-ignore
     const [x2, y2] = this.context.viewport.project(coordinates[0][2]);
-    // @ts-ignore
     const pickingInfos = this.context.deck.pickObjects({
       x: Math.min(x1, x2),
       y: Math.min(y1, y2),
@@ -83,8 +81,8 @@ export default class SelectionLayer extends CompositeLayer<any> {
   }
 
   _selectPolygonObjects(coordinates: any) {
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'layerIds' does not exist on type 'Compos... Remove this comment to see the full error message
     const { layerIds, onSelect } = this.props;
-    // @ts-ignore
     const mousePoints = coordinates[0].map((c) => this.context.viewport.project(c));
 
     const allX = mousePoints.map((mousePoint) => mousePoint[0]);
@@ -119,7 +117,6 @@ export default class SelectionLayer extends CompositeLayer<any> {
 
     // HACK, find a better way
     setTimeout(() => {
-      // @ts-ignore
       const pickingInfos = this.context.deck.pickObjects({
         x,
         y,
@@ -137,7 +134,9 @@ export default class SelectionLayer extends CompositeLayer<any> {
   renderLayers() {
     const { pendingPolygonSelection } = this.state;
 
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'selectionType' does not exist on type 'C... Remove this comment to see the full error message
     const mode = MODE_MAP[this.props.selectionType] || ViewMode;
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'selectionType' does not exist on type 'C... Remove this comment to see the full error message
     const modeConfig = MODE_CONFIG_MAP[this.props.selectionType];
 
     const inheritedProps = {};
@@ -158,8 +157,10 @@ export default class SelectionLayer extends CompositeLayer<any> {
             if (editType === 'addFeature') {
               const { coordinates } = updatedData.features[0].geometry;
 
+              // @ts-expect-error ts-migrate(2339) FIXME: Property 'selectionType' does not exist on type 'C... Remove this comment to see the full error message
               if (this.props.selectionType === SELECTION_TYPE.RECTANGLE) {
                 this._selectRectangleObjects(coordinates);
+                // @ts-expect-error ts-migrate(2339) FIXME: Property 'selectionType' does not exist on type 'C... Remove this comment to see the full error message
               } else if (this.props.selectionType === SELECTION_TYPE.POLYGON) {
                 this._selectPolygonObjects(coordinates);
               }
@@ -173,8 +174,8 @@ export default class SelectionLayer extends CompositeLayer<any> {
     if (pendingPolygonSelection) {
       const { bigPolygon } = pendingPolygonSelection;
       layers.push(
+        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'PolygonLayer<unknown, LayerProps... Remove this comment to see the full error message
         new PolygonLayer(
-          // @ts-ignore
           this.getSubLayerProps({
             id: LAYER_ID_BLOCKER,
             pickable: true,

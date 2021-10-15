@@ -83,7 +83,7 @@ export class TranslateHandler extends ModeHandler {
     const direction = turfBearing(p1, p2);
 
     const movedFeatures = turfTransformTranslate(
-      // @ts-ignore
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'FeatureCollection' is not assign... Remove this comment to see the full error message
       this._geometryBeforeTranslate,
       distanceMoved,
       direction
@@ -94,6 +94,7 @@ export class TranslateHandler extends ModeHandler {
     const selectedIndexes = this.getSelectedFeatureIndexes();
     for (let i = 0; i < selectedIndexes.length; i++) {
       const selectedIndex = selectedIndexes[i];
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'features' does not exist on type 'AllGeo... Remove this comment to see the full error message
       const movedFeature = movedFeatures.features[i];
       updatedData = updatedData.replaceGeometry(selectedIndex, movedFeature.geometry);
     }

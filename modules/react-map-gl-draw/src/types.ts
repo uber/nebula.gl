@@ -7,6 +7,7 @@ import {
   Pick,
   ClickEvent,
   ScreenCoordinates,
+  Position,
 } from '@nebula.gl/edit-modes';
 
 import { RENDER_STATE, GEOJSON_TYPE, RENDER_TYPE } from './constants';
@@ -38,16 +39,16 @@ export type EditorProps = {
   style?: Record<string, any> | null | undefined;
   features?: Feature[] | null | undefined;
   selectedFeatureIndex?: number | null | undefined;
-  selectable?: Boolean;
+  selectable?: boolean;
   clickRadius?: number;
-  featureShape?: Function | string;
-  editHandleShape?: Function | string;
-  editHandleStyle?: Function | any;
-  featureStyle?: Function | any;
+  featureShape?: () => void | string;
+  editHandleShape?: () => void | string;
+  editHandleStyle?: () => void | any;
+  featureStyle?: () => void | any;
   featuresDraggable?: boolean | null | undefined;
-  onUpdate?: Function;
-  onSelect?: Function;
-  onUpdateCursor?: Function;
+  onUpdate?: (any) => void;
+  onSelect?: (selected: any) => void;
+  onUpdateCursor?: () => void;
   modeConfig?: any;
 };
 

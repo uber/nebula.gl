@@ -71,7 +71,7 @@ export default class Editor extends ModeHandler {
     ) {
       return RENDER_STATE.SELECTED;
     }
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'type' does not exist on type 'Pick'.
     if (hovered && hovered.type === ELEMENT_TYPE.EDIT_HANDLE) {
       if (hovered.index === editHandleIndex) {
         return RENDER_STATE.HOVERED;
@@ -99,7 +99,7 @@ export default class Editor extends ModeHandler {
     if (index === selectedFeatureIndex) {
       return RENDER_STATE.SELECTED;
     }
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'type' does not exist on type 'Pick'.
     if (hovered && hovered.type === ELEMENT_TYPE.FEATURE && hovered.featureIndex === index) {
       return RENDER_STATE.HOVERED;
     }
@@ -133,7 +133,7 @@ export default class Editor extends ModeHandler {
       feature: feature || editHandle,
       index,
       featureIndex,
-      // @ts-ignore
+      // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
       state: this._getEditHandleState(editHandle),
     });
 
@@ -142,7 +142,7 @@ export default class Editor extends ModeHandler {
       index,
       featureIndex,
       shape,
-      // @ts-ignore
+      // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
       state: this._getEditHandleState(editHandle),
     });
 
@@ -301,7 +301,7 @@ export default class Editor extends ModeHandler {
     let committedPath;
     let uncommittedPath;
     let closingPath;
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '[number, number] | [number, numb... Remove this comment to see the full error message
     const fill = this._renderFill('tentative', coordinates, uncommittedStyle);
 
     const type = shape || geojsonType;
@@ -314,24 +314,22 @@ export default class Editor extends ModeHandler {
         });
 
         if (cursorEditHandle) {
-          // @ts-ignore
           const cursorCoords = coordinates[coordinates.length - 2];
           committedPath = this._renderSegments(
             'tentative',
-            // @ts-ignore
+            // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'number[] | (Position | LineStrin... Remove this comment to see the full error message
             coordinates.slice(0, coordinates.length - 1),
             committedStyle
           );
           uncommittedPath = this._renderSegment(
             'tentative-uncommitted',
-            // @ts-ignore
             coordinates.length - 2,
-            // @ts-ignore
+            // @ts-expect-error ts-migrate(2322) FIXME: Type 'number | Position | LineStringCoordinates | ... Remove this comment to see the full error message
             [cursorCoords, lastCoords],
             uncommittedStyle
           );
         } else {
-          // @ts-ignore
+          // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '[number, number] | [number, numb... Remove this comment to see the full error message
           committedPath = this._renderSegments('tentative', coordinates, committedStyle);
         }
 
@@ -344,9 +342,8 @@ export default class Editor extends ModeHandler {
 
           closingPath = this._renderSegment(
             'tentative-closing',
-            // @ts-ignore
             coordinates.length - 1,
-            // @ts-ignore
+            // @ts-expect-error ts-migrate(2322) FIXME: Type 'number | Position | LineStringCoordinates | ... Remove this comment to see the full error message
             [lastCoords, firstCoords],
             closingStyle
           );
@@ -357,7 +354,7 @@ export default class Editor extends ModeHandler {
       case SHAPE.RECTANGLE:
         uncommittedPath = this._renderSegments(
           'tentative',
-          // @ts-ignore
+          // @ts-expect-error ts-migrate(2322) FIXME: Type 'number | Position | LineStringCoordinates | ... Remove this comment to see the full error message
           [...coordinates, firstCoords],
           uncommittedStyle
         );
@@ -403,7 +400,7 @@ export default class Editor extends ModeHandler {
   };
 
   _renderPoint = (feature: Feature, index: number, path: string) => {
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
     const renderState = this._getFeatureRenderState(index);
     const { featureStyle, featureShape, clickRadius } = this.props;
     const shape = this._getStyleProp(featureShape, { feature, index, state: renderState });
@@ -465,14 +462,14 @@ export default class Editor extends ModeHandler {
     const { featureStyle, clickRadius } = this.props;
     const selectedFeatureIndex = this._getSelectedFeatureIndex();
     const selected = index === selectedFeatureIndex;
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
     const renderState = this._getFeatureRenderState(index);
     const style = this._getStyleProp(featureStyle, { feature, index, state: renderState });
 
     const elemKey = `feature.${index}`;
     if (selected) {
       return (
-        // @ts-ignore
+        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'Position | LineStringCoordinates... Remove this comment to see the full error message
         <g key={elemKey}>{this._renderSegments(index, feature.geometry.coordinates, style)}</g>
       );
     }
@@ -507,7 +504,7 @@ export default class Editor extends ModeHandler {
     const { featureStyle } = this.props;
     const selectedFeatureIndex = this._getSelectedFeatureIndex();
     const selected = index === selectedFeatureIndex;
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
     const renderState = this._getFeatureRenderState(index);
     const style = this._getStyleProp(featureStyle, { feature, index, state: renderState });
 
@@ -520,10 +517,10 @@ export default class Editor extends ModeHandler {
       return (
         <g key={elemKey}>
           {// eslint-disable-next-line prettier/prettier
-          //@ts-ignore
+          // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'number | [number, number] | [num... Remove this comment to see the full error message
           this._renderFill(index, coordinates, style)}
           {// eslint-disable-next-line prettier/prettier
-          // @ts-ignore
+          // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'number | [number, number] | [num... Remove this comment to see the full error message
           this._renderSegments(index, coordinates, style)}
         </g>
       );
@@ -542,7 +539,7 @@ export default class Editor extends ModeHandler {
 
   _renderFeature = (feature: Feature, index: number) => {
     const coordinates = getFeatureCoordinates(feature);
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'length' does not exist on type 'number |... Remove this comment to see the full error message
     if (!coordinates || !coordinates.length) {
       return null;
     }
@@ -552,7 +549,7 @@ export default class Editor extends ModeHandler {
     } = feature;
 
     const shape = properties?.shape;
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '"Point" | "LineString" | "Polygo... Remove this comment to see the full error message
     const path = this._getPathInScreenCoords(coordinates, geojsonType);
     if (!path) {
       return null;
@@ -595,7 +592,7 @@ export default class Editor extends ModeHandler {
   _render = () => {
     const viewport = (this._context && this._context.viewport) || {};
     const { style } = this.props;
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'width' does not exist on type '{}'.
     const { width = 0, height = 0 } = viewport;
     return (
       <div

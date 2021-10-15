@@ -22,12 +22,12 @@ export default class EditingMode extends BaseMode {
   handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>) {
     const picked = event.picks && event.picks[0];
     const selectedFeatureIndex = props.selectedIndexes && props.selectedIndexes[0];
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'featureIndex' does not exist on type 'Pi... Remove this comment to see the full error message
     if (!picked || !picked.object || picked.featureIndex !== selectedFeatureIndex) {
       return;
     }
 
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'type' does not exist on type 'Pick'.
     const { type: objectType, featureIndex, index } = picked;
     const feature = this.getSelectedFeature(props, featureIndex);
 
@@ -41,14 +41,14 @@ export default class EditingMode extends BaseMode {
       if (!coordinates) {
         return;
       }
-      // @ts-ignore
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'length' does not exist on type 'number |... Remove this comment to see the full error message
       const insertIndex = (index + 1) % coordinates.length;
       const positionIndexes =
         feature.geometry.type === SHAPE.POLYGON ? [0, insertIndex] : [insertIndex];
       const insertMapCoords = this._getPointOnSegment(feature, picked, event.mapCoords);
 
       const updatedData = new ImmutableFeatureCollection(props.data)
-        // @ts-ignore
+        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'number[]' is not assignable to p... Remove this comment to see the full error message
         .addPosition(featureIndex, positionIndexes, insertMapCoords)
         .getObject();
 
@@ -59,7 +59,7 @@ export default class EditingMode extends BaseMode {
           {
             featureIndex,
             editHandleIndex: insertIndex,
-            // @ts-ignore
+            // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
             screenCoords: props.viewport && props.viewport.project(insertMapCoords),
             mapCoords: insertMapCoords,
           },
@@ -72,7 +72,7 @@ export default class EditingMode extends BaseMode {
     // replace point
     const picked = event.picks && event.picks[0];
 
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2551) FIXME: Property 'Object' does not exist on type 'Pick'. D... Remove this comment to see the full error message
     if (!picked || !picked.Object || !isNumeric(picked.featureIndex)) {
       return;
     }
@@ -94,20 +94,20 @@ export default class EditingMode extends BaseMode {
     props: ModeProps<FeatureCollection>
   ) {
     const { onEdit } = props;
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
     const selectedFeature = this.getSelectedFeature(props);
     // nothing clicked
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'isDragging' does not exist on type 'Poin... Remove this comment to see the full error message
     const { isDragging, pointerDownPicks, screenCoords } = event;
     const { lastPointerMoveEvent } = props;
 
     const clicked = pointerDownPicks && pointerDownPicks[0];
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'featureIndex' does not exist on type 'Pi... Remove this comment to see the full error message
     if (!clicked || !clicked.object || !isNumeric(clicked.featureIndex)) {
       return;
     }
 
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'type' does not exist on type 'Pick'.
     const { type: objectType, index: editHandleIndex } = clicked;
 
     // not dragging
@@ -154,12 +154,12 @@ export default class EditingMode extends BaseMode {
 
   handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>) {
     // no selected feature
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
     const selectedFeature = this.getSelectedFeature(props);
     if (!selectedFeature) {
       return;
     }
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'isDragging' does not exist on type 'Poin... Remove this comment to see the full error message
     if (!event.isDragging) {
       return;
     }
@@ -180,6 +180,7 @@ export default class EditingMode extends BaseMode {
       return null;
     }
 
+    // @ts-expect-error ts-migrate(2548) FIXME: Type 'number | [number, number] | [number, number,... Remove this comment to see the full error message
     let newCoordinates = [...coordinates];
 
     switch (type) {
@@ -196,10 +197,8 @@ export default class EditingMode extends BaseMode {
       case 'feature':
         const { dx, dy } = options;
 
-        // @ts-ignore
         newCoordinates = newCoordinates
           .map((mapCoords) => {
-            // @ts-ignore
             const pixels = viewport && viewport.project(mapCoords);
             if (pixels) {
               pixels[0] += dx;
@@ -226,7 +225,7 @@ export default class EditingMode extends BaseMode {
       case 'rectangle':
         // moved editHandleIndex and destination mapCoords
         newCoordinates = updateRectanglePosition(
-          // @ts-ignore
+          // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'Feature' is not assignable to pa... Remove this comment to see the full error message
           feature,
           options.editHandleIndex,
           options.mapCoords
@@ -253,7 +252,6 @@ export default class EditingMode extends BaseMode {
     const srcVertexIndex = picked.index;
     const targetVertexIndex = picked.index + 1;
     return findClosestPointOnLineSegment(
-      // @ts-ignore
       coordinates[srcVertexIndex],
       coordinates[targetVertexIndex],
       pickedMapCoords
@@ -268,11 +266,11 @@ export default class EditingMode extends BaseMode {
       return null;
     }
 
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'isDragging' does not exist on type 'Poin... Remove this comment to see the full error message
     const { isDragging, picks } = event;
     // if not pick segment
     const picked = picks && picks[0];
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'featureIndex' does not exist on type 'Pi... Remove this comment to see the full error message
     if (!picked || !isNumeric(picked.featureIndex) || picked.type !== ELEMENT_TYPE.SEGMENT) {
       return null;
     }
@@ -306,9 +304,9 @@ export default class EditingMode extends BaseMode {
       },
     };
   }
-  // @ts-ignore
+  // @ts-expect-error ts-migrate(2416) FIXME: Property 'getGuides' in type 'EditingMode' is not ... Remove this comment to see the full error message
   getGuides(props: ModeProps<FeatureCollection>) {
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
     const selectedFeature = this.getSelectedFeature(props);
     const selectedFeatureIndex = props.selectedIndexes && props.selectedIndexes[0];
 
@@ -324,7 +322,6 @@ export default class EditingMode extends BaseMode {
     // cursor editHandle
     const cursorEditHandle = this._getCursorEditHandle(event, selectedFeature);
     if (cursorEditHandle) {
-      // @ts-ignore
       editHandles.push(cursorEditHandle);
     }
 

@@ -8,7 +8,7 @@ export class DrawPointHandler extends ModeHandler {
       type: 'Point',
       coordinates: groundCoords,
     };
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ type: string; coordinates: Pos... Remove this comment to see the full error message
     return this.getAddFeatureAction(geometry);
   }
 }

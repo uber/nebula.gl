@@ -63,7 +63,7 @@ export default class BaseMode implements EditMode<FeatureCollection, GuideFeatur
     if (!coordinates) {
       return null;
     }
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'map' does not exist on type 'number | [n... Remove this comment to see the full error message
     return coordinates.map((coord, i) => {
       return {
         type: 'Feature',
@@ -85,7 +85,6 @@ export default class BaseMode implements EditMode<FeatureCollection, GuideFeatur
 
   getSelectedFeature(props: ModeProps<FeatureCollection>, featureIndex: number | null | undefined) {
     const { data, selectedIndexes } = props;
-    // @ts-ignore
     const features = data && data.features;
 
     const selectedIndex = isNumeric(featureIndex)

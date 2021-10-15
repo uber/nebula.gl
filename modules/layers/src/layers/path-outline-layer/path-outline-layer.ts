@@ -61,11 +61,13 @@ export default class PathOutlineLayer extends PathLayer<any> {
   draw({ moduleParameters = {}, parameters, uniforms, context }) {
     // Need to calculate same uniforms as base layer
     const {
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'rounded' does not exist on type 'PathLay... Remove this comment to see the full error message
       rounded,
       miterLimit,
       widthScale,
       widthMinPixels,
       widthMaxPixels,
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'dashJustified' does not exist on type 'P... Remove this comment to see the full error message
       dashJustified,
     } = this.props;
 
@@ -120,6 +122,7 @@ export default class PathOutlineLayer extends PathLayer<any> {
   }
 
   calculateZLevels(attribute) {
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'getZLevel' does not exist on type 'PathL... Remove this comment to see the full error message
     const { getZLevel } = this.props;
     const { pathTesselator } = this.state;
 

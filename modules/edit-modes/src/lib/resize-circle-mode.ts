@@ -63,7 +63,7 @@ export class ResizeCircleMode extends GeoJsonEditMode {
           (lineString, prefix) => {
             const lineStringFeature = toLineString(lineString);
             const candidateIntermediatePoint = this.getNearestPoint(
-              // @ts-ignore
+              // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'Feature<LineString, { [name: str... Remove this comment to see the full error message
               lineStringFeature,
               referencePoint,
               props.modeConfig && props.modeConfig.viewport

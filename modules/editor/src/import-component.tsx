@@ -179,7 +179,7 @@ export function ImportComponent(props: ImportComponentProps) {
           <ImportInfo style={{ color: 'rgb(133, 100, 4)', backgroundColor: 'rgb(255, 243, 205)' }}>
             {isDataSet() &&
               !parseResult.valid &&
-              // @ts-ignore
+              // @ts-expect-error ts-migrate(2339) FIXME: Property 'validationErrors' does not exist on type... Remove this comment to see the full error message
               parseResult.validationErrors.map((err, i) => <div key={i}>{err}</div>)}
           </ImportInfo>
         </ImportArea>
@@ -233,7 +233,7 @@ export function ImportComponent(props: ImportComponentProps) {
               type: 'FeatureCollection',
               properties: {},
               // $FlowFixMe - can't be clicked if it is invalid, so features will be there
-              //@ts-ignore
+              // @ts-expect-error ts-migrate(2339) FIXME: Property 'features' does not exist on type 'Import... Remove this comment to see the full error message
               features: parseResult.features,
             });
             flush();

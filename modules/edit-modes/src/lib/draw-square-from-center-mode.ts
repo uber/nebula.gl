@@ -40,7 +40,7 @@ export class DrawSquareFromCenterMode extends TwoClickPolygonMode {
     square.properties = square.properties || {};
     square.properties.shape = 'Square';
 
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2322) FIXME: Type 'Feature<Polygon, { [name: string]: any; }>' ... Remove this comment to see the full error message
     return square;
   }
 }

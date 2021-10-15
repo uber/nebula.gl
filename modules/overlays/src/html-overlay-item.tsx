@@ -23,7 +23,7 @@ export default class HtmlOverlayItem extends React.Component<Props> {
     const { x, y, children, style, coordinates, ...props } = this.props;
 
     return (
-      //@ts-ignore
+      // @ts-expect-error ts-migrate(2322) FIXME: Type '{ left: number; top: number; position: strin... Remove this comment to see the full error message
       <div style={{ ...styles.item, ...style, left: x, top: y }} {...props}>
         {children}
       </div>

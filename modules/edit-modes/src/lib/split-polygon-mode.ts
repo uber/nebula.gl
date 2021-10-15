@@ -30,7 +30,7 @@ export class SplitPolygonMode extends GeoJsonEditMode {
       // if first point is clicked, then find closest polygon point and build ~90deg vector
       const firstPoint = clickSequence[0];
       const selectedGeometry = this.getSelectedGeometry(props);
-      // @ts-ignore
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'Geometry' is not assignable to p... Remove this comment to see the full error message
       const feature = turfPolygonToLine(selectedGeometry);
 
       const lines = feature.type === 'FeatureCollection' ? feature.features : [feature];
@@ -122,11 +122,11 @@ export class SplitPolygonMode extends GeoJsonEditMode {
       type: 'Point',
       coordinates: clickSequence[clickSequence.length - 1],
     };
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ type: string; coordinates: Pos... Remove this comment to see the full error message
     const isPointInPolygon = booleanPointInPolygon(pt, selectedGeometry);
     if (clickSequence.length > 1 && tentativeFeature && !isPointInPolygon) {
       this.resetClickSequence();
-      // @ts-ignore
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'TentativeFeature' is not assigna... Remove this comment to see the full error message
       const isLineInterectingWithPolygon = lineIntersect(tentativeFeature, selectedGeometry);
       if (isLineInterectingWithPolygon.features.length === 0) {
         return;
@@ -157,7 +157,7 @@ export class SplitPolygonMode extends GeoJsonEditMode {
     }
 
     const buffer = turfBuffer(tentativeFeature, gap, { units });
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'Geometry' is not assignable to p... Remove this comment to see the full error message
     const updatedGeometry = turfDifference(selectedGeometry, buffer);
     if (!updatedGeometry) {
       // eslint-disable-next-line no-console,no-undef
@@ -169,11 +169,10 @@ export class SplitPolygonMode extends GeoJsonEditMode {
     let updatedCoordinates = [];
     if (type === 'Polygon') {
       // Update the coordinates as per Multipolygon
-      // @ts-ignore
       updatedCoordinates = coordinates.map((c) => [c]);
     } else {
       // Handle Case when Multipolygon has holes
-      // @ts-ignore
+      // @ts-expect-error ts-migrate(2349) FIXME: This expression is not callable.
       updatedCoordinates = coordinates.reduce((agg, prev) => {
         prev.forEach((p) => {
           agg.push([p]);

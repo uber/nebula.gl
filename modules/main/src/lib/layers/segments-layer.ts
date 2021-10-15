@@ -75,7 +75,7 @@ export default class SegmentsLayer extends NebulaLayer {
       id: `segments-${this.id}`,
       data: objects,
       opacity: 1,
-      // @ts-ignore
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ id: string; data: any[]; opaci... Remove this comment to see the full error message
       fp64: false,
       rounded: this.rounded,
       pickable: true,
@@ -86,12 +86,12 @@ export default class SegmentsLayer extends NebulaLayer {
         blendEquation: GL.MAX,
       },
       getPath: (nf: any) => nf.geoJson.geometry.coordinates,
-      // @ts-ignore
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'number[]' is not assignable to p... Remove this comment to see the full error message
       getColor: (nf: any) => toDeckColor(nf.style.lineColor, defaultColor),
       getWidth: (nf: any) => nf.style.lineWidthMeters || 1,
       getZLevel: (nf: any) => nf.style.zLevel * 255,
       getDirection: (nf: any) => NEBULA_TO_DECK_DIRECTIONS[nf.style.arrowStyle],
-      // @ts-ignore
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'number[]' is not assignable to p... Remove this comment to see the full error message
       getMarkerColor: (nf: any) => toDeckColor(nf.style.arrowColor, defaultColor),
       getMarkerPercentages: this._calcMarkerPercentages,
       updateTriggers: { all: updateTrigger },

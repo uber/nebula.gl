@@ -71,5 +71,5 @@ export default class HtmlOverlay extends React.Component<
 }
 
 // This is needed for Deck.gl 8.0+
-//@ts-ignore
+// @ts-expect-error ts-migrate(2339) FIXME: Property 'deckGLViewProps' does not exist on type ... Remove this comment to see the full error message
 HtmlOverlay.deckGLViewProps = true;

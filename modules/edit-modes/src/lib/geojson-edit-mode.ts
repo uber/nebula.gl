@@ -86,7 +86,7 @@ export class GeoJsonEditMode implements EditMode<FeatureCollection, GuideFeature
   getTentativeGuide(props: ModeProps<FeatureCollection>): TentativeFeature | null | undefined {
     const guides = this.getGuides(props);
 
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2322) FIXME: Type 'Readonly<GuideFeature>' is not assignable to... Remove this comment to see the full error message
     return guides.features.find((f) => f.properties && f.properties.guideType === 'tentative');
   }
 
@@ -105,7 +105,7 @@ export class GeoJsonEditMode implements EditMode<FeatureCollection, GuideFeature
 
     const isPolygonal = geometry.type === 'Polygon' || geometry.type === 'MultiPolygon';
     if (isPolygonal) {
-      // @ts-ignore
+      // @ts-expect-error ts-migrate(2322) FIXME: Type 'AllGeoJSON' is not assignable to type 'Featu... Remove this comment to see the full error message
       return rewind(feature);
     }
 
@@ -202,10 +202,10 @@ export class GeoJsonEditMode implements EditMode<FeatureCollection, GuideFeature
       if (modeConfig.booleanOperation === 'union') {
         updatedGeometry = turfUnion(selectedFeature, feature);
       } else if (modeConfig.booleanOperation === 'difference') {
-        // @ts-ignore
+        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'Feature' is not assignable to pa... Remove this comment to see the full error message
         updatedGeometry = turfDifference(selectedFeature, feature);
       } else if (modeConfig.booleanOperation === 'intersection') {
-        // @ts-ignore
+        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'Feature' is not assignable to pa... Remove this comment to see the full error message
         updatedGeometry = turfIntersect(selectedFeature, feature);
       } else {
         // eslint-disable-next-line no-console,no-undef
@@ -277,6 +277,6 @@ export function getIntermediatePosition(position1: Position, position2: Position
     (position1[0] + position2[0]) / 2.0,
     (position1[1] + position2[1]) / 2.0,
   ];
-  // @ts-ignore
+  // @ts-expect-error ts-migrate(2322) FIXME: Type 'number[]' is not assignable to type 'Positio... Remove this comment to see the full error message
   return intermediatePosition;
 }

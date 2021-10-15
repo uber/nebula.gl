@@ -51,14 +51,14 @@ export class ElevationHandler extends ModifyHandler {
   ): { editAction: EditAction | null | undefined; cancelMapPan: boolean } {
     const editHandle = getPickedEditHandle(event.pointerDownPicks);
     const position = editHandle ? editHandle.position : event.groundCoords;
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'Record<string, any>' is not assi... Remove this comment to see the full error message
     return super.handlePointerMove(this.makeElevatedEvent(event, position));
   }
 
   handleStopDragging(event: StopDraggingEvent): EditAction | null | undefined {
     const editHandle = getPickedEditHandle(event.picks);
     const position = editHandle ? editHandle.position : event.groundCoords;
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'Record<string, any>' is not assi... Remove this comment to see the full error message
     return super.handleStopDragging(this.makeElevatedEvent(event, position));
   }
 

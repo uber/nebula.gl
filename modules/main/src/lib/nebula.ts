@@ -43,7 +43,7 @@ export default class Nebula {
   _mouseWasDown: boolean;
   wmViewport: WebMercatorViewport;
   queryObjectEvents: EventEmitter = new EventEmitter();
-  forceUpdate: Function;
+  forceUpdate: () => void;
   inited: boolean;
 
   log(message: string) {
@@ -152,7 +152,7 @@ export default class Nebula {
   }
 
   unprojectMousePosition(mousePosition: [number, number]): [number, number] {
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2322) FIXME: Type 'any[]' is not assignable to type '[number, n... Remove this comment to see the full error message
     return this.wmViewport.unproject(mousePosition);
   }
 
@@ -169,7 +169,7 @@ export default class Nebula {
 
       const lngLat = this.getMouseGroundPosition(event);
       if (eventFilter && !eventFilter(lngLat, event)) return;
-      // @ts-ignore
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'any[]' is not assignable to para... Remove this comment to see the full error message
       const drawerResult = this._deckDrawer.handleEvent(event, lngLat, selectionType);
       if (drawerResult.redraw) this.forceUpdate();
       return;
@@ -215,7 +215,7 @@ export default class Nebula {
 
         if (original) {
           this.deckglMouseOverInfo = { originalLayer: deckLayer.props.nebulaLayer, index };
-          // @ts-ignore
+          // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'Record<string, any>' is not assi... Remove this comment to see the full error message
           const nebulaMouseEvent = new LayerMouseEvent(event, {
             data: original,
             metadata: object.metadata,
@@ -241,7 +241,7 @@ export default class Nebula {
       if (eventFilter && !eventFilter(lngLat, event)) return;
 
       // send to layers first
-      // @ts-ignore
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'Record<string, any>' is not assi... Remove this comment to see the full error message
       const nebulaMouseEvent = new LayerMouseEvent(event, {
         groundPoint: lngLat,
         nebula: this,

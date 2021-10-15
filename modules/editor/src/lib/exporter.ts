@@ -2,7 +2,7 @@
 
 import tokml from '@maphubs/tokml';
 import { stringify as stringifyWkt } from 'wellknown';
-// @ts-ignore
+// @ts-expect-error ts-migrate(2305) FIXME: Module '"@nebula.gl/edit-modes"' has no exported m... Remove this comment to see the full error message
 import { AnyGeoJson, Geometry, PolygonalGeometry } from '@nebula.gl/edit-modes';
 
 export type ExportParameters = {
@@ -42,13 +42,11 @@ export function toKml(geoJson: AnyGeoJson, filename: string): ExportParameters {
 export function toWkt(geoJson: AnyGeoJson, filename: string): ExportParameters {
   let wkt = '';
   if (geoJson.type === 'Feature') {
-    // @ts-ignore
     wkt = stringifyWkt(geoJson);
   } else {
     // feature collection
     wkt = '';
     for (const feature of geoJson.features) {
-      // @ts-ignore
       wkt += `${stringifyWkt(feature)}\n`;
     }
     if (wkt.length > 0) {

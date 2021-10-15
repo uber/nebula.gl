@@ -118,7 +118,7 @@ export function nearestPointOnProjectedLine(
   // Project the line to viewport, then find the nearest point
   const coordinates: Array<Array<number>> = line.geometry.coordinates as any;
   const projectedCoords = coordinates.map(([x, y, z = 0]) => wmViewport.project([x, y, z]));
-  // @ts-ignore
+  // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
   const [x, y] = wmViewport.project(inPoint.geometry.coordinates);
   // console.log('projectedCoords', JSON.stringify(projectedCoords));
 
@@ -153,7 +153,7 @@ export function nearestPointOnProjectedLine(
       };
     }
   });
-  // @ts-ignore
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'index' does not exist on type '{}'.
   const { index, x0, y0 } = minPointInfo;
   const [x1, y1, z1 = 0] = projectedCoords[index - 1];
   const [x2, y2, z2 = 0] = projectedCoords[index];
@@ -196,10 +196,10 @@ export function nearestPointOnLine<G extends LineString | MultiLineString>(
     return closestPoint;
   }
 
-  // @ts-ignore
+  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'FeatureOf<LineString>' is not as... Remove this comment to see the full error message
   flattenEach(lines, (line: any) => {
     const coords: any = getCoords(line);
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'FeatureOf<Point>' is not assigna... Remove this comment to see the full error message
     const pointCoords: any = getCoords(inPoint);
 
     let minDist;
@@ -425,7 +425,7 @@ export function getEditHandlesForGeometry(
 
       break;
     default:
-      // @ts-ignore
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'type' does not exist on type 'never'.
       throw Error(`Unhandled geometry type: ${geometry.type}`);
   }
 

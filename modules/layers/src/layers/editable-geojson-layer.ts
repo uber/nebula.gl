@@ -218,36 +218,58 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
       // Proxy most GeoJsonLayer props as-is
       data: this.props.data,
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'fp64' does not exist on type 'CompositeL... Remove this comment to see the full error message
       fp64: this.props.fp64,
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'filled' does not exist on type 'Composit... Remove this comment to see the full error message
       filled: this.props.filled,
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'stroked' does not exist on type 'Composi... Remove this comment to see the full error message
       stroked: this.props.stroked,
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'lineWidthScale' does not exist on type '... Remove this comment to see the full error message
       lineWidthScale: this.props.lineWidthScale,
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'lineWidthMinPixels' does not exist on ty... Remove this comment to see the full error message
       lineWidthMinPixels: this.props.lineWidthMinPixels,
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'lineWidthMaxPixels' does not exist on ty... Remove this comment to see the full error message
       lineWidthMaxPixels: this.props.lineWidthMaxPixels,
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'lineWidthUnits' does not exist on type '... Remove this comment to see the full error message
       lineWidthUnits: this.props.lineWidthUnits,
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'lineJointRounded' does not exist on type... Remove this comment to see the full error message
       lineJointRounded: this.props.lineJointRounded,
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'lineMiterLimit' does not exist on type '... Remove this comment to see the full error message
       lineMiterLimit: this.props.lineMiterLimit,
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'pointRadiusScale' does not exist on type... Remove this comment to see the full error message
       pointRadiusScale: this.props.pointRadiusScale,
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'pointRadiusMinPixels' does not exist on ... Remove this comment to see the full error message
       pointRadiusMinPixels: this.props.pointRadiusMinPixels,
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'pointRadiusMaxPixels' does not exist on ... Remove this comment to see the full error message
       pointRadiusMaxPixels: this.props.pointRadiusMaxPixels,
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'getLineColor' does not exist on type 'Co... Remove this comment to see the full error message
       getLineColor: this.selectionAwareAccessor(this.props.getLineColor),
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'getFillColor' does not exist on type 'Co... Remove this comment to see the full error message
       getFillColor: this.selectionAwareAccessor(this.props.getFillColor),
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'getRadius' does not exist on type 'Compo... Remove this comment to see the full error message
       getRadius: this.selectionAwareAccessor(this.props.getRadius),
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'getLineWidth' does not exist on type 'Co... Remove this comment to see the full error message
       getLineWidth: this.selectionAwareAccessor(this.props.getLineWidth),
 
       _subLayerProps: {
         'line-strings': {
+          // @ts-expect-error ts-migrate(2339) FIXME: Property 'billboard' does not exist on type 'Compo... Remove this comment to see the full error message
           billboard: this.props.billboard,
         },
         'polygons-stroke': {
+          // @ts-expect-error ts-migrate(2339) FIXME: Property 'billboard' does not exist on type 'Compo... Remove this comment to see the full error message
           billboard: this.props.billboard,
         },
       },
 
       updateTriggers: {
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'selectedFeatureIndexes' does not exist o... Remove this comment to see the full error message
         getLineColor: [this.props.selectedFeatureIndexes, this.props.mode],
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'selectedFeatureIndexes' does not exist o... Remove this comment to see the full error message
         getFillColor: [this.props.selectedFeatureIndexes, this.props.mode],
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'selectedFeatureIndexes' does not exist o... Remove this comment to see the full error message
         getRadius: [this.props.selectedFeatureIndexes, this.props.mode],
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'selectedFeatureIndexes' does not exist o... Remove this comment to see the full error message
         getLineWidth: [this.props.selectedFeatureIndexes, this.props.mode],
       },
     });
@@ -278,6 +300,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     return super.shouldUpdateState(opts) || opts.changeFlags.stateChanged;
   }
 
+  // @ts-expect-error ts-migrate(2416) FIXME: Property 'updateState' in type 'EditableGeoJsonLay... Remove this comment to see the full error message
   updateState({
     props,
     oldProps,
@@ -287,7 +310,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     oldProps: Props;
     changeFlags: any;
   }) {
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2559) FIXME: Type 'Props' has no properties in common with type... Remove this comment to see the full error message
     super.updateState({ oldProps, props, changeFlags });
 
     if (changeFlags.propsOrDataChanged) {
@@ -356,17 +379,21 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       return accessor;
     }
     return (feature: Record<string, any>) =>
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'mode' does not exist on type 'CompositeL... Remove this comment to see the full error message
       accessor(feature, this.isFeatureSelected(feature), this.props.mode);
   }
 
   isFeatureSelected(feature: Record<string, any>) {
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'selectedFeatureIndexes' does not exist o... Remove this comment to see the full error message
     if (!this.props.data || !this.props.selectedFeatureIndexes) {
       return false;
     }
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'selectedFeatureIndexes' does not exist o... Remove this comment to see the full error message
     if (!this.props.selectedFeatureIndexes.length) {
       return false;
     }
     const featureIndex = this.props.data.features.indexOf(feature);
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'selectedFeatureIndexes' does not exist o... Remove this comment to see the full error message
     return this.props.selectedFeatureIndexes.includes(featureIndex);
   }
 
@@ -381,6 +408,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
   createGuidesLayers() {
     const mode = this.getActiveMode();
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'CompositeLayerProps<any>' is not... Remove this comment to see the full error message
     const guides: FeatureCollection = mode.getGuides(this.getModeProps(this.props));
 
     if (!guides || !guides.features.length) {
@@ -388,27 +416,43 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     }
 
     let pointLayerProps;
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'editHandleType' does not exist on type '... Remove this comment to see the full error message
     if (this.props.editHandleType === 'icon') {
       pointLayerProps = {
         type: IconLayer,
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'editHandleIconAtlas' does not exist on t... Remove this comment to see the full error message
         iconAtlas: this.props.editHandleIconAtlas,
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'editHandleIconMapping' does not exist on... Remove this comment to see the full error message
         iconMapping: this.props.editHandleIconMapping,
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'editHandleIconSizeScale' does not exist ... Remove this comment to see the full error message
         sizeScale: this.props.editHandleIconSizeScale,
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'getEditHandleIcon' does not exist on typ... Remove this comment to see the full error message
         getIcon: guideAccessor(this.props.getEditHandleIcon),
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'getEditHandleIconSize' does not exist on... Remove this comment to see the full error message
         getSize: guideAccessor(this.props.getEditHandleIconSize),
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'getEditHandleIconColor' does not exist o... Remove this comment to see the full error message
         getColor: guideAccessor(this.props.getEditHandleIconColor),
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'getEditHandleIconAngle' does not exist o... Remove this comment to see the full error message
         getAngle: guideAccessor(this.props.getEditHandleIconAngle),
       };
     } else {
       pointLayerProps = {
         type: ScatterplotLayer,
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'editHandlePointRadiusScale' does not exi... Remove this comment to see the full error message
         radiusScale: this.props.editHandlePointRadiusScale,
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'editHandlePointOutline' does not exist o... Remove this comment to see the full error message
         stroked: this.props.editHandlePointOutline,
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'editHandlePointStrokeWidth' does not exi... Remove this comment to see the full error message
         getLineWidth: this.props.editHandlePointStrokeWidth,
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'editHandlePointRadiusMinPixels' does not... Remove this comment to see the full error message
         radiusMinPixels: this.props.editHandlePointRadiusMinPixels,
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'editHandlePointRadiusMaxPixels' does not... Remove this comment to see the full error message
         radiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'getEditHandlePointRadius' does not exist... Remove this comment to see the full error message
         getRadius: guideAccessor(this.props.getEditHandlePointRadius),
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'getEditHandlePointColor' does not exist ... Remove this comment to see the full error message
         getFillColor: guideAccessor(this.props.getEditHandlePointColor),
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'getEditHandlePointOutlineColor' does not... Remove this comment to see the full error message
         getLineColor: guideAccessor(this.props.getEditHandlePointOutlineColor),
       };
     }
@@ -417,18 +461,28 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       this.getSubLayerProps({
         id: `guides`,
         data: guides,
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'fp64' does not exist on type 'CompositeL... Remove this comment to see the full error message
         fp64: this.props.fp64,
         _subLayerProps: {
           points: pointLayerProps,
         },
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'lineWidthScale' does not exist on type '... Remove this comment to see the full error message
         lineWidthScale: this.props.lineWidthScale,
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'lineWidthMinPixels' does not exist on ty... Remove this comment to see the full error message
         lineWidthMinPixels: this.props.lineWidthMinPixels,
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'lineWidthMaxPixels' does not exist on ty... Remove this comment to see the full error message
         lineWidthMaxPixels: this.props.lineWidthMaxPixels,
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'lineWidthUnits' does not exist on type '... Remove this comment to see the full error message
         lineWidthUnits: this.props.lineWidthUnits,
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'lineJointRounded' does not exist on type... Remove this comment to see the full error message
         lineJointRounded: this.props.lineJointRounded,
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'lineMiterLimit' does not exist on type '... Remove this comment to see the full error message
         lineMiterLimit: this.props.lineMiterLimit,
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'getTentativeLineColor' does not exist on... Remove this comment to see the full error message
         getLineColor: guideAccessor(this.props.getTentativeLineColor),
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'getTentativeLineWidth' does not exist on... Remove this comment to see the full error message
         getLineWidth: guideAccessor(this.props.getTentativeLineWidth),
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'getTentativeFillColor' does not exist on... Remove this comment to see the full error message
         getFillColor: guideAccessor(this.props.getTentativeFillColor),
       })
     );
@@ -438,6 +492,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
 
   createTooltipsLayers() {
     const mode = this.getActiveMode();
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'CompositeLayerProps<any>' is not... Remove this comment to see the full error message
     const tooltips = mode.getTooltips(this.getModeProps(this.props));
 
     const layer = new TextLayer(
@@ -451,27 +506,33 @@ export default class EditableGeoJsonLayer extends EditableLayer {
   }
 
   onLayerClick(event: ClickEvent) {
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'CompositeLayerProps<any>' is not... Remove this comment to see the full error message
     this.getActiveMode().handleClick(event, this.getModeProps(this.props));
   }
 
   onLayerKeyUp(event: KeyboardEvent) {
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'CompositeLayerProps<any>' is not... Remove this comment to see the full error message
     this.getActiveMode().handleKeyUp(event, this.getModeProps(this.props));
   }
 
   onStartDragging(event: StartDraggingEvent) {
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'CompositeLayerProps<any>' is not... Remove this comment to see the full error message
     this.getActiveMode().handleStartDragging(event, this.getModeProps(this.props));
   }
 
   onDragging(event: DraggingEvent) {
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'CompositeLayerProps<any>' is not... Remove this comment to see the full error message
     this.getActiveMode().handleDragging(event, this.getModeProps(this.props));
   }
 
   onStopDragging(event: StopDraggingEvent) {
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'CompositeLayerProps<any>' is not... Remove this comment to see the full error message
     this.getActiveMode().handleStopDragging(event, this.getModeProps(this.props));
   }
 
   onPointerMove(event: PointerMoveEvent) {
     this.setState({ lastPointerMoveEvent: event });
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'CompositeLayerProps<any>' is not... Remove this comment to see the full error message
     this.getActiveMode().handlePointerMove(event, this.getModeProps(this.props));
   }
 

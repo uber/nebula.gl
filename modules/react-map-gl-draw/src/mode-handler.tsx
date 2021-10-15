@@ -269,7 +269,7 @@ export default class ModeHandler extends React.PureComponent<EditorProps, Editor
     const { editType, updatedData, editContext } = editAction;
     const newState = { featureCollection: new ImmutableFeatureCollection(updatedData) };
     if (editType === EDIT_TYPE.ADD_POSITION) {
-      // @ts-ignore
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'selectedEditHandleIndexes' does not exis... Remove this comment to see the full error message
       newState.selectedEditHandleIndexes = [];
     }
     this.setState(newState);
@@ -337,15 +337,14 @@ export default class ModeHandler extends React.PureComponent<EditorProps, Editor
   _onClick = (event: BaseEvent) => {
     const modeProps = this.getModeProps();
     // TODO refactor EditingMode
-    // @ts-ignore
     if (this._modeHandler instanceof EditingMode || this.props.selectable) {
       const { mapCoords, screenCoords } = event;
       const pickedObject = event.picks && event.picks[0];
       const selectedEditHandleIndexes = [...this.state.selectedEditHandleIndexes];
-      // @ts-ignore
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'featureIndex' does not exist on type 'Pi... Remove this comment to see the full error message
       if (pickedObject && isNumeric(pickedObject.featureIndex)) {
         const handleIndex =
-          // @ts-ignore
+          // @ts-expect-error ts-migrate(2339) FIXME: Property 'type' does not exist on type 'Pick'.
           pickedObject.type === ELEMENT_TYPE.EDIT_HANDLE ? pickedObject.index : null;
         const index = selectedEditHandleIndexes.indexOf(handleIndex);
         if (handleIndex !== null) {
@@ -356,14 +355,13 @@ export default class ModeHandler extends React.PureComponent<EditorProps, Editor
           }
           this.setState({ selectedEditHandleIndexes });
         }
-        // @ts-ignore
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'featureIndex' does not exist on type 'Pi... Remove this comment to see the full error message
         const selectedFeatureIndex = pickedObject.featureIndex;
         this._onSelect({
           selectedFeature: pickedObject.object,
           selectedFeatureIndex,
           selectedEditHandleIndex: handleIndex,
           selectedEditHandleIndexes,
-          // @ts-ignore
           mapCoords,
           screenCoords,
         });
@@ -373,7 +371,6 @@ export default class ModeHandler extends React.PureComponent<EditorProps, Editor
           selectedFeatureIndex: null,
           selectedEditHandleIndex: null,
           selectedEditHandleIndexes,
-          // @ts-ignore
           mapCoords,
           screenCoords,
         });
@@ -428,7 +425,6 @@ export default class ModeHandler extends React.PureComponent<EditorProps, Editor
 
     this.setState({
       hovered,
-      // @ts-ignore
       lastPointerMoveEvent: pointerMoveEvent,
     });
   };
@@ -450,7 +446,6 @@ export default class ModeHandler extends React.PureComponent<EditorProps, Editor
       pointerDownScreenCoords: event.screenCoords,
       pointerDownMapCoords: event.mapCoords,
     };
-    // @ts-ignore
     this.setState(newState);
 
     const modeProps = this.getModeProps();
@@ -510,7 +505,7 @@ export default class ModeHandler extends React.PureComponent<EditorProps, Editor
     const guides = this._modeHandler.getGuides(this.getModeProps());
     const picked = parseEventElement(evt, features, guides && guides.features);
     const screenCoords = getScreenCoords(evt);
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'number[]' is not assignable to p... Remove this comment to see the full error message
     const mapCoords = this.unproject(screenCoords);
 
     return {

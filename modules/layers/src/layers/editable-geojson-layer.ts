@@ -37,6 +37,8 @@ import {
   FeatureCollection,
 } from '@nebula.gl/edit-modes';
 
+import { PROJECTED_PIXEL_SIZE_MULTIPLIER } from '../constants';
+
 import EditableLayer from './editable-layer';
 
 const DEFAULT_LINE_COLOR = [0x0, 0x0, 0x0, 0x99];
@@ -52,6 +54,7 @@ const DEFAULT_EDITING_POINT_OUTLINE_COLOR = [0xff, 0xff, 0xff, 0xff];
 const DEFAULT_EDITING_EXISTING_POINT_RADIUS = 5;
 const DEFAULT_EDITING_INTERMEDIATE_POINT_RADIUS = 3;
 const DEFAULT_EDITING_SNAP_POINT_RADIUS = 7;
+const DEFAULT_TOOLTIP_FONT_SIZE = 32 * PROJECTED_PIXEL_SIZE_MULTIPLIER;
 
 const DEFAULT_EDIT_MODE = DrawPolygonMode;
 
@@ -113,11 +116,12 @@ const defaultProps = {
   fp64: false,
   filled: true,
   stroked: true,
-  lineWidthScale: 1,
+  lineWidthScale: PROJECTED_PIXEL_SIZE_MULTIPLIER,
   lineWidthMinPixels: 1,
   lineWidthMaxPixels: Number.MAX_SAFE_INTEGER,
   lineWidthUnits: 'pixels',
   lineJointRounded: false,
+  lineCapRounded: false,
   lineMiterLimit: 4,
   pointRadiusScale: 1,
   pointRadiusMinPixels: 2,
@@ -226,17 +230,18 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       lineWidthMaxPixels: this.props.lineWidthMaxPixels,
       lineWidthUnits: this.props.lineWidthUnits,
       lineJointRounded: this.props.lineJointRounded,
+      lineCapRounded: this.props.lineCapRounded,
       lineMiterLimit: this.props.lineMiterLimit,
       pointRadiusScale: this.props.pointRadiusScale,
       pointRadiusMinPixels: this.props.pointRadiusMinPixels,
       pointRadiusMaxPixels: this.props.pointRadiusMaxPixels,
       getLineColor: this.selectionAwareAccessor(this.props.getLineColor),
       getFillColor: this.selectionAwareAccessor(this.props.getFillColor),
-      getRadius: this.selectionAwareAccessor(this.props.getRadius),
+      getPointRadius: this.selectionAwareAccessor(this.props.getRadius),
       getLineWidth: this.selectionAwareAccessor(this.props.getLineWidth),
 
       _subLayerProps: {
-        'line-strings': {
+        linestrings: {
           billboard: this.props.billboard,
         },
         'polygons-stroke': {
@@ -247,7 +252,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       updateTriggers: {
         getLineColor: [this.props.selectedFeatureIndexes, this.props.mode],
         getFillColor: [this.props.selectedFeatureIndexes, this.props.mode],
-        getRadius: [this.props.selectedFeatureIndexes, this.props.mode],
+        getPointRadius: [this.props.selectedFeatureIndexes, this.props.mode],
         getLineWidth: [this.props.selectedFeatureIndexes, this.props.mode],
       },
     });
@@ -387,13 +392,18 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       return [];
     }
 
-    let pointLayerProps;
+    let pointLayerProps = {};
+    let iconLayerProps = {};
+
     if (this.props.editHandleType === 'icon') {
-      pointLayerProps = {
+      iconLayerProps = {
         type: IconLayer,
         iconAtlas: this.props.editHandleIconAtlas,
         iconMapping: this.props.editHandleIconMapping,
         sizeScale: this.props.editHandleIconSizeScale,
+        sizeUnits: 'pixels',
+        sizeMinPixels: 40,
+        billboard: true,
         getIcon: guideAccessor(this.props.getEditHandleIcon),
         getSize: guideAccessor(this.props.getEditHandleIconSize),
         getColor: guideAccessor(this.props.getEditHandleIconColor),
@@ -419,17 +429,24 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         data: guides,
         fp64: this.props.fp64,
         _subLayerProps: {
-          points: pointLayerProps,
+          'points-circle': pointLayerProps,
+          'points-icon': iconLayerProps,
+          linestrings: {
+            billboard: this.props.billboard,
+          },
         },
         lineWidthScale: this.props.lineWidthScale,
         lineWidthMinPixels: this.props.lineWidthMinPixels,
         lineWidthMaxPixels: this.props.lineWidthMaxPixels,
         lineWidthUnits: this.props.lineWidthUnits,
         lineJointRounded: this.props.lineJointRounded,
+        lineCapRounded: this.props.lineCapRounded,
         lineMiterLimit: this.props.lineMiterLimit,
         getLineColor: guideAccessor(this.props.getTentativeLineColor),
         getLineWidth: guideAccessor(this.props.getTentativeLineWidth),
         getFillColor: guideAccessor(this.props.getTentativeFillColor),
+        pointType: this.props.editHandleType === 'icon' ? 'icon' : 'circle',
+        iconAtlas: this.props.editHandleIconAtlas,
       })
     );
 
@@ -440,12 +457,13 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     const mode = this.getActiveMode();
     const tooltips = mode.getTooltips(this.getModeProps(this.props));
 
-    const layer = new TextLayer(
-      this.getSubLayerProps({
+    const layer = new TextLayer({
+      getSize: DEFAULT_TOOLTIP_FONT_SIZE,
+      ...this.getSubLayerProps({
         id: `tooltips`,
         data: tooltips,
-      })
-    );
+      }),
+    });
 
     return [layer];
   }

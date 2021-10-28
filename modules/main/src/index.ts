@@ -11,6 +11,8 @@ export { default as SegmentsLayer } from './lib/layers/segments-layer';
 
 export { default as NebulaCore } from './lib/nebula';
 
+export { PROJECTED_PIXEL_SIZE_MULTIPLIER } from './lib/constants';
+
 // Utils
 export { toDeckColor } from './lib/utils';
 

@@ -62,7 +62,7 @@ export default class App extends React.Component {
   _onDelete = () => {
     const { selectedFeatureIndex, selectedEditHandleIndexes } = this.state;
 
-    if (selectedEditHandleIndexes.length) {
+    if (selectedEditHandleIndexes?.length) {
       try {
         this._editorRef.deleteHandles(selectedFeatureIndex, selectedEditHandleIndexes);
       } catch (error) {

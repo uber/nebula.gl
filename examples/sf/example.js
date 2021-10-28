@@ -3,7 +3,13 @@ import * as React from 'react';
 import DeckGL, { TextLayer } from 'deck.gl';
 import MapGL from 'react-map-gl';
 
-import { NebulaCore, Feature, SegmentsLayer, SELECTION_TYPE } from 'nebula.gl';
+import {
+  NebulaCore,
+  Feature,
+  SegmentsLayer,
+  SELECTION_TYPE,
+  PROJECTED_PIXEL_SIZE_MULTIPLIER,
+} from 'nebula.gl';
 
 // import { HtmlTooltipOverlay } from '@nebula.gl/overlays';
 
@@ -250,6 +256,7 @@ export default class Example extends React.Component<
           position: [-122.4, 37.7],
         },
       ],
+      getSize: PROJECTED_PIXEL_SIZE_MULTIPLIER,
     });
     const nebulaLayers = [segmentsLayer];
     const deckLayers = this.nebula.updateAndGetRenderedLayers(nebulaLayers, viewport, this);

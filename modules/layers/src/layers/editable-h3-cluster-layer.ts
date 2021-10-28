@@ -3,6 +3,7 @@
 import { H3ClusterLayer } from '@deck.gl/geo-layers';
 import { ViewMode } from '@nebula.gl/edit-modes';
 import { polyfill, geoToH3 } from 'h3-js';
+import { PROJECTED_PIXEL_SIZE_MULTIPLIER } from '../constants';
 import EditableGeoJsonLayer from './editable-geojson-layer';
 import EditableLayer from './editable-layer';
 
@@ -24,7 +25,7 @@ const defaultProps = {
   selectedIndexes: [],
   filled: false,
   stroked: true,
-  lineWidthScale: 1,
+  lineWidthScale: PROJECTED_PIXEL_SIZE_MULTIPLIER,
   lineWidthMinPixels: 1,
   lineWidthMaxPixels: Number.MAX_SAFE_INTEGER,
   lineWidthUnits: 'pixels',
@@ -187,7 +188,7 @@ export default class EditableH3ClusterLayer extends EditableLayer {
   }
 
   getCursor({ isDragging }: { isDragging: boolean }) {
-    let { cursor } = this.state;
+    let { cursor } = this.state || {};
     if (!cursor) {
       // default cursor
       cursor = isDragging ? 'grabbing' : 'grab';

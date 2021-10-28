@@ -44,6 +44,7 @@ const PASS_THROUGH_PROPS = [
   'lineWidthMaxPixels',
   'lineWidthUnits',
   'lineJointRounded',
+  'lineCapRounded',
   'lineMiterLimit',
   'pointRadiusScale',
   'pointRadiusMinPixels',
@@ -173,6 +174,7 @@ export default class SelectionLayer extends CompositeLayer<any> {
     if (pendingPolygonSelection) {
       const { bigPolygon } = pendingPolygonSelection;
       layers.push(
+        // @ts-ignore
         new PolygonLayer(
           // @ts-ignore
           this.getSubLayerProps({

@@ -145,6 +145,7 @@ const defaultProps = {
   editHandlePointRadiusScale: 1,
   editHandlePointOutline: true,
   editHandlePointStrokeWidth: 2,
+  editHandlePointRadiusUnits: 'pixels',
   editHandlePointRadiusMinPixels: 4,
   editHandlePointRadiusMaxPixels: 8,
   getEditHandlePointColor: getEditHandleColor,
@@ -155,6 +156,7 @@ const defaultProps = {
   editHandleIconAtlas: null,
   editHandleIconMapping: null,
   editHandleIconSizeScale: 1,
+  editHandleIconSizeUnits: 'pixels',
   getEditHandleIcon: (handle) => handle.properties.editHandleType,
   getEditHandleIconSize: 10,
   getEditHandleIconColor: getEditHandleColor,
@@ -243,9 +245,17 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       _subLayerProps: {
         linestrings: {
           billboard: this.props.billboard,
+          updateTriggers: {
+            // required to update dashed array attribute
+            all: [this.props.selectedFeatureIndexes, this.props.mode],
+          },
         },
         'polygons-stroke': {
           billboard: this.props.billboard,
+          updateTriggers: {
+            // required to update dashed array attribute
+            all: [this.props.selectedFeatureIndexes, this.props.mode],
+          },
         },
       },
 
@@ -384,6 +394,19 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     return info;
   }
 
+  _updateAutoHighlight(info) {
+    // Extra handling for guides
+    if (info?.sourceLayer) {
+      if (info.isGuide) {
+        for (const layer of info.sourceLayer.getSubLayers()) {
+          layer.updateAutoHighlight(info);
+        }
+      } else {
+        info.sourceLayer.updateAutoHighlight(info);
+      }
+    }
+  }
+
   createGuidesLayers() {
     const mode = this.getActiveMode();
     const guides: FeatureCollection = mode.getGuides(this.getModeProps(this.props));
@@ -392,14 +415,25 @@ export default class EditableGeoJsonLayer extends EditableLayer {
       return [];
     }
 
-    let pointLayerProps = {};
-    let iconLayerProps = {};
+    const subLayerProps = {
+      linestrings: {
+        billboard: this.props.billboard,
+        autoHighlight: false,
+      },
+      'polygons-fill': {
+        autoHighlight: false,
+      },
+      'polygons-stroke': {
+        billboard: this.props.billboard,
+      },
+    };
 
     if (this.props.editHandleType === 'icon') {
-      iconLayerProps = {
+      subLayerProps['points-icon'] = {
         type: IconLayer,
         iconAtlas: this.props.editHandleIconAtlas,
         iconMapping: this.props.editHandleIconMapping,
+        sizeUnits: this.props.editHandleIconSizeUnits,
         sizeScale: this.props.editHandleIconSizeScale,
         getIcon: guideAccessor(this.props.getEditHandleIcon),
         getSize: guideAccessor(this.props.getEditHandleIconSize),
@@ -407,11 +441,12 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         getAngle: guideAccessor(this.props.getEditHandleIconAngle),
       };
     } else {
-      pointLayerProps = {
+      subLayerProps['points-circle'] = {
         type: ScatterplotLayer,
         radiusScale: this.props.editHandlePointRadiusScale,
         stroked: this.props.editHandlePointOutline,
         getLineWidth: this.props.editHandlePointStrokeWidth,
+        radiusUnits: this.props.editHandlePointRadiusUnits,
         radiusMinPixels: this.props.editHandlePointRadiusMinPixels,
         radiusMaxPixels: this.props.editHandlePointRadiusMaxPixels,
         getRadius: guideAccessor(this.props.getEditHandlePointRadius),
@@ -425,13 +460,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
         id: `guides`,
         data: guides,
         fp64: this.props.fp64,
-        _subLayerProps: {
-          'points-circle': pointLayerProps,
-          'points-icon': iconLayerProps,
-          linestrings: {
-            billboard: this.props.billboard,
-          },
-        },
+        _subLayerProps: subLayerProps,
         lineWidthScale: this.props.lineWidthScale,
         lineWidthMinPixels: this.props.lineWidthMinPixels,
         lineWidthMaxPixels: this.props.lineWidthMaxPixels,

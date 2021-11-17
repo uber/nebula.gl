@@ -1004,6 +1004,7 @@ export default class Example extends React.Component<
 
     if (this.state.selectionTool) {
       layers.push(
+        // @ts-ignore
         new SelectionLayer({
           id: 'selection',
           // @ts-ignore
@@ -1038,6 +1039,7 @@ export default class Example extends React.Component<
                 type: MapController,
                 doubleClickZoom: false,
               },
+              legacyMeterSizes: true,
             }),
           ]}
           onClick={this._onLayerClick}

@@ -1,5 +1,5 @@
 import { PathMarkerLayer } from '@nebula.gl/layers';
-import { GL } from '@luma.gl/constants';
+import GL from '@luma.gl/constants';
 
 import { ArrowStyles, DEFAULT_STYLE, MAX_ARROWS } from '../style';
 import NebulaLayer from '../nebula-layer';
@@ -18,7 +18,8 @@ export default class SegmentsLayer extends NebulaLayer {
   noBlend: boolean;
   highlightColor: [number, number, number, number];
   arrowSize: number;
-  rounded: boolean;
+  jointRounded: boolean;
+  capRounded: boolean;
   dashed: boolean;
   markerLayerProps: Record<string, any> | null | undefined;
 
@@ -29,11 +30,19 @@ export default class SegmentsLayer extends NebulaLayer {
     const {
       enablePicking = true,
       noBlend = false,
-      rounded = true,
+      jointRounded = true,
+      capRounded = true,
       dashed = false,
       markerLayerProps = null,
     } = config;
-    Object.assign(this, { enablePicking, noBlend, rounded, dashed, markerLayerProps });
+    Object.assign(this, {
+      enablePicking,
+      noBlend,
+      jointRounded,
+      capRounded,
+      dashed,
+      markerLayerProps,
+    });
   }
 
   getMouseOverSegment(): any {
@@ -77,7 +86,8 @@ export default class SegmentsLayer extends NebulaLayer {
       opacity: 1,
       // @ts-ignore
       fp64: false,
-      rounded: this.rounded,
+      jointRounded: this.jointRounded,
+      capRounded: this.capRounded,
       pickable: true,
       sizeScale: this.arrowSize || 6,
       parameters: {

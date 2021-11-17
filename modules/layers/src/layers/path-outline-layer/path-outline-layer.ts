@@ -61,7 +61,8 @@ export default class PathOutlineLayer extends PathLayer<any> {
   draw({ moduleParameters = {}, parameters, uniforms, context }) {
     // Need to calculate same uniforms as base layer
     const {
-      rounded,
+      jointRounded,
+      capRounded,
       miterLimit,
       widthScale,
       widthMinPixels,
@@ -70,7 +71,8 @@ export default class PathOutlineLayer extends PathLayer<any> {
     } = this.props;
 
     uniforms = Object.assign({}, uniforms, {
-      jointType: Number(rounded),
+      jointType: Number(jointRounded),
+      capType: Number(capRounded),
       alignMode: Number(dashJustified),
       widthScale,
       miterLimit,
@@ -110,7 +112,8 @@ export default class PathOutlineLayer extends PathLayer<any> {
     });
     this.state.model.draw({
       uniforms: Object.assign({}, uniforms, {
-        jointType: Number(rounded),
+        jointType: Number(jointRounded),
+        capType: Number(capRounded),
         widthScale: this.props.widthScale,
       }),
       parameters: {

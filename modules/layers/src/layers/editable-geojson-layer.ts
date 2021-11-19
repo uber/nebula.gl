@@ -168,35 +168,34 @@ const defaultProps = {
 
 // Mapping of mode name to mode class (for legacy purposes)
 const modeNameMapping = {
-  view: ViewMode,
+  view: new ViewMode(),
 
   // Alter modes
-  modify: ModifyMode,
+  modify: new ModifyMode(),
   translate: new SnappableMode(new TranslateMode()),
 
   transform: new SnappableMode(new TransformMode()),
-  scale: ScaleMode,
-  rotate: RotateMode,
-  duplicate: DuplicateMode,
-  split: SplitPolygonMode,
-  extrude: ExtrudeMode,
-  elevation: ElevationMode,
+  scale: new ScaleMode(),
+  rotate: new RotateMode(),
+  duplicate: new DuplicateMode(),
+  split: new SplitPolygonMode(),
+  extrude: new ExtrudeMode(),
+  elevation: new ElevationMode(),
 
   // Draw modes
-  drawPoint: DrawPointMode,
-  drawLineString: DrawLineStringMode,
-  drawPolygon: DrawPolygonMode,
-  drawRectangle: DrawRectangleMode,
-  drawSquareFromCenter: DrawSquareFromCenterMode,
-  drawCircleFromCenter: DrawCircleFromCenterMode,
-  drawCircleByBoundingBox: DrawCircleByDiameterMode,
-  drawEllipseByBoundingBox: DrawEllipseByBoundingBoxMode,
-  drawRectangleUsing3Points: DrawRectangleUsingThreePointsMode,
-  drawEllipseUsing3Points: DrawEllipseUsingThreePointsMode,
-  draw90DegreePolygon: Draw90DegreePolygonMode,
-  drawPolygonByDragging: DrawPolygonByDraggingMode,
+  drawPoint: new DrawPointMode(),
+  drawLineString: new DrawLineStringMode(),
+  drawPolygon: new DrawPolygonMode(),
+  drawRectangle: new DrawRectangleMode(),
+  drawSquareFromCenter: new DrawSquareFromCenterMode(),
+  drawCircleFromCenter: new DrawCircleFromCenterMode(),
+  drawCircleByBoundingBox: new DrawCircleByDiameterMode(),
+  drawEllipseByBoundingBox: new DrawEllipseByBoundingBoxMode(),
+  drawRectangleUsing3Points: new DrawRectangleUsingThreePointsMode(),
+  drawEllipseUsing3Points: new DrawEllipseUsingThreePointsMode(),
+  draw90DegreePolygon: new Draw90DegreePolygonMode(),
+  drawPolygonByDragging: new DrawPolygonByDraggingMode(),
 };
-
 type Props = {
   mode: string | GeoJsonEditModeConstructor | GeoJsonEditModeType;
   onEdit: (arg0: EditAction<FeatureCollection>) => void;

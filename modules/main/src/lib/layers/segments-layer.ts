@@ -77,14 +77,13 @@ export default class SegmentsLayer extends NebulaLayer {
   }
 
   render({ nebula }: Record<string, any>) {
-    const defaultColor = [0x0, 0x0, 0x0, 0xff];
+    const defaultColor: [number, number, number, number] = [0x0, 0x0, 0x0, 0xff];
     const { objects, updateTrigger } = this.deckCache;
 
     return new PathMarkerLayer({
       id: `segments-${this.id}`,
       data: objects,
       opacity: 1,
-      // @ts-ignore
       fp64: false,
       jointRounded: this.jointRounded,
       capRounded: this.capRounded,
@@ -96,12 +95,10 @@ export default class SegmentsLayer extends NebulaLayer {
         blendEquation: GL.MAX,
       },
       getPath: (nf: any) => nf.geoJson.geometry.coordinates,
-      // @ts-ignore
       getColor: (nf: any) => toDeckColor(nf.style.lineColor, defaultColor),
       getWidth: (nf: any) => nf.style.lineWidthMeters || 1,
       getZLevel: (nf: any) => nf.style.zLevel * 255,
       getDirection: (nf: any) => NEBULA_TO_DECK_DIRECTIONS[nf.style.arrowStyle],
-      // @ts-ignore
       getMarkerColor: (nf: any) => toDeckColor(nf.style.arrowColor, defaultColor),
       getMarkerPercentages: this._calcMarkerPercentages,
       updateTriggers: { all: updateTrigger },

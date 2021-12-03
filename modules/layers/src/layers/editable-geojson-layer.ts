@@ -33,7 +33,6 @@ import {
   DraggingEvent,
   PointerMoveEvent,
   GeoJsonEditModeType,
-  GeoJsonEditModeConstructor,
   FeatureCollection,
 } from '@nebula.gl/edit-modes';
 
@@ -104,66 +103,65 @@ function getEditHandleRadius(handle) {
   }
 }
 
-type EditableGeojsonLayerProps = EditableLayerProps & {
-  mode: string | GeoJsonEditModeConstructor | GeoJsonEditModeType;
-  onEdit: (arg0: EditAction<FeatureCollection>) => void;
+export interface EditableGeojsonLayerProps<D> extends EditableLayerProps<D> {
+  mode?: any;
+  modeConfig?: any;
+  selectedFeatureIndexes?: number[];
+  onEdit?: (updatedData?, editType?: string, featureIndexes?: number[], editContext?) => void;
 
-  pickable: boolean;
-  pickingRadius: number;
-  pickingDepth: number;
-  fp64: boolean;
-  filled: boolean;
-  stroked: boolean;
-  lineWidthScale: number;
-  lineWidthMinPixels: number;
-  lineWidthMaxPixels: number;
-  lineWidthUnits: string;
-  lineJointRounded: boolean;
-  lineCapRounded: boolean;
-  lineMiterLimit: number;
-  pointRadiusScale: number;
-  pointRadiusMinPixels: number;
-  pointRadiusMaxPixels: number;
+  pickable?: boolean;
+  pickingRadius?: number;
+  pickingDepth?: number;
+  fp64?: boolean;
+  filled?: boolean;
+  stroked?: boolean;
+  lineWidthScale?: number;
+  lineWidthMinPixels?: number;
+  lineWidthMaxPixels?: number;
+  lineWidthUnits?: string;
+  lineJointRounded?: boolean;
+  lineCapRounded?: boolean;
+  lineMiterLimit?: number;
+  pointRadiusScale?: number;
+  pointRadiusMinPixels?: number;
+  pointRadiusMaxPixels?: number;
 
-  getLineColor: (feature, isSelected, mode) => any;
-  getFillColor: (feature, isSelected, mode) => any;
-  getRadius: (f) => number;
-  getLineWidth: (f) => number;
+  getLineColor?: (feature, isSelected, mode) => any;
+  getFillColor?: (feature, isSelected, mode) => any;
+  getRadius?: (f) => number;
+  getLineWidth?: (f) => number;
 
-  getTentativeLineColor: (f) => any;
-  getTentativeFillColor: (f) => any;
-  getTentativeLineWidth: (f) => number;
+  getTentativeLineColor?: (f) => any;
+  getTentativeFillColor?: (f) => any;
+  getTentativeLineWidth?: (f) => number;
 
-  editHandleType: string;
+  editHandleType?: string;
 
-  editHandlePointRadiusScale: number;
-  editHandlePointOutline: boolean;
-  editHandlePointStrokeWidth: number;
-  editHandlePointRadiusUnits: string;
-  editHandlePointRadiusMinPixels: number;
-  editHandlePointRadiusMaxPixels: (f) => any;
-  getEditHandlePointColor: (f) => any;
-  getEditHandlePointOutlineColor: (f) => any;
-  getEditHandlePointRadius: (f) => number;
+  editHandlePointRadiusScale?: number;
+  editHandlePointOutline?: boolean;
+  editHandlePointStrokeWidth?: number;
+  editHandlePointRadiusUnits?: string;
+  editHandlePointRadiusMinPixels?: number;
+  editHandlePointRadiusMaxPixels?: number;
+  getEditHandlePointColor?: (f) => any;
+  getEditHandlePointOutlineColor?: (f) => any;
+  getEditHandlePointRadius?: (f) => number;
 
   // icon handles
-  editHandleIconAtlas: any;
-  editHandleIconMapping: any;
-  editHandleIconSizeScale: number;
-  editHandleIconSizeUnits: string;
-  getEditHandleIcon: (handle) => string;
-  getEditHandleIconSize: number;
-  getEditHandleIconColor: (f) => any;
-  getEditHandleIconAngle: number;
+  editHandleIconAtlas?: any;
+  editHandleIconMapping?: any;
+  editHandleIconSizeScale?: number;
+  editHandleIconSizeUnits?: string;
+  getEditHandleIcon?: (handle) => string;
+  getEditHandleIconSize?: number;
+  getEditHandleIconColor?: (f) => any;
+  getEditHandleIconAngle?: number;
 
   // misc
-  billboard: boolean;
+  billboard?: boolean;
+}
 
-  selectedFeatureIndexes: number[];
-  modeConfig: any;
-};
-
-const defaultProps = {
+const defaultProps: EditableGeojsonLayerProps<any> = {
   mode: DEFAULT_EDIT_MODE,
 
   // Edit and interaction events
@@ -263,11 +261,12 @@ const modeNameMapping = {
 //   selectedFeatures: Feature[]
 // };
 
-export default class EditableGeoJsonLayer extends EditableLayer {
+export default class EditableGeoJsonLayer extends EditableLayer<
+  any,
+  EditableGeojsonLayerProps<any>
+> {
   static layerName = 'EditableGeoJsonLayer';
   static defaultProps = defaultProps;
-
-  props: EditableGeojsonLayerProps;
 
   // setState: ($Shape<State>) => void;
   renderLayers() {
@@ -351,8 +350,8 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     changeFlags,
     context,
   }: {
-    props: EditableGeojsonLayerProps;
-    oldProps: EditableGeojsonLayerProps;
+    props: EditableGeojsonLayerProps<any>;
+    oldProps: EditableGeojsonLayerProps<any>;
     changeFlags: any;
     context: any;
     s;
@@ -400,7 +399,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     this.setState({ selectedFeatures });
   }
 
-  getModeProps(props: EditableGeojsonLayerProps) {
+  getModeProps(props: EditableGeojsonLayerProps<any>) {
     return {
       modeConfig: props.modeConfig,
       data: props.data,

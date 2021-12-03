@@ -7,17 +7,18 @@ import Arrow2DGeometry from './arrow-2d-geometry';
 import createPathMarkers from './create-path-markers';
 import { getClosestPointOnPolyline } from './polyline';
 
-type PathMarkerLayerProps = PathOutlineLayerProps & {
-  getDirection: (x) => any;
-  getMarkerColor: (x) => number[];
-  getMarkerPercentages: (x: any) => number[];
-  highlightPoint: any;
-  highlightIndex: number;
-  MarkerLayer: any;
-  markerLayerProps: any;
-  sizeScale: number;
-  fp64: boolean;
-};
+export interface PathMarkerLayerProps<D> extends PathOutlineLayerProps<D> {
+  getDirection?: (x) => any;
+  getMarkerColor?: (x) => number[];
+  getMarkerPercentages?: (x: any, info: any) => number[];
+  highlightPoint?: any;
+  highlightIndex?: number;
+  MarkerLayer?: any;
+  markerLayerProps?: any;
+  sizeScale?: number;
+  fp64?: boolean;
+  nebulaLayer?: any;
+}
 const DISTANCE_FOR_MULTI_ARROWS = 0.1;
 const ARROW_HEAD_SIZE = 0.2;
 const ARROW_TAIL_WIDTH = 0.05;
@@ -29,14 +30,14 @@ const DEFAULT_MARKER_LAYER_PROPS = {
   mesh: new Arrow2DGeometry({ headSize: ARROW_HEAD_SIZE, tailWidth: ARROW_TAIL_WIDTH }),
 };
 
-const defaultProps = Object.assign({}, PathOutlineLayer.defaultProps, {
+const defaultProps: PathMarkerLayerProps<any> = Object.assign({}, PathOutlineLayer.defaultProps, {
   MarkerLayer: DEFAULT_MARKER_LAYER,
   markerLayerProps: DEFAULT_MARKER_LAYER_PROPS,
 
   sizeScale: 100,
   fp64: false,
 
-  hightlightIndex: -1,
+  highlightIndex: -1,
   highlightPoint: null,
 
   getPath: (x) => x.path,
@@ -47,9 +48,7 @@ const defaultProps = Object.assign({}, PathOutlineLayer.defaultProps, {
     lineLength > DISTANCE_FOR_MULTI_ARROWS ? [0.25, 0.5, 0.75] : [0.5],
 });
 
-export default class PathMarkerLayer extends CompositeLayer<any> {
-  props: PathMarkerLayerProps;
-
+export default class PathMarkerLayer extends CompositeLayer<any, PathMarkerLayerProps<any>> {
   static layerName = 'PathMarkerLayer';
   static defaultProps = defaultProps;
 

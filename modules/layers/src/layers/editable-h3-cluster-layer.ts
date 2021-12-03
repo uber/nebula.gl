@@ -14,17 +14,23 @@ const EMPTY_FEATURE_COLLECTION = {
   features: [],
 };
 
-type EditableH3ClusterLayerProps = EditableLayerProps & {
-  resolution: number;
-  mode: string;
-  modeConfig: any;
-  selectedIndexes: number[];
-  getEditedCluster: (updatedHexagons: any[], existingCluster: any) => any;
-  getHexagons: (d) => number[];
-  onEdit: (d) => void;
-};
+export interface EditableH3ClusterLayerProps<D> extends EditableLayerProps<D> {
+  resolution?: number;
+  mode?: any;
+  modeConfig?: any;
+  selectedIndexes?: number[];
+  getEditedCluster?: (updatedHexagons: any[], existingCluster: any) => any;
+  getHexagons?: (d) => number[];
+  onEdit?: (updatedData?, editType?: string, featureIndexes?: number[], editContext?) => void;
+  filled?: boolean;
+  stroked?: boolean;
+  lineWidthScale?: number;
+  lineWidthMinPixels?: number;
+  lineWidthMaxPixels?: number;
+  lineWidthUnits?: string;
+}
 
-const defaultProps = {
+const defaultProps: EditableH3ClusterLayerProps<any> = {
   mode: DEFAULT_EDIT_MODE,
 
   ...EditableGeoJsonLayer.defaultProps,
@@ -53,9 +59,10 @@ const defaultProps = {
   resolution: DEFAULT_H3_RESOLUTION,
 };
 
-export default class EditableH3ClusterLayer extends EditableLayer {
-  props: EditableH3ClusterLayerProps;
-
+export default class EditableH3ClusterLayer extends EditableLayer<
+  any,
+  EditableH3ClusterLayerProps<any>
+> {
   static layerName = 'EditableH3ClusterLayer';
   static defaultProps = defaultProps;
 

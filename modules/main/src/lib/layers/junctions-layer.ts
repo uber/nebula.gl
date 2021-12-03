@@ -13,7 +13,7 @@ export default class JunctionsLayer extends NebulaLayer {
   }
 
   render({ nebula }: Record<string, any>) {
-    const defaultColor = [0x0, 0x0, 0x0, 0xff];
+    const defaultColor: [number, number, number, number] = [0x0, 0x0, 0x0, 0xff];
     const { objects, updateTrigger } = this.deckCache;
 
     return new JunctionScatterplotLayer({

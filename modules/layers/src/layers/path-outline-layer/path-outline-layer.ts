@@ -4,11 +4,6 @@ import GL from '@luma.gl/constants';
 import { Framebuffer, Texture2D } from '@luma.gl/core';
 import outline from '../../shaderlib/outline/outline';
 
-export type PathOutlineLayerProps = PathLayerProps<any> & {
-  dashJustified?: number;
-  getZLevel?: (object: any, index: number) => number;
-};
-
 // TODO - this should be built into assembleShaders
 function injectShaderCode({ source, code = '' }) {
   const INJECT_CODE = /}[^{}]*$/;
@@ -24,13 +19,20 @@ const FS_CODE = `\
   gl_FragColor = outline_filterColor(gl_FragColor);
 `;
 
-const defaultProps = {
-  getZLevel: { type: 'accessor', value: 0 },
+export interface PathOutlineLayerProps<D> extends PathLayerProps<D> {
+  dashJustified?: boolean;
+  getDashArray?: (d) => [number, number] | null;
+  getZLevel?: (object: any, index: number) => number;
+}
+
+const defaultProps: PathOutlineLayerProps<any> = {
+  getZLevel: () => 0,
 };
 
-export default class PathOutlineLayer extends PathLayer<any> {
-  props: PathOutlineLayerProps;
-
+export default class PathOutlineLayer<
+  D,
+  P extends PathOutlineLayerProps<D> = PathOutlineLayerProps<D>
+> extends PathLayer<D, P> {
   static layerName = 'PathOutlineLayer';
   static defaultProps = defaultProps;
 

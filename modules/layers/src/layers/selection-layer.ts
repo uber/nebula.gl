@@ -25,7 +25,13 @@ const MODE_CONFIG_MAP = {
   [SELECTION_TYPE.RECTANGLE]: { dragToDraw: true },
 };
 
-const defaultProps = {
+interface SelectionLayerProps extends CompositeLayerProps<any> {
+  layerIds: any[];
+  onSelect: (info: any) => any;
+  selectionType: string | null;
+}
+
+const defaultProps: SelectionLayerProps = {
   selectionType: SELECTION_TYPE.RECTANGLE,
   layerIds: [],
   onSelect: () => {},
@@ -62,12 +68,6 @@ const PASS_THROUGH_PROPS = [
   'getTentativeFillColor',
   'getTentativeLineWidth',
 ];
-
-type SelectionLayerProps = CompositeLayerProps<any> & {
-  layerIds: any[];
-  onSelect: (info: any) => any;
-  selectionType: string | null;
-};
 
 export default class SelectionLayer extends CompositeLayer<any> {
   props: SelectionLayerProps;

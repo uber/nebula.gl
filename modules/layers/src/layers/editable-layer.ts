@@ -13,15 +13,16 @@ import {
 
 const EVENT_TYPES = ['anyclick', 'pointermove', 'panstart', 'panmove', 'panend', 'keyup'];
 
-export type EditableLayerProps = CompositeLayerProps<any> & {
+export interface EditableLayerProps<D> extends CompositeLayerProps<D> {
   pickingRadius?: number;
   pickingDepth?: number;
-};
+}
 
-export default class EditableLayer extends CompositeLayer<any> {
+export default class EditableLayerA<
+  D,
+  P extends EditableLayerProps<D> = EditableLayerProps<D>
+> extends CompositeLayer<D, P> {
   static layerName = 'EditableLayer';
-
-  props: EditableLayerProps;
 
   // Overridable interaction event handlers
   onLayerClick(event: ClickEvent) {

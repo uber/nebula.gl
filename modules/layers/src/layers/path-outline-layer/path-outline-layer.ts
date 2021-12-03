@@ -1,7 +1,13 @@
 import { PathLayer } from '@deck.gl/layers';
+import { PathLayerProps } from '@deck.gl/layers/path-layer/path-layer';
 import GL from '@luma.gl/constants';
 import { Framebuffer, Texture2D } from '@luma.gl/core';
 import outline from '../../shaderlib/outline/outline';
+
+export type PathOutlineLayerProps = PathLayerProps<any> & {
+  dashJustified?: number;
+  getZLevel?: (object: any, index: number) => number;
+};
 
 // TODO - this should be built into assembleShaders
 function injectShaderCode({ source, code = '' }) {
@@ -23,6 +29,8 @@ const defaultProps = {
 };
 
 export default class PathOutlineLayer extends PathLayer<any> {
+  props: PathOutlineLayerProps;
+
   static layerName = 'PathOutlineLayer';
   static defaultProps = defaultProps;
 

@@ -1,12 +1,23 @@
 import { CompositeLayer, COORDINATE_SYSTEM } from '@deck.gl/core';
 import { ScatterplotLayer } from '@deck.gl/layers';
 import { SimpleMeshLayer } from '@deck.gl/mesh-layers';
-import PathOutlineLayer from '../path-outline-layer/path-outline-layer';
+import PathOutlineLayer, { PathOutlineLayerProps } from '../path-outline-layer/path-outline-layer';
 import Arrow2DGeometry from './arrow-2d-geometry';
 
 import createPathMarkers from './create-path-markers';
 import { getClosestPointOnPolyline } from './polyline';
 
+type PathMarkerLayerProps = PathOutlineLayerProps & {
+  getDirection: (x) => any;
+  getMarkerColor: (x) => number[];
+  getMarkerPercentages: (x: any) => number[];
+  highlightPoint: any;
+  highlightIndex: number;
+  MarkerLayer: any;
+  markerLayerProps: any;
+  sizeScale: number;
+  fp64: boolean;
+};
 const DISTANCE_FOR_MULTI_ARROWS = 0.1;
 const ARROW_HEAD_SIZE = 0.2;
 const ARROW_TAIL_WIDTH = 0.05;
@@ -37,6 +48,8 @@ const defaultProps = Object.assign({}, PathOutlineLayer.defaultProps, {
 });
 
 export default class PathMarkerLayer extends CompositeLayer<any> {
+  props: PathMarkerLayerProps;
+
   static layerName = 'PathMarkerLayer';
   static defaultProps = defaultProps;
 

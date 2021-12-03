@@ -1,6 +1,8 @@
 /* eslint-env browser */
+
 import { CompositeLayer } from '@deck.gl/core';
 import { PolygonLayer } from '@deck.gl/layers';
+import { CompositeLayerProps } from '@deck.gl/core/lib/composite-layer';
 import { polygon } from '@turf/helpers';
 import turfBuffer from '@turf/buffer';
 import turfDifference from '@turf/difference';
@@ -61,7 +63,15 @@ const PASS_THROUGH_PROPS = [
   'getTentativeLineWidth',
 ];
 
+type SelectionLayerProps = CompositeLayerProps<any> & {
+  layerIds: any[];
+  onSelect: (info: any) => any;
+  selectionType: string | null;
+};
+
 export default class SelectionLayer extends CompositeLayer<any> {
+  props: SelectionLayerProps;
+
   static layerName = 'SelectionLayer';
   static defaultProps = defaultProps;
 

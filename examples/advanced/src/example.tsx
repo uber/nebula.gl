@@ -839,7 +839,7 @@ export default class Example extends React.Component<
     const { testFeatures, selectedFeatureIndexes, mode } = this.state;
     let { modeConfig } = this.state;
 
-    const viewport = {
+    const viewport: Record<string, any> = {
       ...this.state.viewport,
       height: window.innerHeight,
       width: window.innerWidth,

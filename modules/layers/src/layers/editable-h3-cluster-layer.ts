@@ -5,7 +5,7 @@ import { ViewMode } from '@nebula.gl/edit-modes';
 import { polyfill, geoToH3 } from 'h3-js';
 import { PROJECTED_PIXEL_SIZE_MULTIPLIER } from '../constants';
 import EditableGeoJsonLayer from './editable-geojson-layer';
-import EditableLayer from './editable-layer';
+import EditableLayer, { EditableLayerProps } from './editable-layer';
 
 const DEFAULT_EDIT_MODE = ViewMode;
 const DEFAULT_H3_RESOLUTION = 9;
@@ -14,10 +14,19 @@ const EMPTY_FEATURE_COLLECTION = {
   features: [],
 };
 
+type EditableH3ClusterLayerProps = EditableLayerProps & {
+  resolution: number;
+  mode: string;
+  modeConfig: any;
+  selectedIndexes: number[];
+  getEditedCluster: (updatedHexagons: any[], existingCluster: any) => any;
+  getHexagons: (d) => number[];
+  onEdit: (d) => void;
+};
+
 const defaultProps = {
   mode: DEFAULT_EDIT_MODE,
 
-  // EditableGeoJsonLayer
   ...EditableGeoJsonLayer.defaultProps,
 
   // h3 layer
@@ -45,6 +54,8 @@ const defaultProps = {
 };
 
 export default class EditableH3ClusterLayer extends EditableLayer {
+  props: EditableH3ClusterLayerProps;
+
   static layerName = 'EditableH3ClusterLayer';
   static defaultProps = defaultProps;
 

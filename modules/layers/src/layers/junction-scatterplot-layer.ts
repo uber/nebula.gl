@@ -1,7 +1,16 @@
-import { CompositeLayer } from '@deck.gl/core';
+import { CompositeLayer, RGBAColor } from '@deck.gl/core';
 import { ScatterplotLayer } from '@deck.gl/layers';
+import { CompositeLayerProps } from '@deck.gl/core/lib/composite-layer';
+
+type JunctionScatterplotLayerProps = CompositeLayerProps<any> & {
+  getFillColor: (d) => RGBAColor;
+  getStrokeColor: (d) => RGBAColor;
+  getInnerRadius: (d) => number;
+};
 
 export default class JunctionScatterplotLayer extends CompositeLayer<any> {
+  props: JunctionScatterplotLayerProps;
+
   static layerName = 'JunctionScatterplotLayer';
   static defaultProps = {
     // @ts-ignore

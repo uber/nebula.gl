@@ -17,7 +17,7 @@ export default function createPathMarkers({
   getPath = (x) => x.path,
   getDirection = (x) => x.direction,
   getColor = (x) => DEFAULT_COLOR,
-  getMarkerPercentages = (x) => [0.5],
+  getMarkerPercentages = (x, info) => [0.5],
   projectFlat,
 }) {
   const markers = [];

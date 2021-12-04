@@ -1,4 +1,5 @@
 import { PathLayer } from '@deck.gl/layers';
+import { PathLayerProps } from '@deck.gl/layers/path-layer/path-layer';
 import GL from '@luma.gl/constants';
 import { Framebuffer, Texture2D } from '@luma.gl/core';
 import outline from '../../shaderlib/outline/outline';
@@ -18,11 +19,20 @@ const FS_CODE = `\
   gl_FragColor = outline_filterColor(gl_FragColor);
 `;
 
-const defaultProps = {
-  getZLevel: { type: 'accessor', value: 0 },
+export interface PathOutlineLayerProps<D> extends PathLayerProps<D> {
+  dashJustified?: boolean;
+  getDashArray?: [number, number] | ((d: D) => [number, number] | null);
+  getZLevel?: (d: D, index: number) => number;
+}
+
+const defaultProps: PathOutlineLayerProps<any> = {
+  getZLevel: () => 0,
 };
 
-export default class PathOutlineLayer extends PathLayer<any> {
+export default class PathOutlineLayer<
+  D,
+  P extends PathOutlineLayerProps<D> = PathOutlineLayerProps<D>
+> extends PathLayer<D, P> {
   static layerName = 'PathOutlineLayer';
   static defaultProps = defaultProps;
 

@@ -1,5 +1,6 @@
 /* eslint-env browser */
 
+import { RGBAColor } from '@deck.gl/core';
 import { GeoJsonLayer, ScatterplotLayer, IconLayer, TextLayer } from '@deck.gl/layers';
 
 import {
@@ -33,24 +34,23 @@ import {
   DraggingEvent,
   PointerMoveEvent,
   GeoJsonEditModeType,
-  GeoJsonEditModeConstructor,
   FeatureCollection,
 } from '@nebula.gl/edit-modes';
 
 import { PROJECTED_PIXEL_SIZE_MULTIPLIER } from '../constants';
 
-import EditableLayer from './editable-layer';
+import EditableLayer, { EditableLayerProps } from './editable-layer';
 
-const DEFAULT_LINE_COLOR = [0x0, 0x0, 0x0, 0x99];
-const DEFAULT_FILL_COLOR = [0x0, 0x0, 0x0, 0x90];
-const DEFAULT_SELECTED_LINE_COLOR = [0x0, 0x0, 0x0, 0xff];
-const DEFAULT_SELECTED_FILL_COLOR = [0x0, 0x0, 0x90, 0x90];
-const DEFAULT_TENTATIVE_LINE_COLOR = [0x90, 0x90, 0x90, 0xff];
-const DEFAULT_TENTATIVE_FILL_COLOR = [0x90, 0x90, 0x90, 0x90];
-const DEFAULT_EDITING_EXISTING_POINT_COLOR = [0xc0, 0x0, 0x0, 0xff];
-const DEFAULT_EDITING_INTERMEDIATE_POINT_COLOR = [0x0, 0x0, 0x0, 0x80];
-const DEFAULT_EDITING_SNAP_POINT_COLOR = [0x7c, 0x00, 0xc0, 0xff];
-const DEFAULT_EDITING_POINT_OUTLINE_COLOR = [0xff, 0xff, 0xff, 0xff];
+const DEFAULT_LINE_COLOR: RGBAColor = [0x0, 0x0, 0x0, 0x99];
+const DEFAULT_FILL_COLOR: RGBAColor = [0x0, 0x0, 0x0, 0x90];
+const DEFAULT_SELECTED_LINE_COLOR: RGBAColor = [0x0, 0x0, 0x0, 0xff];
+const DEFAULT_SELECTED_FILL_COLOR: RGBAColor = [0x0, 0x0, 0x90, 0x90];
+const DEFAULT_TENTATIVE_LINE_COLOR: RGBAColor = [0x90, 0x90, 0x90, 0xff];
+const DEFAULT_TENTATIVE_FILL_COLOR: RGBAColor = [0x90, 0x90, 0x90, 0x90];
+const DEFAULT_EDITING_EXISTING_POINT_COLOR: RGBAColor = [0xc0, 0x0, 0x0, 0xff];
+const DEFAULT_EDITING_INTERMEDIATE_POINT_COLOR: RGBAColor = [0x0, 0x0, 0x0, 0x80];
+const DEFAULT_EDITING_SNAP_POINT_COLOR: RGBAColor = [0x7c, 0x00, 0xc0, 0xff];
+const DEFAULT_EDITING_POINT_OUTLINE_COLOR: RGBAColor = [0xff, 0xff, 0xff, 0xff];
 const DEFAULT_EDITING_EXISTING_POINT_RADIUS = 5;
 const DEFAULT_EDITING_INTERMEDIATE_POINT_RADIUS = 3;
 const DEFAULT_EDITING_SNAP_POINT_RADIUS = 7;
@@ -104,7 +104,65 @@ function getEditHandleRadius(handle) {
   }
 }
 
-const defaultProps = {
+export interface EditableGeojsonLayerProps<D> extends EditableLayerProps<D> {
+  mode?: any;
+  modeConfig?: any;
+  selectedFeatureIndexes?: number[];
+  onEdit?: (updatedData?, editType?: string, featureIndexes?: number[], editContext?) => void;
+
+  pickable?: boolean;
+  pickingRadius?: number;
+  pickingDepth?: number;
+  fp64?: boolean;
+  filled?: boolean;
+  stroked?: boolean;
+  lineWidthScale?: number;
+  lineWidthMinPixels?: number;
+  lineWidthMaxPixels?: number;
+  lineWidthUnits?: string;
+  lineJointRounded?: boolean;
+  lineCapRounded?: boolean;
+  lineMiterLimit?: number;
+  pointRadiusScale?: number;
+  pointRadiusMinPixels?: number;
+  pointRadiusMaxPixels?: number;
+
+  getLineColor?: RGBAColor | ((feature, isSelected, mode) => RGBAColor);
+  getFillColor?: RGBAColor | ((feature, isSelected, mode) => RGBAColor);
+  getRadius?: number | ((f) => number);
+  getLineWidth?: number | ((f) => number);
+
+  getTentativeLineColor?: RGBAColor | ((feature, isSelected, mode) => RGBAColor);
+  getTentativeFillColor?: RGBAColor | ((feature, isSelected, mode) => RGBAColor);
+  getTentativeLineWidth?: number | ((f) => number);
+
+  editHandleType?: string;
+
+  editHandlePointRadiusScale?: number;
+  editHandlePointOutline?: boolean;
+  editHandlePointStrokeWidth?: number;
+  editHandlePointRadiusUnits?: string;
+  editHandlePointRadiusMinPixels?: number;
+  editHandlePointRadiusMaxPixels?: number;
+  getEditHandlePointColor?: RGBAColor | ((handle) => RGBAColor);
+  getEditHandlePointOutlineColor?: RGBAColor | ((handle) => RGBAColor);
+  getEditHandlePointRadius?: number | ((handle) => number);
+
+  // icon handles
+  editHandleIconAtlas?: any;
+  editHandleIconMapping?: any;
+  editHandleIconSizeScale?: number;
+  editHandleIconSizeUnits?: string;
+  getEditHandleIcon?: (handle) => string;
+  getEditHandleIconSize?: number;
+  getEditHandleIconColor?: RGBAColor | ((handle) => RGBAColor);
+  getEditHandleIconAngle?: number | ((handle) => number);
+
+  // misc
+  billboard?: boolean;
+}
+
+const defaultProps: EditableGeojsonLayerProps<any> = {
   mode: DEFAULT_EDIT_MODE,
 
   // Edit and interaction events
@@ -197,14 +255,6 @@ const modeNameMapping = {
   drawPolygonByDragging: DrawPolygonByDraggingMode,
 };
 
-type Props = {
-  mode: string | GeoJsonEditModeConstructor | GeoJsonEditModeType;
-  onEdit: (arg0: EditAction<FeatureCollection>) => void;
-  // TODO: type the rest
-
-  [key: string]: any;
-};
-
 // type State = {
 //   mode: GeoJsonEditMode,
 //   tentativeFeature: ?Feature,
@@ -212,10 +262,12 @@ type Props = {
 //   selectedFeatures: Feature[]
 // };
 
-export default class EditableGeoJsonLayer extends EditableLayer {
+export default class EditableGeoJsonLayer extends EditableLayer<
+  any,
+  EditableGeojsonLayerProps<any>
+> {
   static layerName = 'EditableGeoJsonLayer';
   static defaultProps = defaultProps;
-  // props: Props;
 
   // setState: ($Shape<State>) => void;
   renderLayers() {
@@ -297,13 +349,15 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     props,
     oldProps,
     changeFlags,
+    context,
   }: {
-    props: Props;
-    oldProps: Props;
+    props: EditableGeojsonLayerProps<any>;
+    oldProps: EditableGeojsonLayerProps<any>;
     changeFlags: any;
+    context: any;
+    s;
   }) {
-    // @ts-ignore
-    super.updateState({ oldProps, props, changeFlags });
+    super.updateState({ oldProps, props, changeFlags, context });
 
     if (changeFlags.propsOrDataChanged) {
       const modePropChanged = Object.keys(oldProps).length === 0 || props.mode !== oldProps.mode;
@@ -346,7 +400,7 @@ export default class EditableGeoJsonLayer extends EditableLayer {
     this.setState({ selectedFeatures });
   }
 
-  getModeProps(props: Props) {
+  getModeProps(props: EditableGeojsonLayerProps<any>) {
     return {
       modeConfig: props.modeConfig,
       data: props.data,

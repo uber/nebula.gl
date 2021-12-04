@@ -1111,10 +1111,10 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@danmarshall/deckgl-typings@^3.4.8":
-  version "3.5.0"
-  resolved "https://registry.yarnpkg.com/@danmarshall/deckgl-typings/-/deckgl-typings-3.5.0.tgz#cdab4a414ec192ff237e276c78fdd74a9fce9f7c"
-  integrity sha512-YDwHoWxAUQdgSkxdqSp+CFUlzrnat9rEeRKucA8zE78iwUVkmOVCRjOrtVf1CjQuBRWhQbs/7/2V3N9wFc9rtw==
+"@danmarshall/deckgl-typings@4.9.11":
+  version "4.9.11"
+  resolved "https://registry.yarnpkg.com/@danmarshall/deckgl-typings/-/deckgl-typings-4.9.11.tgz#98339f1c36d6fcb6afad04056b9c1a5e9d7d4ca0"
+  integrity sha512-Fh7ptaFvmPykGGLzAS0L/hmNKjNRl4msOXfKKj5QTtu6Kr3oeBOljQPQynRH8tQKX43tdnDYZ0hWgJnMw041iA==
   dependencies:
     "@types/hammerjs" "^2.0.36"
     "@types/react" "*"
@@ -3122,9 +3122,9 @@
     "@types/node" "*"
 
 "@types/hammerjs@^2.0.36":
-  version "2.0.36"
-  resolved "https://registry.yarnpkg.com/@types/hammerjs/-/hammerjs-2.0.36.tgz"
-  integrity sha512-7TUK/k2/QGpEAv/BCwSHlYu3NXZhQ9ZwBYpzr9tjlPIL2C5BeGhH3DmVavRx3ZNyELX5TLC91JTz/cen6AAtIQ==
+  version "2.0.40"
+  resolved "https://registry.yarnpkg.com/@types/hammerjs/-/hammerjs-2.0.40.tgz#ded0240b6ea1ad7afc1e60374c49087aaea5dbd8"
+  integrity sha512-VbjwR1fhsn2h2KXAY4oy1fm7dCxaKy0D+deTb8Ilc3Eo3rc5+5eA4rfYmZaHgNJKxVyI0f6WIXzO2zLkVmQPHA==
 
 "@types/hoist-non-react-statics@*":
   version "3.3.1"
@@ -6939,7 +6939,7 @@ from2@^2.1.0:
 
 fs-extra@^7.0.0:
   version "7.0.1"
-  resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-7.0.1.tgz"
+  resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-7.0.1.tgz#4f189c44aa123b895f722804f55ea23eadc348e9"
   integrity sha512-YJDaCJZEnBmcbw13fvdAM9AwNOJwOzrE4pqMqBq5nFiEqXUqHwlK4B+3pUw6JNvfSPtX05xFHtYy/1ni01eGCw==
   dependencies:
     graceful-fs "^4.1.2"
@@ -7765,13 +7765,13 @@ imurmurhash@^0.1.4:
   resolved "https://registry.yarnpkg.com/imurmurhash/-/imurmurhash-0.1.4.tgz"
   integrity sha1-khi5srkoojixPcT7a21XbyMUU+o=
 
-indefinitely-typed@1.0.2, indefinitely-typed@^1.1.0:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/indefinitely-typed/-/indefinitely-typed-1.0.2.tgz#b577044fceb8f7c151e1a851b034b643eafdb14e"
-  integrity sha512-BGnhwdPmpGDCvKQ4EnhfcPkE3tHbwodkmLLPIWjDINHjD5WFj0C0lGMLzObZC9yyaVoqwJRzYJxe0X1XYXxcDQ==
+indefinitely-typed@1.1.0, indefinitely-typed@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/indefinitely-typed/-/indefinitely-typed-1.1.0.tgz#d0acd3645445e89ae1c70129be21609a0aa5a114"
+  integrity sha512-giaI0hCj+wWZIZZLsmWHI+LrM4Hwc+rEZ/VrgCafKePcnE42fLnQTFt4xspqLin8fCjI5WnQr2fep/0EFqjaxw==
   dependencies:
     fs-extra "^7.0.0"
-    minimist "^1.2.0"
+    minimist "^1.2.5"
 
 indent-string@^2.1.0:
   version "2.1.0"

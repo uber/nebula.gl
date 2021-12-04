@@ -7,6 +7,13 @@ import Arrow2DGeometry from './arrow-2d-geometry';
 import createPathMarkers from './create-path-markers';
 import { getClosestPointOnPolyline } from './polyline';
 
+const DISTANCE_FOR_MULTI_ARROWS = 0.1;
+const ARROW_HEAD_SIZE = 0.2;
+const ARROW_TAIL_WIDTH = 0.05;
+// const ARROW_CENTER_ADJUST = -0.8;
+
+const DEFAULT_MARKER_LAYER = SimpleMeshLayer;
+
 export interface PathMarkerLayerProps<D> extends PathOutlineLayerProps<D> {
   getDirection?: (x) => any;
   getMarkerColor?: (x) => number[];
@@ -19,12 +26,6 @@ export interface PathMarkerLayerProps<D> extends PathOutlineLayerProps<D> {
   fp64?: boolean;
   nebulaLayer?: any;
 }
-const DISTANCE_FOR_MULTI_ARROWS = 0.1;
-const ARROW_HEAD_SIZE = 0.2;
-const ARROW_TAIL_WIDTH = 0.05;
-// const ARROW_CENTER_ADJUST = -0.8;
-
-const DEFAULT_MARKER_LAYER = SimpleMeshLayer;
 
 const DEFAULT_MARKER_LAYER_PROPS = {
   mesh: new Arrow2DGeometry({ headSize: ARROW_HEAD_SIZE, tailWidth: ARROW_TAIL_WIDTH }),

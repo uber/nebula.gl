@@ -1,5 +1,6 @@
 /* eslint-env browser */
 
+import { RGBAColor } from '@deck.gl/core';
 import { GeoJsonLayer, ScatterplotLayer, IconLayer, TextLayer } from '@deck.gl/layers';
 
 import {
@@ -40,16 +41,16 @@ import { PROJECTED_PIXEL_SIZE_MULTIPLIER } from '../constants';
 
 import EditableLayer, { EditableLayerProps } from './editable-layer';
 
-const DEFAULT_LINE_COLOR = [0x0, 0x0, 0x0, 0x99];
-const DEFAULT_FILL_COLOR = [0x0, 0x0, 0x0, 0x90];
-const DEFAULT_SELECTED_LINE_COLOR = [0x0, 0x0, 0x0, 0xff];
-const DEFAULT_SELECTED_FILL_COLOR = [0x0, 0x0, 0x90, 0x90];
-const DEFAULT_TENTATIVE_LINE_COLOR = [0x90, 0x90, 0x90, 0xff];
-const DEFAULT_TENTATIVE_FILL_COLOR = [0x90, 0x90, 0x90, 0x90];
-const DEFAULT_EDITING_EXISTING_POINT_COLOR = [0xc0, 0x0, 0x0, 0xff];
-const DEFAULT_EDITING_INTERMEDIATE_POINT_COLOR = [0x0, 0x0, 0x0, 0x80];
-const DEFAULT_EDITING_SNAP_POINT_COLOR = [0x7c, 0x00, 0xc0, 0xff];
-const DEFAULT_EDITING_POINT_OUTLINE_COLOR = [0xff, 0xff, 0xff, 0xff];
+const DEFAULT_LINE_COLOR: RGBAColor = [0x0, 0x0, 0x0, 0x99];
+const DEFAULT_FILL_COLOR: RGBAColor = [0x0, 0x0, 0x0, 0x90];
+const DEFAULT_SELECTED_LINE_COLOR: RGBAColor = [0x0, 0x0, 0x0, 0xff];
+const DEFAULT_SELECTED_FILL_COLOR: RGBAColor = [0x0, 0x0, 0x90, 0x90];
+const DEFAULT_TENTATIVE_LINE_COLOR: RGBAColor = [0x90, 0x90, 0x90, 0xff];
+const DEFAULT_TENTATIVE_FILL_COLOR: RGBAColor = [0x90, 0x90, 0x90, 0x90];
+const DEFAULT_EDITING_EXISTING_POINT_COLOR: RGBAColor = [0xc0, 0x0, 0x0, 0xff];
+const DEFAULT_EDITING_INTERMEDIATE_POINT_COLOR: RGBAColor = [0x0, 0x0, 0x0, 0x80];
+const DEFAULT_EDITING_SNAP_POINT_COLOR: RGBAColor = [0x7c, 0x00, 0xc0, 0xff];
+const DEFAULT_EDITING_POINT_OUTLINE_COLOR: RGBAColor = [0xff, 0xff, 0xff, 0xff];
 const DEFAULT_EDITING_EXISTING_POINT_RADIUS = 5;
 const DEFAULT_EDITING_INTERMEDIATE_POINT_RADIUS = 3;
 const DEFAULT_EDITING_SNAP_POINT_RADIUS = 7;
@@ -126,14 +127,14 @@ export interface EditableGeojsonLayerProps<D> extends EditableLayerProps<D> {
   pointRadiusMinPixels?: number;
   pointRadiusMaxPixels?: number;
 
-  getLineColor?: (feature, isSelected, mode) => any;
-  getFillColor?: (feature, isSelected, mode) => any;
-  getRadius?: (f) => number;
-  getLineWidth?: (f) => number;
+  getLineColor?: RGBAColor | ((feature, isSelected, mode) => RGBAColor);
+  getFillColor?: RGBAColor | ((feature, isSelected, mode) => RGBAColor);
+  getRadius?: number | ((f) => number);
+  getLineWidth?: number | ((f) => number);
 
-  getTentativeLineColor?: (f) => any;
-  getTentativeFillColor?: (f) => any;
-  getTentativeLineWidth?: (f) => number;
+  getTentativeLineColor?: RGBAColor | ((feature, isSelected, mode) => RGBAColor);
+  getTentativeFillColor?: RGBAColor | ((feature, isSelected, mode) => RGBAColor);
+  getTentativeLineWidth?: number | ((f) => number);
 
   editHandleType?: string;
 
@@ -143,9 +144,9 @@ export interface EditableGeojsonLayerProps<D> extends EditableLayerProps<D> {
   editHandlePointRadiusUnits?: string;
   editHandlePointRadiusMinPixels?: number;
   editHandlePointRadiusMaxPixels?: number;
-  getEditHandlePointColor?: (f) => any;
-  getEditHandlePointOutlineColor?: (f) => any;
-  getEditHandlePointRadius?: (f) => number;
+  getEditHandlePointColor?: RGBAColor | ((handle) => RGBAColor);
+  getEditHandlePointOutlineColor?: RGBAColor | ((handle) => RGBAColor);
+  getEditHandlePointRadius?: number | ((handle) => number);
 
   // icon handles
   editHandleIconAtlas?: any;
@@ -154,8 +155,8 @@ export interface EditableGeojsonLayerProps<D> extends EditableLayerProps<D> {
   editHandleIconSizeUnits?: string;
   getEditHandleIcon?: (handle) => string;
   getEditHandleIconSize?: number;
-  getEditHandleIconColor?: (f) => any;
-  getEditHandleIconAngle?: number;
+  getEditHandleIconColor?: RGBAColor | ((handle) => RGBAColor);
+  getEditHandleIconAngle?: number | ((handle) => number);
 
   // misc
   billboard?: boolean;

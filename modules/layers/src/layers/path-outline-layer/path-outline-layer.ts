@@ -21,8 +21,8 @@ const FS_CODE = `\
 
 export interface PathOutlineLayerProps<D> extends PathLayerProps<D> {
   dashJustified?: boolean;
-  getDashArray?: (d) => [number, number] | null;
-  getZLevel?: (object: any, index: number) => number;
+  getDashArray?: [number, number] | ((d: D) => [number, number] | null);
+  getZLevel?: (d: D, index: number) => number;
 }
 
 const defaultProps: PathOutlineLayerProps<any> = {

@@ -18,7 +18,7 @@ export interface EditableLayerProps<D> extends CompositeLayerProps<D> {
   pickingDepth?: number;
 }
 
-export default class EditableLayerA<
+export default class EditableLayer<
   D,
   P extends EditableLayerProps<D> = EditableLayerProps<D>
 > extends CompositeLayer<D, P> {

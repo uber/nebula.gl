@@ -3,7 +3,7 @@
 import window from 'global/window';
 import * as React from 'react';
 import DeckGL from '@deck.gl/react';
-import { MapView, MapController } from '@deck.gl/core';
+import { MapView, MapController, RGBAColor } from '@deck.gl/core';
 import { StaticMap } from 'react-map-gl';
 import GL from '@luma.gl/constants';
 import circle from '@turf/circle';
@@ -191,7 +191,7 @@ function getEditHandleTypeFromEitherLayer(handleOrFeature) {
   return handleOrFeature.type;
 }
 
-function getEditHandleColor(handle: {}) {
+function getEditHandleColor(handle: {}): RGBAColor {
   switch (getEditHandleTypeFromEitherLayer(handle)) {
     case 'existing':
       return [0xff, 0x80, 0x00, 0xff];
@@ -380,10 +380,11 @@ export default class Example extends React.Component<
     return `rgba(${color}, ${alpha})`;
   }
 
-  _getDeckColorForFeature(index: number, bright: number, alpha: number) {
+  _getDeckColorForFeature(index: number, bright: number, alpha: number): RGBAColor {
     const length = FEATURE_COLORS.length;
     const color = FEATURE_COLORS[index % length].map((c) => c * bright * 255);
 
+    // @ts-ignore
     return [...color, alpha * 255];
   }
 

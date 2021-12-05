@@ -1,7 +1,7 @@
 {
   "name": "example-advance",
   "private": true,
-  "version": "1.0.0-alpha.0",
+  "version": "1.0.1-alpha.0",
   "scripts": {
     "start": "webpack-dev-server --progress --hot --open",
     "start-local": "webpack-dev-server --env.local --progress --hot --open",

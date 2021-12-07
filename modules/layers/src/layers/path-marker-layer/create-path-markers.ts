@@ -72,7 +72,7 @@ function createMarkerAlongPath({ path, percentage, lineLength, color, object, pr
   const distanceAlong = lineLength * percentage;
   let currentDistance = 0;
   let previousDistance = 0;
-  
+
   for (let i = 0; i < path.length - 1; i++) {
     currentDistance += path[i].distance(path[i + 1]);
     if (currentDistance > distanceAlong) {
@@ -80,7 +80,7 @@ function createMarkerAlongPath({ path, percentage, lineLength, color, object, pr
     }
     previousDistance = currentDistance;
   }
-  
+
   const lastPoint = path[path.length - 1];
   const beforeLastPoint = path[path.length - 2];
 

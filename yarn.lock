@@ -1111,10 +1111,10 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@danmarshall/deckgl-typings@4.9.11":
-  version "4.9.11"
-  resolved "https://registry.yarnpkg.com/@danmarshall/deckgl-typings/-/deckgl-typings-4.9.11.tgz#98339f1c36d6fcb6afad04056b9c1a5e9d7d4ca0"
-  integrity sha512-Fh7ptaFvmPykGGLzAS0L/hmNKjNRl4msOXfKKj5QTtu6Kr3oeBOljQPQynRH8tQKX43tdnDYZ0hWgJnMw041iA==
+"@danmarshall/deckgl-typings@4.9.12":
+  version "4.9.12"
+  resolved "https://registry.yarnpkg.com/@danmarshall/deckgl-typings/-/deckgl-typings-4.9.12.tgz#81ed316353550996cf5a139f40d8c01384264a93"
+  integrity sha512-hRXXDepfieobs+YFcjhoSXS97boSqgMAlWKREGwxBbqO/mE2seNJgQHPedsR+DeGJiK3hJsQmykt8TO51shJ4g==
   dependencies:
     "@types/hammerjs" "^2.0.36"
     "@types/react" "*"

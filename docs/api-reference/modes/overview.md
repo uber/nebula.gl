@@ -115,6 +115,17 @@ The following options can be provided in the `modeConfig` object:
 - `dragToDraw` (optional): `boolean`
   - If `true`, user can click and drag instead of clicking twice. Note however, that the user will not be able to pan the map while drawing.
 
+## [DrawRectangleFromCenterMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/draw-rectangle-from-center-mode.ts)
+
+User can draw a new rectangular `Polygon` feature by clicking the center then along a corner of the rectangle.
+
+### ModeConfig
+
+The following options can be provided in the `modeConfig` object:
+
+- `dragToDraw` (optional): `boolean`
+  - If `true`, user can click and drag instead of clicking twice. Note however, that the user will not be able to pan the map while drawing.
+
 ## [DrawRectangleUsingThreePointsMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/draw-rectangle-using-three-points-mode.ts)
 
 User can draw a new rectangular `Polygon` feature by clicking three corners of the rectangle.

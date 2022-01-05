@@ -61,7 +61,6 @@ export default class PathOutlineLayer<
       instanceZLevel: {
         size: 1,
         type: GL.UNSIGNED_BYTE,
-        update: this.calculateZLevels,
         accessor: 'getZLevel',
       },
     });
@@ -129,17 +128,6 @@ export default class PathOutlineLayer<
       parameters: {
         depthTest: false,
       },
-    });
-  }
-
-  calculateZLevels(attribute) {
-    const { getZLevel } = this.props;
-    const { pathTesselator } = this.state;
-
-    attribute.value = pathTesselator._updateAttribute({
-      target: attribute.value,
-      size: 1,
-      getValue: (object, index) => [getZLevel(object, index) || 0],
     });
   }
 }

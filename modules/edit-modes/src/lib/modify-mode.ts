@@ -8,9 +8,10 @@ import {
   getPickedEditHandle,
   getPickedExistingEditHandle,
   getPickedIntermediateEditHandle,
+  updateRectanglePosition,
   NearestPointType,
 } from '../utils';
-import { LineString, Point, FeatureCollection, FeatureOf } from '../geojson-types';
+import { LineString, Point, Polygon, FeatureCollection, FeatureOf } from '../geojson-types';
 import {
   ModeProps,
   ClickEvent,
@@ -52,6 +53,9 @@ export class ModifyMode extends GeoJsonEditMode {
       if (
         featureAsPick &&
         !featureAsPick.object.geometry.type.includes('Point') &&
+        !(
+          props.modeConfig?.lockRectangles && featureAsPick.object.properties.shape === 'Rectangle'
+        ) &&
         props.selectedIndexes.includes(featureAsPick.index)
       ) {
         let intermediatePoint: NearestPointType | null | undefined = null;
@@ -157,20 +161,27 @@ export class ModifyMode extends GeoJsonEditMode {
     } else if (pickedIntermediateHandle) {
       const { featureIndex, positionIndexes } = pickedIntermediateHandle.properties;
 
-      const updatedData = new ImmutableFeatureCollection(props.data)
-        .addPosition(featureIndex, positionIndexes, pickedIntermediateHandle.geometry.coordinates)
-        .getObject();
+      const feature = props.data.features[featureIndex];
+      const canAddPosition = !(
+        props.modeConfig?.lockRectangles && feature?.properties.shape === 'Rectangle'
+      );
 
-      if (updatedData) {
-        props.onEdit({
-          updatedData,
-          editType: 'addPosition',
-          editContext: {
-            featureIndexes: [featureIndex],
-            positionIndexes,
-            position: pickedIntermediateHandle.geometry.coordinates,
-          },
-        });
+      if (canAddPosition) {
+        const updatedData = new ImmutableFeatureCollection(props.data)
+          .addPosition(featureIndex, positionIndexes, pickedIntermediateHandle.geometry.coordinates)
+          .getObject();
+
+        if (updatedData) {
+          props.onEdit({
+            updatedData,
+            editType: 'addPosition',
+            editContext: {
+              featureIndexes: [featureIndex],
+              positionIndexes,
+              position: pickedIntermediateHandle.geometry.coordinates,
+            },
+          });
+        }
       }
     }
   }
@@ -184,13 +195,28 @@ export class ModifyMode extends GeoJsonEditMode {
 
       const editHandleProperties = editHandle.properties;
 
-      const updatedData = new ImmutableFeatureCollection(props.data)
-        .replacePosition(
-          editHandleProperties.featureIndex,
-          editHandleProperties.positionIndexes,
+      const editedFeature = props.data.features[editHandleProperties.featureIndex];
+
+      let updatedData;
+      if (props.modeConfig?.lockRectangles && editedFeature.properties.shape === 'Rectangle') {
+        const coordinates = updateRectanglePosition(
+          editedFeature as FeatureOf<Polygon>,
+          editHandleProperties.positionIndexes[1],
           event.mapCoords
-        )
-        .getObject();
+        );
+
+        updatedData = new ImmutableFeatureCollection(props.data)
+          .replaceGeometry(editHandleProperties.featureIndex, { coordinates, type: 'Polygon' })
+          .getObject();
+      } else {
+        updatedData = new ImmutableFeatureCollection(props.data)
+          .replacePosition(
+            editHandleProperties.featureIndex,
+            editHandleProperties.positionIndexes,
+            event.mapCoords
+          )
+          .getObject();
+      }
 
       props.onEdit({
         updatedData,

@@ -11,6 +11,7 @@ import {
   Position,
   Point,
   LineString,
+  Polygon,
   FeatureOf,
   FeatureWithProps,
 } from './geojson-types';
@@ -456,4 +457,25 @@ function getEditHandlesForCoordinates(
     });
   }
   return editHandles;
+}
+
+export function updateRectanglePosition(
+  feature: FeatureOf<Polygon>,
+  editHandleIndex: number,
+  mapCoords: Position
+) {
+  const coordinates = feature.geometry.coordinates;
+  if (!coordinates || !Array.isArray(coordinates) || !coordinates.length) {
+    return null;
+  }
+
+  const points = coordinates[0].slice(0, 4);
+  points[editHandleIndex % 4] = mapCoords;
+
+  const p0 = points[(editHandleIndex + 2) % 4];
+  const p2 = points[editHandleIndex % 4];
+  points[(editHandleIndex + 1) % 4] = [p2[0], p0[1]];
+  points[(editHandleIndex + 3) % 4] = [p0[0], p2[1]];
+
+  return [[...points, points[0]]];
 }

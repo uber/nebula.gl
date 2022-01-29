@@ -867,7 +867,7 @@ export default class Example extends React.Component<
         modeConfig = {
           ...modeConfig,
           viewport,
-          translateInScreenSpace: true,
+          screenSpace: true,
         };
       }
 

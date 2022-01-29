@@ -11,7 +11,7 @@ import {
   DraggingEvent,
   ModeProps,
 } from '../types';
-import { traverseCoords } from '../utils';
+import { mapCoords } from '../utils';
 import { GeoJsonEditMode, GeoJsonEditAction } from './geojson-edit-mode';
 import { ImmutableFeatureCollection } from './immutable-feature-collection';
 
@@ -96,9 +96,9 @@ export class TranslateMode extends GeoJsonEditMode {
     let updatedData = new ImmutableFeatureCollection(props.data);
     const selectedIndexes = props.selectedIndexes;
 
-    const { viewport: viewportDesc, translateInScreenSpace } = props.modeConfig || {};
+    const { viewport: viewportDesc, screenSpace } = props.modeConfig || {};
 
-    if (viewportDesc && translateInScreenSpace) {
+    if (viewportDesc && screenSpace) {
       const viewport = viewportDesc.project ? viewportDesc : new WebMercatorViewport(viewportDesc);
 
       const from = viewport.project(startDragPoint);
@@ -112,7 +112,7 @@ export class TranslateMode extends GeoJsonEditMode {
 
         let coordinates = feature.geometry.coordinates;
         if (coordinates) {
-          coordinates = traverseCoords(coordinates, (coord) => {
+          coordinates = mapCoords(coordinates, (coord) => {
             const pixels = viewport.project(coord);
             if (pixels) {
               pixels[0] += dx;

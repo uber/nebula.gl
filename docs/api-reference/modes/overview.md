@@ -36,6 +36,10 @@ User can rotate a feature about its centroid by clicking and dragging the select
 
 The user can move a feature by selecting one or more features and dragging anywhere within the screen.
 _Additionally, the user can initiate snapping by clicking and dragging the selected feature's vertex handles. If the vertex handle is close enough to another feature's vertex, the two features will snap together._
+The following options can be provided in the `modeConfig` object for TranslateMode:
+
+- `screenSpace` (optional): `<boolean>`
+  - If `true`, the features will be translated without distortion in screen space.
 
 ## [TransformMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/transform-mode.ts)
 

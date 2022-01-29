@@ -862,29 +862,39 @@ export default class Example extends React.Component<
         ...modeConfig,
         viewport,
       };
-    } else if (mode instanceof SnappableMode && modeConfig && modeConfig.enableSnapping) {
-      // Snapping can be accomplished to features that aren't rendered in the same layer
-      modeConfig = {
-        ...modeConfig,
-        additionalSnapTargets: [
-          {
-            type: 'Feature',
-            properties: {},
-            geometry: {
-              type: 'Polygon',
-              coordinates: [
-                [
-                  [-122.52235, 37.734008],
-                  [-122.52217, 37.712706],
-                  [-122.49436, 37.711979],
-                  [-122.49725, 37.734306],
-                  [-122.52235, 37.734008],
+    } else if (mode instanceof SnappableMode && modeConfig) {
+      if (mode._handler instanceof TranslateMode) {
+        modeConfig = {
+          ...modeConfig,
+          viewport,
+          translateInScreenSpace: true,
+        };
+      }
+
+      if (modeConfig && modeConfig.enableSnapping) {
+        // Snapping can be accomplished to features that aren't rendered in the same layer
+        modeConfig = {
+          ...modeConfig,
+          additionalSnapTargets: [
+            {
+              type: 'Feature',
+              properties: {},
+              geometry: {
+                type: 'Polygon',
+                coordinates: [
+                  [
+                    [-122.52235, 37.734008],
+                    [-122.52217, 37.712706],
+                    [-122.49436, 37.711979],
+                    [-122.49725, 37.734306],
+                    [-122.52235, 37.734008],
+                  ],
                 ],
-              ],
+              },
             },
-          },
-        ],
-      };
+          ],
+        };
+      }
     } else if (mode === DrawPolygonByDraggingMode) {
       modeConfig = {
         ...modeConfig,

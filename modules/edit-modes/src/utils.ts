@@ -457,3 +457,22 @@ function getEditHandlesForCoordinates(
   }
   return editHandles;
 }
+
+export function isNumeric(val: any) {
+  return !Array.isArray(val) && !isNaN(parseFloat(val)) && isFinite(val);
+}
+
+export function traverseCoords(
+  coords: any,
+  callback: (coords: [number, number]) => [number, number]
+) {
+  if (isNumeric(coords[0])) {
+    return callback(coords);
+  } else {
+    return coords
+      .map((coord) => {
+        return traverseCoords(coord, callback);
+      })
+      .filter(Boolean);
+  }
+}

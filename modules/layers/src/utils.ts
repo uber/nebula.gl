@@ -176,3 +176,18 @@ export function nearestPointOnProjectedLine(
     },
   };
 }
+
+/**
+ * Inserts toInsert string into base string before insertBefore string.
+ * @param base A string to insert into.
+ * @param insertBefore A sub string in `base` string to insert before.
+ * @param toInsert A string to insert.
+ * @returns Combined string. `base` string if `insertBefore` string isn't found.
+ */
+export function insertBefore(base: string, insertBefore: string, toInsert: string): string {
+  const at = base.indexOf(insertBefore);
+  if (at < 0) {
+    return base;
+  }
+  return base.slice(0, at) + toInsert + base.slice(at);
+}

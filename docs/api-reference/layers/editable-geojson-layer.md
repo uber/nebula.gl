@@ -376,6 +376,12 @@ Number of pixels around the mouse cursor used for picking. This value determines
 
 Number of layers of overlapping features that will be picked. Useful in cases where features overlap.
 
+#### `pickingLineWidthExtraPixels` (Number, optional)
+
+- Default: `0`
+
+Additional line width in pixels used for picking. Can be useful when `EditableGeojsonLayer` is over a deck.gl layer and precise picking is problematic, and when usage of `pickingDepth` introduces performance issues.
+
 ### Sub Layers
 
 `EditableGeoJsonLayer` renders the following sub-layers:

@@ -41,6 +41,7 @@ import {
 import { PROJECTED_PIXEL_SIZE_MULTIPLIER } from '../constants';
 
 import EditableLayer, { EditableLayerProps } from './editable-layer';
+import EditablePathLayer from './editable-path-layer';
 
 const DEFAULT_LINE_COLOR: RGBAColor = [0x0, 0x0, 0x0, 0x99];
 const DEFAULT_FILL_COLOR: RGBAColor = [0x0, 0x0, 0x0, 0x90];
@@ -120,6 +121,7 @@ export interface EditableGeojsonLayerProps<D> extends EditableLayerProps<D> {
   lineWidthScale?: number;
   lineWidthMinPixels?: number;
   lineWidthMaxPixels?: number;
+  pickingLineWidthExtraPixels?: number;
   lineWidthUnits?: string;
   lineJointRounded?: boolean;
   lineCapRounded?: boolean;
@@ -178,6 +180,7 @@ const defaultProps: EditableGeojsonLayerProps<any> = {
   lineWidthScale: PROJECTED_PIXEL_SIZE_MULTIPLIER,
   lineWidthMinPixels: 1,
   lineWidthMaxPixels: Number.MAX_SAFE_INTEGER,
+  pickingLineWidthExtraPixels: 0,
   lineWidthUnits: 'pixels',
   lineJointRounded: false,
   lineCapRounded: false,
@@ -306,6 +309,8 @@ export default class EditableGeoJsonLayer extends EditableLayer<
         },
         'polygons-stroke': {
           billboard: this.props.billboard,
+          pickingLineWidthExtraPixels: this.props.pickingLineWidthExtraPixels,
+          type: EditablePathLayer,
           updateTriggers: {
             // required to update dashed array attribute
             all: [this.props.selectedFeatureIndexes, this.props.mode],

@@ -459,13 +459,20 @@ function getEditHandlesForCoordinates(
   return editHandles;
 }
 
+/**
+ * Calculates coordinates for a feature preserving rectangular shape.
+ * @param feature Feature before modification.
+ * @param editHandleIndex Index of the point to modify.
+ * @param mapCoords New position for the point.
+ * @returns Updated coordinates.
+ */
 export function updateRectanglePosition(
   feature: FeatureOf<Polygon>,
   editHandleIndex: number,
   mapCoords: Position
-) {
+): Position[][] {
   const coordinates = feature.geometry.coordinates;
-  if (!coordinates || !Array.isArray(coordinates) || !coordinates.length) {
+  if (!coordinates) {
     return null;
   }
 

@@ -21,6 +21,7 @@ import {
   DraggingEvent,
   Viewport,
   GuideFeatureCollection,
+  EditHandleFeature,
 } from '../types';
 import { GeoJsonEditMode } from './geojson-edit-mode';
 import { ImmutableFeatureCollection } from './immutable-feature-collection';
@@ -193,41 +194,49 @@ export class ModifyMode extends GeoJsonEditMode {
       // Cancel map panning if pointer went down on an edit handle
       event.cancelPan();
 
-      const editHandleProperties = editHandle.properties;
-
-      const editedFeature = props.data.features[editHandleProperties.featureIndex];
-
-      let updatedData;
-      if (props.modeConfig?.lockRectangles && editedFeature.properties.shape === 'Rectangle') {
-        const coordinates = updateRectanglePosition(
-          editedFeature as FeatureOf<Polygon>,
-          editHandleProperties.positionIndexes[1],
-          event.mapCoords
-        );
-
-        updatedData = new ImmutableFeatureCollection(props.data)
-          .replaceGeometry(editHandleProperties.featureIndex, { coordinates, type: 'Polygon' })
-          .getObject();
-      } else {
-        updatedData = new ImmutableFeatureCollection(props.data)
-          .replacePosition(
-            editHandleProperties.featureIndex,
-            editHandleProperties.positionIndexes,
-            event.mapCoords
-          )
-          .getObject();
-      }
-
-      props.onEdit({
-        updatedData,
-        editType: 'movePosition',
-        editContext: {
-          featureIndexes: [editHandleProperties.featureIndex],
-          positionIndexes: editHandleProperties.positionIndexes,
-          position: event.mapCoords,
-        },
-      });
+      this._dragEditHandle('movePosition', props, editHandle, event);
     }
+  }
+
+  _dragEditHandle(
+    editType: string,
+    props: ModeProps<FeatureCollection>,
+    editHandle: EditHandleFeature,
+    event: StopDraggingEvent | DraggingEvent
+  ) {
+    const editHandleProperties = editHandle.properties;
+    const editedFeature = props.data.features[editHandleProperties.featureIndex];
+
+    let updatedData;
+    if (props.modeConfig?.lockRectangles && editedFeature.properties.shape === 'Rectangle') {
+      const coordinates = updateRectanglePosition(
+        editedFeature as FeatureOf<Polygon>,
+        editHandleProperties.positionIndexes[1],
+        event.mapCoords
+      );
+
+      updatedData = new ImmutableFeatureCollection(props.data)
+        .replaceGeometry(editHandleProperties.featureIndex, { coordinates, type: 'Polygon' })
+        .getObject();
+    } else {
+      updatedData = new ImmutableFeatureCollection(props.data)
+        .replacePosition(
+          editHandleProperties.featureIndex,
+          editHandleProperties.positionIndexes,
+          event.mapCoords
+        )
+        .getObject();
+    }
+
+    props.onEdit({
+      updatedData,
+      editType,
+      editContext: {
+        featureIndexes: [editHandleProperties.featureIndex],
+        positionIndexes: editHandleProperties.positionIndexes,
+        position: event.mapCoords,
+      },
+    });
   }
 
   handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>): void {
@@ -266,25 +275,7 @@ export class ModifyMode extends GeoJsonEditMode {
     const selectedFeatureIndexes = props.selectedIndexes;
     const editHandle = getPickedEditHandle(event.picks);
     if (selectedFeatureIndexes.length && editHandle) {
-      const editHandleProperties = editHandle.properties;
-
-      const updatedData = new ImmutableFeatureCollection(props.data)
-        .replacePosition(
-          editHandleProperties.featureIndex,
-          editHandleProperties.positionIndexes,
-          event.mapCoords
-        )
-        .getObject();
-
-      props.onEdit({
-        updatedData,
-        editType: 'finishMovePosition',
-        editContext: {
-          featureIndexes: [editHandleProperties.featureIndex],
-          positionIndexes: editHandleProperties.positionIndexes,
-          position: event.mapCoords,
-        },
-      });
+      this._dragEditHandle('finishMovePosition', props, editHandle, event);
     }
   }
 

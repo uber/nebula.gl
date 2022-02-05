@@ -861,6 +861,7 @@ export default class Example extends React.Component<
       modeConfig = {
         ...modeConfig,
         viewport,
+        lockRectangles: true,
       };
     } else if (mode instanceof SnappableMode && modeConfig && modeConfig.enableSnapping) {
       // Snapping can be accomplished to features that aren't rendered in the same layer

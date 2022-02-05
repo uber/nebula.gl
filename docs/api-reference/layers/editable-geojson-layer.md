@@ -67,7 +67,7 @@ _Note: passing a single `Feature` is not supported. However, you can pass a `Fea
 
 The `mode` property defines the mode used to handle user interaction events (e.g. pointer events) in order to accomplish edits. This can either be a constructor for an `EditMode` or an instance of `EditMode`.
 
-There are a extensive number of modes that come out-of-the-box with nebula.gl. See [modes overview](/docs/api-reference/modes/overview.md).
+There are a extensive number of modes that come out-of-the-box with nebula.gl. See [modes overview](../modes/overview.md).
 
 #### `modeConfig` (Object, optional)
 
@@ -375,6 +375,12 @@ Number of pixels around the mouse cursor used for picking. This value determines
 - Default: `5`
 
 Number of layers of overlapping features that will be picked. Useful in cases where features overlap.
+
+#### `pickingLineWidthExtraPixels` (Number, optional)
+
+- Default: `0`
+
+Additional line width in pixels used for picking. Can be useful when `EditableGeojsonLayer` is over a deck.gl layer and precise picking is problematic, and when usage of `pickingDepth` introduces performance issues.
 
 ### Sub Layers
 

@@ -14,6 +14,7 @@ import {
   Polygon,
   FeatureOf,
   FeatureWithProps,
+  AnyCoordinates,
 } from './geojson-types';
 
 export type NearestPointType = FeatureWithProps<Point, { dist: number; index: number }>;
@@ -485,4 +486,28 @@ export function updateRectanglePosition(
   points[(editHandleIndex + 3) % 4] = [p0[0], p2[1]];
 
   return [[...points, points[0]]];
+}
+
+/** Creates a copy of feature's coordinates.
+ * Each position in coordinates is transformed by calling the provided function.
+ * @param coords Coordinates of a feature.
+ * @param callback A function to transform each coordinate.
+ * @retuns Transformed coordinates.
+ */
+export function mapCoords(
+  coords: AnyCoordinates,
+  callback: (coords: Position) => Position
+): AnyCoordinates {
+  if (typeof coords[0] === 'number') {
+    if (!isNaN(coords[0]) && isFinite(coords[0])) {
+      return callback(coords as Position);
+    }
+    return coords;
+  }
+
+  return (coords as Position[])
+    .map((coord) => {
+      return mapCoords(coord, callback) as Position;
+    })
+    .filter(Boolean);
 }

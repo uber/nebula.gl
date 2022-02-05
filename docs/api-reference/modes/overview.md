@@ -12,6 +12,11 @@ No edits are possible, but selection is still possible.
 
 User can move existing points, add intermediate points along lines, and remove points.
 
+The following options can be provided in the `modeConfig` object for ModifyMode:
+
+- `lockRectangles` (optional): `<boolean>`
+  - If `true`, features with `properties.shape === 'Rectangle'` will preserve rectangular shape.
+
 ### Edit Context
 
 `editContext` argument to the `onEdit` callback contains the following properties:

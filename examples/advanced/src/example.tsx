@@ -861,6 +861,7 @@ export default class Example extends React.Component<
       modeConfig = {
         ...modeConfig,
         viewport,
+        lockRectangles: true,
       };
     } else if (mode instanceof SnappableMode && modeConfig) {
       if (mode._handler instanceof TranslateMode) {

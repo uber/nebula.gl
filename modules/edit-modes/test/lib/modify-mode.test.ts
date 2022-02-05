@@ -1,12 +1,19 @@
 /* eslint-env jest */
 
 import { ModifyMode } from '../../src/lib/modify-mode';
-import { createFeatureCollectionProps } from '../test-utils';
+import { Pick, ModeProps } from '../../src/types';
+import {
+  createFeatureCollectionProps,
+  createPointerMoveEvent,
+  createStartDraggingEvent,
+  createStopDraggingEvent,
+} from '../test-utils';
 import { FeatureCollection, Position, Point, LineString, FeatureOf } from '../../src/geojson-types';
 
 let pointFeature: FeatureOf<Point>;
 let lineStringFeature: FeatureOf<LineString>;
 let polygonFeature;
+let polygonRectangleFeature;
 let multiPointFeature;
 let multiLineStringFeature;
 let multiPolygonFeature;
@@ -52,6 +59,23 @@ beforeEach(() => {
           [0.5, 0.5],
           [0.5, -0.5],
           [-0.5, -0.5],
+        ],
+      ],
+    },
+  };
+
+  polygonRectangleFeature = {
+    type: 'Feature',
+    properties: { shape: 'Rectangle' },
+    geometry: {
+      type: 'Polygon',
+      coordinates: [
+        [
+          [-100, -100],
+          [100, -100],
+          [100, 100],
+          [-100, 100],
+          [-100, -100],
         ],
       ],
     },
@@ -126,6 +150,44 @@ beforeEach(() => {
       ],
     },
   };
+});
+
+const mockMove = (mode, picks: Pick[], props: ModeProps<FeatureCollection>) => {
+  const moveEvent = createPointerMoveEvent([100, 100], picks);
+  mode.handlePointerMove(moveEvent, props);
+
+  const startDragEvent = createStartDraggingEvent([100, 100], [100, 100], picks);
+  mode.handleStartDragging(startDragEvent, props);
+
+  const stopDragEvent = createStopDraggingEvent([110, 115], [100, 100], picks);
+  mode.handleStopDragging(stopDragEvent, props);
+};
+
+test('Rectangular polygon feature preserves shape', () => {
+  const mockOnEdit = jest.fn();
+  const props = createFeatureCollectionProps({
+    data: {
+      type: 'FeatureCollection',
+      features: [polygonRectangleFeature],
+    } as FeatureCollection,
+    selectedIndexes: [0],
+    onEdit: mockOnEdit,
+  });
+
+  const mode = new ModifyMode();
+  const guides = mode.getGuides(props);
+  expect(guides).toMatchSnapshot();
+
+  const guideFeature = guides.features[2];
+  mockMove(mode, [{ index: 2, isGuide: true, object: guideFeature }], {
+    ...props,
+    modeConfig: { lockRectangles: true },
+  });
+
+  expect(mockOnEdit).toHaveBeenCalledTimes(1);
+  const movedFeature = mockOnEdit.mock.calls[0][0].updatedData.features[0];
+  expect(movedFeature).toMatchSnapshot();
+  expect(props.data.features[0]).not.toEqual(movedFeature);
 });
 
 describe('getGuides()', () => {

@@ -9,7 +9,7 @@ const MAPBOX_ACCESS_TOKEN =
   "pk.eyJ1IjoiZ2Vvcmdpb3MtdWJlciIsImEiOiJjanZidTZzczAwajMxNGVwOGZrd2E5NG90In0.gdsRu_UeU_uPi9IulBruXA";
 
 const DATA_URL =
-  "https://cors-anywhere.herokuapp.com/http://whc.unesco.org/en/list/georss/";
+  "https://cors-tube.vercel.app/?url=https://whc.unesco.org/en/list/georss/";
 
 const initialViewState = {
   longitude: 20,
@@ -69,7 +69,7 @@ class WorldHeritage extends HtmlClusterOverlay {
           alignItems: "center",
           justifyContent: "center",
         }}
-        key={clusterId}
+        key={`${clusterId}-cluster`}
         coordinates={coordinates}
       >
         {pointCount}

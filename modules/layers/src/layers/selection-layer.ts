@@ -68,10 +68,10 @@ const PASS_THROUGH_PROPS = [
   'getTentativeFillColor',
   'getTentativeLineWidth',
 ];
-
-export default class SelectionLayer extends CompositeLayer<any> {
-  props: SelectionLayerProps;
-
+export default class SelectionLayer<
+  D,
+  P extends SelectionLayerProps = SelectionLayerProps
+> extends CompositeLayer<D, P> {
   static layerName = 'SelectionLayer';
   static defaultProps = defaultProps;
 

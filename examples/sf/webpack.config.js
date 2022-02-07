@@ -12,20 +12,28 @@ const CONFIG = {
   devtool: 'source-map',
 
   entry: {
-    app: resolve('./app.js'),
+    app: resolve('./app.tsx'),
   },
-
+  resolve: {
+    extensions: ['.ts', '.tsx', '.js', '.jsx'],
+  },
+  stats: 'minimal',
   module: {
     rules: [
       {
         // Compile ES2015 using babel
-        test: /\.js$/,
+        test: /(\.js|\.ts|\.tsx)$/,
         include: [resolve('.'), resolve('../../modules')],
         exclude: [/node_modules/],
+        include: [/@luma.gl\/core/],
         use: {
           loader: 'babel-loader',
           options: {
-            presets: [require('@babel/preset-env'), require('@babel/preset-react')],
+            presets: [
+              require('@babel/preset-env'),
+              require('@babel/preset-react'),
+              require('@babel/preset-typescript'),
+            ],
             plugins: [
               require('@babel/plugin-proposal-class-properties'),
               require('@babel/plugin-proposal-export-default-from'),

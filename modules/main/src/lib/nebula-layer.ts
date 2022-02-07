@@ -1,5 +1,5 @@
 import Event from 'events';
-import uuid from 'uuid';
+import { v4 } from 'uuid';
 
 import Feature from './feature';
 
@@ -17,7 +17,7 @@ export default class NebulaLayer extends Event.EventEmitter {
 
   constructor({ getData, on, toNebulaFeature }: Record<string, any>) {
     super();
-    this.id = uuid.v4();
+    this.id = v4();
     this.getData = getData;
     this.toNebulaFeature = toNebulaFeature;
     this.helperLayers = [];

@@ -4,12 +4,45 @@ _All notable changes to this project will be documented in this file. This proje
 
 <!-- INSERT HERE -->
 
+## [v1.0.2-alpha.1](https://github.com/uber/nebula.gl/compare/v1.0.2-alpha.0...v1.0.2-alpha.1) - TBD
+
+### Changes
+
+- Fix EditingMode drag to move (react-map-gl-draw) (#600)
+- Add Draw Rectangle From Center mode (#530)
+- Expose addTentativePosition (react-map-gl-draw) (#610)
+- Fix cursor issue when using the scale mode (#522)
+- Remove broken calculateZLevels (#678)
+- Fix link to modes in overview (#679)
+- Translate mode: translate shapes in screen space (#692)
+- EditableGeojsonLayer: pickingLineWidthExtraPixels prop (#694)
+- feat(modify-mode): an option to lock shape or rectangles and prevent insertion of point (#691)
+
+## [v1.0.2-alpha.0](https://github.com/uber/nebula.gl/compare/v1.0.1-alpha.0...v1.0.2-alpha.0) - Dec 8, 2021
+
+### Changes
+
+- bump deck types and prett fix (#676)
+
+## [v1.0.1-alpha.0](https://github.com/uber/nebula.gl/compare/v1.0.0-alpha.0...v1.0.1-alpha.0) - Dec 5, 2021
+
+### Changes
+
+- Update deck typings for deck 8.6 (#670)
+- Fix "Cannot read properties of undefined (reading 'clone')" (#671)
+
+## [v1.0.0-alpha.0](https://github.com/uber/nebula.gl/compare/v0.23.6...v1.0.0-alpha.0) - Nov 17, 2021
+
+### Changes
+
+- Bump deck.gl from 8.4.6 to 8.6.0, luma.gl from 8.4.3 to 8.5.10 (#660)
+
 ## [0.23.6](https://github.com/uber/nebula.gl/compare/v0.23.3...v0.23.6) - 2021-09-08
 
 ### Changes
 
-* Update outdated links (#631)
-* fix: "this.state is null" error (#628)
+- Update outdated links (#631)
+- fix: "this.state is null" error (#628)
 
 ## [0.23.3](https://github.com/uber/nebula.gl/compare/v0.22.3...v0.23.3) - 2021-07-14
 

@@ -4,3 +4,12 @@
  * https://github.com/visgl/deck.gl/blob/master/docs/upgrade-guide.md
  */
 export const PROJECTED_PIXEL_SIZE_MULTIPLIER = 2 / 3;
+
+/**
+ * Unit literal to shader unit number conversion.
+ */
+export const UNIT = {
+  common: 0,
+  meters: 1,
+  pixels: 2,
+};

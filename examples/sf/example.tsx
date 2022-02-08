@@ -174,7 +174,7 @@ export default class Example extends React.Component<
     const style = {
       lineColor: [0, 0, 1, 1],
       // TODO: fix, doesn't look like meters
-      lineWidthMeters: 5.0 * 0.0001,
+      lineWidthMeters: 15,
       tooltip: segment.LINE,
       arrowStyle: 3,
       arrowColor: [1, 0, 0, 1],

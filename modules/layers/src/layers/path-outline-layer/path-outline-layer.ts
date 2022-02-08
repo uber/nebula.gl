@@ -3,6 +3,7 @@ import { PathLayerProps } from '@deck.gl/layers/path-layer/path-layer';
 import GL from '@luma.gl/constants';
 import { Framebuffer, Texture2D } from '@luma.gl/core';
 import outline from '../../shaderlib/outline/outline';
+import { UNIT } from '../../constants';
 
 // TODO - this should be built into assembleShaders
 function injectShaderCode({ source, code = '' }) {
@@ -72,17 +73,19 @@ export default class PathOutlineLayer<
     const {
       jointRounded,
       capRounded,
+      billboard,
       miterLimit,
+      widthUnits,
       widthScale,
       widthMinPixels,
       widthMaxPixels,
-      dashJustified,
     } = this.props;
 
     uniforms = Object.assign({}, uniforms, {
       jointType: Number(jointRounded),
       capType: Number(capRounded),
-      alignMode: Number(dashJustified),
+      billboard,
+      widthUnits: UNIT[widthUnits],
       widthScale,
       miterLimit,
       widthMinPixels,

@@ -1,5 +1,5 @@
 import { PathMarkerLayer } from '@nebula.gl/layers';
-import { MAX } from '@luma.gl/constants';
+import { GL } from '@luma.gl/constants';
 
 import { ArrowStyles, DEFAULT_STYLE, MAX_ARROWS } from '../style';
 import NebulaLayer from '../nebula-layer';
@@ -83,7 +83,7 @@ export default class SegmentsLayer extends NebulaLayer {
       parameters: {
         depthTest: false,
         blend: !this.noBlend,
-        blendEquation: MAX,
+        blendEquation: GL.MAX,
       },
       getPath: (nf: any) => nf.geoJson.geometry.coordinates,
       // @ts-ignore

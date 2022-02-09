@@ -1,16 +1,17 @@
-import nearestPointOnLine from '@turf/nearest-point-on-line';
 import { point, lineString as toLineString } from '@turf/helpers';
 import {
   recursivelyTraverseNestedArrays,
   nearestPointOnProjectedLine,
+  nearestPointOnLine,
   getEditHandlesForGeometry,
   getPickedEditHandles,
   getPickedEditHandle,
   getPickedExistingEditHandle,
   getPickedIntermediateEditHandle,
+  updateRectanglePosition,
   NearestPointType,
 } from '../utils';
-import { LineString, Point, FeatureCollection, FeatureOf } from '../geojson-types';
+import { LineString, Point, Polygon, FeatureCollection, FeatureOf } from '../geojson-types';
 import {
   ModeProps,
   ClickEvent,
@@ -20,6 +21,7 @@ import {
   DraggingEvent,
   Viewport,
   GuideFeatureCollection,
+  EditHandleFeature,
 } from '../types';
 import { GeoJsonEditMode } from './geojson-edit-mode';
 import { ImmutableFeatureCollection } from './immutable-feature-collection';
@@ -52,6 +54,9 @@ export class ModifyMode extends GeoJsonEditMode {
       if (
         featureAsPick &&
         !featureAsPick.object.geometry.type.includes('Point') &&
+        !(
+          props.modeConfig?.lockRectangles && featureAsPick.object.properties.shape === 'Rectangle'
+        ) &&
         props.selectedIndexes.includes(featureAsPick.index)
       ) {
         let intermediatePoint: NearestPointType | null | undefined = null;
@@ -63,7 +68,7 @@ export class ModifyMode extends GeoJsonEditMode {
           [],
           (lineString, prefix) => {
             const lineStringFeature = toLineString(lineString);
-            const candidateIntermediatePoint = this.nearestPointOnLine(
+            const candidateIntermediatePoint = this.getNearestPoint(
               // @ts-ignore
               lineStringFeature,
               referencePoint,
@@ -108,7 +113,7 @@ export class ModifyMode extends GeoJsonEditMode {
   }
 
   // turf.js does not support elevation for nearestPointOnLine
-  nearestPointOnLine(
+  getNearestPoint(
     line: FeatureOf<LineString>,
     inPoint: FeatureOf<Point>,
     viewport: Viewport | null | undefined
@@ -124,8 +129,7 @@ export class ModifyMode extends GeoJsonEditMode {
         'Editing 3D point but modeConfig.viewport not provided. Falling back to 2D logic.'
       );
     }
-
-    return nearestPointOnLine(line, inPoint);
+    return nearestPointOnLine(line, inPoint, viewport);
   }
 
   handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>) {
@@ -158,20 +162,27 @@ export class ModifyMode extends GeoJsonEditMode {
     } else if (pickedIntermediateHandle) {
       const { featureIndex, positionIndexes } = pickedIntermediateHandle.properties;
 
-      const updatedData = new ImmutableFeatureCollection(props.data)
-        .addPosition(featureIndex, positionIndexes, pickedIntermediateHandle.geometry.coordinates)
-        .getObject();
+      const feature = props.data.features[featureIndex];
+      const canAddPosition = !(
+        props.modeConfig?.lockRectangles && feature?.properties.shape === 'Rectangle'
+      );
 
-      if (updatedData) {
-        props.onEdit({
-          updatedData,
-          editType: 'addPosition',
-          editContext: {
-            featureIndexes: [featureIndex],
-            positionIndexes,
-            position: pickedIntermediateHandle.geometry.coordinates,
-          },
-        });
+      if (canAddPosition) {
+        const updatedData = new ImmutableFeatureCollection(props.data)
+          .addPosition(featureIndex, positionIndexes, pickedIntermediateHandle.geometry.coordinates)
+          .getObject();
+
+        if (updatedData) {
+          props.onEdit({
+            updatedData,
+            editType: 'addPosition',
+            editContext: {
+              featureIndexes: [featureIndex],
+              positionIndexes,
+              position: pickedIntermediateHandle.geometry.coordinates,
+            },
+          });
+        }
       }
     }
   }
@@ -183,26 +194,49 @@ export class ModifyMode extends GeoJsonEditMode {
       // Cancel map panning if pointer went down on an edit handle
       event.cancelPan();
 
-      const editHandleProperties = editHandle.properties;
+      this._dragEditHandle('movePosition', props, editHandle, event);
+    }
+  }
 
-      const updatedData = new ImmutableFeatureCollection(props.data)
+  _dragEditHandle(
+    editType: string,
+    props: ModeProps<FeatureCollection>,
+    editHandle: EditHandleFeature,
+    event: StopDraggingEvent | DraggingEvent
+  ) {
+    const editHandleProperties = editHandle.properties;
+    const editedFeature = props.data.features[editHandleProperties.featureIndex];
+
+    let updatedData;
+    if (props.modeConfig?.lockRectangles && editedFeature.properties.shape === 'Rectangle') {
+      const coordinates = updateRectanglePosition(
+        editedFeature as FeatureOf<Polygon>,
+        editHandleProperties.positionIndexes[1],
+        event.mapCoords
+      );
+
+      updatedData = new ImmutableFeatureCollection(props.data)
+        .replaceGeometry(editHandleProperties.featureIndex, { coordinates, type: 'Polygon' })
+        .getObject();
+    } else {
+      updatedData = new ImmutableFeatureCollection(props.data)
         .replacePosition(
           editHandleProperties.featureIndex,
           editHandleProperties.positionIndexes,
           event.mapCoords
         )
         .getObject();
-
-      props.onEdit({
-        updatedData,
-        editType: 'movePosition',
-        editContext: {
-          featureIndexes: [editHandleProperties.featureIndex],
-          positionIndexes: editHandleProperties.positionIndexes,
-          position: event.mapCoords,
-        },
-      });
     }
+
+    props.onEdit({
+      updatedData,
+      editType,
+      editContext: {
+        featureIndexes: [editHandleProperties.featureIndex],
+        positionIndexes: editHandleProperties.positionIndexes,
+        position: event.mapCoords,
+      },
+    });
   }
 
   handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>): void {
@@ -241,25 +275,7 @@ export class ModifyMode extends GeoJsonEditMode {
     const selectedFeatureIndexes = props.selectedIndexes;
     const editHandle = getPickedEditHandle(event.picks);
     if (selectedFeatureIndexes.length && editHandle) {
-      const editHandleProperties = editHandle.properties;
-
-      const updatedData = new ImmutableFeatureCollection(props.data)
-        .replacePosition(
-          editHandleProperties.featureIndex,
-          editHandleProperties.positionIndexes,
-          event.mapCoords
-        )
-        .getObject();
-
-      props.onEdit({
-        updatedData,
-        editType: 'finishMovePosition',
-        editContext: {
-          featureIndexes: [editHandleProperties.featureIndex],
-          positionIndexes: editHandleProperties.positionIndexes,
-          position: event.mapCoords,
-        },
-      });
+      this._dragEditHandle('finishMovePosition', props, editHandle, event);
     }
   }
 

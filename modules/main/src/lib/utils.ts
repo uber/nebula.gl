@@ -1,5 +1,5 @@
 export function toDeckColor(
-  color?: [number, number, number, number] | null | undefined,
+  color?: [number, number, number, number] | [number, number, number] | null | undefined,
   defaultColor: [number, number, number, number] = [255, 0, 0, 255]
 ): [number, number, number, number] {
   if (!Array.isArray(color)) {

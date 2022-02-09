@@ -2,7 +2,7 @@
   "name": "nebula.gl",
   "description": "A suite of 3D-enabled data editing overlays, suitable for deck.gl",
   "license": "MIT",
-  "version": "0.22.3",
+  "version": "1.0.2-alpha.1",
   "author": "Georgios Karnas <georgios@uber.com>",
   "repository": {
     "type": "git",
@@ -49,8 +49,8 @@
     "test-rendering": "(cd test/rendering-test && webpack-dev-server --config webpack.config.test-rendering.js --progress --hot --open)"
   },
   "dependencies": {
-    "@luma.gl/constants": "^8.4.3",
-    "@nebula.gl/layers": "0.22.3",
+    "@luma.gl/constants": "^8.5.10",
+    "@nebula.gl/layers": "1.0.2-alpha.1",
     "@turf/bbox": ">=4.0.0",
     "@turf/bbox-polygon": ">=4.0.0",
     "@turf/bearing": ">=4.0.0",
@@ -80,10 +80,12 @@
     "viewport-mercator-project": ">=6.0.0"
   },
   "peerDependencies": {
-    "@deck.gl/core": "^8.4.6",
-    "@deck.gl/geo-layers": "^8.4.6",
-    "@deck.gl/layers": "^8.4.6",
-    "@luma.gl/constants": "^8.4.3",
-    "@luma.gl/core": "^8.4.3"
-  }
+    "@deck.gl/core": "^8.6.0",
+    "@deck.gl/extensions": "^8.6.0",
+    "@deck.gl/geo-layers": "^8.6.0",
+    "@deck.gl/layers": "^8.6.0",
+    "@luma.gl/constants": "^8.5.10",
+    "@luma.gl/core": "^8.5.10"
+  },
+  "gitHead": "4eb929f50b89ea745cb92d7ba3d17df025a962e4"
 }

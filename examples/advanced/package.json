@@ -1,17 +1,17 @@
 {
   "name": "example-advance",
   "private": true,
-  "version": "0.22.3",
+  "version": "1.0.2-alpha.1",
   "scripts": {
     "start": "webpack-dev-server --progress --hot --open",
     "start-local": "webpack-dev-server --env.local --progress --hot --open",
     "types-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@deck.gl/core": "^8.4.6",
-    "@deck.gl/layers": "^8.4.6",
-    "@deck.gl/mesh-layers": "^8.4.6",
-    "@deck.gl/react": "^8.4.6",
+    "@deck.gl/core": "^8.6.0",
+    "@deck.gl/layers": "^8.6.0",
+    "@deck.gl/mesh-layers": "^8.6.0",
+    "@deck.gl/react": "^8.6.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-map-gl": "^5.2.1",

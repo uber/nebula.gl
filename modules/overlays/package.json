@@ -2,7 +2,7 @@
   "name": "@nebula.gl/overlays",
   "description": "React overlays for deck.gl",
   "license": "MIT",
-  "version": "0.22.3",
+  "version": "1.0.2-alpha.1",
   "author": "Georgios Karnas <georgios@uber.com>",
   "repository": {
     "type": "git",
@@ -56,5 +56,6 @@
   "peerDependencies": {
     "react": "0.14.x - 16.x",
     "react-dom": "0.14.x - 16.x"
-  }
+  },
+  "gitHead": "4eb929f50b89ea745cb92d7ba3d17df025a962e4"
 }

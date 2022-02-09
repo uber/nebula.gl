@@ -1,7 +1,9 @@
 import { PathLayer } from '@deck.gl/layers';
+import { PathLayerProps } from '@deck.gl/layers/path-layer/path-layer';
 import GL from '@luma.gl/constants';
 import { Framebuffer, Texture2D } from '@luma.gl/core';
 import outline from '../../shaderlib/outline/outline';
+import { UNIT } from '../../constants';
 
 // TODO - this should be built into assembleShaders
 function injectShaderCode({ source, code = '' }) {
@@ -18,11 +20,20 @@ const FS_CODE = `\
   gl_FragColor = outline_filterColor(gl_FragColor);
 `;
 
-const defaultProps = {
-  getZLevel: { type: 'accessor', value: 0 },
+export interface PathOutlineLayerProps<D> extends PathLayerProps<D> {
+  dashJustified?: boolean;
+  getDashArray?: [number, number] | ((d: D) => [number, number] | null);
+  getZLevel?: (d: D, index: number) => number;
+}
+
+const defaultProps: PathOutlineLayerProps<any> = {
+  getZLevel: () => 0,
 };
 
-export default class PathOutlineLayer extends PathLayer<any> {
+export default class PathOutlineLayer<
+  D,
+  P extends PathOutlineLayerProps<D> = PathOutlineLayerProps<D>
+> extends PathLayer<D, P> {
   static layerName = 'PathOutlineLayer';
   static defaultProps = defaultProps;
 
@@ -51,7 +62,6 @@ export default class PathOutlineLayer extends PathLayer<any> {
       instanceZLevel: {
         size: 1,
         type: GL.UNSIGNED_BYTE,
-        update: this.calculateZLevels,
         accessor: 'getZLevel',
       },
     });
@@ -61,17 +71,21 @@ export default class PathOutlineLayer extends PathLayer<any> {
   draw({ moduleParameters = {}, parameters, uniforms, context }) {
     // Need to calculate same uniforms as base layer
     const {
-      rounded,
+      jointRounded,
+      capRounded,
+      billboard,
       miterLimit,
+      widthUnits,
       widthScale,
       widthMinPixels,
       widthMaxPixels,
-      dashJustified,
     } = this.props;
 
     uniforms = Object.assign({}, uniforms, {
-      jointType: Number(rounded),
-      alignMode: Number(dashJustified),
+      jointType: Number(jointRounded),
+      capType: Number(capRounded),
+      billboard,
+      widthUnits: UNIT[widthUnits],
       widthScale,
       miterLimit,
       widthMinPixels,
@@ -110,23 +124,13 @@ export default class PathOutlineLayer extends PathLayer<any> {
     });
     this.state.model.draw({
       uniforms: Object.assign({}, uniforms, {
-        jointType: Number(rounded),
+        jointType: Number(jointRounded),
+        capType: Number(capRounded),
         widthScale: this.props.widthScale,
       }),
       parameters: {
         depthTest: false,
       },
-    });
-  }
-
-  calculateZLevels(attribute) {
-    const { getZLevel } = this.props;
-    const { pathTesselator } = this.state;
-
-    attribute.value = pathTesselator._updateAttribute({
-      target: attribute.value,
-      size: 1,
-      getValue: (object, index) => [getZLevel(object, index) || 0],
     });
   }
 }

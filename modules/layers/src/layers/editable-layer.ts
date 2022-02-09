@@ -1,18 +1,29 @@
 /* eslint-env browser */
 
 import { CompositeLayer } from '@deck.gl/core';
+import { CompositeLayerProps } from '@deck.gl/core/lib/composite-layer';
 import {
   ClickEvent,
   StartDraggingEvent,
   StopDraggingEvent,
   DraggingEvent,
   PointerMoveEvent,
+  Position,
 } from '@nebula.gl/edit-modes';
 
 const EVENT_TYPES = ['anyclick', 'pointermove', 'panstart', 'panmove', 'panend', 'keyup'];
 
-export default class EditableLayer extends CompositeLayer<any> {
+export interface EditableLayerProps<D> extends CompositeLayerProps<D> {
+  pickingRadius?: number;
+  pickingDepth?: number;
+}
+
+export default class EditableLayer<
+  D,
+  P extends EditableLayerProps<D> = EditableLayerProps<D>
+> extends CompositeLayer<D, P> {
   static layerName = 'EditableLayer';
+
   // Overridable interaction event handlers
   onLayerClick(event: ClickEvent) {
     // default implementation - do nothing
@@ -247,7 +258,7 @@ export default class EditableLayer extends CompositeLayer<any> {
     });
   }
 
-  getScreenCoords(pointerEvent: any) {
+  getScreenCoords(pointerEvent: any): Position {
     return [
       pointerEvent.clientX -
         (this.context.gl.canvas as HTMLCanvasElement).getBoundingClientRect().left,
@@ -256,7 +267,7 @@ export default class EditableLayer extends CompositeLayer<any> {
     ];
   }
 
-  getMapCoords(screenCoords: number[]) {
+  getMapCoords(screenCoords: Position): Position {
     // @ts-ignore
     return this.context.viewport.unproject([screenCoords[0], screenCoords[1]]);
   }

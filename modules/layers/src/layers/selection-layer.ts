@@ -1,6 +1,8 @@
 /* eslint-env browser */
+
 import { CompositeLayer } from '@deck.gl/core';
 import { PolygonLayer } from '@deck.gl/layers';
+import { CompositeLayerProps } from '@deck.gl/core/lib/composite-layer';
 import { polygon } from '@turf/helpers';
 import turfBuffer from '@turf/buffer';
 import turfDifference from '@turf/difference';
@@ -23,7 +25,13 @@ const MODE_CONFIG_MAP = {
   [SELECTION_TYPE.RECTANGLE]: { dragToDraw: true },
 };
 
-const defaultProps = {
+interface SelectionLayerProps extends CompositeLayerProps<any> {
+  layerIds: any[];
+  onSelect: (info: any) => any;
+  selectionType: string | null;
+}
+
+const defaultProps: SelectionLayerProps = {
   selectionType: SELECTION_TYPE.RECTANGLE,
   layerIds: [],
   onSelect: () => {},
@@ -44,6 +52,7 @@ const PASS_THROUGH_PROPS = [
   'lineWidthMaxPixels',
   'lineWidthUnits',
   'lineJointRounded',
+  'lineCapRounded',
   'lineMiterLimit',
   'pointRadiusScale',
   'pointRadiusMinPixels',
@@ -59,8 +68,10 @@ const PASS_THROUGH_PROPS = [
   'getTentativeFillColor',
   'getTentativeLineWidth',
 ];
-
-export default class SelectionLayer extends CompositeLayer<any> {
+export default class SelectionLayer<
+  D,
+  P extends SelectionLayerProps = SelectionLayerProps
+> extends CompositeLayer<D, P> {
   static layerName = 'SelectionLayer';
   static defaultProps = defaultProps;
 
@@ -173,6 +184,7 @@ export default class SelectionLayer extends CompositeLayer<any> {
     if (pendingPolygonSelection) {
       const { bigPolygon } = pendingPolygonSelection;
       layers.push(
+        // @ts-ignore
         new PolygonLayer(
           // @ts-ignore
           this.getSubLayerProps({

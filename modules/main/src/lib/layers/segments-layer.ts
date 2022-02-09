@@ -1,5 +1,5 @@
 import { PathMarkerLayer } from '@nebula.gl/layers';
-import { GL } from '@luma.gl/constants';
+import GL from '@luma.gl/constants';
 
 import { ArrowStyles, DEFAULT_STYLE, MAX_ARROWS } from '../style';
 import NebulaLayer from '../nebula-layer';
@@ -18,7 +18,8 @@ export default class SegmentsLayer extends NebulaLayer {
   noBlend: boolean;
   highlightColor: [number, number, number, number];
   arrowSize: number;
-  rounded: boolean;
+  jointRounded: boolean;
+  capRounded: boolean;
   dashed: boolean;
   markerLayerProps: Record<string, any> | null | undefined;
 
@@ -29,11 +30,19 @@ export default class SegmentsLayer extends NebulaLayer {
     const {
       enablePicking = true,
       noBlend = false,
-      rounded = true,
+      jointRounded = true,
+      capRounded = true,
       dashed = false,
       markerLayerProps = null,
     } = config;
-    Object.assign(this, { enablePicking, noBlend, rounded, dashed, markerLayerProps });
+    Object.assign(this, {
+      enablePicking,
+      noBlend,
+      jointRounded,
+      capRounded,
+      dashed,
+      markerLayerProps,
+    });
   }
 
   getMouseOverSegment(): any {
@@ -68,16 +77,16 @@ export default class SegmentsLayer extends NebulaLayer {
   }
 
   render({ nebula }: Record<string, any>) {
-    const defaultColor = [0x0, 0x0, 0x0, 0xff];
+    const defaultColor: [number, number, number, number] = [0x0, 0x0, 0x0, 0xff];
     const { objects, updateTrigger } = this.deckCache;
 
     return new PathMarkerLayer({
       id: `segments-${this.id}`,
       data: objects,
       opacity: 1,
-      // @ts-ignore
       fp64: false,
-      rounded: this.rounded,
+      jointRounded: this.jointRounded,
+      capRounded: this.capRounded,
       pickable: true,
       sizeScale: this.arrowSize || 6,
       parameters: {
@@ -86,12 +95,10 @@ export default class SegmentsLayer extends NebulaLayer {
         blendEquation: GL.MAX,
       },
       getPath: (nf: any) => nf.geoJson.geometry.coordinates,
-      // @ts-ignore
       getColor: (nf: any) => toDeckColor(nf.style.lineColor, defaultColor),
       getWidth: (nf: any) => nf.style.lineWidthMeters || 1,
       getZLevel: (nf: any) => nf.style.zLevel * 255,
       getDirection: (nf: any) => NEBULA_TO_DECK_DIRECTIONS[nf.style.arrowStyle],
-      // @ts-ignore
       getMarkerColor: (nf: any) => toDeckColor(nf.style.arrowColor, defaultColor),
       getMarkerPercentages: this._calcMarkerPercentages,
       updateTriggers: { all: updateTrigger },

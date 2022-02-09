@@ -52,5 +52,5 @@ render() {
 ## See Also
 
 - [EditableGeoJsonLayer](/docs/api-reference/layers/editable-geojson-layer)
-- [Using deck.gl with React](https://deck.gl/#/documentation/getting-started/using-with-react)
-- [Using deck.gl with a Base Map](https://deck.gl/#/documentation/getting-started/using-with-base-map)
+- [Using deck.gl with React](https://deck.gl/docs/get-started/using-with-react)
+- [Using deck.gl with a Base Map](https://deck.gl/docs/get-started/using-with-base-map)

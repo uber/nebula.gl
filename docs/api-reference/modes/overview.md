@@ -12,6 +12,11 @@ No edits are possible, but selection is still possible.
 
 User can move existing points, add intermediate points along lines, and remove points.
 
+The following options can be provided in the `modeConfig` object for ModifyMode:
+
+- `lockRectangles` (optional): `<boolean>`
+  - If `true`, features with `properties.shape === 'Rectangle'` will preserve rectangular shape.
+
 ### Edit Context
 
 `editContext` argument to the `onEdit` callback contains the following properties:
@@ -36,6 +41,10 @@ User can rotate a feature about its centroid by clicking and dragging the select
 
 The user can move a feature by selecting one or more features and dragging anywhere within the screen.
 _Additionally, the user can initiate snapping by clicking and dragging the selected feature's vertex handles. If the vertex handle is close enough to another feature's vertex, the two features will snap together._
+The following options can be provided in the `modeConfig` object for TranslateMode:
+
+- `screenSpace` (optional): `<boolean>`
+  - If `true`, the features will be translated without distortion in screen space.
 
 ## [TransformMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/transform-mode.ts)
 
@@ -107,6 +116,17 @@ The following options can be provided in the `modeConfig` object:
 ## [DrawRectangleMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/draw-rectangle-mode.ts)
 
 User can draw a new rectangular `Polygon` feature by clicking two opposing corners of the rectangle.
+
+### ModeConfig
+
+The following options can be provided in the `modeConfig` object:
+
+- `dragToDraw` (optional): `boolean`
+  - If `true`, user can click and drag instead of clicking twice. Note however, that the user will not be able to pan the map while drawing.
+
+## [DrawRectangleFromCenterMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/draw-rectangle-from-center-mode.ts)
+
+User can draw a new rectangular `Polygon` feature by clicking the center then along a corner of the rectangle.
 
 ### ModeConfig
 

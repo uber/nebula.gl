@@ -90,6 +90,13 @@ User can resize an existing circular Polygon feature by clicking and dragging al
 
 User can draw a new `Polygon` feature by clicking positions to add then closing the polygon (or double-clicking).
 
+### ModeConfig
+
+The following options can be provided in the `modeConfig` object:
+
+- `preventOverlappingLines` (optional): `boolean`
+  - If `true`, it will not be possible to add a polygon point if the current line overlaps any other lines on the same polygon.
+
 ### Edit Context
 
 `editContext` argument to the `onEdit` callback contains the following properties:

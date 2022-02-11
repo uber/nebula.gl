@@ -346,7 +346,9 @@ export default class Example extends React.Component<
   };
 
   _download = () => {
-    const blob = new Blob([JSON.stringify(this.state.testFeatures)], { type: 'octet/stream' });
+    const blob = new Blob([JSON.stringify(this.state.testFeatures)], {
+      type: 'octet/stream',
+    });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = 'nebula.geojson';
@@ -469,11 +471,17 @@ export default class Example extends React.Component<
               onClick={() => {
                 if (this.state.modeConfig && this.state.modeConfig.booleanOperation === operation) {
                   this.setState({
-                    modeConfig: { ...(this.state.modeConfig || {}), booleanOperation: null },
+                    modeConfig: {
+                      ...(this.state.modeConfig || {}),
+                      booleanOperation: null,
+                    },
                   });
                 } else {
                   this.setState({
-                    modeConfig: { ...(this.state.modeConfig || {}), booleanOperation: operation },
+                    modeConfig: {
+                      ...(this.state.modeConfig || {}),
+                      booleanOperation: operation,
+                    },
                   });
                 }
               }}
@@ -532,7 +540,9 @@ export default class Example extends React.Component<
             type="checkbox"
             checked={Boolean(this.state.modeConfig && this.state.modeConfig.lock90Degree)}
             onChange={(event) =>
-              this.setState({ modeConfig: { lock90Degree: Boolean(event.target.checked) } })
+              this.setState({
+                modeConfig: { lock90Degree: Boolean(event.target.checked) },
+              })
             }
           />
         </ToolboxControl>
@@ -593,6 +603,30 @@ export default class Example extends React.Component<
     );
   }
 
+  _renderDrawPolygonModeControls() {
+    return (
+      <ToolboxRow key="draw-polygon">
+        <ToolboxTitle>Prevent overlapping lines</ToolboxTitle>
+        <ToolboxControl>
+          <input
+            type="checkbox"
+            checked={Boolean(
+              this.state.modeConfig && this.state.modeConfig.preventOverlappingLines
+            )}
+            onChange={(event) =>
+              this.setState({
+                modeConfig: {
+                  ...(this.state.modeConfig || {}),
+                  preventOverlappingLines: Boolean(event.target.checked),
+                },
+              })
+            }
+          />
+        </ToolboxControl>
+      </ToolboxRow>
+    );
+  }
+
   _renderModeConfigControls() {
     const controls = [];
 
@@ -614,6 +648,9 @@ export default class Example extends React.Component<
     }
     if (this.state.mode === MeasureDistanceMode) {
       controls.push(this._renderMeasureDistanceControls());
+    }
+    if (this.state.mode === DrawPolygonMode) {
+      controls.push(this._renderDrawPolygonModeControls());
     }
 
     return controls;
@@ -731,21 +768,30 @@ export default class Example extends React.Component<
           <ToolboxControl>
             <ToolboxButton
               onClick={() =>
-                this.setState({ selectedFeatureIndexes: [], selectionTool: SELECTION_TYPE.NONE })
+                this.setState({
+                  selectedFeatureIndexes: [],
+                  selectionTool: SELECTION_TYPE.NONE,
+                })
               }
             >
               Clear Selection
             </ToolboxButton>
             <ToolboxButton
               onClick={() =>
-                this.setState({ mode: ViewMode, selectionTool: SELECTION_TYPE.RECTANGLE })
+                this.setState({
+                  mode: ViewMode,
+                  selectionTool: SELECTION_TYPE.RECTANGLE,
+                })
               }
             >
               Rect Select
             </ToolboxButton>
             <ToolboxButton
               onClick={() =>
-                this.setState({ mode: ViewMode, selectionTool: SELECTION_TYPE.POLYGON })
+                this.setState({
+                  mode: ViewMode,
+                  selectionTool: SELECTION_TYPE.POLYGON,
+                })
               }
             >
               Lasso Select
@@ -1026,7 +1072,9 @@ export default class Example extends React.Component<
           // @ts-ignore
           selectionType: this.state.selectionTool,
           onSelect: ({ pickingInfos }) => {
-            this.setState({ selectedFeatureIndexes: pickingInfos.map((pi) => pi.index) });
+            this.setState({
+              selectedFeatureIndexes: pickingInfos.map((pi) => pi.index),
+            });
           },
           layerIds: ['geojson'],
 

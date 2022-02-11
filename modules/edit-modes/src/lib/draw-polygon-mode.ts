@@ -1,3 +1,5 @@
+import lineIntersect from '@turf/line-intersect';
+import { lineString as turfLineString } from '@turf/helpers';
 import {
   ClickEvent,
   PointerMoveEvent,
@@ -79,14 +81,27 @@ export class DrawPolygonMode extends GeoJsonEditMode {
   handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>) {
     const { picks } = event;
     const clickedEditHandle = getPickedEditHandle(picks);
+    const clickSequence = this.getClickSequence();
+
+    let overlappingLines = false;
+    if (clickSequence.length > 2 && props.modeConfig && props.modeConfig.preventOverlappingLines) {
+      const currentLine = turfLineString([
+        clickSequence[clickSequence.length - 1],
+        event.mapCoords,
+      ]);
+      const otherLines = turfLineString([...clickSequence.slice(0, clickSequence.length - 1)]);
+      const intersectingPoints = lineIntersect(currentLine, otherLines);
+      if (intersectingPoints.features.length > 0) {
+        overlappingLines = true;
+      }
+    }
 
     let positionAdded = false;
-    if (!clickedEditHandle) {
+    if (!clickedEditHandle && !overlappingLines) {
       // Don't add another point right next to an existing one
       this.addClickSequence(event);
       positionAdded = true;
     }
-    const clickSequence = this.getClickSequence();
 
     if (
       clickSequence.length > 2 &&
@@ -121,6 +136,7 @@ export class DrawPolygonMode extends GeoJsonEditMode {
       });
     }
   }
+
   handleKeyUp(event: KeyboardEvent, props: ModeProps<FeatureCollection>) {
     if (event.key === 'Enter') {
       const clickSequence = this.getClickSequence();
@@ -138,6 +154,7 @@ export class DrawPolygonMode extends GeoJsonEditMode {
       }
     }
   }
+
   handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>) {
     props.onUpdateCursor('cell');
     super.handlePointerMove(event, props);

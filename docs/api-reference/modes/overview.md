@@ -146,6 +146,10 @@ The following options can be provided in the `modeConfig` object:
 
 User can draw a new rectangular `Polygon` feature by clicking three corners of the rectangle.
 
+## [DrawSquareMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/draw-square-mode.ts)
+
+User can draw a new square-shaped `Polygon` feature by clicking two opposing corners of the square.
+
 ## [DrawSquareFromCenterMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/draw-square-from-center-mode.ts)
 
 User can draw a new square-shaped `Polygon` feature by clicking the center and then along one of the corners of the square.

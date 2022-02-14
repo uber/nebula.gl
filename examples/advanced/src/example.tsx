@@ -89,7 +89,10 @@ const ALL_MODES: any = [
     category: 'View',
     modes: [
       { label: 'View', mode: ViewMode },
-      { label: 'Measure Distance', mode: MeasureDistanceMode },
+      {
+        label: 'Measure Distance',
+        mode: MeasureDistanceMode,
+      },
       { label: 'Measure Area', mode: MeasureAreaMode },
       { label: 'Measure Angle', mode: MeasureAngleMode },
     ],
@@ -602,6 +605,21 @@ export default class Example extends React.Component<
             <option value="degrees">degrees</option>
             <option value="radians">radians</option>
           </select>
+        </ToolboxControl>
+
+        <ToolboxTitle>Center Tooltips on Line</ToolboxTitle>
+        <ToolboxControl>
+          <input
+            type="checkbox"
+            checked={Boolean(this.state.modeConfig && this.state.modeConfig.centerTooltipsOnLine)}
+            onChange={(event) => {
+              const modeConfig = {
+                ...this.state.modeConfig,
+                centerTooltipsOnLine: Boolean(event.target.checked),
+              };
+              this.setState({ modeConfig });
+            }}
+          />
         </ToolboxControl>
       </ToolboxRow>
     );

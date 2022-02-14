@@ -8,6 +8,11 @@ import {
   createKeyboardEvent,
 } from '../test-utils';
 
+const expectToBeCloseToArray = (actual, expected) => {
+  expect(actual.length).toBe(expected.length);
+  actual.forEach((x, index) => expect(x).toBeCloseTo(expected[index], 1));
+};
+
 describe('move without click', () => {
   let mode;
   beforeEach(() => {
@@ -44,6 +49,20 @@ describe('one click', () => {
   });
 });
 
+describe('one click - centerTooltipsOnLine = true', () => {
+  let mode;
+  const props = { modeConfig: { centerTooltipsOnLine: true } };
+  beforeEach(() => {
+    mode = new MeasureDistanceMode();
+    mode.handleClick(createClickEvent([1, 2]), createFeatureCollectionProps(props));
+  });
+
+  it('tooltip is placed at [1,2]', () => {
+    const tooltips = mode.getTooltips(createFeatureCollectionProps(props));
+    expect(tooltips[0].position).toEqual([1, 2]);
+  });
+});
+
 describe('one click + pointer move', () => {
   let mode;
   beforeEach(() => {
@@ -60,6 +79,21 @@ describe('one click + pointer move', () => {
   it('tooltip contains distance', () => {
     const tooltips = mode.getTooltips(createFeatureCollectionProps());
     expect(tooltips).toMatchSnapshot();
+  });
+});
+
+describe('one click + pointer move - centerTooltipsOnLine = true', () => {
+  let mode;
+  const props = { modeConfig: { centerTooltipsOnLine: true } };
+  beforeEach(() => {
+    mode = new MeasureDistanceMode();
+    mode.handleClick(createClickEvent([1, 2]), createFeatureCollectionProps(props));
+    mode.handlePointerMove(createPointerMoveEvent([1, 4]), createFeatureCollectionProps(props));
+  });
+
+  it('tooltips are on center of their respective line', () => {
+    const tooltips = mode.getTooltips(createFeatureCollectionProps(props));
+    expect(tooltips[0].position).toEqual([1, 3]);
   });
 });
 
@@ -101,6 +135,23 @@ describe('two clicks', () => {
   });
 });
 
+describe('two clicks - centerTooltipsOnLine = true', () => {
+  let mode;
+  const props = { modeConfig: { centerTooltipsOnLine: true } };
+
+  beforeEach(() => {
+    mode = new MeasureDistanceMode();
+    mode.handleClick(createClickEvent([1, 2]), createFeatureCollectionProps(props));
+    mode.handleClick(createClickEvent([1, 4]), createFeatureCollectionProps(props));
+  });
+
+  it('tooltips are on center of their respective line', () => {
+    const tooltips = mode.getTooltips(createFeatureCollectionProps(props));
+    expect(tooltips[0].position).toEqual([1, 3]);
+    expect(tooltips[1].position).toEqual([1, 4]);
+  });
+});
+
 describe('two clicks + pointer move', () => {
   let mode;
   beforeEach(() => {
@@ -118,6 +169,24 @@ describe('two clicks + pointer move', () => {
   it('tooltip contains distance', () => {
     const tooltips = mode.getTooltips(createFeatureCollectionProps());
     expect(tooltips).toMatchSnapshot();
+  });
+});
+
+describe('two clicks + pointer move - centerTooltipsOnLine = true', () => {
+  let mode;
+  const props = { modeConfig: { centerTooltipsOnLine: true } };
+
+  beforeEach(() => {
+    mode = new MeasureDistanceMode();
+    mode.handleClick(createClickEvent([1, 2]), createFeatureCollectionProps(props));
+    mode.handleClick(createClickEvent([1, 4]), createFeatureCollectionProps(props));
+    mode.handlePointerMove(createPointerMoveEvent([5, 4]), createFeatureCollectionProps(props));
+  });
+
+  it('tooltips are on center of their respective line', () => {
+    const tooltips = mode.getTooltips(createFeatureCollectionProps(props));
+    expect(tooltips[0].position).toEqual([1, 3]);
+    expectToBeCloseToArray(tooltips[1].position, [3, 4]);
   });
 });
 
@@ -149,6 +218,26 @@ describe('three clicks + pointer move', () => {
   it('tooltip contains distance', () => {
     const tooltips = mode.getTooltips(createFeatureCollectionProps());
     expect(tooltips).toMatchSnapshot();
+  });
+});
+
+describe('three clicks + pointer move - centerTooltipsOnLine = true', () => {
+  let mode;
+  const props = { modeConfig: { centerTooltipsOnLine: true } };
+
+  beforeEach(() => {
+    mode = new MeasureDistanceMode();
+    mode.handleClick(createClickEvent([1, 2]), createFeatureCollectionProps(props));
+    mode.handleClick(createClickEvent([1, 4]), createFeatureCollectionProps(props));
+    mode.handleClick(createClickEvent([5, 4]), createFeatureCollectionProps(props));
+    mode.handlePointerMove(createPointerMoveEvent([11, 8]), createFeatureCollectionProps(props));
+  });
+
+  it('tooltips are on center of their respective line', () => {
+    const tooltips = mode.getTooltips(createFeatureCollectionProps(props));
+    expect(tooltips[0].position).toEqual([1, 3]);
+    expectToBeCloseToArray(tooltips[1].position, [3, 4]);
+    expectToBeCloseToArray(tooltips[2].position, [8, 6]);
   });
 });
 

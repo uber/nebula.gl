@@ -229,8 +229,14 @@ The following options can be provided in the `modeConfig` object:
   - Default: `(distance) => parseFloat(distance).toFixed(2) + units`
 
 - `measurementCallback` (Function, optional)
+
   - Function to call as measurements are calculated
   - Default: `undefined`
+
+- `centerTooltipsOnLine` (Boolean, optional)
+
+  - If true, the measurement tooltips appear on the middle of their respective line segments rather than at the end
+  - Default: `false`
 
 ## [MeasureAreaMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/measure-area-mode.ts)
 

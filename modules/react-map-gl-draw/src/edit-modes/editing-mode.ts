@@ -180,6 +180,7 @@ export default class EditingMode extends BaseMode {
       return null;
     }
 
+    // @ts-ignore
     let newCoordinates = [...coordinates];
 
     switch (type) {

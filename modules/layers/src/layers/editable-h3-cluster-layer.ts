@@ -3,8 +3,9 @@
 import { H3ClusterLayer } from '@deck.gl/geo-layers';
 import { ViewMode } from '@nebula.gl/edit-modes';
 import { polyfill, geoToH3 } from 'h3-js';
+import { PROJECTED_PIXEL_SIZE_MULTIPLIER } from '../constants';
 import EditableGeoJsonLayer from './editable-geojson-layer';
-import EditableLayer from './editable-layer';
+import EditableLayer, { EditableLayerProps } from './editable-layer';
 
 const DEFAULT_EDIT_MODE = ViewMode;
 const DEFAULT_H3_RESOLUTION = 9;
@@ -13,10 +14,25 @@ const EMPTY_FEATURE_COLLECTION = {
   features: [],
 };
 
-const defaultProps = {
+export interface EditableH3ClusterLayerProps<D> extends EditableLayerProps<D> {
+  resolution?: number;
+  mode?: any;
+  modeConfig?: any;
+  selectedIndexes?: number[];
+  getEditedCluster?: (updatedHexagons: any[], existingCluster: any) => any;
+  getHexagons?: (d) => number[];
+  onEdit?: (updatedData?, editType?: string, featureIndexes?: number[], editContext?) => void;
+  filled?: boolean;
+  stroked?: boolean;
+  lineWidthScale?: number;
+  lineWidthMinPixels?: number;
+  lineWidthMaxPixels?: number;
+  lineWidthUnits?: string;
+}
+
+const defaultProps: EditableH3ClusterLayerProps<any> = {
   mode: DEFAULT_EDIT_MODE,
 
-  // EditableGeoJsonLayer
   ...EditableGeoJsonLayer.defaultProps,
 
   // h3 layer
@@ -24,7 +40,7 @@ const defaultProps = {
   selectedIndexes: [],
   filled: false,
   stroked: true,
-  lineWidthScale: 1,
+  lineWidthScale: PROJECTED_PIXEL_SIZE_MULTIPLIER,
   lineWidthMinPixels: 1,
   lineWidthMaxPixels: Number.MAX_SAFE_INTEGER,
   lineWidthUnits: 'pixels',
@@ -43,7 +59,10 @@ const defaultProps = {
   resolution: DEFAULT_H3_RESOLUTION,
 };
 
-export default class EditableH3ClusterLayer extends EditableLayer {
+export default class EditableH3ClusterLayer extends EditableLayer<
+  any,
+  EditableH3ClusterLayerProps<any>
+> {
   static layerName = 'EditableH3ClusterLayer';
   static defaultProps = defaultProps;
 
@@ -187,7 +206,7 @@ export default class EditableH3ClusterLayer extends EditableLayer {
   }
 
   getCursor({ isDragging }: { isDragging: boolean }) {
-    let { cursor } = this.state;
+    let { cursor } = this.state || {};
     if (!cursor) {
       // default cursor
       cursor = isDragging ? 'grabbing' : 'grab';

@@ -1,3 +1,4 @@
+import { CSSProperties } from 'react';
 import { WebMercatorViewport } from 'viewport-mercator-project';
 import {
   ModeProps as BaseModeProps,
@@ -16,6 +17,8 @@ export type Id = string | number;
 export type RenderState = RENDER_STATE;
 export type GeoJsonType = GEOJSON_TYPE;
 export type RenderType = RENDER_TYPE;
+
+export type Position = [number, number] | [number, number, number];
 
 export type SelectAction = {
   selectedFeature: Feature | null | undefined;
@@ -44,6 +47,7 @@ export type EditorProps = {
   editHandleShape?: Function | string;
   editHandleStyle?: Function | any;
   featureStyle?: Function | any;
+  tooltipStyle?: Function | CSSProperties;
   featuresDraggable?: boolean | null | undefined;
   onUpdate?: Function;
   onSelect?: Function;

@@ -11,8 +11,10 @@ import {
   Position,
   Point,
   LineString,
+  Polygon,
   FeatureOf,
   FeatureWithProps,
+  AnyCoordinates,
 } from './geojson-types';
 
 export type NearestPointType = FeatureWithProps<Point, { dist: number; index: number }>;
@@ -456,4 +458,56 @@ function getEditHandlesForCoordinates(
     });
   }
   return editHandles;
+}
+
+/**
+ * Calculates coordinates for a feature preserving rectangular shape.
+ * @param feature Feature before modification.
+ * @param editHandleIndex Index of the point to modify.
+ * @param mapCoords New position for the point.
+ * @returns Updated coordinates.
+ */
+export function updateRectanglePosition(
+  feature: FeatureOf<Polygon>,
+  editHandleIndex: number,
+  mapCoords: Position
+): Position[][] {
+  const coordinates = feature.geometry.coordinates;
+  if (!coordinates) {
+    return null;
+  }
+
+  const points = coordinates[0].slice(0, 4);
+  points[editHandleIndex % 4] = mapCoords;
+
+  const p0 = points[(editHandleIndex + 2) % 4];
+  const p2 = points[editHandleIndex % 4];
+  points[(editHandleIndex + 1) % 4] = [p2[0], p0[1]];
+  points[(editHandleIndex + 3) % 4] = [p0[0], p2[1]];
+
+  return [[...points, points[0]]];
+}
+
+/** Creates a copy of feature's coordinates.
+ * Each position in coordinates is transformed by calling the provided function.
+ * @param coords Coordinates of a feature.
+ * @param callback A function to transform each coordinate.
+ * @retuns Transformed coordinates.
+ */
+export function mapCoords(
+  coords: AnyCoordinates,
+  callback: (coords: Position) => Position
+): AnyCoordinates {
+  if (typeof coords[0] === 'number') {
+    if (!isNaN(coords[0]) && isFinite(coords[0])) {
+      return callback(coords as Position);
+    }
+    return coords;
+  }
+
+  return (coords as Position[])
+    .map((coord) => {
+      return mapCoords(coord, callback) as Position;
+    })
+    .filter(Boolean);
 }

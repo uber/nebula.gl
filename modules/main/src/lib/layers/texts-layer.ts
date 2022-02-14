@@ -2,6 +2,7 @@ import { TextLayer } from '@deck.gl/layers';
 
 import NebulaLayer from '../nebula-layer';
 import { toDeckColor } from '../utils';
+import { PROJECTED_PIXEL_SIZE_MULTIPLIER } from '../constants';
 import DeckCache from '../deck-renderer/deck-cache';
 
 export default class TextsLayer extends NebulaLayer {
@@ -25,13 +26,16 @@ export default class TextsLayer extends NebulaLayer {
       fp64: false,
       pickable: false,
 
+      // @ts-ignore
       getText: (nf) => nf.style.text,
+      // @ts-ignore
       getPosition: (nf) => nf.geoJson.geometry.coordinates,
       // @ts-ignore
       getColor: (nf) => toDeckColor(nf.style.fillColor) || defaultColor,
 
       // TODO: layer should offer option to scale with zoom
       sizeScale: 1 / Math.pow(2, 20 - zoom),
+      getSize: PROJECTED_PIXEL_SIZE_MULTIPLIER,
 
       updateTriggers: { all: updateTrigger },
 

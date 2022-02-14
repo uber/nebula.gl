@@ -38,6 +38,7 @@ export enum ELEMENT_TYPE {
   FILL = 'fill',
   SEGMENT = 'segment',
   EDIT_HANDLE = 'editHandle',
+  TOOLTIP = 'tooltip',
 }
 
 export enum EDIT_TYPE {

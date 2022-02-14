@@ -1,3 +1,4 @@
+import { CSSProperties } from 'react';
 import { WebMercatorViewport } from 'viewport-mercator-project';
 import {
   ModeProps as BaseModeProps,
@@ -46,6 +47,7 @@ export type EditorProps = {
   editHandleShape?: Function | string;
   editHandleStyle?: Function | any;
   featureStyle?: Function | any;
+  tooltipStyle?: Function | CSSProperties;
   featuresDraggable?: boolean | null | undefined;
   onUpdate?: Function;
   onSelect?: Function;

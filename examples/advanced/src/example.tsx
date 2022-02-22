@@ -995,7 +995,7 @@ export default class Example extends React.Component<
       _subLayerProps = Object.assign(_subLayerProps, {
         geojson: {
           _subLayerProps: {
-            'line-strings': {
+            linestrings: {
               type: PathMarkerLayer,
               getMarkerColor: (x) => [255, 255, 255, 255],
               sizeScale: 1500,

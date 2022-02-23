@@ -4,7 +4,19 @@ _All notable changes to this project will be documented in this file. This proje
 
 <!-- INSERT HERE -->
 
-## [v1.0.2-alpha.1](https://github.com/uber/nebula.gl/compare/v1.0.2-alpha.0...v1.0.2-alpha.1) - TBD
+## [v1.0.2-alpha.2](https://github.com/uber/nebula.gl/compare/v1.0.2-alpha.1...v1.0.2-alpha.2) - Feb 22, 2022
+
+### Changes
+
+- Add option to prevent overlapping lines when drawing a polygon (#549)
+- Add draw square mode (#528)
+- Support for tooltips for measure modes in react-map-gl-draw (#601)
+- Update the basic usage documentation (#606)
+- Add option to MeasureDistanceMode to center tooltips on line (#642)
+- Fix incorrectly positioned arrows in path-marker-layer (#730)
+- Fix example for path-marker-layer (#728)
+
+## [v1.0.2-alpha.1](https://github.com/uber/nebula.gl/compare/v1.0.2-alpha.0...v1.0.2-alpha.1) - Feb 9, 2022
 
 ### Changes
 

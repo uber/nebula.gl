@@ -81,6 +81,12 @@ function createMarkerAlongPath({ path, percentage, lineLength, color, object, pr
     previousDistance = currentDistance;
   }
 
+  // If reached the end of the loop without exiting early,
+  // undo the final increment to avoid a null-pointer exception
+  if (i === path.length - 1) {
+    i -= 1;
+  }
+
   const vDirection = path[i + 1].clone().subtract(path[i]).normalize();
   const along = distanceAlong - previousDistance;
   const vCenter = vDirection.clone().multiply(new Vector2(along, along)).add(path[i]);

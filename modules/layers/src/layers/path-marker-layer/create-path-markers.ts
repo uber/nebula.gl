@@ -72,8 +72,8 @@ function createMarkerAlongPath({ path, percentage, lineLength, color, object, pr
   const distanceAlong = lineLength * percentage;
   let currentDistance = 0;
   let previousDistance = 0;
-
-  for (let i = 0; i < path.length - 1; i++) {
+  let i = 0;
+  for (i = 0; i < path.length - 1; i++) {
     currentDistance += path[i].distance(path[i + 1]);
     if (currentDistance > distanceAlong) {
       break;
@@ -81,14 +81,17 @@ function createMarkerAlongPath({ path, percentage, lineLength, color, object, pr
     previousDistance = currentDistance;
   }
 
-  const lastPoint = path[path.length - 1];
-  const beforeLastPoint = path[path.length - 2];
+  // If reached the end of the loop without exiting early,
+  // undo the final increment to avoid a null-pointer exception
+  if (i === path.length - 1) {
+    i -= 1;
+  }
 
-  const vDirection = lastPoint.clone().subtract(beforeLastPoint).normalize();
+  const vDirection = path[i + 1].clone().subtract(path[i]).normalize();
   const along = distanceAlong - previousDistance;
-  const vCenter = vDirection.clone().multiply(new Vector2(along, along)).add(beforeLastPoint);
+  const vCenter = vDirection.clone().multiply(new Vector2(along, along)).add(path[i]);
 
-  const vDirection2 = new Vector2(projectFlat(lastPoint)).subtract(projectFlat(beforeLastPoint));
+  const vDirection2 = new Vector2(projectFlat(path[i + 1])).subtract(projectFlat(path[i]));
 
   const angle = (vDirection2.verticalAngle() * 180) / Math.PI;
 

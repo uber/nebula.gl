@@ -1,12 +1,5 @@
 import * as React from 'react';
 
-const styles = {
-  item: {
-    position: 'absolute',
-    userSelect: 'none',
-  },
-};
-
 type Props = {
   // Injected by HtmlOverlay
   x?: number;
@@ -23,9 +16,10 @@ export default class HtmlOverlayItem extends React.Component<Props> {
     const { x, y, children, style, coordinates, ...props } = this.props;
 
     return (
-      //@ts-ignore
-      <div style={{ ...styles.item, ...style, left: x, top: y }} {...props}>
-        {children}
+      <div style={{ transform: `translate(${x}px, ${y}px)` }}>
+        <div style={{ position: 'absolute', userSelect: 'none', ...style }} {...props}>
+          {children}
+        </div>
       </div>
     );
   }

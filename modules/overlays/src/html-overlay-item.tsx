@@ -16,6 +16,9 @@ export default class HtmlOverlayItem extends React.Component<Props> {
     const { x, y, children, style, coordinates, ...props } = this.props;
 
     return (
+      // Using transform translate to position overlay items will result in a smooth zooming
+      // effect, whereas using the top/left css properties will cause overlay items to
+      // jiggle when zooming
       <div style={{ transform: `translate(${x}px, ${y}px)` }}>
         <div style={{ position: 'absolute', userSelect: 'none', ...style }} {...props}>
           {children}

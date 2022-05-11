@@ -14,7 +14,7 @@ type Props = {
 export default class HtmlOverlayItem extends React.Component<Props> {
   render() {
     const { x, y, children, style, coordinates, ...props } = this.props;
-    const { zIndex, ...remainingStyle } = style || {};
+    const { zIndex = 'auto', ...remainingStyle } = style || {};
 
     return (
       // Using transform translate to position overlay items will result in a smooth zooming

@@ -831,6 +831,13 @@
     mjolnir.js "^2.5.0"
     probe.gl "^3.4.0"
 
+"@deck.gl/extensions@^8.6.0":
+  version "8.7.10"
+  resolved "https://registry.yarnpkg.com/@deck.gl/extensions/-/extensions-8.7.10.tgz#fcc6c9dd3fab1f1d9fe13831b9eb82487a5f24b1"
+  integrity sha512-pNX/9UDliu+pqabz/hMNnr1gJ+41KqDiKwqkbPBWz8cqsufZqLCo3Z+gJhe9otLHCqwPueeD+sFSDFzru5Dxkw==
+  dependencies:
+    "@luma.gl/shadertools" "^8.5.10"
+
 "@deck.gl/geo-layers@^8.6.0":
   version "8.6.0"
   resolved "https://registry.yarnpkg.com/@deck.gl/geo-layers/-/geo-layers-8.6.0.tgz#4e77e75569746ac23bc63c2c9559e04022979951"
@@ -1575,9 +1582,9 @@ async-limiter@~1.0.0:
   integrity sha512-csOlWGAcRFJaI6m+F2WKdnMKr4HhdhFVBk0H/QbJFMCr+uO2kwohwXQPxw/9OCxp05r5ghVBFSyioixx3gfkNQ==
 
 async@^2.6.2:
-  version "2.6.3"
-  resolved "https://registry.yarnpkg.com/async/-/async-2.6.3.tgz#d72625e2344a3656e3a3ad4fa749fa83299d82ff"
-  integrity sha512-zflvls11DCy+dQWzTW2dzuilv8Z5X/pjfmZOWba6TNIVDm+2UDaJmXSOXlasHKfNBs8oo3M0aT50fDEWfKZjXg==
+  version "2.6.4"
+  resolved "https://registry.yarnpkg.com/async/-/async-2.6.4.tgz#706b7ff6084664cd7eae713f6f965433b5504221"
+  integrity sha512-mzo5dfJYwAn29PeiJ0zvwTo04zj8HDJj0Mn8TD7sno7q12prdbnasKJHhkm2c1LgrhlJ0teaea8860oxi51mGA==
   dependencies:
     lodash "^4.17.14"
 

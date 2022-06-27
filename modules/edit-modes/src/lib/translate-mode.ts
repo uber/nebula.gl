@@ -1,9 +1,9 @@
 import turfBearing from '@turf/bearing';
 import turfDistance from '@turf/distance';
-import turfTransformTranslate from '@turf/transform-translate';
-import { point } from '@turf/helpers';
+import clone from '@turf/clone';
+import { point, Feature as TurfFeature, Geometry as TurfGeometry } from '@turf/helpers';
 import WebMercatorViewport from 'viewport-mercator-project';
-import { FeatureCollection, Position } from '../geojson-types';
+import { FeatureCollection, Position, Geometry } from '../geojson-types';
 import {
   PointerMoveEvent,
   StartDraggingEvent,
@@ -14,6 +14,7 @@ import {
 import { mapCoords } from '../utils';
 import { GeoJsonEditMode, GeoJsonEditAction } from './geojson-edit-mode';
 import { ImmutableFeatureCollection } from './immutable-feature-collection';
+import { translateFromCenter } from '../translateFromCenter';
 
 export class TranslateMode extends GeoJsonEditMode {
   _geometryBeforeTranslate: FeatureCollection | null | undefined;
@@ -98,6 +99,7 @@ export class TranslateMode extends GeoJsonEditMode {
 
     const { viewport: viewportDesc, screenSpace } = props.modeConfig || {};
 
+    // move features without adapting to mercator projection
     if (viewportDesc && screenSpace) {
       const viewport = viewportDesc.project ? viewportDesc : new WebMercatorViewport(viewportDesc);
 
@@ -136,17 +138,14 @@ export class TranslateMode extends GeoJsonEditMode {
       const distanceMoved = turfDistance(p1, p2);
       const direction = turfBearing(p1, p2);
 
-      const movedFeatures = turfTransformTranslate(
-        // @ts-ignore
-        this._geometryBeforeTranslate,
-        distanceMoved,
-        direction
+      const movedFeatures = this._geometryBeforeTranslate.features.map((feature) =>
+        translateFromCenter(clone(feature as TurfFeature<TurfGeometry>), distanceMoved, direction),
       );
 
       for (let i = 0; i < selectedIndexes.length; i++) {
         const selectedIndex = selectedIndexes[i];
-        const movedFeature = movedFeatures.features[i];
-        updatedData = updatedData.replaceGeometry(selectedIndex, movedFeature.geometry);
+        const movedFeature = movedFeatures[i];
+        updatedData = updatedData.replaceGeometry(selectedIndex, movedFeature.geometry as Geometry);
       }
     }
 

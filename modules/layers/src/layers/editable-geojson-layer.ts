@@ -133,12 +133,12 @@ export interface EditableGeojsonLayerProps<D> extends EditableLayerProps<D> {
 
   getLineColor?: RGBAColor | ((feature, isSelected, mode) => RGBAColor);
   getFillColor?: RGBAColor | ((feature, isSelected, mode) => RGBAColor);
-  getRadius?: number | ((f) => number);
-  getLineWidth?: number | ((f) => number);
+  getRadius?: number | ((feature, isSelected, mode) => number);
+  getLineWidth?: number | ((feature, isSelected, mode) => number);
 
   getTentativeLineColor?: RGBAColor | ((feature, isSelected, mode) => RGBAColor);
   getTentativeFillColor?: RGBAColor | ((feature, isSelected, mode) => RGBAColor);
-  getTentativeLineWidth?: number | ((f) => number);
+  getTentativeLineWidth?: number | ((feature, isSelected, mode) => number);
 
   editHandleType?: string;
 

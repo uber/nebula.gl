@@ -60,6 +60,13 @@ export class DrawPolygonByDraggingMode extends DrawPolygonMode {
     if (!clickedEditHandle) {
       // Don't add another point right next to an existing one.
       this.addClickSequence(event);
+      props.onEdit({
+        updatedData: props.data,
+        editType: 'addTentativePosition',
+        editContext: {
+          position: event.mapCoords,
+        },
+      });
     }
   }
 

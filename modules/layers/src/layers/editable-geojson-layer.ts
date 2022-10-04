@@ -583,7 +583,7 @@ export default class EditableGeoJsonLayer extends EditableLayer<
   }
 
   getCursor({ isDragging }: { isDragging: boolean }) {
-    if (this.state == null) {
+    if (this.state === null || this.state === undefined) {
       // Layer in 'Awaiting state'
       return null;
     }

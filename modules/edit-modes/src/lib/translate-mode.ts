@@ -12,9 +12,9 @@ import {
   ModeProps,
 } from '../types';
 import { mapCoords } from '../utils';
+import { translateFromCenter } from '../translateFromCenter';
 import { GeoJsonEditMode, GeoJsonEditAction } from './geojson-edit-mode';
 import { ImmutableFeatureCollection } from './immutable-feature-collection';
-import { translateFromCenter } from '../translateFromCenter';
 
 export class TranslateMode extends GeoJsonEditMode {
   _geometryBeforeTranslate: FeatureCollection | null | undefined;
@@ -139,7 +139,7 @@ export class TranslateMode extends GeoJsonEditMode {
       const direction = turfBearing(p1, p2);
 
       const movedFeatures = this._geometryBeforeTranslate.features.map((feature) =>
-        translateFromCenter(clone(feature as TurfFeature<TurfGeometry>), distanceMoved, direction),
+        translateFromCenter(clone(feature as TurfFeature<TurfGeometry>), distanceMoved, direction)
       );
 
       for (let i = 0; i < selectedIndexes.length; i++) {

@@ -88,7 +88,7 @@
     "eslint-plugin-react-hooks": "3.0.0",
     "husky": "^4.2.5",
     "jest": "25.2.7",
-    "jsdom": "^9.11.0",
+    "jsdom": "^16.5.0",
     "lerna": "3.20.2",
     "module-alias": "^2.0.0",
     "pre-commit": "^1.2.2",

@@ -40,8 +40,6 @@
     "test-fast": "yarn test-node",
     "test-ci": "yarn lint && node test/node-ci.js",
     "test-cover": "NODE_ENV=test tape -r babel-register test/node.js && nyc report",
-    "test-node": "(cd ../.. && node test/node.js)",
-    "test-dist": "(cd ../.. && node test/node-dist.js)",
     "test-browser": "webpack-dev-server --env.test --progress --hot --open",
     "jest": "(cd ../.. && jest src)",
     "bench": "node test/bench/node.js",

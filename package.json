@@ -30,17 +30,11 @@
     "prepublish": "yarn run build",
     "publish-prod": "yarn run bootstrap && yarn run build && yarn run test && lerna publish --force-publish --exact && ./scripts/changelog.sh",
     "test": "yarn run lint && yarn run build && yarn run types-check && yarn run jest",
-    "test-r": "yarn run lint && yarn run build && yarn run test-node && (cd test/rendering-test && node node-rendering.js)",
+    "test-r": "yarn run lint && yarn run build",
     "test-fast": "yarn run test-node",
     "test-ci": "yarn run lint && yarn run prettier-diff && yarn run build && yarn run types-check && yarn run jest-cover",
-    "test-node": "node test/node.js",
-    "test-dist": "node test/node-dist.js",
-    "test-browser": "webpack-dev-server --env.test --progress --hot --open",
     "jest": "jest",
     "jest-cover": "jest --coverage",
-    "bench": "node test/bench/node.js",
-    "bench-browser": "webpack-dev-server --env.bench --progress --hot --open",
-    "test-rendering": "(cd test/rendering-test && webpack-dev-server --config webpack.config.test-rendering.js --progress --hot --open)",
     "publish-docs": "./publish-docs.sh",
     "postinstall": "scripts/copyDeckglTypes.sh"
   },
@@ -88,7 +82,7 @@
     "eslint-plugin-react-hooks": "3.0.0",
     "husky": "^4.2.5",
     "jest": "25.2.7",
-    "jsdom": "^9.11.0",
+    "jsdom": "^16.5.0",
     "lerna": "3.20.2",
     "module-alias": "^2.0.0",
     "pre-commit": "^1.2.2",
@@ -109,9 +103,7 @@
     "transform-loader": "^0.2.3",
     "ts-jest": "25.3.1",
     "ts-loader": "^7.0.0",
-    "typescript": "3.8.3",
-    "webpack": "^2.4.0",
-    "webpack-dev-server": "^3.1.14"
+    "typescript": "3.8.3"
   },
   "resolutions": {
     "indefinitely-typed": "1.1.0"

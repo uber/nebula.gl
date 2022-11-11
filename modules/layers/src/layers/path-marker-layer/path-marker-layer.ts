@@ -1,4 +1,4 @@
-import { CompositeLayer, COORDINATE_SYSTEM } from '@deck.gl/core';
+import { CompositeLayer, COORDINATE_SYSTEM } from '@deck.gl/core/typed';
 import { ScatterplotLayer } from '@deck.gl/layers';
 import { SimpleMeshLayer } from '@deck.gl/mesh-layers';
 import PathOutlineLayer, { PathOutlineLayerProps } from '../path-outline-layer/path-outline-layer';
@@ -14,7 +14,7 @@ const ARROW_TAIL_WIDTH = 0.05;
 
 const DEFAULT_MARKER_LAYER = SimpleMeshLayer;
 
-export interface PathMarkerLayerProps<D> extends PathOutlineLayerProps<D> {
+export type PathMarkerLayerProps<DataT> = PathOutlineLayerProps<DataT> & {
   getDirection?: (x) => any;
   getMarkerColor?: (x) => number[];
   getMarkerPercentages?: (x: any, info: any) => number[];
@@ -49,7 +49,10 @@ const defaultProps: PathMarkerLayerProps<any> = Object.assign({}, PathOutlineLay
     lineLength > DISTANCE_FOR_MULTI_ARROWS ? [0.25, 0.5, 0.75] : [0.5],
 });
 
-export default class PathMarkerLayer extends CompositeLayer<any, PathMarkerLayerProps<any>> {
+export default class PathMarkerLayer<
+DataT = any,
+ExtraPropsT = {}
+> extends CompositeLayer<ExtraPropsT & Required<PathMarkerLayerProps<DataT>>> {
   static layerName = 'PathMarkerLayer';
   static defaultProps = defaultProps;
 
@@ -110,7 +113,7 @@ export default class PathMarkerLayer extends CompositeLayer<any, PathMarkerLayer
     const { highlightPoint, highlightIndex } = this.props;
     if (highlightPoint && highlightIndex >= 0) {
       const object = this.props.data[highlightIndex];
-      const points = this.props.getPath(object);
+      const points = this.props.getPath(object, null);
       const { point } = getClosestPointOnPolyline({ points, p: highlightPoint });
       this.state.closestPoints = [
         {

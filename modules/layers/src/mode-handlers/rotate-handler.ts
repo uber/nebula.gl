@@ -72,7 +72,7 @@ export class RotateHandler extends ModeHandler {
     const centroid = turfCentroid(this._geometryBeingRotated);
     const angle = getRotationAngle(centroid, startPosition, currentPoint);
     // @ts-ignore
-    const rotatedFeatures = turfTransformRotate(this._geometryBeingRotated, angle);
+    const rotatedFeatures: FeatureCollection = turfTransformRotate(this._geometryBeingRotated, angle);
 
     let updatedData = this.getImmutableFeatureCollection();
 

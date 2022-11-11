@@ -176,6 +176,7 @@ export class SplitPolygonMode extends GeoJsonEditMode {
       // @ts-ignore
       updatedCoordinates = coordinates.reduce((agg, prev) => {
         prev.forEach((p) => {
+          // @ts-ignore
           agg.push([p]);
         });
         return agg;

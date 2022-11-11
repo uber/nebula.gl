@@ -1,6 +1,7 @@
 /* eslint-env browser */
 
 import { RGBAColor } from '@deck.gl/core';
+import type { UpdateParameters, DefaultProps } from '@deck.gl/core/typed';
 import { GeoJsonLayer, ScatterplotLayer, IconLayer, TextLayer } from '@deck.gl/layers';
 
 import {
@@ -107,7 +108,7 @@ function getEditHandleRadius(handle) {
   }
 }
 
-export interface EditableGeojsonLayerProps<D> extends EditableLayerProps<D> {
+export type EditableGeojsonLayerProps<DataT = any> = EditableLayerProps<DataT> & {
   mode?: any;
   modeConfig?: any;
   selectedFeatureIndexes?: number[];
@@ -164,9 +165,9 @@ export interface EditableGeojsonLayerProps<D> extends EditableLayerProps<D> {
 
   // misc
   billboard?: boolean;
-}
+};
 
-const defaultProps: EditableGeojsonLayerProps<any> = {
+const defaultProps: DefaultProps<EditableGeojsonLayerProps<any>> = {
   mode: DEFAULT_EDIT_MODE,
 
   // Edit and interaction events
@@ -359,13 +360,7 @@ export default class EditableGeoJsonLayer extends EditableLayer<
     oldProps,
     changeFlags,
     context,
-  }: {
-    props: EditableGeojsonLayerProps<any>;
-    oldProps: EditableGeojsonLayerProps<any>;
-    changeFlags: any;
-    context: any;
-    s;
-  }) {
+  }: UpdateParameters<this>) {
     super.updateState({ oldProps, props, changeFlags, context });
 
     if (changeFlags.propsOrDataChanged) {
@@ -403,6 +398,7 @@ export default class EditableGeoJsonLayer extends EditableLayer<
     let selectedFeatures = [];
     if (Array.isArray(props.selectedFeatureIndexes)) {
       // TODO: needs improved testing, i.e. checking for duplicates, NaNs, out of range numbers, ...
+      // @ts-ignore
       selectedFeatures = props.selectedFeatureIndexes.map((elem) => props.data.features[elem]);
     }
 
@@ -444,6 +440,8 @@ export default class EditableGeoJsonLayer extends EditableLayer<
     if (!this.props.selectedFeatureIndexes.length) {
       return false;
     }
+
+    // @ts-ignore
     const featureIndex = this.props.data.features.indexOf(feature);
     return this.props.selectedFeatureIndexes.includes(featureIndex);
   }
@@ -472,6 +470,7 @@ export default class EditableGeoJsonLayer extends EditableLayer<
 
   createGuidesLayers() {
     const mode = this.getActiveMode();
+    // @ts-ignore
     const guides: FeatureCollection = mode.getGuides(this.getModeProps(this.props));
 
     if (!guides || !guides.features.length) {
@@ -544,6 +543,7 @@ export default class EditableGeoJsonLayer extends EditableLayer<
 
   createTooltipsLayers() {
     const mode = this.getActiveMode();
+    // @ts-ignore
     const tooltips = mode.getTooltips(this.getModeProps(this.props));
 
     const layer = new TextLayer({
@@ -558,27 +558,33 @@ export default class EditableGeoJsonLayer extends EditableLayer<
   }
 
   onLayerClick(event: ClickEvent) {
+    // @ts-ignore
     this.getActiveMode().handleClick(event, this.getModeProps(this.props));
   }
 
   onLayerKeyUp(event: KeyboardEvent) {
+    // @ts-ignore
     this.getActiveMode().handleKeyUp(event, this.getModeProps(this.props));
   }
 
   onStartDragging(event: StartDraggingEvent) {
+    // @ts-ignore
     this.getActiveMode().handleStartDragging(event, this.getModeProps(this.props));
   }
 
   onDragging(event: DraggingEvent) {
+    // @ts-ignore
     this.getActiveMode().handleDragging(event, this.getModeProps(this.props));
   }
 
   onStopDragging(event: StopDraggingEvent) {
+    // @ts-ignore
     this.getActiveMode().handleStopDragging(event, this.getModeProps(this.props));
   }
 
   onPointerMove(event: PointerMoveEvent) {
     this.setState({ lastPointerMoveEvent: event });
+    // @ts-ignore
     this.getActiveMode().handlePointerMove(event, this.getModeProps(this.props));
   }
 

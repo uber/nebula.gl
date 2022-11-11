@@ -68,7 +68,7 @@ export class ScaleHandler extends ModeHandler {
     const centroid = turfCentroid(this._geometryBeingScaled);
     const factor = getScaleFactor(centroid, startPosition, currentPoint);
     // @ts-ignore
-    const scaledFeatures = turfTransformScale(this._geometryBeingScaled, factor, {
+    const scaledFeatures: FeatureCollection = turfTransformScale(this._geometryBeingScaled, factor, {
       origin: centroid,
     });
 

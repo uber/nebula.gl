@@ -11,9 +11,9 @@ export type EditAction<TData> = {
 
 // Represents an object "picked" from the screen. This usually reflects an object under the cursor
 export type Pick = {
-  object: any;
   index: number;
-  isGuide: boolean;
+  object?: any;
+  isGuide?: boolean;
 };
 
 export type Viewport = {

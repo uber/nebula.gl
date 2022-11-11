@@ -157,7 +157,7 @@ export class SplitPolygonHandler extends ModeHandler {
           agg.push([p]);
         });
         return agg;
-      }, []);
+      }, [] as any[]);
     }
 
     // Update the type to Mulitpolygon

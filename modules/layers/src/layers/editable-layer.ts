@@ -1,7 +1,6 @@
 /* eslint-env browser */
 
-import { CompositeLayer } from '@deck.gl/core';
-import { CompositeLayerProps } from '@deck.gl/core/lib/composite-layer';
+import { CompositeLayer, CompositeLayerProps} from '@deck.gl/core/typed';
 import {
   ClickEvent,
   StartDraggingEvent,
@@ -13,15 +12,15 @@ import {
 
 const EVENT_TYPES = ['anyclick', 'pointermove', 'panstart', 'panmove', 'panend', 'keyup'];
 
-export interface EditableLayerProps<D> extends CompositeLayerProps<D> {
+export type EditableLayerProps<DataType = any> = CompositeLayerProps<DataType> & {
   pickingRadius?: number;
   pickingDepth?: number;
 }
 
-export default class EditableLayer<
-  D,
-  P extends EditableLayerProps<D> = EditableLayerProps<D>
-> extends CompositeLayer<D, P> {
+export default abstract class EditableLayer<
+  DataT = any,
+  ExtraPropsT = {}
+> extends CompositeLayer<ExtraPropsT & Required<EditableLayerProps<DataT>>> {
   static layerName = 'EditableLayer';
 
   // Overridable interaction event handlers
@@ -78,6 +77,7 @@ export default class EditableLayer<
     const { eventHandler } = this.state._editableLayerState;
 
     for (const eventType of EVENT_TYPES) {
+      // @ts-ignore
       eventManager.on(eventType, eventHandler, {
         // give nebula a higher priority so that it can stop propagation to deck.gl's map panning handlers
         priority: 100,
@@ -91,6 +91,7 @@ export default class EditableLayer<
     const { eventHandler } = this.state._editableLayerState;
 
     for (const eventType of EVENT_TYPES) {
+      // @ts-ignore
       eventManager.off(eventType, eventHandler);
     }
   }
@@ -248,7 +249,6 @@ export default class EditableLayer<
   }
 
   getPicks(screenCoords: [number, number]) {
-    // @ts-ignore
     return this.context.deck.pickMultipleObjects({
       x: screenCoords[0],
       y: screenCoords[1],

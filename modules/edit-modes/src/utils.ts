@@ -496,7 +496,7 @@ export function updateRectanglePosition(
  */
 export function mapCoords(
   coords: AnyCoordinates,
-  callback: (coords: Position) => Position
+  callback: (coordinates: Position) => Position
 ): AnyCoordinates {
   if (typeof coords[0] === 'number') {
     if (!isNaN(coords[0]) && isFinite(coords[0])) {

@@ -47,7 +47,7 @@ export class DrawLineStringMode extends GeoJsonEditMode {
       });
     }
   }
-  
+
   handleKeyUp(event: KeyboardEvent, props: ModeProps<FeatureCollection>) {
     const { key } = event;
     if (key === 'Enter') {

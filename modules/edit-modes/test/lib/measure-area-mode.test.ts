@@ -5,6 +5,7 @@ import {
   createFeatureCollectionProps,
   createClickEvent,
   createPointerMoveEvent,
+  createKeyboardEvent,
 } from '../test-utils';
 
 describe('move without click', () => {
@@ -62,5 +63,66 @@ describe('three clicks + pointer move', () => {
       modeConfig: { formatTooltip: (area) => String(Math.round(area)) },
     });
     expect(tooltips[0].text).toEqual('49565599608');
+  });
+});
+
+describe('finished drawing by clicking', () => {
+  let mode: MeasureAreaMode;
+  let props;
+
+  beforeEach(() => {
+    mode = new MeasureAreaMode();
+    props = createFeatureCollectionProps();
+    mode.handleClick(createClickEvent([1, 1]), props);
+    mode.handleClick(createClickEvent([-1, 1]), props);
+    mode.handleClick(createClickEvent([-1, -1]), props);
+    mode.handleClick(
+      createClickEvent(
+        [-1, -1],
+        [
+          {
+            index: -1,
+            isGuide: true,
+            object: {
+              properties: {
+                guideType: 'editHandle',
+                positionIndexes: [2],
+              },
+            },
+          },
+        ]
+      ),
+      props
+    );
+  });
+
+  it('the click sequence should be cleared', () => {
+    expect(mode.getClickSequence()).toEqual([]);
+  });
+
+  it('onEdit should not be callled', () => {
+    expect(props.onEdit).not.toBeCalled();
+  });
+});
+
+describe('finished drawing by pressing enter', () => {
+  let mode: MeasureAreaMode;
+  let props;
+
+  beforeEach(() => {
+    mode = new MeasureAreaMode();
+    props = createFeatureCollectionProps();
+    mode.handleClick(createClickEvent([1, 1]), props);
+    mode.handleClick(createClickEvent([-1, 1]), props);
+    mode.handleClick(createClickEvent([-1, -1]), props);
+    mode.handleKeyUp(createKeyboardEvent('Enter'), props);
+  });
+
+  it('the click sequence should be cleared', () => {
+    expect(mode.getClickSequence()).toEqual([]);
+  });
+
+  it('onEdit should not be callled', () => {
+    expect(props.onEdit).not.toBeCalled();
   });
 });

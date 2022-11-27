@@ -5,7 +5,7 @@ cd website
 yarn
 yarn build
 
-mv dist /tmp/nebula-docs
+mv public /tmp/nebula-docs
 
 cd ..
 git checkout gh-pages

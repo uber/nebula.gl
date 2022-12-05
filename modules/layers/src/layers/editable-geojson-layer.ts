@@ -515,6 +515,7 @@ export default class EditableGeoJsonLayer extends EditableLayer<
         getRadius: guideAccessor(this.props.getEditHandlePointRadius),
         getFillColor: guideAccessor(this.props.getEditHandlePointColor),
         getLineColor: guideAccessor(this.props.getEditHandlePointOutlineColor),
+        billboard: this.props.billboard,
       };
     }
 

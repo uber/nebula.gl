@@ -73,12 +73,12 @@ export default class EditingMode extends BaseMode {
     const picked = event.picks && event.picks[0];
 
     // @ts-ignore
-    if (!picked || !picked.Object || !isNumeric(picked.featureIndex)) {
+    if (!picked || !picked.object || !isNumeric(picked.featureIndex)) {
       return;
     }
 
     const pickedObject = picked.object;
-    switch (pickedObject.type) {
+    switch (pickedObject.type.toLowerCase()) {
       case ELEMENT_TYPE.FEATURE:
       case ELEMENT_TYPE.FILL:
       case ELEMENT_TYPE.EDIT_HANDLE:

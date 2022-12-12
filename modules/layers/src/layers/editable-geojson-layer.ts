@@ -502,6 +502,7 @@ export default class EditableGeoJsonLayer extends EditableLayer<
         getSize: guideAccessor(this.props.getEditHandleIconSize),
         getColor: guideAccessor(this.props.getEditHandleIconColor),
         getAngle: guideAccessor(this.props.getEditHandleIconAngle),
+        billboard: this.props.billboard,
       };
     } else {
       subLayerProps['points-circle'] = {
@@ -515,6 +516,7 @@ export default class EditableGeoJsonLayer extends EditableLayer<
         getRadius: guideAccessor(this.props.getEditHandlePointRadius),
         getFillColor: guideAccessor(this.props.getEditHandlePointColor),
         getLineColor: guideAccessor(this.props.getEditHandlePointOutlineColor),
+        billboard: this.props.billboard,
       };
     }
 

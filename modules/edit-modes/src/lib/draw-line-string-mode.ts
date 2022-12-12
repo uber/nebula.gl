@@ -47,6 +47,7 @@ export class DrawLineStringMode extends GeoJsonEditMode {
       });
     }
   }
+
   handleKeyUp(event: KeyboardEvent, props: ModeProps<FeatureCollection>) {
     const { key } = event;
     if (key === 'Enter') {
@@ -62,8 +63,17 @@ export class DrawLineStringMode extends GeoJsonEditMode {
           props.onEdit(editAction);
         }
       }
+    } else if (key === 'Escape') {
+      this.resetClickSequence();
+      props.onEdit({
+        // Because the new drawing feature is dropped, so the data will keep as the same.
+        updatedData: props.data,
+        editType: 'cancelFeature',
+        editContext: {},
+      });
     }
   }
+
   getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
     const { lastPointerMoveEvent } = props;
     const clickSequence = this.getClickSequence();

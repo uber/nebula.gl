@@ -19,11 +19,11 @@ const FS_CODE = `\
   gl_FragColor = outline_filterColor(gl_FragColor);
 `;
 
-export type PathOutlineLayerProps<DataT> =  PathLayerProps<DataT> & {
+export type PathOutlineLayerProps<DataT> = PathLayerProps<DataT> & {
   dashJustified?: boolean;
   getDashArray?: [number, number] | ((d: DataT) => [number, number] | null);
   getZLevel?: (d: DataT, index: number) => number;
-}
+};
 
 const defaultProps: DefaultProps<PathOutlineLayerProps<any>> = {
   getZLevel: () => 0,
@@ -31,16 +31,16 @@ const defaultProps: DefaultProps<PathOutlineLayerProps<any>> = {
 
 export default class PathOutlineLayer<
   DataT = any,
-  ExtraPropsT = {}
+  ExtraPropsT = Record<string, unknown>
 > extends PathLayer<DataT, ExtraPropsT & Required<PathOutlineLayerProps<DataT>>> {
   static layerName = 'PathOutlineLayer';
   static defaultProps = defaultProps;
 
   state: {
-      model?: any;
-      pathTesselator: any;
-      outlineFramebuffer: Framebuffer;
-      dummyTexture: Texture2D;
+    model?: any;
+    pathTesselator: any;
+    outlineFramebuffer: Framebuffer;
+    dummyTexture: Texture2D;
   };
 
   // Override getShaders to inject the outline module
@@ -53,7 +53,7 @@ export default class PathOutlineLayer<
     });
   }
 
-  // @ts-ignore PathLayer is missing LayerContext arg
+  // @ts-expect-error PathLayer is missing LayerContext arg
   initializeState(context: LayerContext) {
     super.initializeState();
 
@@ -65,7 +65,7 @@ export default class PathOutlineLayer<
     });
 
     // Create an attribute manager
-    // @ts-ignore check whether this.getAttributeManager works here
+    // @ts-expect-error check whether this.getAttributeManager works here
     this.state.attributeManager.addInstanced({
       instanceZLevel: {
         size: 1,

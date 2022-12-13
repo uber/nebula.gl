@@ -1,5 +1,11 @@
 import { LineString, FeatureCollection } from '../geojson-types';
-import { ClickEvent, PointerMoveEvent, ModeProps, GuideFeatureCollection } from '../types';
+import {
+  ClickEvent,
+  PointerMoveEvent,
+  ModeProps,
+  GuideFeatureCollection,
+  GuideFeature,
+} from '../types';
 import { getPickedEditHandle } from '../utils';
 import { GeoJsonEditMode } from './geojson-edit-mode';
 
@@ -70,7 +76,7 @@ export class DrawLineStringMode extends GeoJsonEditMode {
 
     const lastCoords = lastPointerMoveEvent ? [lastPointerMoveEvent.mapCoords] : [];
 
-    const guides = {
+    const guides: GuideFeatureCollection = {
       type: 'FeatureCollection',
       features: [],
     };
@@ -93,7 +99,7 @@ export class DrawLineStringMode extends GeoJsonEditMode {
       guides.features.push(tentativeFeature);
     }
 
-    const editHandles = clickSequence.map((clickedCoord, index) => ({
+    const editHandles: GuideFeature[] = clickSequence.map((clickedCoord, index) => ({
       type: 'Feature',
       properties: {
         guideType: 'editHandle',
@@ -108,7 +114,6 @@ export class DrawLineStringMode extends GeoJsonEditMode {
     }));
 
     guides.features.push(...editHandles);
-    // @ts-ignore
     return guides;
   }
 

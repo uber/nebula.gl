@@ -1,6 +1,6 @@
 /* eslint-env browser */
 
-import { CompositeLayer, CompositeLayerProps, DefaultProps} from '@deck.gl/core/typed';
+import { CompositeLayer, CompositeLayerProps, DefaultProps } from '@deck.gl/core/typed';
 import { PolygonLayer } from '@deck.gl/layers';
 import { polygon } from '@turf/helpers';
 import turfBuffer from '@turf/buffer';
@@ -67,20 +67,16 @@ const PASS_THROUGH_PROPS = [
   'getTentativeFillColor',
   'getTentativeLineWidth',
 ];
-export default class SelectionLayer<
-  DataT,
-  ExtraPropsT
-> extends CompositeLayer<ExtraPropsT & Required<SelectionLayerProps<DataT>>> {
+export default class SelectionLayer<DataT, ExtraPropsT> extends CompositeLayer<
+  ExtraPropsT & Required<SelectionLayerProps<DataT>>
+> {
   static layerName = 'SelectionLayer';
   static defaultProps = defaultProps;
 
   _selectRectangleObjects(coordinates: any) {
     const { layerIds, onSelect } = this.props;
-    // @ts-ignore
     const [x1, y1] = this.context.viewport.project(coordinates[0][0]);
-    // @ts-ignore
     const [x2, y2] = this.context.viewport.project(coordinates[0][2]);
-    // @ts-ignore
     const pickingInfos = this.context.deck.pickObjects({
       x: Math.min(x1, x2),
       y: Math.min(y1, y2),
@@ -94,7 +90,6 @@ export default class SelectionLayer<
 
   _selectPolygonObjects(coordinates: any) {
     const { layerIds, onSelect } = this.props;
-    // @ts-ignore
     const mousePoints = coordinates[0].map((c) => this.context.viewport.project(c));
 
     const allX = mousePoints.map((mousePoint) => mousePoint[0]);
@@ -129,7 +124,6 @@ export default class SelectionLayer<
 
     // HACK, find a better way
     setTimeout(() => {
-      // @ts-ignore
       const pickingInfos = this.context.deck.pickObjects({
         x,
         y,
@@ -183,9 +177,7 @@ export default class SelectionLayer<
     if (pendingPolygonSelection) {
       const { bigPolygon } = pendingPolygonSelection;
       layers.push(
-        // @ts-ignore
         new PolygonLayer(
-          // @ts-ignore
           this.getSubLayerProps({
             id: LAYER_ID_BLOCKER,
             pickable: true,

@@ -1,9 +1,7 @@
 /* eslint-env browser */
 
-import { RGBAColor } from '@deck.gl/core';
 import type { UpdateParameters, DefaultProps } from '@deck.gl/core/typed';
-import { GeoJsonLayer, ScatterplotLayer, IconLayer, TextLayer } from '@deck.gl/layers';
-
+import { GeoJsonLayer, ScatterplotLayer, IconLayer, TextLayer } from '@deck.gl/layers/typed';
 import {
   ViewMode,
   ModifyMode,
@@ -40,21 +38,22 @@ import {
   FeatureCollection,
 } from '@nebula.gl/edit-modes';
 
+import { Color } from '../types';
 import { PROJECTED_PIXEL_SIZE_MULTIPLIER } from '../constants';
 
 import EditableLayer, { EditableLayerProps } from './editable-layer';
 import EditablePathLayer from './editable-path-layer';
 
-const DEFAULT_LINE_COLOR: RGBAColor = [0x0, 0x0, 0x0, 0x99];
-const DEFAULT_FILL_COLOR: RGBAColor = [0x0, 0x0, 0x0, 0x90];
-const DEFAULT_SELECTED_LINE_COLOR: RGBAColor = [0x0, 0x0, 0x0, 0xff];
-const DEFAULT_SELECTED_FILL_COLOR: RGBAColor = [0x0, 0x0, 0x90, 0x90];
-const DEFAULT_TENTATIVE_LINE_COLOR: RGBAColor = [0x90, 0x90, 0x90, 0xff];
-const DEFAULT_TENTATIVE_FILL_COLOR: RGBAColor = [0x90, 0x90, 0x90, 0x90];
-const DEFAULT_EDITING_EXISTING_POINT_COLOR: RGBAColor = [0xc0, 0x0, 0x0, 0xff];
-const DEFAULT_EDITING_INTERMEDIATE_POINT_COLOR: RGBAColor = [0x0, 0x0, 0x0, 0x80];
-const DEFAULT_EDITING_SNAP_POINT_COLOR: RGBAColor = [0x7c, 0x00, 0xc0, 0xff];
-const DEFAULT_EDITING_POINT_OUTLINE_COLOR: RGBAColor = [0xff, 0xff, 0xff, 0xff];
+const DEFAULT_LINE_COLOR: Color = [0x0, 0x0, 0x0, 0x99];
+const DEFAULT_FILL_COLOR: Color = [0x0, 0x0, 0x0, 0x90];
+const DEFAULT_SELECTED_LINE_COLOR: Color = [0x0, 0x0, 0x0, 0xff];
+const DEFAULT_SELECTED_FILL_COLOR: Color = [0x0, 0x0, 0x90, 0x90];
+const DEFAULT_TENTATIVE_LINE_COLOR: Color = [0x90, 0x90, 0x90, 0xff];
+const DEFAULT_TENTATIVE_FILL_COLOR: Color = [0x90, 0x90, 0x90, 0x90];
+const DEFAULT_EDITING_EXISTING_POINT_COLOR: Color = [0xc0, 0x0, 0x0, 0xff];
+const DEFAULT_EDITING_INTERMEDIATE_POINT_COLOR: Color = [0x0, 0x0, 0x0, 0x80];
+const DEFAULT_EDITING_SNAP_POINT_COLOR: Color = [0x7c, 0x00, 0xc0, 0xff];
+const DEFAULT_EDITING_POINT_OUTLINE_COLOR: Color = [0xff, 0xff, 0xff, 0xff];
 const DEFAULT_EDITING_EXISTING_POINT_RADIUS = 5;
 const DEFAULT_EDITING_INTERMEDIATE_POINT_RADIUS = 3;
 const DEFAULT_EDITING_SNAP_POINT_RADIUS = 7;
@@ -132,13 +131,13 @@ export type EditableGeojsonLayerProps<DataT = any> = EditableLayerProps<DataT> &
   pointRadiusMinPixels?: number;
   pointRadiusMaxPixels?: number;
 
-  getLineColor?: RGBAColor | ((feature, isSelected, mode) => RGBAColor);
-  getFillColor?: RGBAColor | ((feature, isSelected, mode) => RGBAColor);
+  getLineColor?: Color | ((feature, isSelected, mode) => Color);
+  getFillColor?: Color | ((feature, isSelected, mode) => Color);
   getRadius?: number | ((f) => number);
   getLineWidth?: number | ((f) => number);
 
-  getTentativeLineColor?: RGBAColor | ((feature, isSelected, mode) => RGBAColor);
-  getTentativeFillColor?: RGBAColor | ((feature, isSelected, mode) => RGBAColor);
+  getTentativeLineColor?: Color | ((feature, isSelected, mode) => Color);
+  getTentativeFillColor?: Color | ((feature, isSelected, mode) => Color);
   getTentativeLineWidth?: number | ((f) => number);
 
   editHandleType?: string;
@@ -149,8 +148,8 @@ export type EditableGeojsonLayerProps<DataT = any> = EditableLayerProps<DataT> &
   editHandlePointRadiusUnits?: string;
   editHandlePointRadiusMinPixels?: number;
   editHandlePointRadiusMaxPixels?: number;
-  getEditHandlePointColor?: RGBAColor | ((handle) => RGBAColor);
-  getEditHandlePointOutlineColor?: RGBAColor | ((handle) => RGBAColor);
+  getEditHandlePointColor?: Color | ((handle) => Color);
+  getEditHandlePointOutlineColor?: Color | ((handle) => Color);
   getEditHandlePointRadius?: number | ((handle) => number);
 
   // icon handles
@@ -160,7 +159,7 @@ export type EditableGeojsonLayerProps<DataT = any> = EditableLayerProps<DataT> &
   editHandleIconSizeUnits?: string;
   getEditHandleIcon?: (handle) => string;
   getEditHandleIconSize?: number;
-  getEditHandleIconColor?: RGBAColor | ((handle) => RGBAColor);
+  getEditHandleIconColor?: Color | ((handle) => Color);
   getEditHandleIconAngle?: number | ((handle) => number);
 
   // misc
@@ -355,12 +354,7 @@ export default class EditableGeoJsonLayer extends EditableLayer<
     return super.shouldUpdateState(opts) || opts.changeFlags.stateChanged;
   }
 
-  updateState({
-    props,
-    oldProps,
-    changeFlags,
-    context,
-  }: UpdateParameters<this>) {
+  updateState({ props, oldProps, changeFlags, context }: UpdateParameters<this>) {
     super.updateState({ oldProps, props, changeFlags, context });
 
     if (changeFlags.propsOrDataChanged) {
@@ -398,7 +392,7 @@ export default class EditableGeoJsonLayer extends EditableLayer<
     let selectedFeatures = [];
     if (Array.isArray(props.selectedFeatureIndexes)) {
       // TODO: needs improved testing, i.e. checking for duplicates, NaNs, out of range numbers, ...
-      // @ts-ignore
+      // @ts-expect-error properly type layer's data
       selectedFeatures = props.selectedFeatureIndexes.map((elem) => props.data.features[elem]);
     }
 
@@ -441,7 +435,7 @@ export default class EditableGeoJsonLayer extends EditableLayer<
       return false;
     }
 
-    // @ts-ignore
+    // @ts-expect-error properly type layer's data
     const featureIndex = this.props.data.features.indexOf(feature);
     return this.props.selectedFeatureIndexes.includes(featureIndex);
   }
@@ -470,7 +464,7 @@ export default class EditableGeoJsonLayer extends EditableLayer<
 
   createGuidesLayers() {
     const mode = this.getActiveMode();
-    // @ts-ignore
+    // @ts-expect-error narrow type
     const guides: FeatureCollection = mode.getGuides(this.getModeProps(this.props));
 
     if (!guides || !guides.features.length) {
@@ -543,7 +537,7 @@ export default class EditableGeoJsonLayer extends EditableLayer<
 
   createTooltipsLayers() {
     const mode = this.getActiveMode();
-    // @ts-ignore
+    // @ts-expect-error narrow type
     const tooltips = mode.getTooltips(this.getModeProps(this.props));
 
     const layer = new TextLayer({
@@ -558,33 +552,33 @@ export default class EditableGeoJsonLayer extends EditableLayer<
   }
 
   onLayerClick(event: ClickEvent) {
-    // @ts-ignore
+    // @ts-expect-error narrow type
     this.getActiveMode().handleClick(event, this.getModeProps(this.props));
   }
 
   onLayerKeyUp(event: KeyboardEvent) {
-    // @ts-ignore
+    // @ts-expect-error narrow type
     this.getActiveMode().handleKeyUp(event, this.getModeProps(this.props));
   }
 
   onStartDragging(event: StartDraggingEvent) {
-    // @ts-ignore
+    // @ts-expect-error narrow type
     this.getActiveMode().handleStartDragging(event, this.getModeProps(this.props));
   }
 
   onDragging(event: DraggingEvent) {
-    // @ts-ignore
+    // @ts-expect-error narrow type
     this.getActiveMode().handleDragging(event, this.getModeProps(this.props));
   }
 
   onStopDragging(event: StopDraggingEvent) {
-    // @ts-ignore
+    // @ts-expect-error narrow type
     this.getActiveMode().handleStopDragging(event, this.getModeProps(this.props));
   }
 
   onPointerMove(event: PointerMoveEvent) {
     this.setState({ lastPointerMoveEvent: event });
-    // @ts-ignore
+    // @ts-expect-error narrow type
     this.getActiveMode().handlePointerMove(event, this.getModeProps(this.props));
   }
 

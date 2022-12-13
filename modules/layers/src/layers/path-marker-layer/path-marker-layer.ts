@@ -25,7 +25,7 @@ export type PathMarkerLayerProps<DataT> = PathOutlineLayerProps<DataT> & {
   sizeScale?: number;
   fp64?: boolean;
   nebulaLayer?: any;
-}
+};
 
 const DEFAULT_MARKER_LAYER_PROPS = {
   mesh: new Arrow2DGeometry({ headSize: ARROW_HEAD_SIZE, tailWidth: ARROW_TAIL_WIDTH }),
@@ -50,8 +50,8 @@ const defaultProps: PathMarkerLayerProps<any> = Object.assign({}, PathOutlineLay
 });
 
 export default class PathMarkerLayer<
-DataT = any,
-ExtraPropsT = {}
+  DataT = any,
+  ExtraPropsT = Record<string, unknown>
 > extends CompositeLayer<ExtraPropsT & Required<PathMarkerLayerProps<DataT>>> {
   static layerName = 'PathMarkerLayer';
   static defaultProps = defaultProps;
@@ -63,7 +63,7 @@ ExtraPropsT = {}
       closestPoint: null,
     };
   }
-  // @ts-ignore
+
   projectFlat(xyz, viewport, coordinateSystem, coordinateOrigin) {
     if (coordinateSystem === COORDINATE_SYSTEM.METER_OFFSETS) {
       const [dx, dy] = viewport.metersToLngLatDelta(xyz);
@@ -89,7 +89,7 @@ ExtraPropsT = {}
         coordinateSystem,
         coordinateOrigin,
       } = this.props;
-      // @ts-ignore
+
       const { viewport } = this.context;
       const projectFlat = (o) => this.projectFlat(o, viewport, coordinateSystem, coordinateOrigin);
       this.state.markers = createPathMarkers({
@@ -136,7 +136,6 @@ ExtraPropsT = {}
     return [
       new PathOutlineLayer(
         this.props,
-        // @ts-ignore
         this.getSubLayerProps({
           id: 'paths',
           // Note: data has to be passed explicitly like this to avoid being empty
@@ -164,7 +163,6 @@ ExtraPropsT = {}
         new ScatterplotLayer({
           id: `${this.props.id}-highlight`,
           data: this.state.closestPoints,
-          // @ts-ignore
           fp64: this.props.fp64,
         }),
     ];

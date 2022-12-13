@@ -14,6 +14,8 @@ export type Pick = {
   index: number;
   object?: any;
   isGuide?: boolean;
+  featureIndex?: number;
+  type?: string;
 };
 
 export type Viewport = {

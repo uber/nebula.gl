@@ -114,7 +114,7 @@ export default class EditableH3ClusterLayer extends EditableLayer<
                 }
                 break;
               case 'addFeature':
-                // @ts-ignore accessing resolved data
+                // @ts-expect-error accessing resolved data
                 const updatedData = [...this.props.data];
                 const { modeConfig } = this.props;
 

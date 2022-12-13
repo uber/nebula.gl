@@ -34,7 +34,6 @@ export default function createPathMarkers({
     const lineLength = getLineLength(vPoints);
 
     // Ask for where to put markers
-    // @ts-ignore
     const percentages = getMarkerPercentages(object, { lineLength });
 
     // Create the markers

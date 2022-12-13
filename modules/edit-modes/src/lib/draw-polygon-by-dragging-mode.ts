@@ -31,9 +31,9 @@ export class DrawPolygonByDraggingMode extends DrawPolygonMode {
   handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollection>) {
     this.addClickSequence(event);
     const clickSequence = this.getClickSequence();
-    // @ts-ignore
+    // @ts-expect-error cancel() not typed
     if (this.handleDraggingThrottled && this.handleDraggingThrottled.cancel) {
-      // @ts-ignore
+      // @ts-expect-error cancel() not typed
       this.handleDraggingThrottled.cancel();
     }
 

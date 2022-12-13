@@ -43,7 +43,7 @@ export default class Nebula {
   _mouseWasDown: boolean;
   wmViewport: WebMercatorViewport;
   queryObjectEvents: EventEmitter = new EventEmitter();
-  forceUpdate: Function;
+  forceUpdate: () => any;
   inited: boolean;
 
   log(message: string) {
@@ -152,7 +152,6 @@ export default class Nebula {
   }
 
   unprojectMousePosition(mousePosition: [number, number]): [number, number] {
-    // @ts-ignore
     return this.wmViewport.unproject(mousePosition);
   }
 
@@ -169,7 +168,6 @@ export default class Nebula {
 
       const lngLat = this.getMouseGroundPosition(event);
       if (eventFilter && !eventFilter(lngLat, event)) return;
-      // @ts-ignore
       const drawerResult = this._deckDrawer.handleEvent(event, lngLat, selectionType);
       if (drawerResult.redraw) this.forceUpdate();
       return;
@@ -215,7 +213,7 @@ export default class Nebula {
 
         if (original) {
           this.deckglMouseOverInfo = { originalLayer: deckLayer.props.nebulaLayer, index };
-          // @ts-ignore
+          // @ts-expect-error narrow event type
           const nebulaMouseEvent = new LayerMouseEvent(event, {
             data: original,
             metadata: object.metadata,
@@ -241,7 +239,7 @@ export default class Nebula {
       if (eventFilter && !eventFilter(lngLat, event)) return;
 
       // send to layers first
-      // @ts-ignore
+      // @ts-expect-error narrow event type
       const nebulaMouseEvent = new LayerMouseEvent(event, {
         groundPoint: lngLat,
         nebula: this,

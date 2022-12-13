@@ -19,7 +19,7 @@
   ],
   "scripts": {
     "start": "open http://nebula.gl/docs",
-    "start-example": "lerna run start-local --scope=example-advance --stream",
+    "start-example": "lerna run start-local --scope=example-advanced --stream",
     "bootstrap": "lerna bootstrap",
     "build": "lerna run build --stream",
     "prettier": "prettier --write \"{modules,examples,test,dev-docs,docs,website}/**/*.{ts,tsx,js,md}\"",
@@ -61,8 +61,8 @@
     "@types/styled-components": "4.4.3",
     "@types/uuid": "7.0.2",
     "@types/viewport-mercator-project": "6.1.0",
-    "@typescript-eslint/eslint-plugin": "2.26.0",
-    "@typescript-eslint/parser": "2.26.0",
+    "@typescript-eslint/eslint-plugin": "^4.1.1",
+    "@typescript-eslint/parser": "^4.1.1",
     "babel-eslint": "10.1.0",
     "babel-jest": "25.2.6",
     "babel-loader": "8.1.0",
@@ -102,7 +102,7 @@
     "transform-loader": "^0.2.3",
     "ts-jest": "25.3.1",
     "ts-loader": "^8.4.0",
-    "typescript": "^4.4.4"
+    "typescript": "4.4.4"
   },
   "husky": {
     "hooks": {

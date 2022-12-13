@@ -1,6 +1,6 @@
 /* eslint-env browser */
 
-import { CompositeLayer, CompositeLayerProps} from '@deck.gl/core/typed';
+import { CompositeLayer, CompositeLayerProps } from '@deck.gl/core/typed';
 import {
   ClickEvent,
   StartDraggingEvent,
@@ -15,11 +15,11 @@ const EVENT_TYPES = ['anyclick', 'pointermove', 'panstart', 'panmove', 'panend',
 export type EditableLayerProps<DataType = any> = CompositeLayerProps<DataType> & {
   pickingRadius?: number;
   pickingDepth?: number;
-}
+};
 
 export default abstract class EditableLayer<
   DataT = any,
-  ExtraPropsT = {}
+  ExtraPropsT = Record<string, unknown>
 > extends CompositeLayer<ExtraPropsT & Required<EditableLayerProps<DataT>>> {
   static layerName = 'EditableLayer';
 
@@ -72,12 +72,12 @@ export default abstract class EditableLayer<
   }
 
   _addEventHandlers() {
-    // @ts-ignore
+    // @ts-expect-error accessing protected props
     const { eventManager } = this.context.deck;
     const { eventHandler } = this.state._editableLayerState;
 
     for (const eventType of EVENT_TYPES) {
-      // @ts-ignore
+      // @ts-expect-error narrow type
       eventManager.on(eventType, eventHandler, {
         // give nebula a higher priority so that it can stop propagation to deck.gl's map panning handlers
         priority: 100,
@@ -86,12 +86,12 @@ export default abstract class EditableLayer<
   }
 
   _removeEventHandlers() {
-    // @ts-ignore
+    // @ts-expect-error accessing protected props
     const { eventManager } = this.context.deck;
     const { eventHandler } = this.state._editableLayerState;
 
     for (const eventType of EVENT_TYPES) {
-      // @ts-ignore
+      // @ts-expect-error narrow type
       eventManager.off(eventType, eventHandler);
     }
   }
@@ -112,14 +112,13 @@ export default abstract class EditableLayer<
   }
 
   _onanyclick({ srcEvent }: any) {
-    const screenCoords = this.getScreenCoords(srcEvent);
+    const screenCoords = this.getScreenCoords(srcEvent) as [number, number];
     const mapCoords = this.getMapCoords(screenCoords);
-    // @ts-ignore
+
     const picks = this.getPicks(screenCoords);
 
     this.onLayerClick({
       mapCoords,
-      // @ts-ignore
       screenCoords,
       picks,
       sourceEvent: srcEvent,
@@ -131,9 +130,8 @@ export default abstract class EditableLayer<
   }
 
   _onpanstart(event: any) {
-    const screenCoords = this.getScreenCoords(event.srcEvent);
+    const screenCoords = this.getScreenCoords(event.srcEvent) as [number, number];
     const mapCoords = this.getMapCoords(screenCoords);
-    // @ts-ignore
     const picks = this.getPicks(screenCoords);
 
     this.setState({
@@ -147,11 +145,8 @@ export default abstract class EditableLayer<
 
     this.onStartDragging({
       picks,
-      // @ts-ignore
       screenCoords,
-      // @ts-ignore
       mapCoords,
-      // @ts-ignore
       pointerDownScreenCoords: screenCoords,
       pointerDownMapCoords: mapCoords,
       cancelPan: event.stopImmediatePropagation,
@@ -161,7 +156,7 @@ export default abstract class EditableLayer<
 
   _onpanmove(event: any) {
     const { srcEvent } = event;
-    const screenCoords = this.getScreenCoords(srcEvent);
+    const screenCoords = this.getScreenCoords(srcEvent) as [number, number];
     const mapCoords = this.getMapCoords(screenCoords);
 
     const {
@@ -169,11 +164,10 @@ export default abstract class EditableLayer<
       pointerDownScreenCoords,
       pointerDownMapCoords,
     } = this.state._editableLayerState;
-    // @ts-ignore
+
     const picks = this.getPicks(screenCoords);
 
     this.onDragging({
-      // @ts-ignore
       screenCoords,
       mapCoords,
       picks,
@@ -191,7 +185,7 @@ export default abstract class EditableLayer<
   }
 
   _onpanend({ srcEvent }: any) {
-    const screenCoords = this.getScreenCoords(srcEvent);
+    const screenCoords = this.getScreenCoords(srcEvent) as [number, number];
     const mapCoords = this.getMapCoords(screenCoords);
 
     const {
@@ -199,12 +193,11 @@ export default abstract class EditableLayer<
       pointerDownScreenCoords,
       pointerDownMapCoords,
     } = this.state._editableLayerState;
-    // @ts-ignore
+
     const picks = this.getPicks(screenCoords);
 
     this.onStopDragging({
       picks,
-      // @ts-ignore
       screenCoords,
       mapCoords,
       pointerDownPicks,
@@ -225,7 +218,7 @@ export default abstract class EditableLayer<
 
   _onpointermove(event: any) {
     const { srcEvent } = event;
-    const screenCoords = this.getScreenCoords(srcEvent);
+    const screenCoords = this.getScreenCoords(srcEvent) as [number, number];
     const mapCoords = this.getMapCoords(screenCoords);
 
     const {
@@ -233,11 +226,10 @@ export default abstract class EditableLayer<
       pointerDownScreenCoords,
       pointerDownMapCoords,
     } = this.state._editableLayerState;
-    // @ts-ignore
+
     const picks = this.getPicks(screenCoords);
 
     this.onPointerMove({
-      // @ts-ignore
       screenCoords,
       mapCoords,
       picks,
@@ -245,6 +237,7 @@ export default abstract class EditableLayer<
       pointerDownScreenCoords,
       pointerDownMapCoords,
       sourceEvent: srcEvent,
+      cancelPan: event.stopImmediatePropagation,
     });
   }
 
@@ -268,7 +261,6 @@ export default abstract class EditableLayer<
   }
 
   getMapCoords(screenCoords: Position): Position {
-    // @ts-ignore
-    return this.context.viewport.unproject([screenCoords[0], screenCoords[1]]);
+    return this.context.viewport.unproject([screenCoords[0], screenCoords[1]]) as Position;
   }
 }

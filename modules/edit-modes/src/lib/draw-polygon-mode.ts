@@ -153,6 +153,14 @@ export class DrawPolygonMode extends GeoJsonEditMode {
           props.onEdit(editAction);
         }
       }
+    } else if (event.key === 'Escape') {
+      this.resetClickSequence();
+      props.onEdit({
+        // Because the new drawing feature is dropped, so the data will keep as the same.
+        updatedData: props.data,
+        editType: 'cancelFeature',
+        editContext: {},
+      });
     }
   }
 

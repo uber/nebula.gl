@@ -1,13 +1,13 @@
 /* eslint-env jest */
 
-import { DrawLineStringMode } from '../../src/lib/draw-line-string-mode';
+import { DrawPolygonMode } from '../../src/lib/draw-polygon-mode';
 import { createFeatureCollectionProps, createClickEvent, createKeyboardEvent } from '../test-utils';
 
 let props;
 let mode;
 
 beforeEach(() => {
-  mode = new DrawLineStringMode();
+  mode = new DrawPolygonMode();
   props = createFeatureCollectionProps({
     data: {
       type: 'FeatureCollection',
@@ -15,40 +15,16 @@ beforeEach(() => {
     },
   });
 
-  mode.handleClick(createClickEvent([1, 2]), props);
-  mode.handleClick(createClickEvent([3, 4]), props);
-  mode.handleClick(createClickEvent([5, 6]), props);
-});
-
-describe('while tentative', () => {
-  it('calls onEdit', () => {
-    expect(props.onEdit).toHaveBeenCalledTimes(3);
-
-    expect(props.onEdit.mock.calls[0][0].editType).toEqual('addTentativePosition');
-    expect(props.onEdit.mock.calls[0][0].editContext.position).toEqual([1, 2]);
-    expect(props.onEdit.mock.calls[1][0].editType).toEqual('addTentativePosition');
-    expect(props.onEdit.mock.calls[1][0].editContext.position).toEqual([3, 4]);
-    expect(props.onEdit.mock.calls[2][0].editType).toEqual('addTentativePosition');
-    expect(props.onEdit.mock.calls[2][0].editContext.position).toEqual([5, 6]);
-  });
-
-  it(`doesn't change the data`, () => {
-    const expectedData = {
-      type: 'FeatureCollection',
-      features: [],
-    };
-
-    expect(props.onEdit.mock.calls[0][0].updatedData).toEqual(expectedData);
-    expect(props.onEdit.mock.calls[1][0].updatedData).toEqual(expectedData);
-    expect(props.onEdit.mock.calls[2][0].updatedData).toEqual(expectedData);
-  });
+  mode.handleClick(createClickEvent([0, 2]), props);
+  mode.handleClick(createClickEvent([2, 2]), props);
+  mode.handleClick(createClickEvent([2, 0]), props);
 });
 
 describe('after double-clicking', () => {
   beforeEach(() => {
     mode.handleClick(
       createClickEvent(
-        [5.0000001, 6.0000001],
+        [-1, -1],
         [
           {
             index: -1,
@@ -73,11 +49,14 @@ describe('after double-clicking', () => {
         type: 'Feature',
         properties: {},
         geometry: {
-          type: 'LineString',
+          type: 'Polygon',
           coordinates: [
-            [1, 2],
-            [3, 4],
-            [5, 6],
+            [
+              [0, 2],
+              [2, 0],
+              [2, 2],
+              [0, 2],
+            ],
           ],
         },
       },
@@ -97,11 +76,14 @@ describe('after hitting enter', () => {
         type: 'Feature',
         properties: {},
         geometry: {
-          type: 'LineString',
+          type: 'Polygon',
           coordinates: [
-            [1, 2],
-            [3, 4],
-            [5, 6],
+            [
+              [0, 2],
+              [2, 0],
+              [2, 2],
+              [0, 2],
+            ],
           ],
         },
       },

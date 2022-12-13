@@ -75,7 +75,7 @@ export default class EditingMode extends BaseMode {
     }
 
     const pickedObject = picked.object;
-    switch (pickedObject.type) {
+    switch (pickedObject.type.toLowerCase()) {
       case ELEMENT_TYPE.FEATURE:
       case ELEMENT_TYPE.FILL:
       case ELEMENT_TYPE.EDIT_HANDLE:

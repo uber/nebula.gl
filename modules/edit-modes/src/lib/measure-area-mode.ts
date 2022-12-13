@@ -16,6 +16,15 @@ export class MeasureAreaMode extends DrawPolygonMode {
     super.handleClick(event, propsWithoutEdit);
   }
 
+  handleKeyUp(event: KeyboardEvent, props: ModeProps<FeatureCollection>): void {
+    const propsWithoutEdit = {
+      ...props,
+      onEdit: () => {},
+    };
+
+    super.handleKeyUp(event, propsWithoutEdit);
+  }
+
   getTooltips(props: ModeProps<FeatureCollection>): Tooltip[] {
     const tentativeGuide = this.getTentativeGuide(props);
 

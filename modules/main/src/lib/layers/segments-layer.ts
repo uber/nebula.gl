@@ -80,7 +80,7 @@ export default class SegmentsLayer extends NebulaLayer {
     const defaultColor: [number, number, number, number] = [0x0, 0x0, 0x0, 0xff];
     const { objects, updateTrigger } = this.deckCache;
 
-    return new PathMarkerLayer({
+    return new PathMarkerLayer<any>({
       id: `segments-${this.id}`,
       data: objects,
       opacity: 1,

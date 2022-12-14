@@ -31,9 +31,9 @@ export class DrawPolygonByDraggingMode extends DrawPolygonMode {
   handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollection>) {
     this.addClickSequence(event);
     const clickSequence = this.getClickSequence();
-    // @ts-ignore
+    // @ts-expect-error cancel() not typed
     if (this.handleDraggingThrottled && this.handleDraggingThrottled.cancel) {
-      // @ts-ignore
+      // @ts-expect-error cancel() not typed
       this.handleDraggingThrottled.cancel();
     }
 
@@ -92,9 +92,7 @@ export class DrawPolygonByDraggingMode extends DrawPolygonMode {
       }
     } else if (event.key === 'Escape') {
       this.resetClickSequence();
-      // @ts-ignore
       if (this.handleDraggingThrottled) {
-        // @ts-ignore
         this.handleDraggingThrottled = null;
       }
       props.onEdit({

@@ -1,8 +1,7 @@
 /* eslint-env browser */
 
-import { CompositeLayer } from '@deck.gl/core';
+import { CompositeLayer, CompositeLayerProps, DefaultProps } from '@deck.gl/core/typed';
 import { PolygonLayer } from '@deck.gl/layers';
-import { CompositeLayerProps } from '@deck.gl/core/lib/composite-layer';
 import { polygon } from '@turf/helpers';
 import turfBuffer from '@turf/buffer';
 import turfDifference from '@turf/difference';
@@ -25,13 +24,13 @@ const MODE_CONFIG_MAP = {
   [SELECTION_TYPE.RECTANGLE]: { dragToDraw: true },
 };
 
-interface SelectionLayerProps extends CompositeLayerProps<any> {
+interface SelectionLayerProps<DataT> extends CompositeLayerProps<DataT> {
   layerIds: any[];
   onSelect: (info: any) => any;
   selectionType: string | null;
 }
 
-const defaultProps: SelectionLayerProps = {
+const defaultProps: DefaultProps<SelectionLayerProps<any>> = {
   selectionType: SELECTION_TYPE.RECTANGLE,
   layerIds: [],
   onSelect: () => {},
@@ -68,20 +67,16 @@ const PASS_THROUGH_PROPS = [
   'getTentativeFillColor',
   'getTentativeLineWidth',
 ];
-export default class SelectionLayer<
-  D,
-  P extends SelectionLayerProps = SelectionLayerProps
-> extends CompositeLayer<D, P> {
+export default class SelectionLayer<DataT, ExtraPropsT> extends CompositeLayer<
+  ExtraPropsT & Required<SelectionLayerProps<DataT>>
+> {
   static layerName = 'SelectionLayer';
   static defaultProps = defaultProps;
 
   _selectRectangleObjects(coordinates: any) {
     const { layerIds, onSelect } = this.props;
-    // @ts-ignore
     const [x1, y1] = this.context.viewport.project(coordinates[0][0]);
-    // @ts-ignore
     const [x2, y2] = this.context.viewport.project(coordinates[0][2]);
-    // @ts-ignore
     const pickingInfos = this.context.deck.pickObjects({
       x: Math.min(x1, x2),
       y: Math.min(y1, y2),
@@ -95,7 +90,6 @@ export default class SelectionLayer<
 
   _selectPolygonObjects(coordinates: any) {
     const { layerIds, onSelect } = this.props;
-    // @ts-ignore
     const mousePoints = coordinates[0].map((c) => this.context.viewport.project(c));
 
     const allX = mousePoints.map((mousePoint) => mousePoint[0]);
@@ -130,7 +124,6 @@ export default class SelectionLayer<
 
     // HACK, find a better way
     setTimeout(() => {
-      // @ts-ignore
       const pickingInfos = this.context.deck.pickObjects({
         x,
         y,
@@ -156,7 +149,7 @@ export default class SelectionLayer<
       if (this.props[p] !== undefined) inheritedProps[p] = this.props[p];
     });
 
-    const layers = [
+    const layers: any[] = [
       new EditableGeoJsonLayer(
         this.getSubLayerProps({
           id: LAYER_ID_GEOJSON,
@@ -184,9 +177,7 @@ export default class SelectionLayer<
     if (pendingPolygonSelection) {
       const { bigPolygon } = pendingPolygonSelection;
       layers.push(
-        // @ts-ignore
         new PolygonLayer(
-          // @ts-ignore
           this.getSubLayerProps({
             id: LAYER_ID_BLOCKER,
             pickable: true,

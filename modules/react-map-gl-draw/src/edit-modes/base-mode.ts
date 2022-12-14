@@ -63,7 +63,7 @@ export default class BaseMode implements EditMode<FeatureCollection, GuideFeatur
     if (!coordinates) {
       return null;
     }
-    // @ts-ignore
+    // @ts-expect-error narrow type of coordinates
     return coordinates.map((coord, i) => {
       return {
         type: 'Feature',
@@ -83,9 +83,8 @@ export default class BaseMode implements EditMode<FeatureCollection, GuideFeatur
     });
   }
 
-  getSelectedFeature(props: ModeProps<FeatureCollection>, featureIndex: number | null | undefined) {
+  getSelectedFeature(props: ModeProps<FeatureCollection>, featureIndex?: number | null) {
     const { data, selectedIndexes } = props;
-    // @ts-ignore
     const features = data && data.features;
 
     const selectedIndex = isNumeric(featureIndex)

@@ -4,6 +4,7 @@ import NebulaLayer from '../nebula-layer';
 import { toDeckColor } from '../utils';
 import { PROJECTED_PIXEL_SIZE_MULTIPLIER } from '../constants';
 import DeckCache from '../deck-renderer/deck-cache';
+import { Color } from '../../types';
 
 export default class TextsLayer extends NebulaLayer {
   deckCache: DeckCache<any, any>;
@@ -14,7 +15,7 @@ export default class TextsLayer extends NebulaLayer {
   }
 
   render({ nebula }: Record<string, any>) {
-    const defaultColor = [0x0, 0x0, 0x0, 0xff];
+    const defaultColor: Color = [0x0, 0x0, 0x0, 0xff];
     const { objects, updateTrigger } = this.deckCache;
 
     const { zoom } = nebula.props.viewport;
@@ -26,12 +27,10 @@ export default class TextsLayer extends NebulaLayer {
       fp64: false,
       pickable: false,
 
-      // @ts-ignore
-      getText: (nf) => nf.style.text,
-      // @ts-ignore
-      getPosition: (nf) => nf.geoJson.geometry.coordinates,
-      // @ts-ignore
-      getColor: (nf) => toDeckColor(nf.style.fillColor) || defaultColor,
+      getText: (nf: any) => nf.style.text,
+      getPosition: (nf: any) => nf.geoJson.geometry.coordinates,
+      getColor: (nf: { style: { fillColor: Color } }) =>
+        toDeckColor(nf.style.fillColor) || defaultColor,
 
       // TODO: layer should offer option to scale with zoom
       sizeScale: 1 / Math.pow(2, 20 - zoom),

@@ -1,5 +1,5 @@
 {
-  "name": "example-advance",
+  "name": "example-advanced",
   "private": true,
   "version": "1.0.4",
   "scripts": {
@@ -8,10 +8,10 @@
     "types-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@deck.gl/core": "^8.6.0",
-    "@deck.gl/layers": "^8.6.0",
-    "@deck.gl/mesh-layers": "^8.6.0",
-    "@deck.gl/react": "^8.6.0",
+    "@deck.gl/core": "^8.8.17",
+    "@deck.gl/layers": "^8.8.17",
+    "@deck.gl/mesh-layers": "^8.8.17",
+    "@deck.gl/react": "^8.8.17",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-map-gl": "^5.2.1",

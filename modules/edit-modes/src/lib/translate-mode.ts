@@ -124,7 +124,7 @@ export class TranslateMode extends GeoJsonEditMode {
             return null;
           });
 
-          // @ts-ignore
+          // @ts-expect-error turf types
           updatedData = updatedData.replaceGeometry(selectedIndex, {
             type: feature.geometry.type,
             coordinates,

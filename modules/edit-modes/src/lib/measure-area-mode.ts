@@ -10,7 +10,6 @@ export class MeasureAreaMode extends DrawPolygonMode {
   handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>) {
     const propsWithoutEdit = {
       ...props,
-      // @ts-ignore
       onEdit: () => {},
     };
 
@@ -20,7 +19,6 @@ export class MeasureAreaMode extends DrawPolygonMode {
   handleKeyUp(event: KeyboardEvent, props: ModeProps<FeatureCollection>): void {
     const propsWithoutEdit = {
       ...props,
-      // @ts-ignore
       onEdit: () => {},
     };
 
@@ -43,7 +41,7 @@ export class MeasureAreaMode extends DrawPolygonMode {
         text = formatTooltip(area);
       } else {
         // By default, round to 2 decimal places and append units
-        // @ts-ignore
+        // @ts-expect-error are isn't string
         text = `${parseFloat(area).toFixed(2)} ${units}`;
       }
 

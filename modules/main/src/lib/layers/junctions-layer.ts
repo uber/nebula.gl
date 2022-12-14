@@ -20,7 +20,7 @@ export default class JunctionsLayer extends NebulaLayer {
       id: `junctions-${this.id}`,
       data: objects,
       opacity: 1,
-      // @ts-ignore
+      // @ts-expect-error check deck types
       fp64: false,
       pickable: true,
       getPosition: (nf) => nf.geoJson.geometry.coordinates,

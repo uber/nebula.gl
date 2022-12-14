@@ -6,6 +6,8 @@ import turfBuffer from '@turf/buffer';
 import turfDifference from '@turf/difference';
 import turfDistance from '@turf/distance';
 
+import { Color } from '../../types';
+
 const POLYGON_LINE_COLOR = [0, 255, 0, 255];
 const POLYGON_FILL_COLOR = [255, 255, 255, 90];
 const POLYGON_LINE_WIDTH = 2;
@@ -99,7 +101,8 @@ export default class DeckDrawer {
   ): { redraw: boolean; deactivate: boolean } {
     // capture all events (mouse-up is needed to prevent us stuck in moving map)
     if (event.type !== 'mouseup') event.stopPropagation();
-    // @ts-ignore
+
+    // @ts-expect-error revisit selectionType type
     this.usePolygon = selectionType === SELECTION_TYPE.POLYGON;
 
     let redraw = false;
@@ -158,7 +161,7 @@ export default class DeckDrawer {
 
   _makeStartPointHighlight(center: [number, number]): number[] {
     const buffer = turfBuffer(point(center), POLYGON_THRESHOLD / 4.0);
-    // @ts-ignore
+    // @ts-expect-error revisit return type
     return turfBboxPolygon(turfBbox(buffer)).geometry.coordinates;
   }
 
@@ -230,7 +233,6 @@ export default class DeckDrawer {
       new PolygonLayer({
         id: LAYER_ID_VIEW,
         data,
-        // @ts-ignore
         fp64: false,
         opacity: 1.0,
         pickable: false,
@@ -238,27 +240,20 @@ export default class DeckDrawer {
         lineWidthMaxPixels: POLYGON_LINE_WIDTH,
         lineDashJustified: true,
         getLineDashArray: (x) => POLYGON_DASHES,
-        // @ts-ignore
-        getLineColor: (obj) => obj.lineColor || [0, 0, 0, 255],
-        // @ts-ignore
-        getFillColor: (obj) => obj.fillColor || [0, 0, 0, 255],
-        // @ts-ignore
-        getPolygon: (o) => o.polygon,
+        getLineColor: (obj: { lineColor?: Color }) => obj.lineColor || [0, 0, 0, 255],
+        getFillColor: (obj: { fillColor?: Color }) => obj.fillColor || [0, 0, 0, 255],
+        getPolygon: (o: { polygon?: any }) => o.polygon,
       }),
       new PolygonLayer({
         id: LAYER_ID_PICK,
         data: dataPick,
-        // @ts-ignore
-        getLineColor: (obj) => obj.lineColor || [0, 0, 0, 255],
-        // @ts-ignore
-        getFillColor: (obj) => obj.fillColor || [0, 0, 0, 255],
-        // @ts-ignore
+        getLineColor: (obj: { lineColor?: Color }) => obj.lineColor || [0, 0, 0, 255],
+        getFillColor: (obj: { fillColor?: Color }) => obj.fillColor || [0, 0, 0, 255],
         fp64: false,
         opacity: 1.0,
         stroked: false,
         pickable: true,
-        // @ts-ignore
-        getPolygon: (o) => o.polygon,
+        getPolygon: (o: { polygon?: any }) => o.polygon,
       }),
     ];
   }

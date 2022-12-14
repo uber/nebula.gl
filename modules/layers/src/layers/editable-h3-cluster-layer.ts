@@ -1,6 +1,7 @@
 /* eslint-env browser */
 
 import { H3ClusterLayer } from '@deck.gl/geo-layers';
+import { DefaultProps } from '@deck.gl/core/typed';
 import { ViewMode } from '@nebula.gl/edit-modes';
 import { polyfill, geoToH3 } from 'h3-js';
 import { PROJECTED_PIXEL_SIZE_MULTIPLIER } from '../constants';
@@ -14,7 +15,7 @@ const EMPTY_FEATURE_COLLECTION = {
   features: [],
 };
 
-export interface EditableH3ClusterLayerProps<D> extends EditableLayerProps<D> {
+export type EditableH3ClusterLayerProps<DataT> = EditableLayerProps<DataT> & {
   resolution?: number;
   mode?: any;
   modeConfig?: any;
@@ -28,9 +29,9 @@ export interface EditableH3ClusterLayerProps<D> extends EditableLayerProps<D> {
   lineWidthMinPixels?: number;
   lineWidthMaxPixels?: number;
   lineWidthUnits?: string;
-}
+};
 
-const defaultProps: EditableH3ClusterLayerProps<any> = {
+const defaultProps: DefaultProps<EditableH3ClusterLayerProps<any>> = {
   mode: DEFAULT_EDIT_MODE,
 
   ...EditableGeoJsonLayer.defaultProps,
@@ -113,6 +114,7 @@ export default class EditableH3ClusterLayer extends EditableLayer<
                 }
                 break;
               case 'addFeature':
+                // @ts-expect-error accessing resolved data
                 const updatedData = [...this.props.data];
                 const { modeConfig } = this.props;
 

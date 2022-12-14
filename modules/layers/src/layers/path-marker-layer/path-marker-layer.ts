@@ -1,4 +1,4 @@
-import { CompositeLayer, COORDINATE_SYSTEM } from '@deck.gl/core/typed';
+import { CompositeLayer, COORDINATE_SYSTEM, DefaultProps } from '@deck.gl/core/typed';
 import { ScatterplotLayer } from '@deck.gl/layers';
 import { SimpleMeshLayer } from '@deck.gl/mesh-layers';
 import PathOutlineLayer, { PathOutlineLayerProps } from '../path-outline-layer/path-outline-layer';
@@ -31,23 +31,27 @@ const DEFAULT_MARKER_LAYER_PROPS = {
   mesh: new Arrow2DGeometry({ headSize: ARROW_HEAD_SIZE, tailWidth: ARROW_TAIL_WIDTH }),
 };
 
-const defaultProps: PathMarkerLayerProps<any> = Object.assign({}, PathOutlineLayer.defaultProps, {
-  MarkerLayer: DEFAULT_MARKER_LAYER,
-  markerLayerProps: DEFAULT_MARKER_LAYER_PROPS,
+const defaultProps: DefaultProps<PathMarkerLayerProps<any>> = Object.assign(
+  {},
+  PathOutlineLayer.defaultProps,
+  {
+    MarkerLayer: DEFAULT_MARKER_LAYER,
+    markerLayerProps: DEFAULT_MARKER_LAYER_PROPS,
 
-  sizeScale: 100,
-  fp64: false,
+    sizeScale: 100,
+    fp64: false,
 
-  highlightIndex: -1,
-  highlightPoint: null,
+    highlightIndex: -1,
+    highlightPoint: null,
 
-  getPath: (x) => x.path,
-  getColor: (x) => x.color,
-  getMarkerColor: (x) => [0, 0, 0, 255],
-  getDirection: (x) => x.direction,
-  getMarkerPercentages: (object, { lineLength }) =>
-    lineLength > DISTANCE_FOR_MULTI_ARROWS ? [0.25, 0.5, 0.75] : [0.5],
-});
+    getPath: (x) => x.path,
+    getColor: (x) => x.color,
+    getMarkerColor: (x) => [0, 0, 0, 255],
+    getDirection: (x) => x.direction,
+    getMarkerPercentages: (object, { lineLength }) =>
+      lineLength > DISTANCE_FOR_MULTI_ARROWS ? [0.25, 0.5, 0.75] : [0.5],
+  }
+);
 
 export default class PathMarkerLayer<
   DataT = any,

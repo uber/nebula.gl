@@ -2,7 +2,7 @@ import { EventEmitter } from 'events';
 
 import document from 'global/document';
 import window from 'global/window';
-import { WebMercatorViewport } from '@deck.gl/core';
+import { WebMercatorViewport } from '@deck.gl/core/typed';
 
 import DeckDrawer from './deck-renderer/deck-drawer';
 import LayerMouseEvent from './layer-mouse-event';
@@ -148,11 +148,11 @@ export default class Nebula {
   };
 
   getMouseGroundPosition(event: Record<string, any>) {
-    return this.wmViewport.unproject([event.offsetX, event.offsetY]);
+    return this.wmViewport.unproject([event.offsetX, event.offsetY]) as [number, number];
   }
 
   unprojectMousePosition(mousePosition: [number, number]): [number, number] {
-    return this.wmViewport.unproject(mousePosition);
+    return this.wmViewport.unproject(mousePosition) as [number, number];
   }
 
   _handleDeckGLEvent(event: Record<string, any>) {

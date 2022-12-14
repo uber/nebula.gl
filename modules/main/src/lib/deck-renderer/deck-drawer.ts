@@ -6,6 +6,8 @@ import turfBuffer from '@turf/buffer';
 import turfDifference from '@turf/difference';
 import turfDistance from '@turf/distance';
 
+import { Color } from '../../types';
+
 const POLYGON_LINE_COLOR = [0, 255, 0, 255];
 const POLYGON_FILL_COLOR = [255, 255, 255, 90];
 const POLYGON_LINE_WIDTH = 2;
@@ -238,20 +240,20 @@ export default class DeckDrawer {
         lineWidthMaxPixels: POLYGON_LINE_WIDTH,
         lineDashJustified: true,
         getLineDashArray: (x) => POLYGON_DASHES,
-        getLineColor: (obj) => obj.lineColor || [0, 0, 0, 255],
-        getFillColor: (obj) => obj.fillColor || [0, 0, 0, 255],
-        getPolygon: (o) => o.polygon,
+        getLineColor: (obj: { lineColor?: Color }) => obj.lineColor || [0, 0, 0, 255],
+        getFillColor: (obj: { fillColor?: Color }) => obj.fillColor || [0, 0, 0, 255],
+        getPolygon: (o: { polygon?: any }) => o.polygon,
       }),
       new PolygonLayer({
         id: LAYER_ID_PICK,
         data: dataPick,
-        getLineColor: (obj) => obj.lineColor || [0, 0, 0, 255],
-        getFillColor: (obj) => obj.fillColor || [0, 0, 0, 255],
+        getLineColor: (obj: { lineColor?: Color }) => obj.lineColor || [0, 0, 0, 255],
+        getFillColor: (obj: { fillColor?: Color }) => obj.fillColor || [0, 0, 0, 255],
         fp64: false,
         opacity: 1.0,
         stroked: false,
         pickable: true,
-        getPolygon: (o) => o.polygon,
+        getPolygon: (o: { polygon?: any }) => o.polygon,
       }),
     ];
   }

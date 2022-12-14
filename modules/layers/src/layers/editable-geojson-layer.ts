@@ -270,8 +270,8 @@ const modeNameMapping = {
 // };
 
 export default class EditableGeoJsonLayer extends EditableLayer<
-  any,
-  EditableGeojsonLayerProps<any>
+  FeatureCollection,
+  EditableGeojsonLayerProps<FeatureCollection>
 > {
   static layerName = 'EditableGeoJsonLayer';
   static defaultProps = defaultProps;
@@ -390,10 +390,14 @@ export default class EditableGeoJsonLayer extends EditableLayer<
     }
 
     let selectedFeatures = [];
-    if (Array.isArray(props.selectedFeatureIndexes)) {
+    if (
+      Array.isArray(props.selectedFeatureIndexes) &&
+      typeof props.data === 'object' &&
+      'features' in props.data
+    ) {
       // TODO: needs improved testing, i.e. checking for duplicates, NaNs, out of range numbers, ...
-      // @ts-expect-error properly type layer's data
-      selectedFeatures = props.selectedFeatureIndexes.map((elem) => props.data.features[elem]);
+      const propsData = props.data as FeatureCollection;
+      selectedFeatures = props.selectedFeatureIndexes.map((elem) => propsData.features[elem]);
     }
 
     this.setState({ selectedFeatures });

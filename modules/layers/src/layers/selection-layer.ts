@@ -149,7 +149,7 @@ export default class SelectionLayer<DataT, ExtraPropsT> extends CompositeLayer<
       if (this.props[p] !== undefined) inheritedProps[p] = this.props[p];
     });
 
-    const layers = [
+    const layers: any[] = [
       new EditableGeoJsonLayer(
         this.getSubLayerProps({
           id: LAYER_ID_GEOJSON,

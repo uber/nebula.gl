@@ -1,6 +1,7 @@
 import { PathLayer, PathLayerProps } from '@deck.gl/layers/typed';
+import type { DefaultProps, LayerContext } from '@deck.gl/core/typed';
 import GL from '@luma.gl/constants';
-import { Framebuffer, Texture2D, LayerContext, DefaultProps } from '@luma.gl/core';
+import { Framebuffer, Texture2D } from '@luma.gl/core';
 import outline from '../../shaderlib/outline/outline';
 import { UNIT } from '../../constants';
 
@@ -103,7 +104,7 @@ export default class PathOutlineLayer<
     // Render the outline shadowmap (based on segment z orders)
     const { outlineFramebuffer, dummyTexture } = this.state;
     outlineFramebuffer.resize();
-    outlineFramebuffer.clear({ color: true, depth: true });
+    outlineFramebuffer.clear({ color: true, depth: true, stencil: true });
 
     this.state.model.updateModuleSettings({
       outlineEnabled: true,

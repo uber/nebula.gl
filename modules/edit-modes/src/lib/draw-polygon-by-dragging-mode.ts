@@ -31,9 +31,9 @@ export class DrawPolygonByDraggingMode extends DrawPolygonMode {
   handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollection>) {
     this.addClickSequence(event);
     const clickSequence = this.getClickSequence();
-    // @ts-ignore
+    // @ts-expect-error cancel() not typed
     if (this.handleDraggingThrottled && this.handleDraggingThrottled.cancel) {
-      // @ts-ignore
+      // @ts-expect-error cancel() not typed
       this.handleDraggingThrottled.cancel();
     }
 
@@ -44,13 +44,12 @@ export class DrawPolygonByDraggingMode extends DrawPolygonMode {
         coordinates: [[...clickSequence, clickSequence[0]]],
       };
 
-      this.resetClickSequence();
-
       const editAction = this.getAddFeatureOrBooleanPolygonAction(polygonToAdd, props);
       if (editAction) {
         props.onEdit(editAction);
       }
     }
+    this.resetClickSequence();
   }
 
   handleDraggingAux(event: DraggingEvent, props: ModeProps<FeatureCollection>) {
@@ -60,12 +59,48 @@ export class DrawPolygonByDraggingMode extends DrawPolygonMode {
     if (!clickedEditHandle) {
       // Don't add another point right next to an existing one.
       this.addClickSequence(event);
+      props.onEdit({
+        updatedData: props.data,
+        editType: 'addTentativePosition',
+        editContext: {
+          position: event.mapCoords,
+        },
+      });
     }
   }
 
   handleDragging(event: DraggingEvent, props: ModeProps<FeatureCollection>) {
     if (this.handleDraggingThrottled) {
       this.handleDraggingThrottled(event, props);
+    }
+  }
+
+  handleKeyUp(event: KeyboardEvent, props: ModeProps<FeatureCollection>) {
+    if (event.key === 'Enter') {
+      const clickSequence = this.getClickSequence();
+      if (clickSequence.length > 2) {
+        const polygonToAdd: Polygon = {
+          type: 'Polygon',
+          coordinates: [[...clickSequence, clickSequence[0]]],
+        };
+        this.resetClickSequence();
+
+        const editAction = this.getAddFeatureOrBooleanPolygonAction(polygonToAdd, props);
+        if (editAction) {
+          props.onEdit(editAction);
+        }
+      }
+    } else if (event.key === 'Escape') {
+      this.resetClickSequence();
+      if (this.handleDraggingThrottled) {
+        this.handleDraggingThrottled = null;
+      }
+      props.onEdit({
+        // Because the new drawing feature is dropped, so the data will keep as the same.
+        updatedData: props.data,
+        editType: 'cancelFeature',
+        editContext: {},
+      });
     }
   }
 }

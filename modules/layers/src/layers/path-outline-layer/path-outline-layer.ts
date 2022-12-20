@@ -1,5 +1,5 @@
-import { PathLayer } from '@deck.gl/layers';
-import { PathLayerProps } from '@deck.gl/layers/path-layer/path-layer';
+import { PathLayer, PathLayerProps } from '@deck.gl/layers/typed';
+import type { DefaultProps, LayerContext } from '@deck.gl/core/typed';
 import GL from '@luma.gl/constants';
 import { Framebuffer, Texture2D } from '@luma.gl/core';
 import outline from '../../shaderlib/outline/outline';
@@ -20,22 +20,29 @@ const FS_CODE = `\
   gl_FragColor = outline_filterColor(gl_FragColor);
 `;
 
-export interface PathOutlineLayerProps<D> extends PathLayerProps<D> {
+export type PathOutlineLayerProps<DataT> = PathLayerProps<DataT> & {
   dashJustified?: boolean;
-  getDashArray?: [number, number] | ((d: D) => [number, number] | null);
-  getZLevel?: (d: D, index: number) => number;
-}
+  getDashArray?: [number, number] | ((d: DataT) => [number, number] | null);
+  getZLevel?: (d: DataT, index: number) => number;
+};
 
-const defaultProps: PathOutlineLayerProps<any> = {
+const defaultProps: DefaultProps<PathOutlineLayerProps<any>> = {
   getZLevel: () => 0,
 };
 
 export default class PathOutlineLayer<
-  D,
-  P extends PathOutlineLayerProps<D> = PathOutlineLayerProps<D>
-> extends PathLayer<D, P> {
+  DataT = any,
+  ExtraPropsT = Record<string, unknown>
+> extends PathLayer<DataT, ExtraPropsT & Required<PathOutlineLayerProps<DataT>>> {
   static layerName = 'PathOutlineLayer';
   static defaultProps = defaultProps;
+
+  state: {
+    model?: any;
+    pathTesselator: any;
+    outlineFramebuffer: Framebuffer;
+    dummyTexture: Texture2D;
+  };
 
   // Override getShaders to inject the outline module
   getShaders() {
@@ -47,8 +54,9 @@ export default class PathOutlineLayer<
     });
   }
 
-  initializeState(context: any) {
-    super.initializeState(context);
+  // @ts-expect-error PathLayer is missing LayerContext arg
+  initializeState(context: LayerContext) {
+    super.initializeState();
 
     // Create an outline "shadow" map
     // TODO - we should create a single outlineMap for all layers
@@ -58,6 +66,7 @@ export default class PathOutlineLayer<
     });
 
     // Create an attribute manager
+    // @ts-expect-error check whether this.getAttributeManager works here
     this.state.attributeManager.addInstanced({
       instanceZLevel: {
         size: 1,
@@ -95,7 +104,7 @@ export default class PathOutlineLayer<
     // Render the outline shadowmap (based on segment z orders)
     const { outlineFramebuffer, dummyTexture } = this.state;
     outlineFramebuffer.resize();
-    outlineFramebuffer.clear({ color: true, depth: true });
+    outlineFramebuffer.clear({ color: true, depth: true, stencil: true });
 
     this.state.model.updateModuleSettings({
       outlineEnabled: true,

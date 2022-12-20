@@ -14,7 +14,7 @@ const DEFAULT_DIRECTION = { forward: true, backward: false };
 
 export default function createPathMarkers({
   data,
-  getPath = (x) => x.path,
+  getPath = (x, context) => x.path,
   getDirection = (x) => x.direction,
   getColor = (x) => DEFAULT_COLOR,
   getMarkerPercentages = (x, info) => [0.5],
@@ -23,7 +23,7 @@ export default function createPathMarkers({
   const markers = [];
 
   for (const object of data) {
-    const path = getPath(object);
+    const path = getPath(object, null);
     const direction = getDirection(object) || DEFAULT_DIRECTION;
     const color = getColor(object);
 
@@ -34,7 +34,6 @@ export default function createPathMarkers({
     const lineLength = getLineLength(vPoints);
 
     // Ask for where to put markers
-    // @ts-ignore
     const percentages = getMarkerPercentages(object, { lineLength });
 
     // Create the markers

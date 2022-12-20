@@ -69,7 +69,7 @@ export class ModifyMode extends GeoJsonEditMode {
           (lineString, prefix) => {
             const lineStringFeature = toLineString(lineString);
             const candidateIntermediatePoint = this.getNearestPoint(
-              // @ts-ignore
+              // @ts-expect-error turf types too wide
               lineStringFeature,
               referencePoint,
               props.modeConfig && props.modeConfig.viewport

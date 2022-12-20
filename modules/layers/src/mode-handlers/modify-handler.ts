@@ -62,7 +62,7 @@ export class ModifyHandler extends ModeHandler {
             const lineStringFeature = toLineString(lineString);
 
             const candidateIntermediatePoint = this.nearestPointOnLine(
-              // @ts-ignore
+              // @ts-expect-error turf type diff
               lineStringFeature,
               referencePoint
             );

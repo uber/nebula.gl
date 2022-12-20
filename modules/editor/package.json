@@ -2,7 +2,7 @@
   "name": "@nebula.gl/editor",
   "description": "A suite of 3D-enabled data editing layers, suitable for deck.gl",
   "license": "MIT",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "author": "Georgios Karnas <georgios@uber.com>",
   "repository": {
     "type": "git",
@@ -40,8 +40,6 @@
     "test-fast": "yarn test-node",
     "test-ci": "yarn lint && node test/node-ci.js",
     "test-cover": "NODE_ENV=test tape -r babel-register test/node.js && nyc report",
-    "test-node": "(cd ../.. && node test/node.js)",
-    "test-dist": "(cd ../.. && node test/node-dist.js)",
     "test-browser": "webpack-dev-server --env.test --progress --hot --open",
     "jest": "(cd ../.. && jest src)",
     "bench": "node test/bench/node.js",
@@ -52,7 +50,7 @@
     "@loaders.gl/core": "^2.1.2",
     "@loaders.gl/wkt": "^2.1.2",
     "@maphubs/tokml": "^0.5.2",
-    "@nebula.gl/edit-modes": "1.0.3",
+    "@nebula.gl/edit-modes": "1.0.4",
     "@tmcw/togeojson": "^3.2.0",
     "@types/downloadjs": "1.4.1",
     "@types/styled-react-modal": "1.2.0",
@@ -69,5 +67,5 @@
   "devDependencies": {
     "sinon": "^9.0.1"
   },
-  "gitHead": "4eb929f50b89ea745cb92d7ba3d17df025a962e4"
+  "gitHead": "8374ab0ac62a52ae8a6b14276694cabced43de35"
 }

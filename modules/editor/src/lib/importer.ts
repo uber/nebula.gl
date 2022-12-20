@@ -58,14 +58,14 @@ function getCleanedFeature(feature: Feature): Feature {
   const properties = feature.properties || {};
 
   let geometry = feature.geometry;
-  // @ts-ignore
+  // @ts-expect-error no overlap, optimize
   if (geometry.type === 'GeometryCollection' && geometry.geometries.length === 1) {
     // There's only one geometry
-    // @ts-ignore
+    // @ts-expect-error no overlap, optimize
     geometry = geometry.geometries[0];
-    // @ts-ignore
+    // @ts-expect-error no overlap, optimize
   } else if (geometry.type === 'GeometryCollection' && geometry.geometries.length > 1) {
-    // @ts-ignore
+    // @ts-expect-error no overlap, optimize
     const types = new Set(geometry.geometries.map((g) => g.type));
     if (types.size === 1) {
       // See if it can be combined into a Multi* geometry
@@ -74,14 +74,14 @@ function getCleanedFeature(feature: Feature): Feature {
         // Combine all the Polygons into a single MultiPolygon
         geometry = {
           type: 'MultiPolygon',
-          // @ts-ignore
+          // @ts-expect-error no overlap, optimize
           coordinates: geometry.geometries.map((g) => g.coordinates),
         };
       } else if (type === 'LineString') {
         // Combine all the LineStrings into a single MultiLineString
         geometry = {
           type: 'MultiLineString',
-          // @ts-ignore
+          // @ts-expect-error no overlap, optimize
           coordinates: geometry.geometries.map((g) => g.coordinates),
         };
       }
@@ -91,7 +91,7 @@ function getCleanedFeature(feature: Feature): Feature {
     }
   }
 
-  // @ts-ignore
+  // @ts-expect-error narrow types
   return {
     type: 'Feature',
     id,

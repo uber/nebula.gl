@@ -4,7 +4,7 @@ import { StaticMap } from 'react-map-gl';
 import CSS from 'csstype';
 
 import DeckGL from '@deck.gl/react';
-import { WebMercatorViewport } from '@deck.gl/core';
+import { WebMercatorViewport } from '@deck.gl/core/typed';
 import { TextLayer } from '@deck.gl/layers';
 
 import {
@@ -235,6 +235,7 @@ export default class Example extends React.Component<
     viewState = Object.assign(viewState, { height, width });
 
     const editableGeoJsonLayer = new EditableGeoJsonLayer({
+      // @ts-expect-error according to docs FeatureCollection should be valid type here
       data: this.state.testFeatures,
       selectedFeatureIndexes,
       pickable: true,
@@ -294,6 +295,7 @@ export default class Example extends React.Component<
     const nebulaLayers = [segmentsLayer];
     const deckLayers = this.nebula.updateAndGetRenderedLayers(
       nebulaLayers,
+      // @ts-expect-error outdated nebula.gl-react?
       new WebMercatorViewport(viewState),
       this
     );

@@ -1,7 +1,7 @@
 {
   "dependencies": {
-    "@deck.gl/core": "^8.6.0",
-    "@deck.gl/react": "^8.6.0",
+    "@deck.gl/core": "^8.8.17",
+    "@deck.gl/react": "^8.8.17",
     "@nebula.gl/overlays": "^0.18.4",
     "@turf/helpers": "6.1.4",
     "global": "4.3.2",

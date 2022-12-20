@@ -32,7 +32,7 @@ export class DrawEllipseByBoundingBoxHandler extends TwoClickPolygonHandler {
 
     const xSemiAxis = Math.max(distance(point(polygonPoints[0]), point(polygonPoints[1])), 0.001);
     const ySemiAxis = Math.max(distance(point(polygonPoints[0]), point(polygonPoints[3])), 0.001);
-    // @ts-ignore
+    // @ts-expect-error turf types diff
     this._setTentativeFeature(ellipse(centerCoordinates, xSemiAxis, ySemiAxis));
 
     return result;

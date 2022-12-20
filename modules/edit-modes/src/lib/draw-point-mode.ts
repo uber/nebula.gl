@@ -1,5 +1,5 @@
 import { ClickEvent, PointerMoveEvent, ModeProps, TentativeFeature } from '../types';
-import { FeatureCollection } from '../geojson-types';
+import { FeatureCollection, Point } from '../geojson-types';
 import { GeoJsonEditMode } from './geojson-edit-mode';
 
 export class DrawPointMode extends GeoJsonEditMode {
@@ -20,11 +20,11 @@ export class DrawPointMode extends GeoJsonEditMode {
   }
 
   handleClick({ mapCoords }: ClickEvent, props: ModeProps<FeatureCollection>): void {
-    const geometry = {
+    const geometry: Point = {
       type: 'Point',
       coordinates: mapCoords,
     };
-    // @ts-ignore
+
     props.onEdit(this.getAddFeatureAction(geometry, props.data));
   }
 

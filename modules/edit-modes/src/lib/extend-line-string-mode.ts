@@ -46,15 +46,13 @@ export class ExtendLineStringMode extends GeoJsonEditMode {
   }
 
   getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
-    const guides = {
+    const guides: GuideFeatureCollection = {
       type: 'FeatureCollection',
       features: [],
     };
 
     const selectedLineString = this.getSingleSelectedLineString(props);
     if (!selectedLineString) {
-      // nothing to do
-      // @ts-ignore
       return guides;
     }
 
@@ -79,7 +77,7 @@ export class ExtendLineStringMode extends GeoJsonEditMode {
         coordinates: [startPosition, mapCoords],
       },
     });
-    // @ts-ignore
+
     return guides;
   }
 

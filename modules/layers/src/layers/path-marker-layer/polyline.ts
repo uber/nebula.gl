@@ -8,8 +8,8 @@ export function getClosestPointOnLine({ p, p1, p2, clampToLine = true }) {
   if (clampToLine) {
     dotProduct = clamp(dotProduct, 0, 1);
   }
-  // @ts-ignore
-  return lineVector.lerp(dotProduct);
+
+  return lineVector.lerp(p1, p2, dotProduct);
 }
 
 // Return the closest point on a line segment

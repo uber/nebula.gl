@@ -6,6 +6,7 @@ import {
   ModeProps,
   GuideFeatureCollection,
   TentativeFeature,
+  GuideFeature,
 } from '../types';
 import { Polygon, FeatureCollection } from '../geojson-types';
 import { getPickedEditHandle } from '../utils';
@@ -49,7 +50,7 @@ export class DrawPolygonMode extends GeoJsonEditMode {
   getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
     const clickSequence = this.getClickSequence();
 
-    const guides = {
+    const guides: GuideFeatureCollection = {
       type: 'FeatureCollection',
       features: [],
     };
@@ -59,7 +60,7 @@ export class DrawPolygonMode extends GeoJsonEditMode {
       guides.features.push(tentativeFeature);
     }
 
-    const editHandles = clickSequence.map((clickedCoord, index) => ({
+    const editHandles: GuideFeature[] = clickSequence.map((clickedCoord, index) => ({
       type: 'Feature',
       properties: {
         guideType: 'editHandle',
@@ -74,7 +75,7 @@ export class DrawPolygonMode extends GeoJsonEditMode {
     }));
 
     guides.features.push(...editHandles);
-    // @ts-ignore
+
     return guides;
   }
 
@@ -152,6 +153,14 @@ export class DrawPolygonMode extends GeoJsonEditMode {
           props.onEdit(editAction);
         }
       }
+    } else if (event.key === 'Escape') {
+      this.resetClickSequence();
+      props.onEdit({
+        // Because the new drawing feature is dropped, so the data will keep as the same.
+        updatedData: props.data,
+        editType: 'cancelFeature',
+        editContext: {},
+      });
     }
   }
 

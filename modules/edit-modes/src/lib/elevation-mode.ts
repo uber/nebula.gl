@@ -48,14 +48,14 @@ export class ElevationMode extends ModifyMode {
   handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>) {
     const editHandle = getPickedEditHandle(event.pointerDownPicks);
     const position = editHandle ? editHandle.geometry.coordinates : event.mapCoords;
-    // @ts-ignore
+    // @ts-expect-error return type too wide
     super.handlePointerMove(this.makeElevatedEvent(event, position, props), props);
   }
 
   handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollection>) {
     const editHandle = getPickedEditHandle(event.picks);
     const position = editHandle ? editHandle.geometry.coordinates : event.mapCoords;
-    // @ts-ignore
+    // @ts-expect-error return type too wide
     super.handleStopDragging(this.makeElevatedEvent(event, position, props), props);
   }
 

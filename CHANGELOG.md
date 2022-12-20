@@ -4,6 +4,16 @@ _All notable changes to this project will be documented in this file. This proje
 
 <!-- INSERT HERE -->
 
+## [1.0.4](https://github.com/uber/nebula.gl/compare/v1.0.2...v1.0.4) - 2022-10-04
+
+### Changes
+
+* v1.0.4
+* Fix #786: bug in EditableGeojsonLayer.getCursor (#802)
+* Set default value to zIndex (#756)
+* v1.0.3
+* Fix issue where overlay items ignored z-index (#753)
+
 ## [v1.0.2-alpha.2](https://github.com/uber/nebula.gl/compare/v1.0.2-alpha.1...v1.0.2-alpha.2) - Feb 22, 2022
 
 ### Changes

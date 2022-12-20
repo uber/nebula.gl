@@ -2,8 +2,7 @@
 
 import tokml from '@maphubs/tokml';
 import { stringify as stringifyWkt } from 'wellknown';
-// @ts-ignore
-import { AnyGeoJson, Geometry, PolygonalGeometry } from '@nebula.gl/edit-modes';
+import { AnyGeoJson, Geometry } from '@nebula.gl/edit-modes';
 
 export type ExportParameters = {
   data: string;
@@ -42,13 +41,13 @@ export function toKml(geoJson: AnyGeoJson, filename: string): ExportParameters {
 export function toWkt(geoJson: AnyGeoJson, filename: string): ExportParameters {
   let wkt = '';
   if (geoJson.type === 'Feature') {
-    // @ts-ignore
+    // @ts-expect-error geojson type diff
     wkt = stringifyWkt(geoJson);
   } else {
     // feature collection
     wkt = '';
     for (const feature of geoJson.features) {
-      // @ts-ignore
+      // @ts-expect-error geojson type diff
       wkt += `${stringifyWkt(feature)}\n`;
     }
     if (wkt.length > 0) {
@@ -104,7 +103,7 @@ function getPolygonalStats(geometry: Geometry) {
     };
   }
 
-  const polygonal: PolygonalGeometry = geometry;
+  const polygonal = geometry;
 
   let pointCount = 0;
   let ringCount = 0;

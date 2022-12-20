@@ -1,7 +1,14 @@
 import turfDistance from '@turf/distance';
 import turfMidpoint from '@turf/midpoint';
 import { FeatureCollection } from '../geojson-types';
-import { ClickEvent, PointerMoveEvent, ModeProps, GuideFeatureCollection, Tooltip } from '../types';
+import {
+  ClickEvent,
+  PointerMoveEvent,
+  ModeProps,
+  GuideFeatureCollection,
+  Tooltip,
+  GuideFeature,
+} from '../types';
 import { getPickedEditHandle } from '../utils';
 import { GeoJsonEditMode } from './geojson-edit-mode';
 
@@ -136,7 +143,7 @@ export class MeasureDistanceMode extends GeoJsonEditMode {
         ? [lastPointerMoveEvent.mapCoords]
         : [];
 
-    const guides = {
+    const guides: GuideFeatureCollection = {
       type: 'FeatureCollection',
       features: [],
     };
@@ -154,7 +161,7 @@ export class MeasureDistanceMode extends GeoJsonEditMode {
       });
     }
 
-    const editHandles = clickSequence.map((clickedCoord, index) => ({
+    const editHandles: GuideFeature[] = clickSequence.map((clickedCoord, index) => ({
       type: 'Feature',
       properties: {
         guideType: 'editHandle',
@@ -169,7 +176,7 @@ export class MeasureDistanceMode extends GeoJsonEditMode {
     }));
 
     guides.features.push(...editHandles);
-    // @ts-ignore
+
     return guides;
   }
 

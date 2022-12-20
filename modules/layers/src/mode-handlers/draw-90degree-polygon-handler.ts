@@ -119,7 +119,7 @@ export class Draw90DegreePolygonHandler extends ModeHandler {
 
     // Trigger pointer move right away in order for it to update edit handles (to support double-click)
     const fakePointerMoveEvent = {
-      screenCoords: [-1, -1],
+      screenCoords: [-1, -1] as Position,
       groundCoords: event.groundCoords,
       picks: [],
       isDragging: false,
@@ -128,7 +128,7 @@ export class Draw90DegreePolygonHandler extends ModeHandler {
       pointerDownGroundCoords: null,
       sourceEvent: null,
     };
-    // @ts-ignore
+
     this.handlePointerMove(fakePointerMoveEvent);
 
     return editAction;

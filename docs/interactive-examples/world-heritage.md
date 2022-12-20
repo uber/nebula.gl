@@ -7,4 +7,4 @@ There is a more advanced example inside `examples/overlays`.
 
 ### Source
 
-https://github.com/uber/nebula.gl/blob/master/docs/examples/examples.js
+https://github.com/uber/nebula.gl/blob/master/examples/codesandbox/world-heritage/index.js

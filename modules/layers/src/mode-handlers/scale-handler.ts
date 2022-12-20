@@ -67,10 +67,15 @@ export class ScaleHandler extends ModeHandler {
     const startPosition = startDragPoint;
     const centroid = turfCentroid(this._geometryBeingScaled);
     const factor = getScaleFactor(centroid, startPosition, currentPoint);
-    // @ts-ignore
-    const scaledFeatures = turfTransformScale(this._geometryBeingScaled, factor, {
-      origin: centroid,
-    });
+    // @ts-expect-error turf type diff
+    const scaledFeatures: FeatureCollection = turfTransformScale(
+      // @ts-expect-error turf type diff
+      this._geometryBeingScaled,
+      factor,
+      {
+        origin: centroid,
+      }
+    );
 
     let updatedData = this.getImmutableFeatureCollection();
 

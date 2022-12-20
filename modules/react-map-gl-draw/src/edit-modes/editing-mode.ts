@@ -1,4 +1,4 @@
-import { ImmutableFeatureCollection } from '@nebula.gl/edit-modes';
+import { ImmutableFeatureCollection, GuideFeatureCollection } from '@nebula.gl/edit-modes';
 import type {
   Feature,
   FeatureCollection,
@@ -22,12 +22,10 @@ export default class EditingMode extends BaseMode {
   handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>) {
     const picked = event.picks && event.picks[0];
     const selectedFeatureIndex = props.selectedIndexes && props.selectedIndexes[0];
-    // @ts-ignore
     if (!picked || !picked.object || picked.featureIndex !== selectedFeatureIndex) {
       return;
     }
 
-    // @ts-ignore
     const { type: objectType, featureIndex, index } = picked;
     const feature = this.getSelectedFeature(props, featureIndex);
 
@@ -41,14 +39,14 @@ export default class EditingMode extends BaseMode {
       if (!coordinates) {
         return;
       }
-      // @ts-ignore
+
+      // @ts-expect-error narrow type of coordinates
       const insertIndex = (index + 1) % coordinates.length;
       const positionIndexes =
         feature.geometry.type === SHAPE.POLYGON ? [0, insertIndex] : [insertIndex];
       const insertMapCoords = this._getPointOnSegment(feature, picked, event.mapCoords);
 
       const updatedData = new ImmutableFeatureCollection(props.data)
-        // @ts-ignore
         .addPosition(featureIndex, positionIndexes, insertMapCoords)
         .getObject();
 
@@ -59,8 +57,8 @@ export default class EditingMode extends BaseMode {
           {
             featureIndex,
             editHandleIndex: insertIndex,
-            // @ts-ignore
-            screenCoords: props.viewport && props.viewport.project(insertMapCoords),
+            screenCoords:
+              props.viewport && props.viewport.project(insertMapCoords as [number, number]),
             mapCoords: insertMapCoords,
           },
         ],
@@ -72,13 +70,12 @@ export default class EditingMode extends BaseMode {
     // replace point
     const picked = event.picks && event.picks[0];
 
-    // @ts-ignore
-    if (!picked || !picked.Object || !isNumeric(picked.featureIndex)) {
+    if (!picked || !picked.object || !isNumeric(picked.featureIndex)) {
       return;
     }
 
     const pickedObject = picked.object;
-    switch (pickedObject.type) {
+    switch (pickedObject.type.toLowerCase()) {
       case ELEMENT_TYPE.FEATURE:
       case ELEMENT_TYPE.FILL:
       case ELEMENT_TYPE.EDIT_HANDLE:
@@ -94,20 +91,17 @@ export default class EditingMode extends BaseMode {
     props: ModeProps<FeatureCollection>
   ) {
     const { onEdit } = props;
-    // @ts-ignore
     const selectedFeature = this.getSelectedFeature(props);
     // nothing clicked
-    // @ts-ignore
+    // @ts-expect-error check event type
     const { isDragging, pointerDownPicks, screenCoords } = event;
     const { lastPointerMoveEvent } = props;
 
     const clicked = pointerDownPicks && pointerDownPicks[0];
-    // @ts-ignore
     if (!clicked || !clicked.object || !isNumeric(clicked.featureIndex)) {
       return;
     }
 
-    // @ts-ignore
     const { type: objectType, index: editHandleIndex } = clicked;
 
     // not dragging
@@ -154,12 +148,11 @@ export default class EditingMode extends BaseMode {
 
   handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>) {
     // no selected feature
-    // @ts-ignore
     const selectedFeature = this.getSelectedFeature(props);
     if (!selectedFeature) {
       return;
     }
-    // @ts-ignore
+    // @ts-expect-error check event type
     if (!event.isDragging) {
       return;
     }
@@ -180,7 +173,7 @@ export default class EditingMode extends BaseMode {
       return null;
     }
 
-    // @ts-ignore
+    // @ts-expect-error narrow coordinates' type
     let newCoordinates = [...coordinates];
 
     switch (type) {
@@ -197,10 +190,8 @@ export default class EditingMode extends BaseMode {
       case 'feature':
         const { dx, dy } = options;
 
-        // @ts-ignore
         newCoordinates = newCoordinates
           .map((mapCoords) => {
-            // @ts-ignore
             const pixels = viewport && viewport.project(mapCoords);
             if (pixels) {
               pixels[0] += dx;
@@ -227,7 +218,7 @@ export default class EditingMode extends BaseMode {
       case 'rectangle':
         // moved editHandleIndex and destination mapCoords
         newCoordinates = updateRectanglePosition(
-          // @ts-ignore
+          // @ts-expect-error turf type diff
           feature,
           options.editHandleIndex,
           options.mapCoords
@@ -254,7 +245,6 @@ export default class EditingMode extends BaseMode {
     const srcVertexIndex = picked.index;
     const targetVertexIndex = picked.index + 1;
     return findClosestPointOnLineSegment(
-      // @ts-ignore
       coordinates[srcVertexIndex],
       coordinates[targetVertexIndex],
       pickedMapCoords
@@ -269,11 +259,10 @@ export default class EditingMode extends BaseMode {
       return null;
     }
 
-    // @ts-ignore
+    // @ts-expect-error check event type
     const { isDragging, picks } = event;
     // if not pick segment
     const picked = picks && picks[0];
-    // @ts-ignore
     if (!picked || !isNumeric(picked.featureIndex) || picked.type !== ELEMENT_TYPE.SEGMENT) {
       return null;
     }
@@ -307,9 +296,8 @@ export default class EditingMode extends BaseMode {
       },
     };
   }
-  // @ts-ignore
-  getGuides(props: ModeProps<FeatureCollection>) {
-    // @ts-ignore
+
+  getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
     const selectedFeature = this.getSelectedFeature(props);
     const selectedFeatureIndex = props.selectedIndexes && props.selectedIndexes[0];
 
@@ -325,7 +313,6 @@ export default class EditingMode extends BaseMode {
     // cursor editHandle
     const cursorEditHandle = this._getCursorEditHandle(event, selectedFeature);
     if (cursorEditHandle) {
-      // @ts-ignore
       editHandles.push(cursorEditHandle);
     }
 

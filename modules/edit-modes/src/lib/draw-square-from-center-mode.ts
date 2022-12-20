@@ -40,7 +40,7 @@ export class DrawSquareFromCenterMode extends TwoClickPolygonMode {
     square.properties = square.properties || {};
     square.properties.shape = 'Square';
 
-    // @ts-ignore
+    // @ts-expect-error turf typing too wide
     return square;
   }
 }

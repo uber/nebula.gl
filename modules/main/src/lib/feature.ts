@@ -22,7 +22,7 @@ export default class Feature {
   }
 
   getCoords(): any {
-    // @ts-ignore
+    // @ts-expect-error revisit geometry type
     return this.geoJson.geometry.coordinates;
   }
 }

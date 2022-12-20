@@ -4,18 +4,111 @@ _All notable changes to this project will be documented in this file. This proje
 
 <!-- INSERT HERE -->
 
+## [1.0.4](https://github.com/uber/nebula.gl/compare/v1.0.2...v1.0.4) - 2022-10-04
+
+### Changes
+
+* v1.0.4
+* Fix #786: bug in EditableGeojsonLayer.getCursor (#802)
+* Set default value to zIndex (#756)
+* v1.0.3
+* Fix issue where overlay items ignored z-index (#753)
+
+## [v1.0.2-alpha.2](https://github.com/uber/nebula.gl/compare/v1.0.2-alpha.1...v1.0.2-alpha.2) - Feb 22, 2022
+
+### Changes
+
+- Add option to prevent overlapping lines when drawing a polygon (#549)
+- Add draw square mode (#528)
+- Support for tooltips for measure modes in react-map-gl-draw (#601)
+- Update the basic usage documentation (#606)
+- Add option to MeasureDistanceMode to center tooltips on line (#642)
+- Fix incorrectly positioned arrows in path-marker-layer (#730)
+- Fix example for path-marker-layer (#728)
+
+## [v1.0.2-alpha.1](https://github.com/uber/nebula.gl/compare/v1.0.2-alpha.0...v1.0.2-alpha.1) - Feb 9, 2022
+
+### Changes
+
+- Fix EditingMode drag to move (react-map-gl-draw) (#600)
+- Add Draw Rectangle From Center mode (#530)
+- Expose addTentativePosition (react-map-gl-draw) (#610)
+- Fix cursor issue when using the scale mode (#522)
+- Remove broken calculateZLevels (#678)
+- Fix link to modes in overview (#679)
+- Translate mode: translate shapes in screen space (#692)
+- EditableGeojsonLayer: pickingLineWidthExtraPixels prop (#694)
+- feat(modify-mode): an option to lock shape or rectangles and prevent insertion of point (#691)
+
+## [v1.0.2-alpha.0](https://github.com/uber/nebula.gl/compare/v1.0.1-alpha.0...v1.0.2-alpha.0) - Dec 8, 2021
+
+### Changes
+
+- bump deck types and prett fix (#676)
+
+## [v1.0.1-alpha.0](https://github.com/uber/nebula.gl/compare/v1.0.0-alpha.0...v1.0.1-alpha.0) - Dec 5, 2021
+
+### Changes
+
+- Update deck typings for deck 8.6 (#670)
+- Fix "Cannot read properties of undefined (reading 'clone')" (#671)
+
+## [v1.0.0-alpha.0](https://github.com/uber/nebula.gl/compare/v0.23.6...v1.0.0-alpha.0) - Nov 17, 2021
+
+### Changes
+
+- Bump deck.gl from 8.4.6 to 8.6.0, luma.gl from 8.4.3 to 8.5.10 (#660)
+
+## [0.23.6](https://github.com/uber/nebula.gl/compare/v0.23.3...v0.23.6) - 2021-09-08
+
+### Changes
+
+- Update outdated links (#631)
+- fix: "this.state is null" error (#628)
+
+## [0.23.3](https://github.com/uber/nebula.gl/compare/v0.22.3...v0.23.3) - 2021-07-14
+
+### Changes
+
+- Nearest point on line (#611)
+- Update EditableGeoJSONLayer docs and update outdated links (#587)
+- chore: Bump to deck/luma v8.4 (#529)
+- Add 'Draw Square From Center' mode (#531)
+- fix for optional properties (#546)
+
+## [0.22.3](https://github.com/uber/nebula.gl/compare/v0.22.2...v0.22.3) - 2021-02-22
+
+### Changes
+
+- [path-marker-layer] Fix arrow direction (#533)
+
+## [0.22.2](https://github.com/uber/nebula.gl/compare/v0.21.0...v0.22.2) - 2021-02-18
+
+### Changes
+
+- [path-marker-layer] Fix arrow direction for deck.gl version > 8.0 (#527)
+- Hide the intermediate edit handle when resizing a circle (#524)
+- Add resize circle mode (#521)
+- Remove handles / vertices (#433)
+- feat: Convert class properties to overridable methods. (#458)
+- fix: add support for DrawPolygonByDragging mode (#516)
+- feat(measure-distance-mode): Add multipoint support (#504)
+- Add missing @turf/helpers depenedency to overlays module (#488)
+- fix: issue with updateState when autoHighlight and pickable on (#486)
+- Flesh out the Toolbox component (#484)
+
 ## [0.21.0](https://github.com/uber/nebula.gl/compare/v0.20.2...v0.21.0) - 2020-10-01
 
 ### Changes
 
-* Create EditableH3ClusterLayer && Refactor Edit Modes to support updateTentativeFeature edit type (#483)
-* Updates to import and export components (#481)
+- Create EditableH3ClusterLayer && Refactor Edit Modes to support updateTentativeFeature edit type (#483)
+- Updates to import and export components (#481)
 
 ## [0.20.2](https://github.com/uber/nebula.gl/compare/v0.20.0...v0.20.2) - 2020-09-22
 
 ### Changes
 
-* Remove polygon fill from bounding guide in rotate and scale edit modes and fix scale mode cursor (#480)
+- Remove polygon fill from bounding guide in rotate and scale edit modes and fix scale mode cursor (#480)
 
 ## [0.20.0](https://github.com/uber/nebula.gl/compare/v0.19.3...v0.20.0) - 2020-08-31
 

@@ -46,24 +46,24 @@ export default class BaseMode implements EditMode<FeatureCollection, GuideFeatur
   }
   handleDragging(event: DraggingEvent, props: ModeProps<FeatureCollection>): void {}
 
-  getTentativeFeature = () => {
+  getTentativeFeature() {
     return this._tentativeFeature;
-  };
+  }
 
-  getEditHandles = () => {
+  getEditHandles() {
     return this._editHandles;
-  };
+  }
 
-  setTentativeFeature = (feature: Feature) => {
+  setTentativeFeature(feature: Feature) {
     this._tentativeFeature = feature;
-  };
+  }
 
   getEditHandlesFromFeature(feature: Feature, featureIndex: number | null | undefined) {
     const coordinates = getFeatureCoordinates(feature);
     if (!coordinates) {
       return null;
     }
-    // @ts-ignore
+    // @ts-expect-error narrow type of coordinates
     return coordinates.map((coord, i) => {
       return {
         type: 'Feature',
@@ -83,12 +83,8 @@ export default class BaseMode implements EditMode<FeatureCollection, GuideFeatur
     });
   }
 
-  getSelectedFeature = (
-    props: ModeProps<FeatureCollection>,
-    featureIndex: number | null | undefined
-  ) => {
+  getSelectedFeature(props: ModeProps<FeatureCollection>, featureIndex?: number | null) {
     const { data, selectedIndexes } = props;
-    // @ts-ignore
     const features = data && data.features;
 
     const selectedIndex = isNumeric(featureIndex)
@@ -96,5 +92,5 @@ export default class BaseMode implements EditMode<FeatureCollection, GuideFeatur
       : selectedIndexes && selectedIndexes[0];
 
     return features && features[selectedIndex];
-  };
+  }
 }

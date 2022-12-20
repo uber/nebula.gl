@@ -11,6 +11,8 @@ export { default as SegmentsLayer } from './lib/layers/segments-layer';
 
 export { default as NebulaCore } from './lib/nebula';
 
+export { PROJECTED_PIXEL_SIZE_MULTIPLIER } from './lib/constants';
+
 // Utils
 export { toDeckColor } from './lib/utils';
 
@@ -29,6 +31,7 @@ export { GeoJsonEditMode } from '@nebula.gl/edit-modes';
 
 // Alter modes
 export { ModifyMode } from '@nebula.gl/edit-modes';
+export { ResizeCircleMode } from '@nebula.gl/edit-modes';
 export { TranslateMode } from '@nebula.gl/edit-modes';
 export { ScaleMode } from '@nebula.gl/edit-modes';
 export { RotateMode } from '@nebula.gl/edit-modes';
@@ -44,6 +47,9 @@ export { DrawPointMode } from '@nebula.gl/edit-modes';
 export { DrawLineStringMode } from '@nebula.gl/edit-modes';
 export { DrawPolygonMode } from '@nebula.gl/edit-modes';
 export { DrawRectangleMode } from '@nebula.gl/edit-modes';
+export { DrawSquareMode } from '@nebula.gl/edit-modes';
+export { DrawRectangleFromCenterMode } from '@nebula.gl/edit-modes';
+export { DrawSquareFromCenterMode } from '@nebula.gl/edit-modes';
 export { DrawCircleByDiameterMode } from '@nebula.gl/edit-modes';
 export { DrawCircleFromCenterMode } from '@nebula.gl/edit-modes';
 export { DrawEllipseByBoundingBoxMode } from '@nebula.gl/edit-modes';

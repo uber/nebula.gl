@@ -35,7 +35,7 @@
 
 [![docs](https://i.imgur.com/bRDL1oh.gif)](https://nebula.gl)
 
-[nebula.gl](https://nebula.gl) provides editable and interactive map overlay layers, built using the power of [deck.gl](https://uber.github.io/deck.gl).
+[nebula.gl](https://nebula.gl) provides editable and interactive map overlay layers, built using the power of [deck.gl](https://deck.gl/).
 
 ## Getting started
 
@@ -52,7 +52,19 @@
 
 ### Installation
 
+For npm
+
+```bash
+npm install @nebula.gl/layers
+npm install @nebula.gl/overlays
+npm install @deck.gl/core
+npm install @deck.gl/react
+npm install @deck.gl/layers
 ```
+
+For yarn
+
+```bash
 yarn add @nebula.gl/layers
 yarn add @nebula.gl/overlays
 yarn add @deck.gl/core
@@ -64,7 +76,7 @@ yarn add @deck.gl/layers
 
 [EditableGeoJsonLayer](/docs/api-reference/layers/editable-geojson-layer.md) is implemented as a [deck.gl](https://deck.gl) layer. It provides the ability to view and edit multiple types of geometry formatted as [GeoJSON](https://tools.ietf.org/html/rfc7946) (an open standard format for geometry) including polygons, lines, and points.
 
-```js
+```jsx
 import DeckGL from '@deck.gl/react';
 import { EditableGeoJsonLayer, DrawPolygonMode } from 'nebula.gl';
 
@@ -103,7 +115,7 @@ class App extends React.Component {
 
 ### Useful examples (Codesandbox)
 
-* [Hello World (using deck.gl)](https://codesandbox.io/s/hello-world-nebulagl-csvsm)
-* [With Toolbox](https://codesandbox.io/s/hello-nebulagl-with-toolbox-oelkr)
-* [No React](https://codesandbox.io/s/deckgl-and-nebulagl-editablegeojsonlayer-no-react-p9yrs)
-* [Custom EditMode](https://codesandbox.io/s/connect-the-dots-mode-yow65)
+- [Hello World (using deck.gl)](https://codesandbox.io/s/hello-world-nebulagl-csvsm)
+- [With Toolbox](https://codesandbox.io/s/hello-nebulagl-with-toolbox-oelkr)
+- [No React](https://codesandbox.io/s/deckgl-and-nebulagl-editablegeojsonlayer-no-react-p9yrs)
+- [Custom EditMode](https://codesandbox.io/s/connect-the-dots-mode-yow65)

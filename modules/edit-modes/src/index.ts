@@ -6,6 +6,7 @@ export { GeoJsonEditMode } from './lib/geojson-edit-mode';
 
 // Alter modes
 export { ModifyMode } from './lib/modify-mode';
+export { ResizeCircleMode } from './lib/resize-circle-mode';
 export { TranslateMode } from './lib/translate-mode';
 export { ScaleMode } from './lib/scale-mode';
 export { RotateMode } from './lib/rotate-mode';
@@ -21,6 +22,9 @@ export { DrawPointMode } from './lib/draw-point-mode';
 export { DrawLineStringMode } from './lib/draw-line-string-mode';
 export { DrawPolygonMode } from './lib/draw-polygon-mode';
 export { DrawRectangleMode } from './lib/draw-rectangle-mode';
+export { DrawSquareMode } from './lib/draw-square-mode';
+export { DrawRectangleFromCenterMode } from './lib/draw-rectangle-from-center-mode';
+export { DrawSquareFromCenterMode } from './lib/draw-square-from-center-mode';
 export { DrawCircleByDiameterMode } from './lib/draw-circle-by-diameter-mode';
 export { DrawCircleFromCenterMode } from './lib/draw-circle-from-center-mode';
 export { DrawEllipseByBoundingBoxMode } from './lib/draw-ellipse-by-bounding-box-mode';

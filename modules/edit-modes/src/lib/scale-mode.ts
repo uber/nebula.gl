@@ -33,8 +33,8 @@ export class ScaleMode extends GeoJsonEditMode {
   _isSinglePointGeometrySelected = (geometry: FeatureCollection | null | undefined): boolean => {
     const { features } = geometry || {};
     if (Array.isArray(features) && features.length === 1) {
-      // @ts-ignore
-      const { type } = getGeom(features[0]);
+      // @ts-expect-error turf types diff
+      const { type }: { type: string } = getGeom(features[0]);
       return type === 'Point';
     }
     return false;
@@ -84,12 +84,13 @@ export class ScaleMode extends GeoJsonEditMode {
     }
 
     const oppositeHandle = this._getOppositeScaleHandle(this._selectedEditHandle);
-    const origin = getCoord(oppositeHandle);
-    // @ts-ignore
+    const origin = getCoord(oppositeHandle) as Position;
+
     const scaleFactor = getScaleFactor(origin, startDragPoint, currentPoint);
-    // @ts-ignore
+
+    // @ts-expect-error turf types diff
     const scaledFeatures: FeatureCollection = turfTransformScale(
-      // @ts-ignore
+      // @ts-expect-error turf types diff
       this._geometryBeingScaled,
       scaleFactor,
       { origin }
@@ -139,9 +140,7 @@ export class ScaleMode extends GeoJsonEditMode {
           ? selectedEditHandle
           : null;
 
-      if (selectedEditHandle) {
-        this.updateCursor(props);
-      }
+      this.updateCursor(props);
     }
   }
 
@@ -220,7 +219,7 @@ export class ScaleMode extends GeoJsonEditMode {
     });
 
     this._cornerGuidePoints = cornerGuidePoints;
-    // @ts-ignore
+    // @ts-expect-error turf types diff
     return featureCollection([polygonToLine(boundingBox), ...this._cornerGuidePoints]);
   }
 }

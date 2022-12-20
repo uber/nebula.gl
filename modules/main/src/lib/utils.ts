@@ -1,5 +1,5 @@
 export function toDeckColor(
-  color?: [number, number, number, number] | null | undefined,
+  color?: [number, number, number, number] | [number, number, number] | null | undefined,
   defaultColor: [number, number, number, number] = [255, 0, 0, 255]
 ): [number, number, number, number] {
   if (!Array.isArray(color)) {
@@ -36,7 +36,7 @@ export function toDeckColor(
 export function recursivelyTraverseNestedArrays(
   array: Array<any>,
   prefix: Array<number>,
-  fn: Function
+  fn: (array_: Array<any>, prefix_: Array<number>) => any
 ) {
   if (!Array.isArray(array[0])) {
     return true;

@@ -2,7 +2,7 @@
   "name": "nebula.gl",
   "description": "A suite of 3D-enabled data editing overlays, suitable for deck.gl",
   "license": "MIT",
-  "version": "0.21.1",
+  "version": "1.0.4",
   "author": "Georgios Karnas <georgios@uber.com>",
   "repository": {
     "type": "git",
@@ -40,8 +40,6 @@
     "test-fast": "yarn test-node",
     "test-ci": "yarn lint && node test/node-ci.js",
     "test-cover": "NODE_ENV=test tape -r babel-register test/node.js && nyc report",
-    "test-node": "(cd ../.. && node test/node.js)",
-    "test-dist": "(cd ../.. && node test/node-dist.js)",
     "test-browser": "webpack-dev-server --env.test --progress --hot --open",
     "jest": "(cd ../.. && jest src)",
     "bench": "node test/bench/node.js",
@@ -49,8 +47,8 @@
     "test-rendering": "(cd test/rendering-test && webpack-dev-server --config webpack.config.test-rendering.js --progress --hot --open)"
   },
   "dependencies": {
-    "@luma.gl/constants": "^8.0.1",
-    "@nebula.gl/layers": "0.21.1",
+    "@luma.gl/constants": "^8.5.16",
+    "@nebula.gl/layers": "1.0.4",
     "@turf/bbox": ">=4.0.0",
     "@turf/bbox-polygon": ">=4.0.0",
     "@turf/bearing": ">=4.0.0",
@@ -80,10 +78,12 @@
     "viewport-mercator-project": ">=6.0.0"
   },
   "peerDependencies": {
-    "@deck.gl/core": "^8.0.3",
-    "@deck.gl/geo-layers": "^8.0.3",
-    "@deck.gl/layers": "^8.0.3",
-    "@luma.gl/constants": "^8.0.1",
-    "@luma.gl/core": "^8.0.1"
-  }
+    "@deck.gl/core": "^8.8.17",
+    "@deck.gl/extensions": "^8.8.17",
+    "@deck.gl/geo-layers": "^8.8.17",
+    "@deck.gl/layers": "^8.8.17",
+    "@luma.gl/constants": "^8.5.16",
+    "@luma.gl/core": "^8.5.16"
+  },
+  "gitHead": "8374ab0ac62a52ae8a6b14276694cabced43de35"
 }

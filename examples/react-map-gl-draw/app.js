@@ -44,6 +44,7 @@ export default class App extends React.Component {
       // editor
       selectedMode: null,
       selectedFeatureIndex: null,
+      selectedEditHandleIndexes: [],
       selectable: false,
 
       features: featureCollection,
@@ -51,8 +52,26 @@ export default class App extends React.Component {
     this._editorRef = null;
   }
 
+  _onSelect = (selected) => {
+    this.setState({
+      selectedFeatureIndex: selected && selected.selectedFeatureIndex,
+      selectedEditHandleIndexes: selected && selected.selectedEditHandleIndexes,
+    });
+  };
+
   _onDelete = () => {
-    const { selectedFeatureIndex } = this.state;
+    const { selectedFeatureIndex, selectedEditHandleIndexes } = this.state;
+
+    if (selectedEditHandleIndexes?.length) {
+      try {
+        this._editorRef.deleteHandles(selectedFeatureIndex, selectedEditHandleIndexes);
+      } catch (error) {
+        // eslint-disable-next-line no-undef, no-console
+        console.error(error.message);
+      }
+      return;
+    }
+
     if (selectedFeatureIndex === null || selectedFeatureIndex === undefined) {
       return;
     }
@@ -104,9 +123,7 @@ export default class App extends React.Component {
         <Editor
           ref={(_) => (this._editorRef = _)}
           clickRadius={12}
-          onSelect={(selected) => {
-            this.setState({ selectedFeatureIndex: selected && selected.selectedFeatureIndex });
-          }}
+          onSelect={this._onSelect}
           featureStyle={getFeatureStyle}
           editHandleStyle={getEditHandleStyle}
           editHandleShape={'circle'}

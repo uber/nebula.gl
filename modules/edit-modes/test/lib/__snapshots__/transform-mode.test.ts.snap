@@ -95,47 +95,34 @@ Array [
 exports[`Transform mode correctly renders composited guides 3`] = `
 Array [
   Object {
-    "bbox": Array [
-      -1,
-      -1,
-      1,
-      1,
-    ],
     "geometry": Object {
       "coordinates": Array [
         Array [
-          Array [
-            -1,
-            -1,
-          ],
-          Array [
-            1,
-            -1,
-          ],
-          Array [
-            1,
-            1,
-          ],
-          Array [
-            -1,
-            1,
-          ],
-          Array [
-            -1,
-            -1,
-          ],
+          -1,
+          -1,
+        ],
+        Array [
+          1,
+          -1,
+        ],
+        Array [
+          1,
+          1,
+        ],
+        Array [
+          -1,
+          1,
+        ],
+        Array [
+          -1,
+          -1,
         ],
       ],
-      "type": "Polygon",
+      "type": "LineString",
     },
     "properties": Object {},
     "type": "Feature",
   },
-]
-`;
-
-exports[`Transform mode correctly renders composited guides 4`] = `
-Array [
   Object {
     "geometry": Object {
       "coordinates": Array [

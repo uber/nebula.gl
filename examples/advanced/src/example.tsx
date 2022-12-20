@@ -3,7 +3,7 @@
 import window from 'global/window';
 import * as React from 'react';
 import DeckGL from '@deck.gl/react';
-import { MapView, MapController } from '@deck.gl/core';
+import { MapView, MapController, RGBAColor } from '@deck.gl/core';
 import { StaticMap } from 'react-map-gl';
 import GL from '@luma.gl/constants';
 import circle from '@turf/circle';
@@ -12,6 +12,7 @@ import {
   EditableGeoJsonLayer,
   SelectionLayer,
   ModifyMode,
+  ResizeCircleMode,
   TranslateMode,
   TransformMode,
   ScaleMode,
@@ -25,6 +26,9 @@ import {
   DrawLineStringMode,
   DrawPolygonMode,
   DrawRectangleMode,
+  DrawSquareMode,
+  DrawRectangleFromCenterMode,
+  DrawSquareFromCenterMode,
   DrawCircleByDiameterMode,
   DrawCircleFromCenterMode,
   DrawEllipseByBoundingBoxMode,
@@ -85,7 +89,10 @@ const ALL_MODES: any = [
     category: 'View',
     modes: [
       { label: 'View', mode: ViewMode },
-      { label: 'Measure Distance', mode: MeasureDistanceMode },
+      {
+        label: 'Measure Distance',
+        mode: MeasureDistanceMode,
+      },
       { label: 'Measure Area', mode: MeasureAreaMode },
       { label: 'Measure Angle', mode: MeasureAngleMode },
     ],
@@ -99,7 +106,10 @@ const ALL_MODES: any = [
       { label: 'Draw 90° Polygon', mode: Draw90DegreePolygonMode },
       { label: 'Draw Polygon By Dragging', mode: DrawPolygonByDraggingMode },
       { label: 'Draw Rectangle', mode: DrawRectangleMode },
+      { label: 'Draw Rectangle From Center', mode: DrawRectangleFromCenterMode },
       { label: 'Draw Rectangle Using 3 Points', mode: DrawRectangleUsingThreePointsMode },
+      { label: 'Draw Square', mode: DrawSquareMode },
+      { label: 'Draw Square From Center', mode: DrawSquareFromCenterMode },
       { label: 'Draw Circle From Center', mode: DrawCircleFromCenterMode },
       { label: 'Draw Circle By Diameter', mode: DrawCircleByDiameterMode },
       { label: 'Draw Ellipse By Bounding Box', mode: DrawEllipseByBoundingBoxMode },
@@ -110,6 +120,7 @@ const ALL_MODES: any = [
     category: 'Alter',
     modes: [
       { label: 'Modify', mode: ModifyMode },
+      { label: 'Resize Circle', mode: ResizeCircleMode },
       { label: 'Elevation', mode: ElevationMode },
       { label: 'Translate', mode: new SnappableMode(new TranslateMode()) },
       { label: 'Rotate', mode: RotateMode },
@@ -132,7 +143,10 @@ const POLYGON_DRAWING_MODES = [
   Draw90DegreePolygonMode,
   DrawPolygonByDraggingMode,
   DrawRectangleMode,
+  DrawRectangleFromCenterMode,
   DrawRectangleUsingThreePointsMode,
+  DrawSquareMode,
+  DrawSquareFromCenterMode,
   DrawCircleFromCenterMode,
   DrawCircleByDiameterMode,
   DrawEllipseByBoundingBoxMode,
@@ -141,6 +155,9 @@ const POLYGON_DRAWING_MODES = [
 
 const TWO_CLICK_POLYGON_MODES = [
   DrawRectangleMode,
+  DrawSquareMode,
+  DrawRectangleFromCenterMode,
+  DrawSquareFromCenterMode,
   DrawCircleFromCenterMode,
   DrawCircleByDiameterMode,
   DrawEllipseByBoundingBoxMode,
@@ -185,7 +202,7 @@ function getEditHandleTypeFromEitherLayer(handleOrFeature) {
   return handleOrFeature.type;
 }
 
-function getEditHandleColor(handle: {}) {
+function getEditHandleColor(handle: {}): RGBAColor {
   switch (getEditHandleTypeFromEitherLayer(handle)) {
     case 'existing':
       return [0xff, 0x80, 0x00, 0xff];
@@ -336,7 +353,9 @@ export default class Example extends React.Component<
   };
 
   _download = () => {
-    const blob = new Blob([JSON.stringify(this.state.testFeatures)], { type: 'octet/stream' });
+    const blob = new Blob([JSON.stringify(this.state.testFeatures)], {
+      type: 'octet/stream',
+    });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = 'nebula.geojson';
@@ -374,10 +393,11 @@ export default class Example extends React.Component<
     return `rgba(${color}, ${alpha})`;
   }
 
-  _getDeckColorForFeature(index: number, bright: number, alpha: number) {
+  _getDeckColorForFeature(index: number, bright: number, alpha: number): RGBAColor {
     const length = FEATURE_COLORS.length;
     const color = FEATURE_COLORS[index % length].map((c) => c * bright * 255);
 
+    // @ts-ignore
     return [...color, alpha * 255];
   }
 
@@ -458,11 +478,17 @@ export default class Example extends React.Component<
               onClick={() => {
                 if (this.state.modeConfig && this.state.modeConfig.booleanOperation === operation) {
                   this.setState({
-                    modeConfig: { ...(this.state.modeConfig || {}), booleanOperation: null },
+                    modeConfig: {
+                      ...(this.state.modeConfig || {}),
+                      booleanOperation: null,
+                    },
                   });
                 } else {
                   this.setState({
-                    modeConfig: { ...(this.state.modeConfig || {}), booleanOperation: operation },
+                    modeConfig: {
+                      ...(this.state.modeConfig || {}),
+                      booleanOperation: operation,
+                    },
                   });
                 }
               }}
@@ -521,7 +547,9 @@ export default class Example extends React.Component<
             type="checkbox"
             checked={Boolean(this.state.modeConfig && this.state.modeConfig.lock90Degree)}
             onChange={(event) =>
-              this.setState({ modeConfig: { lock90Degree: Boolean(event.target.checked) } })
+              this.setState({
+                modeConfig: { lock90Degree: Boolean(event.target.checked) },
+              })
             }
           />
         </ToolboxControl>
@@ -564,15 +592,58 @@ export default class Example extends React.Component<
                 this.state.modeConfig.turfOptions.units) ||
               'kilometers'
             }
-            onChange={(event) =>
-              this.setState({ modeConfig: { turfOptions: { units: event.target.value } } })
-            }
+            onChange={(event) => {
+              const modeConfig = {
+                ...this.state.modeConfig,
+                turfOptions: { units: event.target.value },
+              };
+              this.setState({ modeConfig });
+            }}
           >
             <option value="kilometers">kilometers</option>
             <option value="miles">miles</option>
             <option value="degrees">degrees</option>
             <option value="radians">radians</option>
           </select>
+        </ToolboxControl>
+
+        <ToolboxTitle>Center Tooltips on Line</ToolboxTitle>
+        <ToolboxControl>
+          <input
+            type="checkbox"
+            checked={Boolean(this.state.modeConfig && this.state.modeConfig.centerTooltipsOnLine)}
+            onChange={(event) => {
+              const modeConfig = {
+                ...this.state.modeConfig,
+                centerTooltipsOnLine: Boolean(event.target.checked),
+              };
+              this.setState({ modeConfig });
+            }}
+          />
+        </ToolboxControl>
+      </ToolboxRow>
+    );
+  }
+
+  _renderDrawPolygonModeControls() {
+    return (
+      <ToolboxRow key="draw-polygon">
+        <ToolboxTitle>Prevent overlapping lines</ToolboxTitle>
+        <ToolboxControl>
+          <input
+            type="checkbox"
+            checked={Boolean(
+              this.state.modeConfig && this.state.modeConfig.preventOverlappingLines
+            )}
+            onChange={(event) =>
+              this.setState({
+                modeConfig: {
+                  ...(this.state.modeConfig || {}),
+                  preventOverlappingLines: Boolean(event.target.checked),
+                },
+              })
+            }
+          />
         </ToolboxControl>
       </ToolboxRow>
     );
@@ -599,6 +670,9 @@ export default class Example extends React.Component<
     }
     if (this.state.mode === MeasureDistanceMode) {
       controls.push(this._renderMeasureDistanceControls());
+    }
+    if (this.state.mode === DrawPolygonMode) {
+      controls.push(this._renderDrawPolygonModeControls());
     }
 
     return controls;
@@ -716,21 +790,30 @@ export default class Example extends React.Component<
           <ToolboxControl>
             <ToolboxButton
               onClick={() =>
-                this.setState({ selectedFeatureIndexes: [], selectionTool: SELECTION_TYPE.NONE })
+                this.setState({
+                  selectedFeatureIndexes: [],
+                  selectionTool: SELECTION_TYPE.NONE,
+                })
               }
             >
               Clear Selection
             </ToolboxButton>
             <ToolboxButton
               onClick={() =>
-                this.setState({ mode: ViewMode, selectionTool: SELECTION_TYPE.RECTANGLE })
+                this.setState({
+                  mode: ViewMode,
+                  selectionTool: SELECTION_TYPE.RECTANGLE,
+                })
               }
             >
               Rect Select
             </ToolboxButton>
             <ToolboxButton
               onClick={() =>
-                this.setState({ mode: ViewMode, selectionTool: SELECTION_TYPE.POLYGON })
+                this.setState({
+                  mode: ViewMode,
+                  selectionTool: SELECTION_TYPE.POLYGON,
+                })
               }
             >
               Lasso Select
@@ -744,8 +827,10 @@ export default class Example extends React.Component<
   }
 
   renderStaticMap(viewport: Record<string, any>) {
-    // @ts-ignore
-    return <StaticMap {...viewport} mapStyle={'mapbox://styles/mapbox/dark-v10'} />;
+    return (
+      // @ts-ignore
+      <StaticMap {...viewport} mapStyle={'mapbox://styles/mapbox/dark-v10'} />
+    );
   }
 
   _featureMenuClick(action: string) {
@@ -827,7 +912,7 @@ export default class Example extends React.Component<
     const { testFeatures, selectedFeatureIndexes, mode } = this.state;
     let { modeConfig } = this.state;
 
-    const viewport = {
+    const viewport: Record<string, any> = {
       ...this.state.viewport,
       height: window.innerHeight,
       width: window.innerWidth,
@@ -844,30 +929,41 @@ export default class Example extends React.Component<
       modeConfig = {
         ...modeConfig,
         viewport,
+        lockRectangles: true,
       };
-    } else if (mode instanceof SnappableMode && modeConfig && modeConfig.enableSnapping) {
-      // Snapping can be accomplished to features that aren't rendered in the same layer
-      modeConfig = {
-        ...modeConfig,
-        additionalSnapTargets: [
-          {
-            type: 'Feature',
-            properties: {},
-            geometry: {
-              type: 'Polygon',
-              coordinates: [
-                [
-                  [-122.52235, 37.734008],
-                  [-122.52217, 37.712706],
-                  [-122.49436, 37.711979],
-                  [-122.49725, 37.734306],
-                  [-122.52235, 37.734008],
+    } else if (mode instanceof SnappableMode && modeConfig) {
+      if (mode._handler instanceof TranslateMode) {
+        modeConfig = {
+          ...modeConfig,
+          viewport,
+          screenSpace: true,
+        };
+      }
+
+      if (modeConfig && modeConfig.enableSnapping) {
+        // Snapping can be accomplished to features that aren't rendered in the same layer
+        modeConfig = {
+          ...modeConfig,
+          additionalSnapTargets: [
+            {
+              type: 'Feature',
+              properties: {},
+              geometry: {
+                type: 'Polygon',
+                coordinates: [
+                  [
+                    [-122.52235, 37.734008],
+                    [-122.52217, 37.712706],
+                    [-122.49436, 37.711979],
+                    [-122.49725, 37.734306],
+                    [-122.52235, 37.734008],
+                  ],
                 ],
-              ],
+              },
             },
-          },
-        ],
-      };
+          ],
+        };
+      }
     } else if (mode === DrawPolygonByDraggingMode) {
       modeConfig = {
         ...modeConfig,
@@ -899,7 +995,7 @@ export default class Example extends React.Component<
       _subLayerProps = Object.assign(_subLayerProps, {
         geojson: {
           _subLayerProps: {
-            'line-strings': {
+            linestrings: {
               type: PathMarkerLayer,
               getMarkerColor: (x) => [255, 255, 255, 255],
               sizeScale: 1500,
@@ -992,12 +1088,15 @@ export default class Example extends React.Component<
 
     if (this.state.selectionTool) {
       layers.push(
+        // @ts-ignore
         new SelectionLayer({
           id: 'selection',
           // @ts-ignore
           selectionType: this.state.selectionTool,
           onSelect: ({ pickingInfos }) => {
-            this.setState({ selectedFeatureIndexes: pickingInfos.map((pi) => pi.index) });
+            this.setState({
+              selectedFeatureIndexes: pickingInfos.map((pi) => pi.index),
+            });
           },
           layerIds: ['geojson'],
 
@@ -1026,6 +1125,7 @@ export default class Example extends React.Component<
                 type: MapController,
                 doubleClickZoom: false,
               },
+              legacyMeterSizes: true,
             }),
           ]}
           onClick={this._onLayerClick}

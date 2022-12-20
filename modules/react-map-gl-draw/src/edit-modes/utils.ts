@@ -60,7 +60,11 @@ export function getScreenCoords(evt: MjolnirEvent) {
   return [Number(x), Number(y)];
 }
 
-export function findClosestPointOnLineSegment(p1: Position, p2: Position, p: Position) {
+export function findClosestPointOnLineSegment(
+  p1: Position,
+  p2: Position,
+  p: Position
+): Position | null {
   // line
   const k = (p2[1] - p1[1]) / (p2[0] - p1[0]);
   const b = p1[1] - k * p1[0];
@@ -79,7 +83,7 @@ export function findClosestPointOnLineSegment(p1: Position, p2: Position, p: Pos
   const qx = (k * p[1] + p[0] - k * b) / (k * k + 1);
   const qy = k * qx + b;
 
-  return inBounds(p1, p2, [qx, qy]) ? [qx, qy] : null;
+  return inBounds(p1, p2, [qx, qy]) ? ([qx, qy] as Position) : null;
 }
 
 export function getFeatureCoordinates(feature: Feature) {
@@ -102,7 +106,8 @@ export function updateRectanglePosition(
   if (!coordinates) {
     return null;
   }
-  // @ts-ignore
+
+  // @ts-expect-error narrow coordinates' type
   const points = coordinates.slice(0, 4);
   points[editHandleIndex % 4] = mapCoords;
 

@@ -1,9 +1,12 @@
+import lineIntersect from '@turf/line-intersect';
+import { lineString as turfLineString } from '@turf/helpers';
 import {
   ClickEvent,
   PointerMoveEvent,
   ModeProps,
   GuideFeatureCollection,
   TentativeFeature,
+  GuideFeature,
 } from '../types';
 import { Polygon, FeatureCollection } from '../geojson-types';
 import { getPickedEditHandle } from '../utils';
@@ -47,7 +50,7 @@ export class DrawPolygonMode extends GeoJsonEditMode {
   getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
     const clickSequence = this.getClickSequence();
 
-    const guides = {
+    const guides: GuideFeatureCollection = {
       type: 'FeatureCollection',
       features: [],
     };
@@ -57,7 +60,7 @@ export class DrawPolygonMode extends GeoJsonEditMode {
       guides.features.push(tentativeFeature);
     }
 
-    const editHandles = clickSequence.map((clickedCoord, index) => ({
+    const editHandles: GuideFeature[] = clickSequence.map((clickedCoord, index) => ({
       type: 'Feature',
       properties: {
         guideType: 'editHandle',
@@ -72,21 +75,34 @@ export class DrawPolygonMode extends GeoJsonEditMode {
     }));
 
     guides.features.push(...editHandles);
-    // @ts-ignore
+
     return guides;
   }
 
   handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>) {
     const { picks } = event;
     const clickedEditHandle = getPickedEditHandle(picks);
+    const clickSequence = this.getClickSequence();
+
+    let overlappingLines = false;
+    if (clickSequence.length > 2 && props.modeConfig && props.modeConfig.preventOverlappingLines) {
+      const currentLine = turfLineString([
+        clickSequence[clickSequence.length - 1],
+        event.mapCoords,
+      ]);
+      const otherLines = turfLineString([...clickSequence.slice(0, clickSequence.length - 1)]);
+      const intersectingPoints = lineIntersect(currentLine, otherLines);
+      if (intersectingPoints.features.length > 0) {
+        overlappingLines = true;
+      }
+    }
 
     let positionAdded = false;
-    if (!clickedEditHandle) {
+    if (!clickedEditHandle && !overlappingLines) {
       // Don't add another point right next to an existing one
       this.addClickSequence(event);
       positionAdded = true;
     }
-    const clickSequence = this.getClickSequence();
 
     if (
       clickSequence.length > 2 &&
@@ -121,6 +137,7 @@ export class DrawPolygonMode extends GeoJsonEditMode {
       });
     }
   }
+
   handleKeyUp(event: KeyboardEvent, props: ModeProps<FeatureCollection>) {
     if (event.key === 'Enter') {
       const clickSequence = this.getClickSequence();
@@ -136,8 +153,17 @@ export class DrawPolygonMode extends GeoJsonEditMode {
           props.onEdit(editAction);
         }
       }
+    } else if (event.key === 'Escape') {
+      this.resetClickSequence();
+      props.onEdit({
+        // Because the new drawing feature is dropped, so the data will keep as the same.
+        updatedData: props.data,
+        editType: 'cancelFeature',
+        editContext: {},
+      });
     }
   }
+
   handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>) {
     props.onUpdateCursor('cell');
     super.handlePointerMove(event, props);

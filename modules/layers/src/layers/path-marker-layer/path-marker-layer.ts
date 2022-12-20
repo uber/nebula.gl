@@ -1,7 +1,7 @@
-import { CompositeLayer, COORDINATE_SYSTEM } from '@deck.gl/core';
+import { CompositeLayer, COORDINATE_SYSTEM, DefaultProps } from '@deck.gl/core/typed';
 import { ScatterplotLayer } from '@deck.gl/layers';
 import { SimpleMeshLayer } from '@deck.gl/mesh-layers';
-import PathOutlineLayer from '../path-outline-layer/path-outline-layer';
+import PathOutlineLayer, { PathOutlineLayerProps } from '../path-outline-layer/path-outline-layer';
 import Arrow2DGeometry from './arrow-2d-geometry';
 
 import createPathMarkers from './create-path-markers';
@@ -14,29 +14,49 @@ const ARROW_TAIL_WIDTH = 0.05;
 
 const DEFAULT_MARKER_LAYER = SimpleMeshLayer;
 
+export type PathMarkerLayerProps<DataT> = PathOutlineLayerProps<DataT> & {
+  getDirection?: (x) => any;
+  getMarkerColor?: (x) => number[];
+  getMarkerPercentages?: (x: any, info: any) => number[];
+  highlightPoint?: any;
+  highlightIndex?: number;
+  MarkerLayer?: any;
+  markerLayerProps?: any;
+  sizeScale?: number;
+  fp64?: boolean;
+  nebulaLayer?: any;
+};
+
 const DEFAULT_MARKER_LAYER_PROPS = {
   mesh: new Arrow2DGeometry({ headSize: ARROW_HEAD_SIZE, tailWidth: ARROW_TAIL_WIDTH }),
 };
 
-const defaultProps = Object.assign({}, PathOutlineLayer.defaultProps, {
-  MarkerLayer: DEFAULT_MARKER_LAYER,
-  markerLayerProps: DEFAULT_MARKER_LAYER_PROPS,
+const defaultProps: DefaultProps<PathMarkerLayerProps<any>> = Object.assign(
+  {},
+  PathOutlineLayer.defaultProps,
+  {
+    MarkerLayer: DEFAULT_MARKER_LAYER,
+    markerLayerProps: DEFAULT_MARKER_LAYER_PROPS,
 
-  sizeScale: 100,
-  fp64: false,
+    sizeScale: 100,
+    fp64: false,
 
-  hightlightIndex: -1,
-  highlightPoint: null,
+    highlightIndex: -1,
+    highlightPoint: null,
 
-  getPath: (x) => x.path,
-  getColor: (x) => x.color,
-  getMarkerColor: (x) => [0, 0, 0, 255],
-  getDirection: (x) => x.direction,
-  getMarkerPercentages: (object, { lineLength }) =>
-    lineLength > DISTANCE_FOR_MULTI_ARROWS ? [0.25, 0.5, 0.75] : [0.5],
-});
+    getPath: (x) => x.path,
+    getColor: (x) => x.color,
+    getMarkerColor: (x) => [0, 0, 0, 255],
+    getDirection: (x) => x.direction,
+    getMarkerPercentages: (object, { lineLength }) =>
+      lineLength > DISTANCE_FOR_MULTI_ARROWS ? [0.25, 0.5, 0.75] : [0.5],
+  }
+);
 
-export default class PathMarkerLayer extends CompositeLayer<any> {
+export default class PathMarkerLayer<
+  DataT = any,
+  ExtraPropsT = Record<string, unknown>
+> extends CompositeLayer<ExtraPropsT & Required<PathMarkerLayerProps<DataT>>> {
   static layerName = 'PathMarkerLayer';
   static defaultProps = defaultProps;
 
@@ -47,7 +67,7 @@ export default class PathMarkerLayer extends CompositeLayer<any> {
       closestPoint: null,
     };
   }
-  // @ts-ignore
+
   projectFlat(xyz, viewport, coordinateSystem, coordinateOrigin) {
     if (coordinateSystem === COORDINATE_SYSTEM.METER_OFFSETS) {
       const [dx, dy] = viewport.metersToLngLatDelta(xyz);
@@ -73,7 +93,7 @@ export default class PathMarkerLayer extends CompositeLayer<any> {
         coordinateSystem,
         coordinateOrigin,
       } = this.props;
-      // @ts-ignore
+
       const { viewport } = this.context;
       const projectFlat = (o) => this.projectFlat(o, viewport, coordinateSystem, coordinateOrigin);
       this.state.markers = createPathMarkers({
@@ -97,7 +117,7 @@ export default class PathMarkerLayer extends CompositeLayer<any> {
     const { highlightPoint, highlightIndex } = this.props;
     if (highlightPoint && highlightIndex >= 0) {
       const object = this.props.data[highlightIndex];
-      const points = this.props.getPath(object);
+      const points = this.props.getPath(object, null);
       const { point } = getClosestPointOnPolyline({ points, p: highlightPoint });
       this.state.closestPoints = [
         {
@@ -120,7 +140,6 @@ export default class PathMarkerLayer extends CompositeLayer<any> {
     return [
       new PathOutlineLayer(
         this.props,
-        // @ts-ignore
         this.getSubLayerProps({
           id: 'paths',
           // Note: data has to be passed explicitly like this to avoid being empty
@@ -148,7 +167,6 @@ export default class PathMarkerLayer extends CompositeLayer<any> {
         new ScatterplotLayer({
           id: `${this.props.id}-highlight`,
           data: this.state.closestPoints,
-          // @ts-ignore
           fp64: this.props.fp64,
         }),
     ];

@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Feature } from '@nebula.gl/edit-modes';
+import { Feature, Tooltip } from '@nebula.gl/edit-modes';
 import { GeoJsonType, RenderState, Id } from './types';
 
 import { RENDER_STATE, SHAPE, GEOJSON_TYPE, GUIDE_TYPE, ELEMENT_TYPE } from './constants';
@@ -10,6 +10,7 @@ import { getFeatureCoordinates } from './edit-modes/utils';
 import {
   editHandleStyle as defaultEditHandleStyle,
   featureStyle as defaultFeatureStyle,
+  tooltipStyle as defaultTooltipStyle,
 } from './style';
 
 const defaultProps = {
@@ -19,6 +20,7 @@ const defaultProps = {
   editHandleShape: 'rect',
   editHandleStyle: defaultEditHandleStyle,
   featureStyle: defaultFeatureStyle,
+  tooltipStyle: defaultTooltipStyle,
   featuresDraggable: true,
 };
 
@@ -65,7 +67,10 @@ export default class Editor extends ModeHandler {
       draggingEditHandleIndex = pickedObject.index;
     }
 
-    if (editHandleIndex === draggingEditHandleIndex) {
+    if (
+      editHandleIndex === draggingEditHandleIndex ||
+      this.state.selectedEditHandleIndexes.includes(editHandleIndex)
+    ) {
       return RENDER_STATE.SELECTED;
     }
     // @ts-ignore
@@ -276,8 +281,10 @@ export default class Editor extends ModeHandler {
     const { featureStyle } = this.props;
     const {
       geometry: { type: geojsonType },
-      properties: { shape },
+      properties,
     } = feature;
+
+    const shape = properties?.shape;
 
     const coordinates = getFeatureCoordinates(feature);
     if (!coordinates || !Array.isArray(coordinates) || coordinates.length < 2) {
@@ -362,6 +369,23 @@ export default class Editor extends ModeHandler {
     }
 
     return [fill, committedPath, uncommittedPath, closingPath].filter(Boolean);
+  };
+
+  _renderTooltips = (tooltips: Tooltip[]) => {
+    const style = this._getStyleProp(this.props.tooltipStyle, null);
+    return (
+      <g key="feature-tooltips">
+        {tooltips.map((tooltip, index) => {
+          const elemKey = `${ELEMENT_TYPE.TOOLTIP}.${index}`;
+          const screenCoords = this.project([tooltip.position[0], tooltip.position[1]]);
+          return (
+            <text key={elemKey} x={screenCoords[0]} y={screenCoords[1]} style={style}>
+              {tooltip.text}
+            </text>
+          );
+        })}
+      </g>
+    );
   };
 
   _renderGuides = (guideFeatures: Feature[]) => {
@@ -542,9 +566,11 @@ export default class Editor extends ModeHandler {
       return null;
     }
     const {
-      properties: { shape },
+      properties,
       geometry: { type: geojsonType },
     } = feature;
+
+    const shape = properties?.shape;
     // @ts-ignore
     const path = this._getPathInScreenCoords(coordinates, geojsonType);
     if (!path) {
@@ -572,6 +598,7 @@ export default class Editor extends ModeHandler {
     const features = this.getFeatures();
     const guides = this._modeHandler && this._modeHandler.getGuides(this.getModeProps());
     const guideFeatures = guides && guides.features;
+    const tooltips = this._modeHandler && this._modeHandler.getTooltips(this.getModeProps());
 
     return (
       <svg key="draw-canvas" width="100%" height="100%">
@@ -581,6 +608,7 @@ export default class Editor extends ModeHandler {
         {guideFeatures && guideFeatures.length > 0 && (
           <g key="feature-guides">{this._renderGuides(guideFeatures)}</g>
         )}
+        {tooltips && this._renderTooltips(tooltips)}
       </svg>
     );
   };

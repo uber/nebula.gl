@@ -438,10 +438,8 @@ export default class EditableGeoJsonLayer extends EditableLayer<
     if (!this.props.selectedFeatureIndexes.length) {
       return false;
     }
-
-    // @ts-expect-error properly type layer's data
-    const featureIndex = this.props.data.features.indexOf(feature);
-    return this.props.selectedFeatureIndexes.includes(featureIndex);
+    
+    return this.state.selectedFeatures.includes(feature)
   }
 
   getPickingInfo({ info, sourceLayer }: Record<string, any>) {

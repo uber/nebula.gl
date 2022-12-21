@@ -671,6 +671,9 @@ export default class Example extends React.Component<
     if (this.state.mode === MeasureDistanceMode) {
       controls.push(this._renderMeasureDistanceControls());
     }
+    if (this.state.mode === ResizeCircleMode) {
+      controls.push(this._renderTwoClickPolygonControls());
+    }
     if (this.state.mode === DrawPolygonMode) {
       controls.push(this._renderDrawPolygonModeControls());
     }

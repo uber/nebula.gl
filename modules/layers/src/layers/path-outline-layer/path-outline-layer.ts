@@ -1,7 +1,9 @@
-import { PathLayer } from '@deck.gl/layers';
+import { PathLayer, PathLayerProps } from '@deck.gl/layers/typed';
+import type { DefaultProps, LayerContext } from '@deck.gl/core/typed';
 import GL from '@luma.gl/constants';
 import { Framebuffer, Texture2D } from '@luma.gl/core';
 import outline from '../../shaderlib/outline/outline';
+import { UNIT } from '../../constants';
 
 // TODO - this should be built into assembleShaders
 function injectShaderCode({ source, code = '' }) {
@@ -18,13 +20,29 @@ const FS_CODE = `\
   gl_FragColor = outline_filterColor(gl_FragColor);
 `;
 
-const defaultProps = {
-  getZLevel: { type: 'accessor', value: 0 },
+export type PathOutlineLayerProps<DataT> = PathLayerProps<DataT> & {
+  dashJustified?: boolean;
+  getDashArray?: [number, number] | ((d: DataT) => [number, number] | null);
+  getZLevel?: (d: DataT, index: number) => number;
 };
 
-export default class PathOutlineLayer extends PathLayer<any> {
+const defaultProps: DefaultProps<PathOutlineLayerProps<any>> = {
+  getZLevel: () => 0,
+};
+
+export default class PathOutlineLayer<
+  DataT = any,
+  ExtraPropsT = Record<string, unknown>
+> extends PathLayer<DataT, ExtraPropsT & Required<PathOutlineLayerProps<DataT>>> {
   static layerName = 'PathOutlineLayer';
   static defaultProps = defaultProps;
+
+  state: {
+    model?: any;
+    pathTesselator: any;
+    outlineFramebuffer: Framebuffer;
+    dummyTexture: Texture2D;
+  };
 
   // Override getShaders to inject the outline module
   getShaders() {
@@ -36,8 +54,9 @@ export default class PathOutlineLayer extends PathLayer<any> {
     });
   }
 
-  initializeState(context: any) {
-    super.initializeState(context);
+  // @ts-expect-error PathLayer is missing LayerContext arg
+  initializeState(context: LayerContext) {
+    super.initializeState();
 
     // Create an outline "shadow" map
     // TODO - we should create a single outlineMap for all layers
@@ -47,11 +66,11 @@ export default class PathOutlineLayer extends PathLayer<any> {
     });
 
     // Create an attribute manager
+    // @ts-expect-error check whether this.getAttributeManager works here
     this.state.attributeManager.addInstanced({
       instanceZLevel: {
         size: 1,
         type: GL.UNSIGNED_BYTE,
-        update: this.calculateZLevels,
         accessor: 'getZLevel',
       },
     });
@@ -61,17 +80,21 @@ export default class PathOutlineLayer extends PathLayer<any> {
   draw({ moduleParameters = {}, parameters, uniforms, context }) {
     // Need to calculate same uniforms as base layer
     const {
-      rounded,
+      jointRounded,
+      capRounded,
+      billboard,
       miterLimit,
+      widthUnits,
       widthScale,
       widthMinPixels,
       widthMaxPixels,
-      dashJustified,
     } = this.props;
 
     uniforms = Object.assign({}, uniforms, {
-      jointType: Number(rounded),
-      alignMode: Number(dashJustified),
+      jointType: Number(jointRounded),
+      capType: Number(capRounded),
+      billboard,
+      widthUnits: UNIT[widthUnits],
       widthScale,
       miterLimit,
       widthMinPixels,
@@ -81,7 +104,7 @@ export default class PathOutlineLayer extends PathLayer<any> {
     // Render the outline shadowmap (based on segment z orders)
     const { outlineFramebuffer, dummyTexture } = this.state;
     outlineFramebuffer.resize();
-    outlineFramebuffer.clear({ color: true, depth: true });
+    outlineFramebuffer.clear({ color: true, depth: true, stencil: true });
 
     this.state.model.updateModuleSettings({
       outlineEnabled: true,
@@ -110,23 +133,13 @@ export default class PathOutlineLayer extends PathLayer<any> {
     });
     this.state.model.draw({
       uniforms: Object.assign({}, uniforms, {
-        jointType: Number(rounded),
+        jointType: Number(jointRounded),
+        capType: Number(capRounded),
         widthScale: this.props.widthScale,
       }),
       parameters: {
         depthTest: false,
       },
-    });
-  }
-
-  calculateZLevels(attribute) {
-    const { getZLevel } = this.props;
-    const { pathTesselator } = this.state;
-
-    attribute.value = pathTesselator._updateAttribute({
-      target: attribute.value,
-      size: 1,
-      getValue: (object, index) => [getZLevel(object, index) || 0],
     });
   }
 }

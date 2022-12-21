@@ -85,9 +85,9 @@ export class GeoJsonEditMode implements EditMode<FeatureCollection, GuideFeature
 
   getTentativeGuide(props: ModeProps<FeatureCollection>): TentativeFeature | null | undefined {
     const guides = this.getGuides(props);
-
-    // @ts-ignore
-    return guides.features.find((f) => f.properties && f.properties.guideType === 'tentative');
+    return guides.features.find(
+      (f) => f.properties && f.properties.guideType === 'tentative'
+    ) as TentativeFeature;
   }
 
   isSelectionPicked(picks: Pick[], props: ModeProps<FeatureCollection>): boolean {
@@ -105,7 +105,7 @@ export class GeoJsonEditMode implements EditMode<FeatureCollection, GuideFeature
 
     const isPolygonal = geometry.type === 'Polygon' || geometry.type === 'MultiPolygon';
     if (isPolygonal) {
-      // @ts-ignore
+      // @ts-expect-error turf type too wide
       return rewind(feature);
     }
 
@@ -202,10 +202,10 @@ export class GeoJsonEditMode implements EditMode<FeatureCollection, GuideFeature
       if (modeConfig.booleanOperation === 'union') {
         updatedGeometry = turfUnion(selectedFeature, feature);
       } else if (modeConfig.booleanOperation === 'difference') {
-        // @ts-ignore
+        // @ts-expect-error selectedFeature type too wide
         updatedGeometry = turfDifference(selectedFeature, feature);
       } else if (modeConfig.booleanOperation === 'intersection') {
-        // @ts-ignore
+        // @ts-expect-error selectedFeature type too wide
         updatedGeometry = turfIntersect(selectedFeature, feature);
       } else {
         // eslint-disable-next-line no-console,no-undef
@@ -273,10 +273,10 @@ export class GeoJsonEditMode implements EditMode<FeatureCollection, GuideFeature
 }
 
 export function getIntermediatePosition(position1: Position, position2: Position): Position {
-  const intermediatePosition = [
+  const intermediatePosition: Position = [
     (position1[0] + position2[0]) / 2.0,
     (position1[1] + position2[1]) / 2.0,
   ];
-  // @ts-ignore
+
   return intermediatePosition;
 }

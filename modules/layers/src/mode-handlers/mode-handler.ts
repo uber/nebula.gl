@@ -229,10 +229,10 @@ export class ModeHandler {
       if (modeConfig.booleanOperation === 'union') {
         updatedGeometry = turfUnion(selectedFeature, feature);
       } else if (modeConfig.booleanOperation === 'difference') {
-        // @ts-ignore
+        // @ts-expect-error turf type diff
         updatedGeometry = turfDifference(selectedFeature, feature);
       } else if (modeConfig.booleanOperation === 'intersection') {
-        // @ts-ignore
+        // @ts-expect-error turf type diff
         updatedGeometry = turfIntersect(selectedFeature, feature);
       } else {
         // eslint-disable-next-line no-console,no-undef
@@ -298,11 +298,11 @@ export function getPickedEditHandle(
 }
 
 export function getIntermediatePosition(position1: Position, position2: Position): Position {
-  const intermediatePosition = [
+  const intermediatePosition: Position = [
     (position1[0] + position2[0]) / 2.0,
     (position1[1] + position2[1]) / 2.0,
   ];
-  // @ts-ignore
+
   return intermediatePosition;
 }
 
@@ -365,7 +365,7 @@ export function getEditHandlesForGeometry(
 
       break;
     default:
-      // @ts-ignore
+      // @ts-expect-error unexpected case
       throw Error(`Unhandled geometry type: ${geometry.type}`);
   }
 

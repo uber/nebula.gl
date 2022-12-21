@@ -48,6 +48,23 @@ test('Selected polygon feature can be translated', () => {
   expect(props.data.features[2]).not.toEqual(movedFeature);
 });
 
+test('Selected polygon feature can be translated in screen space', () => {
+  const mockOnEdit = jest.fn();
+  const props = createFeatureCollectionProps({
+    selectedIndexes: [2],
+    onEdit: mockOnEdit,
+  });
+  mockMove([{ index: 2, isGuide: false, object: null }], {
+    ...props,
+    modeConfig: { screenSpace: true, viewport: { width: 600, height: 480, zoom: 5 } },
+  });
+
+  expect(mockOnEdit).toHaveBeenCalledTimes(1);
+  const movedFeature = mockOnEdit.mock.calls[0][0].updatedData.features[2];
+  expect(movedFeature).toMatchSnapshot();
+  expect(props.data.features[2]).not.toEqual(movedFeature);
+});
+
 test('Non-picked selected polygon feature cannnot be translated', () => {
   const mockOnEdit = jest.fn();
   const props = createFeatureCollectionProps({

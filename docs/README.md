@@ -1,6 +1,6 @@
 # Overview
 
-[nebula.gl](https://nebula.gl) provides editable and interactive map overlay layers, built using the power of [deck.gl](https://uber.github.io/deck.gl).
+[nebula.gl](https://nebula.gl) provides editable and interactive map overlay layers, built using the power of [deck.gl](https://deck.gl/).
 
 ## Design Goals
 

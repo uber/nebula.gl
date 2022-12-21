@@ -65,7 +65,8 @@ export class TransformMode extends CompositeMode {
         }
         return !guidesToFilterOut.includes('scale');
       });
-      // @ts-ignore
+
+      // @ts-expect-error turf types
       compositeGuides = featureCollection(nonEnvelopeGuides);
     }
     return compositeGuides;

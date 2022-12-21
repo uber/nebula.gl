@@ -14,16 +14,16 @@ const DEFAULT_DIRECTION = { forward: true, backward: false };
 
 export default function createPathMarkers({
   data,
-  getPath = (x) => x.path,
+  getPath = (x, context) => x.path,
   getDirection = (x) => x.direction,
   getColor = (x) => DEFAULT_COLOR,
-  getMarkerPercentages = (x) => [0.5],
+  getMarkerPercentages = (x, info) => [0.5],
   projectFlat,
 }) {
   const markers = [];
 
   for (const object of data) {
-    const path = getPath(object);
+    const path = getPath(object, null);
     const direction = getDirection(object) || DEFAULT_DIRECTION;
     const color = getColor(object);
 
@@ -34,7 +34,6 @@ export default function createPathMarkers({
     const lineLength = getLineLength(vPoints);
 
     // Ask for where to put markers
-    // @ts-ignore
     const percentages = getMarkerPercentages(object, { lineLength });
 
     // Create the markers
@@ -81,12 +80,19 @@ function createMarkerAlongPath({ path, percentage, lineLength, color, object, pr
     previousDistance = currentDistance;
   }
 
+  // If reached the end of the loop without exiting early,
+  // undo the final increment to avoid a null-pointer exception
+  if (i === path.length - 1) {
+    i -= 1;
+  }
+
   const vDirection = path[i + 1].clone().subtract(path[i]).normalize();
   const along = distanceAlong - previousDistance;
   const vCenter = vDirection.clone().multiply(new Vector2(along, along)).add(path[i]);
 
   const vDirection2 = new Vector2(projectFlat(path[i + 1])).subtract(projectFlat(path[i]));
-  const angle = (-vDirection2.verticalAngle() * 180) / Math.PI;
+
+  const angle = (vDirection2.verticalAngle() * 180) / Math.PI;
 
   return { position: [vCenter.x, vCenter.y, 0], angle, color, object };
 }

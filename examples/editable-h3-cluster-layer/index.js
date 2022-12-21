@@ -110,7 +110,7 @@ function Toolbar({
 
 function renderClusterSelectors(data, selectedIndexes, setSelectedIndexes) {
   return data.map((cluster, i) => (
-    <div>
+    <div key={i}>
       <Button
         key={i}
         onClick={() => {

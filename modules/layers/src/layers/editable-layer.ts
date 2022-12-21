@@ -1,18 +1,28 @@
 /* eslint-env browser */
 
-import { CompositeLayer } from '@deck.gl/core';
+import { CompositeLayer, CompositeLayerProps } from '@deck.gl/core/typed';
 import {
   ClickEvent,
   StartDraggingEvent,
   StopDraggingEvent,
   DraggingEvent,
   PointerMoveEvent,
+  Position,
 } from '@nebula.gl/edit-modes';
 
 const EVENT_TYPES = ['anyclick', 'pointermove', 'panstart', 'panmove', 'panend', 'keyup'];
 
-export default class EditableLayer extends CompositeLayer<any> {
+export type EditableLayerProps<DataType = any> = CompositeLayerProps<DataType> & {
+  pickingRadius?: number;
+  pickingDepth?: number;
+};
+
+export default abstract class EditableLayer<
+  DataT = any,
+  ExtraPropsT = Record<string, unknown>
+> extends CompositeLayer<ExtraPropsT & Required<EditableLayerProps<DataT>>> {
   static layerName = 'EditableLayer';
+
   // Overridable interaction event handlers
   onLayerClick(event: ClickEvent) {
     // default implementation - do nothing
@@ -62,11 +72,12 @@ export default class EditableLayer extends CompositeLayer<any> {
   }
 
   _addEventHandlers() {
-    // @ts-ignore
+    // @ts-expect-error accessing protected props
     const { eventManager } = this.context.deck;
     const { eventHandler } = this.state._editableLayerState;
 
     for (const eventType of EVENT_TYPES) {
+      // @ts-expect-error narrow type
       eventManager.on(eventType, eventHandler, {
         // give nebula a higher priority so that it can stop propagation to deck.gl's map panning handlers
         priority: 100,
@@ -75,11 +86,12 @@ export default class EditableLayer extends CompositeLayer<any> {
   }
 
   _removeEventHandlers() {
-    // @ts-ignore
+    // @ts-expect-error accessing protected props
     const { eventManager } = this.context.deck;
     const { eventHandler } = this.state._editableLayerState;
 
     for (const eventType of EVENT_TYPES) {
+      // @ts-expect-error narrow type
       eventManager.off(eventType, eventHandler);
     }
   }
@@ -100,14 +112,13 @@ export default class EditableLayer extends CompositeLayer<any> {
   }
 
   _onanyclick({ srcEvent }: any) {
-    const screenCoords = this.getScreenCoords(srcEvent);
+    const screenCoords = this.getScreenCoords(srcEvent) as [number, number];
     const mapCoords = this.getMapCoords(screenCoords);
-    // @ts-ignore
+
     const picks = this.getPicks(screenCoords);
 
     this.onLayerClick({
       mapCoords,
-      // @ts-ignore
       screenCoords,
       picks,
       sourceEvent: srcEvent,
@@ -119,9 +130,8 @@ export default class EditableLayer extends CompositeLayer<any> {
   }
 
   _onpanstart(event: any) {
-    const screenCoords = this.getScreenCoords(event.srcEvent);
+    const screenCoords = this.getScreenCoords(event.srcEvent) as [number, number];
     const mapCoords = this.getMapCoords(screenCoords);
-    // @ts-ignore
     const picks = this.getPicks(screenCoords);
 
     this.setState({
@@ -135,11 +145,8 @@ export default class EditableLayer extends CompositeLayer<any> {
 
     this.onStartDragging({
       picks,
-      // @ts-ignore
       screenCoords,
-      // @ts-ignore
       mapCoords,
-      // @ts-ignore
       pointerDownScreenCoords: screenCoords,
       pointerDownMapCoords: mapCoords,
       cancelPan: event.stopImmediatePropagation,
@@ -149,7 +156,7 @@ export default class EditableLayer extends CompositeLayer<any> {
 
   _onpanmove(event: any) {
     const { srcEvent } = event;
-    const screenCoords = this.getScreenCoords(srcEvent);
+    const screenCoords = this.getScreenCoords(srcEvent) as [number, number];
     const mapCoords = this.getMapCoords(screenCoords);
 
     const {
@@ -157,11 +164,10 @@ export default class EditableLayer extends CompositeLayer<any> {
       pointerDownScreenCoords,
       pointerDownMapCoords,
     } = this.state._editableLayerState;
-    // @ts-ignore
+
     const picks = this.getPicks(screenCoords);
 
     this.onDragging({
-      // @ts-ignore
       screenCoords,
       mapCoords,
       picks,
@@ -179,7 +185,7 @@ export default class EditableLayer extends CompositeLayer<any> {
   }
 
   _onpanend({ srcEvent }: any) {
-    const screenCoords = this.getScreenCoords(srcEvent);
+    const screenCoords = this.getScreenCoords(srcEvent) as [number, number];
     const mapCoords = this.getMapCoords(screenCoords);
 
     const {
@@ -187,12 +193,11 @@ export default class EditableLayer extends CompositeLayer<any> {
       pointerDownScreenCoords,
       pointerDownMapCoords,
     } = this.state._editableLayerState;
-    // @ts-ignore
+
     const picks = this.getPicks(screenCoords);
 
     this.onStopDragging({
       picks,
-      // @ts-ignore
       screenCoords,
       mapCoords,
       pointerDownPicks,
@@ -213,7 +218,7 @@ export default class EditableLayer extends CompositeLayer<any> {
 
   _onpointermove(event: any) {
     const { srcEvent } = event;
-    const screenCoords = this.getScreenCoords(srcEvent);
+    const screenCoords = this.getScreenCoords(srcEvent) as [number, number];
     const mapCoords = this.getMapCoords(screenCoords);
 
     const {
@@ -221,11 +226,10 @@ export default class EditableLayer extends CompositeLayer<any> {
       pointerDownScreenCoords,
       pointerDownMapCoords,
     } = this.state._editableLayerState;
-    // @ts-ignore
+
     const picks = this.getPicks(screenCoords);
 
     this.onPointerMove({
-      // @ts-ignore
       screenCoords,
       mapCoords,
       picks,
@@ -233,11 +237,11 @@ export default class EditableLayer extends CompositeLayer<any> {
       pointerDownScreenCoords,
       pointerDownMapCoords,
       sourceEvent: srcEvent,
+      cancelPan: event.stopImmediatePropagation,
     });
   }
 
   getPicks(screenCoords: [number, number]) {
-    // @ts-ignore
     return this.context.deck.pickMultipleObjects({
       x: screenCoords[0],
       y: screenCoords[1],
@@ -247,7 +251,7 @@ export default class EditableLayer extends CompositeLayer<any> {
     });
   }
 
-  getScreenCoords(pointerEvent: any) {
+  getScreenCoords(pointerEvent: any): Position {
     return [
       pointerEvent.clientX -
         (this.context.gl.canvas as HTMLCanvasElement).getBoundingClientRect().left,
@@ -256,8 +260,7 @@ export default class EditableLayer extends CompositeLayer<any> {
     ];
   }
 
-  getMapCoords(screenCoords: number[]) {
-    // @ts-ignore
-    return this.context.viewport.unproject([screenCoords[0], screenCoords[1]]);
+  getMapCoords(screenCoords: Position): Position {
+    return this.context.viewport.unproject([screenCoords[0], screenCoords[1]]) as Position;
   }
 }

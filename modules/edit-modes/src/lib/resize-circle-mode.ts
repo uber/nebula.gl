@@ -63,8 +63,8 @@ export class ResizeCircleMode extends GeoJsonEditMode {
           [],
           (lineString, prefix) => {
             const lineStringFeature = toLineString(lineString);
-            const candidateIntermediatePoint = this.nearestPointOnLine(
-              // @ts-ignore
+            const candidateIntermediatePoint = this.getNearestPoint(
+              // @ts-expect-error turf types too wide
               lineStringFeature,
               referencePoint,
               props.modeConfig && props.modeConfig.viewport
@@ -108,7 +108,7 @@ export class ResizeCircleMode extends GeoJsonEditMode {
   }
 
   // turf.js does not support elevation for nearestPointOnLine
-  nearestPointOnLine(
+  getNearestPoint(
     line: FeatureOf<LineString>,
     inPoint: FeatureOf<Point>,
     viewport: Viewport | null | undefined

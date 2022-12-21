@@ -1,6 +1,14 @@
 import turfDistance from '@turf/distance';
+import turfMidpoint from '@turf/midpoint';
 import { FeatureCollection } from '../geojson-types';
-import { ClickEvent, PointerMoveEvent, ModeProps, GuideFeatureCollection, Tooltip } from '../types';
+import {
+  ClickEvent,
+  PointerMoveEvent,
+  ModeProps,
+  GuideFeatureCollection,
+  Tooltip,
+  GuideFeature,
+} from '../types';
 import { getPickedEditHandle } from '../utils';
 import { GeoJsonEditMode } from './geojson-edit-mode';
 
@@ -37,6 +45,7 @@ export class MeasureDistanceMode extends GeoJsonEditMode {
 
   handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>) {
     const { modeConfig, data, onEdit } = props;
+    const { centerTooltipsOnLine = false } = modeConfig || {};
 
     // restart measuring session
     if (this._isMeasuringSessionFinished) {
@@ -72,8 +81,16 @@ export class MeasureDistanceMode extends GeoJsonEditMode {
           positionB: clickSequence[clickSequence.length - 1],
           modeConfig,
         });
+
+        const tooltipPosition = centerTooltipsOnLine
+          ? turfMidpoint(
+              clickSequence[clickSequence.length - 2],
+              clickSequence[clickSequence.length - 1]
+            ).geometry.coordinates
+          : event.mapCoords;
+
         this._currentTooltips.push({
-          position: event.mapCoords,
+          position: tooltipPosition,
           text: this._formatTooltip(this._currentDistance, modeConfig),
         });
       }
@@ -126,7 +143,7 @@ export class MeasureDistanceMode extends GeoJsonEditMode {
         ? [lastPointerMoveEvent.mapCoords]
         : [];
 
-    const guides = {
+    const guides: GuideFeatureCollection = {
       type: 'FeatureCollection',
       features: [],
     };
@@ -144,7 +161,7 @@ export class MeasureDistanceMode extends GeoJsonEditMode {
       });
     }
 
-    const editHandles = clickSequence.map((clickedCoord, index) => ({
+    const editHandles: GuideFeature[] = clickSequence.map((clickedCoord, index) => ({
       type: 'Feature',
       properties: {
         guideType: 'editHandle',
@@ -159,7 +176,7 @@ export class MeasureDistanceMode extends GeoJsonEditMode {
     }));
 
     guides.features.push(...editHandles);
-    // @ts-ignore
+
     return guides;
   }
 
@@ -169,6 +186,7 @@ export class MeasureDistanceMode extends GeoJsonEditMode {
 
   getTooltips(props: ModeProps<FeatureCollection>): Tooltip[] {
     const { lastPointerMoveEvent, modeConfig } = props;
+    const { centerTooltipsOnLine = false } = modeConfig || {};
     const positions = this.getClickSequence();
 
     if (positions.length > 0 && lastPointerMoveEvent && !this._isMeasuringSessionFinished) {
@@ -177,10 +195,16 @@ export class MeasureDistanceMode extends GeoJsonEditMode {
         positionB: lastPointerMoveEvent.mapCoords,
         modeConfig: props.modeConfig,
       });
+
+      const tooltipPosition = centerTooltipsOnLine
+        ? turfMidpoint(positions[positions.length - 1], lastPointerMoveEvent.mapCoords).geometry
+            .coordinates
+        : lastPointerMoveEvent.mapCoords;
+
       return [
         ...this._currentTooltips,
         {
-          position: lastPointerMoveEvent.mapCoords,
+          position: tooltipPosition,
           text: this._formatTooltip(this._currentDistance + distance, modeConfig),
         },
       ];

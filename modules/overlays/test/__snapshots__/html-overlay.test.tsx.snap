@@ -5,6 +5,7 @@ exports[`HtmlOverlay is able to handle a null child with other valid children 1`
   style={
     Object {
       "height": "100%",
+      "overflow": "hidden",
       "pointerEvents": "none",
       "position": "absolute",
       "width": "100%",
@@ -46,6 +47,7 @@ exports[`HtmlOverlay is able to handle a single null child 1`] = `
   style={
     Object {
       "height": "100%",
+      "overflow": "hidden",
       "pointerEvents": "none",
       "position": "absolute",
       "width": "100%",
@@ -60,6 +62,7 @@ exports[`HtmlOverlay is able to handle no children 1`] = `
   style={
     Object {
       "height": "100%",
+      "overflow": "hidden",
       "pointerEvents": "none",
       "position": "absolute",
       "width": "100%",

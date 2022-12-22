@@ -138,7 +138,7 @@ export type EditableGeojsonLayerProps<DataT = any> = EditableLayerProps<DataT> &
 
   getTentativeLineColor?: Color | ((feature, isSelected, mode) => Color);
   getTentativeFillColor?: Color | ((feature, isSelected, mode) => Color);
-  getTentativeLineWidth?: number | ((feature, isSelected, mode) => number);
+  getTentativeLineWidth?: number | ((f) => number);
 
   editHandleType?: string;
 

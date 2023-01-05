@@ -47,25 +47,25 @@
     "test-rendering": "(cd test/rendering-test && webpack-dev-server --config webpack.config.test-rendering.js --progress --hot --open)"
   },
   "dependencies": {
-    "@loaders.gl/core": "^2.1.2",
-    "@loaders.gl/wkt": "^2.1.2",
-    "@maphubs/tokml": "^0.5.2",
+    "@loaders.gl/core": "^2.3.13",
+    "@loaders.gl/wkt": "^2.3.13",
+    "@maphubs/tokml": "^0.6.1",
     "@nebula.gl/edit-modes": "1.0.4",
     "@tmcw/togeojson": "^3.2.0",
-    "@types/downloadjs": "1.4.1",
-    "@types/styled-react-modal": "1.2.0",
-    "@types/wellknown": "0.5.1",
-    "boxicons": "^2.0.5",
-    "clipboard-copy": "^3.1.0",
+    "@types/downloadjs": "1.4.3",
+    "@types/styled-react-modal": "1.2.2",
+    "@types/wellknown": "0.5.4",
+    "boxicons": "^2.1.4",
+    "clipboard-copy": "^3.2.0",
     "downloadjs": "^1.4.7",
-    "react": "^16.8.0",
-    "react-dropzone": "^10.2.1",
-    "styled-components": "^4.3.2",
+    "react": "^16.14.0",
+    "react-dropzone": "^10.2.2",
+    "styled-components": "^4.4.1",
     "styled-react-modal": "1.2.4",
     "wellknown": "^0.5.0"
   },
   "devDependencies": {
-    "sinon": "^9.0.1"
+    "sinon": "^9.2.4"
   },
   "gitHead": "8374ab0ac62a52ae8a6b14276694cabced43de35"
 }

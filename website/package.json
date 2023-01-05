@@ -18,25 +18,25 @@
     "fix-mjs-bug": "find ../node_modules -name '*.mjs' | xargs rm"
   },
   "dependencies": {
-    "@deck.gl/core": "^8.8.17",
-    "@deck.gl/layers": "^8.8.17",
-    "@deck.gl/react": "^8.8.17",
-    "@luma.gl/constants": "^8.5.16",
-    "@luma.gl/core": "^8.5.16",
-    "@luma.gl/webgl": "^8.5.16",
-    "@probe.gl/stats-widget": "^3.0.1",
-    "gl": "^4.2.2",
-    "react": "^16.6.0",
-    "react-dom": "^16.6.0",
-    "react-map-gl": "^4.1.2",
-    "styled-components": "^4.3.2"
+    "@deck.gl/core": "^8.8.21",
+    "@deck.gl/layers": "^8.8.21",
+    "@deck.gl/react": "^8.8.21",
+    "@luma.gl/constants": "^8.5.18",
+    "@luma.gl/core": "^8.5.18",
+    "@luma.gl/webgl": "^8.5.18",
+    "@probe.gl/stats-widget": "^3.6.0",
+    "gl": "^4.9.2",
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0",
+    "react-map-gl": "^4.1.16",
+    "styled-components": "^4.4.1"
   },
   "devDependencies": {
-    "gatsby": "^2.18.11",
-    "gatsby-plugin-typescript": "2.3.1",
-    "gatsby-plugin-styletron": "^4.1.22",
+    "gatsby": "^2.32.13",
+    "gatsby-plugin-typescript": "2.12.1",
+    "gatsby-plugin-styletron": "^4.3.1",
     "gatsby-remark-embedded-codesandbox": "^1.2.0",
-    "gatsby-theme-ocular": "^1.0.3",
-    "gh-pages": "^2.1.1"
+    "gatsby-theme-ocular": "^1.2.5",
+    "gh-pages": "^2.2.0"
   }
 }

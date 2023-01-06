@@ -57,7 +57,7 @@ export function toDeckColor(
 export function recursivelyTraverseNestedArrays(
   array: Array<any>,
   prefix: Array<number>,
-  fn: Function
+  fn: (array: Array<any>, prefix: number[]) => void
 ) {
   if (!Array.isArray(array[0])) {
     return true;

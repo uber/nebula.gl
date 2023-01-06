@@ -227,6 +227,7 @@ export class ModeHandler {
 
       let updatedGeometry;
       if (modeConfig.booleanOperation === 'union') {
+        // @ts-expect-error turf types diff
         updatedGeometry = turfUnion(selectedFeature, feature);
       } else if (modeConfig.booleanOperation === 'difference') {
         // @ts-expect-error turf type diff
@@ -272,9 +273,10 @@ export class ModeHandler {
     return null;
   }
 
-  handlePointerMove(
-    event: PointerMoveEvent
-  ): { editAction: EditAction | null | undefined; cancelMapPan: boolean } {
+  handlePointerMove(event: PointerMoveEvent): {
+    editAction: EditAction | null | undefined;
+    cancelMapPan: boolean;
+  } {
     return { editAction: null, cancelMapPan: false };
   }
 

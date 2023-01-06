@@ -6,9 +6,10 @@ import { TwoClickPolygonHandler } from './two-click-polygon-handler';
 
 // TODO edit-modes: delete handlers once EditMode fully implemented
 export class DrawCircleFromCenterHandler extends TwoClickPolygonHandler {
-  handlePointerMove(
-    event: PointerMoveEvent
-  ): { editAction: EditAction | null | undefined; cancelMapPan: boolean } {
+  handlePointerMove(event: PointerMoveEvent): {
+    editAction: EditAction | null | undefined;
+    cancelMapPan: boolean;
+  } {
     const result = { editAction: null, cancelMapPan: false };
     const clickSequence = this.getClickSequence();
 
@@ -29,6 +30,7 @@ export class DrawCircleFromCenterHandler extends TwoClickPolygonHandler {
 
     const centerCoordinates = clickSequence[0];
     const radius = Math.max(distance(centerCoordinates, event.groundCoords), 0.001);
+    // @ts-expect-error turf types diff
     this._setTentativeFeature(circle(centerCoordinates, radius, options));
 
     return result;

@@ -1,13 +1,13 @@
 import distance from '@turf/distance';
 import memoize from '../memoize';
-import { LineString, FeatureCollection } from '../geojson-types';
+import { LineString, FeatureCollection, Position } from '../geojson-types';
 import {
   ClickEvent,
   PointerMoveEvent,
   ModeProps,
   GuideFeatureCollection,
   GuideFeature,
-  Tooltip
+  Tooltip,
 } from '../types';
 import { getPickedEditHandle } from '../utils';
 import { GeoJsonEditMode } from './geojson-edit-mode';

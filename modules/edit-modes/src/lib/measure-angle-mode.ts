@@ -38,6 +38,7 @@ export class MeasureAngleMode extends GeoJsonEditMode {
 
       const position = turfCenter({
         type: 'FeatureCollection',
+        // @ts-expect-error
         features: [point1, point2].map((p) => ({
           type: 'Feature',
           geometry: {

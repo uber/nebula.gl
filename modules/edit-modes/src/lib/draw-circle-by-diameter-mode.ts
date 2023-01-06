@@ -36,7 +36,7 @@ export class DrawCircleByDiameterMode extends TwoClickPolygonMode {
     geometry.properties.shape = 'Circle';
     // calculate area of circle with turf function
     this.areaCircle = area(geometry);
-
+    // @ts-expect-error turf types diff
     return geometry;
   }
 

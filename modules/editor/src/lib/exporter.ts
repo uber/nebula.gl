@@ -41,13 +41,11 @@ export function toKml(geoJson: AnyGeoJson, filename: string): ExportParameters {
 export function toWkt(geoJson: AnyGeoJson, filename: string): ExportParameters {
   let wkt = '';
   if (geoJson.type === 'Feature') {
-    // @ts-expect-error geojson type diff
     wkt = stringifyWkt(geoJson);
   } else {
     // feature collection
     wkt = '';
     for (const feature of geoJson.features) {
-      // @ts-expect-error geojson type diff
       wkt += `${stringifyWkt(feature)}\n`;
     }
     if (wkt.length > 0) {

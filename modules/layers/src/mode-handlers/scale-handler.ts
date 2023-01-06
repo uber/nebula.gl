@@ -10,9 +10,10 @@ export class ScaleHandler extends ModeHandler {
   _isScalable: boolean;
   _geometryBeingScaled: FeatureCollection | null | undefined;
 
-  handlePointerMove(
-    event: PointerMoveEvent
-  ): { editAction: EditAction | null | undefined; cancelMapPan: boolean } {
+  handlePointerMove(event: PointerMoveEvent): {
+    editAction: EditAction | null | undefined;
+    cancelMapPan: boolean;
+  } {
     let editAction: EditAction | null | undefined = null;
 
     this._isScalable = Boolean(this._geometryBeingScaled) || this.isSelectionPicked(event.picks);
@@ -65,7 +66,9 @@ export class ScaleHandler extends ModeHandler {
 
   getScaleAction(startDragPoint: Position, currentPoint: Position, editType: string): EditAction {
     const startPosition = startDragPoint;
+    // @ts-expect-error turf types diff
     const centroid = turfCentroid(this._geometryBeingScaled);
+    // @ts-expect-error turf types diff
     const factor = getScaleFactor(centroid, startPosition, currentPoint);
     // @ts-expect-error turf type diff
     const scaledFeatures: FeatureCollection = turfTransformScale(

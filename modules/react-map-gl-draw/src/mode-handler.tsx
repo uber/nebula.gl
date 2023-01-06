@@ -83,7 +83,7 @@ export default class ModeHandler extends React.PureComponent<EditorProps, Editor
     this._degregisterEvents();
   }
 
-  _events: any;
+  _events: Record<string, (evt: MjolnirEvent) => void>;
   _eventsRegistered: boolean;
   _modeHandler: any;
   _context: MapContextProps | null | undefined;
@@ -337,15 +337,12 @@ export default class ModeHandler extends React.PureComponent<EditorProps, Editor
   _onClick = (event: BaseEvent) => {
     const modeProps = this.getModeProps();
     // TODO refactor EditingMode
-    // @ts-ignore
     if (this._modeHandler instanceof EditingMode || this.props.selectable) {
       const { mapCoords, screenCoords } = event;
       const pickedObject = event.picks && event.picks[0];
       const selectedEditHandleIndexes = [...this.state.selectedEditHandleIndexes];
-      // @ts-ignore
       if (pickedObject && isNumeric(pickedObject.featureIndex)) {
         const handleIndex =
-          // @ts-ignore
           pickedObject.type === ELEMENT_TYPE.EDIT_HANDLE ? pickedObject.index : null;
         const index = selectedEditHandleIndexes.indexOf(handleIndex);
         if (handleIndex !== null) {
@@ -356,14 +353,12 @@ export default class ModeHandler extends React.PureComponent<EditorProps, Editor
           }
           this.setState({ selectedEditHandleIndexes });
         }
-        // @ts-ignore
         const selectedFeatureIndex = pickedObject.featureIndex;
         this._onSelect({
           selectedFeature: pickedObject.object,
           selectedFeatureIndex,
           selectedEditHandleIndex: handleIndex,
           selectedEditHandleIndexes,
-          // @ts-ignore
           mapCoords,
           screenCoords,
         });
@@ -373,7 +368,6 @@ export default class ModeHandler extends React.PureComponent<EditorProps, Editor
           selectedFeatureIndex: null,
           selectedEditHandleIndex: null,
           selectedEditHandleIndexes,
-          // @ts-ignore
           mapCoords,
           screenCoords,
         });
@@ -392,13 +386,8 @@ export default class ModeHandler extends React.PureComponent<EditorProps, Editor
   _onPointerMove = (event: BaseEvent) => {
     // hovering
     const hovered = this._getHoverState(event);
-    const {
-      isDragging,
-      didDrag,
-      pointerDownPicks,
-      pointerDownScreenCoords,
-      pointerDownMapCoords,
-    } = this.state;
+    const { isDragging, didDrag, pointerDownPicks, pointerDownScreenCoords, pointerDownMapCoords } =
+      this.state;
 
     if (isDragging && !didDrag && pointerDownScreenCoords) {
       const dx = event.screenCoords[0] - pointerDownScreenCoords[0];
@@ -426,7 +415,6 @@ export default class ModeHandler extends React.PureComponent<EditorProps, Editor
 
     this.setState({
       hovered,
-      // @ts-ignore
       lastPointerMoveEvent: pointerMoveEvent,
     });
   };
@@ -448,7 +436,6 @@ export default class ModeHandler extends React.PureComponent<EditorProps, Editor
       pointerDownScreenCoords: event.screenCoords,
       pointerDownMapCoords: event.mapCoords,
     };
-    // @ts-ignore
     this.setState(newState);
 
     const modeProps = this.getModeProps();
@@ -508,7 +495,7 @@ export default class ModeHandler extends React.PureComponent<EditorProps, Editor
     const guides = this._modeHandler.getGuides(this.getModeProps());
     const picked = parseEventElement(evt, features, guides && guides.features);
     const screenCoords = getScreenCoords(evt);
-    // @ts-ignore
+    // @ts-expect-error Position type diff
     const mapCoords = this.unproject(screenCoords);
 
     return {

@@ -53,7 +53,7 @@ export default class Editor extends ModeHandler {
     }
   }
 
-  _getEditHandleState = (editHandle: Feature, renderState: string | null | undefined) => {
+  _getEditHandleState = (editHandle: Feature, renderState?: string | null) => {
     const { pointerDownPicks, hovered } = this.state;
 
     if (renderState) {
@@ -73,7 +73,6 @@ export default class Editor extends ModeHandler {
     ) {
       return RENDER_STATE.SELECTED;
     }
-    // @ts-ignore
     if (hovered && hovered.type === ELEMENT_TYPE.EDIT_HANDLE) {
       if (hovered.index === editHandleIndex) {
         return RENDER_STATE.HOVERED;
@@ -91,7 +90,7 @@ export default class Editor extends ModeHandler {
     return RENDER_STATE.INACTIVE;
   };
 
-  _getFeatureRenderState = (index: number, renderState: RenderState | null | undefined) => {
+  _getFeatureRenderState = (index: number, renderState?: RenderState | null) => {
     const { hovered } = this.state;
     const selectedFeatureIndex = this._getSelectedFeatureIndex();
     if (renderState) {
@@ -101,7 +100,6 @@ export default class Editor extends ModeHandler {
     if (index === selectedFeatureIndex) {
       return RENDER_STATE.SELECTED;
     }
-    // @ts-ignore
     if (hovered && hovered.type === ELEMENT_TYPE.FEATURE && hovered.featureIndex === index) {
       return RENDER_STATE.HOVERED;
     }
@@ -135,7 +133,6 @@ export default class Editor extends ModeHandler {
       feature: feature || editHandle,
       index,
       featureIndex,
-      // @ts-ignore
       state: this._getEditHandleState(editHandle),
     });
 
@@ -144,7 +141,6 @@ export default class Editor extends ModeHandler {
       index,
       featureIndex,
       shape,
-      // @ts-ignore
       state: this._getEditHandleState(editHandle),
     });
 
@@ -303,7 +299,7 @@ export default class Editor extends ModeHandler {
     let committedPath;
     let uncommittedPath;
     let closingPath;
-    // @ts-ignore
+    // @ts-expect-error Position type diff
     const fill = this._renderFill('tentative', coordinates, uncommittedStyle);
 
     const type = shape || geojsonType;
@@ -316,24 +312,22 @@ export default class Editor extends ModeHandler {
         });
 
         if (cursorEditHandle) {
-          // @ts-ignore
           const cursorCoords = coordinates[coordinates.length - 2];
           committedPath = this._renderSegments(
             'tentative',
-            // @ts-ignore
+            // @ts-expect-error Position type diff
             coordinates.slice(0, coordinates.length - 1),
             committedStyle
           );
           uncommittedPath = this._renderSegment(
             'tentative-uncommitted',
-            // @ts-ignore
             coordinates.length - 2,
-            // @ts-ignore
+            // @ts-expect-error Position type diff
             [cursorCoords, lastCoords],
             uncommittedStyle
           );
         } else {
-          // @ts-ignore
+          // @ts-expect-error Position type diff
           committedPath = this._renderSegments('tentative', coordinates, committedStyle);
         }
 
@@ -346,9 +340,8 @@ export default class Editor extends ModeHandler {
 
           closingPath = this._renderSegment(
             'tentative-closing',
-            // @ts-ignore
             coordinates.length - 1,
-            // @ts-ignore
+            // @ts-expect-error Position type diff
             [lastCoords, firstCoords],
             closingStyle
           );
@@ -359,7 +352,7 @@ export default class Editor extends ModeHandler {
       case SHAPE.RECTANGLE:
         uncommittedPath = this._renderSegments(
           'tentative',
-          // @ts-ignore
+          // @ts-expect-error Position type diff
           [...coordinates, firstCoords],
           uncommittedStyle
         );
@@ -422,7 +415,6 @@ export default class Editor extends ModeHandler {
   };
 
   _renderPoint = (feature: Feature, index: number, path: string) => {
-    // @ts-ignore
     const renderState = this._getFeatureRenderState(index);
     const { featureStyle, featureShape, clickRadius } = this.props;
     const shape = this._getStyleProp(featureShape, { feature, index, state: renderState });
@@ -484,14 +476,13 @@ export default class Editor extends ModeHandler {
     const { featureStyle, clickRadius } = this.props;
     const selectedFeatureIndex = this._getSelectedFeatureIndex();
     const selected = index === selectedFeatureIndex;
-    // @ts-ignore
     const renderState = this._getFeatureRenderState(index);
     const style = this._getStyleProp(featureStyle, { feature, index, state: renderState });
 
     const elemKey = `feature.${index}`;
     if (selected) {
       return (
-        // @ts-ignore
+        // @ts-expect-error Position type diff
         <g key={elemKey}>{this._renderSegments(index, feature.geometry.coordinates, style)}</g>
       );
     }
@@ -526,7 +517,6 @@ export default class Editor extends ModeHandler {
     const { featureStyle } = this.props;
     const selectedFeatureIndex = this._getSelectedFeatureIndex();
     const selected = index === selectedFeatureIndex;
-    // @ts-ignore
     const renderState = this._getFeatureRenderState(index);
     const style = this._getStyleProp(featureStyle, { feature, index, state: renderState });
 
@@ -538,12 +528,16 @@ export default class Editor extends ModeHandler {
       }
       return (
         <g key={elemKey}>
-          {// eslint-disable-next-line prettier/prettier
-          //@ts-ignore
-          this._renderFill(index, coordinates, style)}
-          {// eslint-disable-next-line prettier/prettier
-          // @ts-ignore
-          this._renderSegments(index, coordinates, style)}
+          {
+            // eslint-disable-next-line prettier/prettier
+            // @ts-expect-error Position type diff
+            this._renderFill(index, coordinates, style)
+          }
+          {
+            // eslint-disable-next-line prettier/prettier
+            // @ts-expect-error Position type diff
+            this._renderSegments(index, coordinates, style)
+          }
         </g>
       );
     }

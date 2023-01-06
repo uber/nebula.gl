@@ -120,7 +120,6 @@ export function nearestPointOnProjectedLine(
   // Project the line to viewport, then find the nearest point
   const coordinates: Array<Array<number>> = line.geometry.coordinates as any;
   const projectedCoords = coordinates.map(([x, y, z = 0]) => wmViewport.project([x, y, z]));
-  // @ts-ignore
   const [x, y] = wmViewport.project(inPoint.geometry.coordinates);
   // console.log('projectedCoords', JSON.stringify(projectedCoords));
 
@@ -428,7 +427,7 @@ export function getEditHandlesForGeometry(
 
       break;
     default:
-      // @ts-ignore
+      // @ts-expect-error
       throw Error(`Unhandled geometry type: ${geometry.type}`);
   }
 

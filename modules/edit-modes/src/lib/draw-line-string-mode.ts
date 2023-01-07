@@ -1,6 +1,6 @@
 import distance from '@turf/distance';
 import memoize from '../memoize';
-import { LineString, FeatureCollection } from '../geojson-types';
+import { LineString, FeatureCollection, Position } from '../geojson-types';
 import {
   ClickEvent,
   PointerMoveEvent,
@@ -9,7 +9,6 @@ import {
   GuideFeature,
   Tooltip,
 } from '../types';
-import { Position } from '..';
 import { getPickedEditHandle } from '../utils';
 import { GeoJsonEditMode } from './geojson-edit-mode';
 

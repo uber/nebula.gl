@@ -57,7 +57,7 @@ export function toDeckColor(
 export function recursivelyTraverseNestedArrays(
   array: Array<any>,
   prefix: Array<number>,
-  fn: Function
+  fn: (array: Array<any>, prefix: number[]) => void
 ) {
   if (!Array.isArray(array[0])) {
     return true;
@@ -120,7 +120,6 @@ export function nearestPointOnProjectedLine(
   // Project the line to viewport, then find the nearest point
   const coordinates: Array<Array<number>> = line.geometry.coordinates as any;
   const projectedCoords = coordinates.map(([x, y, z = 0]) => wmViewport.project([x, y, z]));
-  // @ts-ignore
   const [x, y] = wmViewport.project(inPoint.geometry.coordinates);
   // console.log('projectedCoords', JSON.stringify(projectedCoords));
 
@@ -170,6 +169,7 @@ export function nearestPointOnProjectedLine(
     type: 'Feature',
     geometry: {
       type: 'Point',
+      // @ts-expect-error
       coordinates: wmViewport.unproject([x0, y0, z0]),
     },
     properties: {
@@ -427,7 +427,7 @@ export function getEditHandlesForGeometry(
 
       break;
     default:
-      // @ts-ignore
+      // @ts-expect-error
       throw Error(`Unhandled geometry type: ${geometry.type}`);
   }
 

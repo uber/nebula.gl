@@ -200,6 +200,7 @@ export class GeoJsonEditMode implements EditMode<FeatureCollection, GuideFeature
 
       let updatedGeometry;
       if (modeConfig.booleanOperation === 'union') {
+        // @ts-expect-error selectedFeature type too wide
         updatedGeometry = turfUnion(selectedFeature, feature);
       } else if (modeConfig.booleanOperation === 'difference') {
         // @ts-expect-error selectedFeature type too wide

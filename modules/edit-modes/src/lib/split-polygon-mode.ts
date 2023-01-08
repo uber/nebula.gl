@@ -173,10 +173,9 @@ export class SplitPolygonMode extends GeoJsonEditMode {
       updatedCoordinates = coordinates.map((c) => [c]);
     } else {
       // Handle Case when Multipolygon has holes
-
-      // @ts-expect-error revisit coordinates' type here
       updatedCoordinates = coordinates.reduce((agg, prev) => {
         prev.forEach((p) => {
+          // @ts-expect-error revisit coordinates type here
           agg.push([p]);
         });
         return agg;

@@ -10,9 +10,10 @@ export class RotateHandler extends ModeHandler {
   _isRotatable: boolean;
   _geometryBeingRotated: FeatureCollection | null | undefined;
 
-  handlePointerMove(
-    event: PointerMoveEvent
-  ): { editAction: EditAction | null | undefined; cancelMapPan: boolean } {
+  handlePointerMove(event: PointerMoveEvent): {
+    editAction: EditAction | null | undefined;
+    cancelMapPan: boolean;
+  } {
     let editAction: EditAction | null | undefined = null;
 
     this._isRotatable = Boolean(this._geometryBeingRotated) || this.isSelectionPicked(event.picks);
@@ -69,7 +70,9 @@ export class RotateHandler extends ModeHandler {
 
   getRotateAction(startDragPoint: Position, currentPoint: Position, editType: string): EditAction {
     const startPosition = startDragPoint;
+    // @ts-expect-error turf types diff
     const centroid = turfCentroid(this._geometryBeingRotated);
+    // @ts-expect-error turf types diff
     const angle = getRotationAngle(centroid, startPosition, currentPoint);
 
     // @ts-expect-error turf type diff

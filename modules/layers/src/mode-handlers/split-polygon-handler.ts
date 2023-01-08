@@ -98,9 +98,10 @@ export class SplitPolygonHandler extends ModeHandler {
     return editAction;
   }
 
-  handlePointerMove({
-    groundCoords,
-  }: PointerMoveEvent): { editAction: EditAction | null | undefined; cancelMapPan: boolean } {
+  handlePointerMove({ groundCoords }: PointerMoveEvent): {
+    editAction: EditAction | null | undefined;
+    cancelMapPan: boolean;
+  } {
     const clickSequence = this.getClickSequence();
     const result = { editAction: null, cancelMapPan: false };
 
@@ -150,7 +151,6 @@ export class SplitPolygonHandler extends ModeHandler {
       updatedCoordinates = coordinates.map((c) => [c]);
     } else {
       // Handle Case when Multipolygon has holes
-      // @ts-expect-error revisit coordinates type and logic
       updatedCoordinates = coordinates.reduce((agg, prev) => {
         prev.forEach((p) => {
           agg.push([p]);

@@ -123,7 +123,7 @@ export class ResizeCircleMode extends GeoJsonEditMode {
         'Editing 3D point but modeConfig.viewport not provided. Falling back to 2D logic.'
       );
     }
-
+    // @ts-expect-error turf types diff
     return nearestPointOnLine(line, inPoint);
   }
 
@@ -137,6 +137,7 @@ export class ResizeCircleMode extends GeoJsonEditMode {
       const editHandleProperties = editHandle.properties;
 
       const feature = this.getSelectedFeature(props);
+      // @ts-expect-error turf types diff
       const center = turfCenter(feature).geometry.coordinates;
       const numberOfSteps = Object.entries(feature.geometry.coordinates[0]).length - 1;
       const radius = Math.max(distance(center, event.mapCoords), 0.001);
@@ -147,6 +148,7 @@ export class ResizeCircleMode extends GeoJsonEditMode {
       const geometry = updatedFeature.geometry;
 
       const updatedData = new ImmutableFeatureCollection(props.data)
+        // @ts-expect-error turf types diff
         .replaceGeometry(editHandleProperties.featureIndex, geometry)
         .getObject();
 

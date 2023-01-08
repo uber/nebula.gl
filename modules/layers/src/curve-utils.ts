@@ -26,6 +26,7 @@ export function generateCurveFromControlPoints(
   for (let i = 0; i < coords.length; i++) {
     const cur = coords[i];
     if (prev !== null) {
+      // @ts-expect-error turf types diff
       totalDistance += turfDistance(prev, cur);
       knots.push(totalDistance);
     }

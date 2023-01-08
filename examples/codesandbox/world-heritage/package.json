@@ -1,13 +1,13 @@
 {
   "dependencies": {
-    "@deck.gl/core": "^8.8.17",
-    "@deck.gl/react": "^8.8.17",
-    "@nebula.gl/overlays": "^0.18.4",
-    "@turf/helpers": "6.1.4",
-    "global": "4.3.2",
-    "react": "16.8.6",
-    "react-dom": "16.8.6",
-    "react-map-gl": "4.1.2",
+    "@deck.gl/core": "^8.8.21",
+    "@deck.gl/react": "^8.8.21",
+    "@nebula.gl/overlays": "^0.23.8",
+    "@turf/helpers": "^6.5.0",
+    "global": "4.4.0",
+    "react": "16.14.0",
+    "react-dom": "16.14.0",
+    "react-map-gl": "4.1.16",
     "react-scripts": "2.1.8"
   }
 }

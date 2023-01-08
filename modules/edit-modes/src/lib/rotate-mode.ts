@@ -50,6 +50,7 @@ export class RotateMode extends GeoJsonEditMode {
 
     if (this._isRotating) {
       // Display rotate pivot
+      // @ts-expect-error turf types diff
       return featureCollection([turfCentroid(selectedGeometry)]) as GuideFeatureCollection;
     }
 
@@ -86,11 +87,7 @@ export class RotateMode extends GeoJsonEditMode {
       editHandleType: 'rotate',
     });
 
-    const outFeatures = [
-      polygonToLine(boundingBox),
-      rotateHandle,
-      lineFromEnvelopeToRotateHandle,
-    ];
+    const outFeatures = [polygonToLine(boundingBox), rotateHandle, lineFromEnvelopeToRotateHandle];
 
     // @ts-expect-error turf type diff
     return featureCollection(outFeatures);
@@ -171,8 +168,9 @@ export class RotateMode extends GeoJsonEditMode {
     if (!this._geometryBeingRotated) {
       return null;
     }
-
+    // @ts-expect-error turf types diff
     const centroid = turfCentroid(this._geometryBeingRotated);
+    // @ts-expect-error turf types diff
     const angle = getRotationAngle(centroid, startDragPoint, currentPoint);
 
     // @ts-expect-error turf types too wide

@@ -360,7 +360,7 @@ export default class EditableGeoJsonLayer extends EditableLayer<
     if (changeFlags.propsOrDataChanged) {
       const modePropChanged = Object.keys(oldProps).length === 0 || props.mode !== oldProps.mode;
       if (modePropChanged) {
-        let mode;
+        let mode: DrawPolygonMode;
         if (typeof props.mode === 'function') {
           // They passed a constructor/class, so new it up
           const ModeConstructor = props.mode;
@@ -396,7 +396,7 @@ export default class EditableGeoJsonLayer extends EditableLayer<
       'features' in props.data
     ) {
       // TODO: needs improved testing, i.e. checking for duplicates, NaNs, out of range numbers, ...
-      const propsData = props.data as FeatureCollection;
+      const propsData = props.data;
       selectedFeatures = props.selectedFeatureIndexes.map((elem) => propsData.features[elem]);
     }
 

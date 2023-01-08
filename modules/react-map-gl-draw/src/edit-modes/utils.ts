@@ -14,9 +14,11 @@ export function parseEventElement(evt: MjolnirEvent, features: Feature[], guides
   }
 
   let featureIndex = elem.dataset.featureIndex;
+  // @ts-expect-error
   featureIndex = isNumeric(featureIndex) ? Number(featureIndex) : -1;
 
   let index = elem.dataset.index;
+  // @ts-expect-error
   index = isNumeric(index) ? Number(index) : undefined;
 
   const type = elem.dataset.type;
@@ -55,6 +57,7 @@ export function parseEventElement(evt: MjolnirEvent, features: Feature[], guides
 
 export function getScreenCoords(evt: MjolnirEvent) {
   const {
+    // @ts-expect-error
     offsetCenter: { x, y },
   } = evt;
   return [Number(x), Number(y)];

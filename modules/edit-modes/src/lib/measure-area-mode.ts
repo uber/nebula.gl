@@ -36,7 +36,7 @@ export class MeasureAreaMode extends DrawPolygonMode {
       const centroid = turfCentroid(tentativeGuide);
       const area = turfArea(tentativeGuide);
 
-      let text;
+      let text: string;
       if (formatTooltip) {
         text = formatTooltip(area);
       } else {
@@ -51,6 +51,7 @@ export class MeasureAreaMode extends DrawPolygonMode {
 
       return [
         {
+          // @ts-expect-error turf types diff
           position: centroid.geometry.coordinates,
           text,
         },

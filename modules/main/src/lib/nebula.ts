@@ -1,4 +1,4 @@
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'eventemitter3';
 
 import document from 'global/document';
 import window from 'global/window';
@@ -42,7 +42,7 @@ export default class Nebula {
   _deckDrawer: DeckDrawer;
   _mouseWasDown: boolean;
   wmViewport: WebMercatorViewport;
-  queryObjectEvents: EventEmitter = new EventEmitter();
+  queryObjectEvents = new EventEmitter();
   forceUpdate: () => any;
   inited: boolean;
 

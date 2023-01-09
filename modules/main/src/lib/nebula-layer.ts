@@ -1,9 +1,9 @@
-import Event from 'events';
+import { EventEmitter } from 'eventemitter3';
 import { v4 } from 'uuid';
 
 import Feature from './feature';
 
-export default class NebulaLayer extends Event.EventEmitter {
+export default class NebulaLayer extends EventEmitter {
   getData: () => Record<string, any>[];
   toNebulaFeature: (data: Record<string, any>) => Feature;
   id: string;

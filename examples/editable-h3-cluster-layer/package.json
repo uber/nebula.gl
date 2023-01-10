@@ -13,9 +13,7 @@
     "global": "4.4.0",
     "react": "16.14.0",
     "react-dom": "16.14.0",
-    "react-map-gl": "4.1.16",
-    "react-scripts": "2.1.8",
-    "uuid": "3.3.2"
+    "react-map-gl": "^5.3.21"
   },
   "devDependencies": {
     "@babel/core": "^7.20.12",

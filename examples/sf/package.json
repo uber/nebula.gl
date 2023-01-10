@@ -13,7 +13,6 @@
     "nebula.gl": "^1.0.4",
     "@nebula.gl/edit-modes": "^1.0.4",
     "@nebula.gl/layers": "^1.0.4",
-    "nebula.gl-react": "^0.10.5",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
     "react-map-gl": "^5.3.21"

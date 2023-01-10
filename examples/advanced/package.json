@@ -8,17 +8,17 @@
     "types-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@deck.gl/core": "^8.8.21",
-    "@deck.gl/layers": "^8.8.21",
-    "@deck.gl/mesh-layers": "^8.8.21",
-    "@deck.gl/react": "^8.8.21",
+    "@deck.gl/core": "^8.8.22",
+    "@deck.gl/layers": "^8.8.22",
+    "@deck.gl/mesh-layers": "^8.8.22",
+    "@deck.gl/react": "^8.8.22",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
     "react-map-gl": "^5.3.21",
     "styled-components": "^4.4.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.7",
+    "@babel/core": "^7.20.12",
     "@babel/plugin-proposal-class-properties": "^7.18.6",
     "@babel/plugin-proposal-export-default-from": "^7.18.10",
     "@babel/preset-env": "^7.20.2",

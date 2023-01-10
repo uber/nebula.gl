@@ -43,7 +43,7 @@
     "@types/react-map-gl": "5.2.11",
     "mjolnir.js": "^2.7.1",
     "prop-types": "^15.8.1",
-    "uuid": "^3.4.0"
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "react-map-gl": "^5.3.21"

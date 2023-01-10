@@ -73,8 +73,8 @@
     "@turf/union": "^6.5.0",
     "cubic-hermite-spline": "^1.0.1",
     "geojson-types": "^2.0.1",
-    "global": ">=4.4.0",
-    "uuid": "7.0.3",
+    "eventemitter3": "^5.0.0",
+    "uuid": "9.0.0",
     "viewport-mercator-project": ">=6.2.3"
   },
   "peerDependencies": {

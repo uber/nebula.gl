@@ -2,6 +2,7 @@
 // delete the local development overrides at the bottom of this file
 
 // hack for node 17+
+// webpack uses old MD4 hashing which is not available in node 17+ anymore
 const crypto = require('crypto');
 const crypto_orig_createHash = crypto.createHash;
 crypto.createHash = (algorithm) =>

@@ -1,10 +1,10 @@
 /* eslint-env browser */
 
-import window from 'global/window';
+// import window from 'global/window';
 import * as React from 'react';
-import DeckGL from '@deck.gl/react';
-import { MapView, MapController, RGBAColor } from '@deck.gl/core';
-import { StaticMap } from 'react-map-gl';
+import DeckGL from '@deck.gl/react/typed';
+import { MapView, MapController } from '@deck.gl/core/typed';
+import StaticMap from 'react-map-gl';
 import GL from '@luma.gl/constants';
 import circle from '@turf/circle';
 
@@ -46,8 +46,9 @@ import {
   PathMarkerLayer,
   SELECTION_TYPE,
   GeoJsonEditMode,
+  Color,
 } from 'nebula.gl';
-
+type RGBAColor = Color; //[number, number, number, number];
 import sampleGeoJson from '../../data/sample-geojson.json';
 
 import iconSheet from '../../data/edit-handles.png';
@@ -828,7 +829,7 @@ export default class Example extends React.Component<
 
   renderStaticMap(viewport: Record<string, any>) {
     return (
-      // @ts-ignore
+      // @ ts-ignore
       <StaticMap {...viewport} mapStyle={'mapbox://styles/mapbox/dark-v10'} />
     );
   }
@@ -1125,7 +1126,7 @@ export default class Example extends React.Component<
                 type: MapController,
                 doubleClickZoom: false,
               },
-              legacyMeterSizes: true,
+              // legacyMeterSizes: true,
             }),
           ]}
           onClick={this._onLayerClick}

@@ -1,5 +1,5 @@
 /* eslint-env jest */
-
+import { expect, test, describe, beforeEach } from 'vitest';
 import { ImmutableFeatureCollection } from '../src/lib/immutable-feature-collection';
 
 let pointFeature;

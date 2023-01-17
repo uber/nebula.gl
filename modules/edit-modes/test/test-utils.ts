@@ -1,5 +1,3 @@
-/* eslint-env jest */
-
 import { Position, FeatureCollection } from '@nebula.gl/edit-modes';
 import {
   ModeProps,
@@ -335,7 +333,7 @@ export function createStartDraggingEvent(
     pointerDownPicks: null,
     pointerDownScreenCoords: [-1, -1],
     pointerDownMapCoords,
-    cancelPan: jest.fn(),
+    cancelPan: vi.fn(),
     sourceEvent: null,
   };
 }
@@ -372,7 +370,7 @@ export function createPointerMoveEvent(mapCoords?: Position, picks?: Pick[]): Po
     pointerDownPicks: null,
     pointerDownScreenCoords: null,
     pointerDownMapCoords: null,
-    cancelPan: jest.fn(),
+    cancelPan: vi.fn(),
     sourceEvent: null,
   };
 }
@@ -387,8 +385,8 @@ export function createFeatureCollectionProps(
     // @ts-ignore
     lastPointerMoveEvent: createPointerMoveEvent(),
     modeConfig: null,
-    onEdit: jest.fn(),
-    onUpdateCursor: jest.fn(),
+    onEdit: vi.fn(),
+    onUpdateCursor: vi.fn(),
     ...overrides,
   };
 }

@@ -35,7 +35,7 @@ const mockMove = (picks: Pick[], props: ModeProps<FeatureCollection>) => {
 };
 
 test('Selected polygon feature can be translated', () => {
-  const mockOnEdit = jest.fn();
+  const mockOnEdit = vi.fn();
   const props = createFeatureCollectionProps({
     selectedIndexes: [2],
     onEdit: mockOnEdit,
@@ -49,7 +49,7 @@ test('Selected polygon feature can be translated', () => {
 });
 
 test('Selected polygon feature can be translated in screen space', () => {
-  const mockOnEdit = jest.fn();
+  const mockOnEdit = vi.fn();
   const props = createFeatureCollectionProps({
     selectedIndexes: [2],
     onEdit: mockOnEdit,
@@ -66,7 +66,7 @@ test('Selected polygon feature can be translated in screen space', () => {
 });
 
 test('Non-picked selected polygon feature cannnot be translated', () => {
-  const mockOnEdit = jest.fn();
+  const mockOnEdit = vi.fn();
   const props = createFeatureCollectionProps({
     selectedIndexes: [2],
     onEdit: mockOnEdit,
@@ -76,7 +76,7 @@ test('Non-picked selected polygon feature cannnot be translated', () => {
 });
 
 test('Picked non-selected polygon feature cannnot be translated', () => {
-  const mockOnEdit = jest.fn();
+  const mockOnEdit = vi.fn();
   const props = createFeatureCollectionProps({
     selectedIndexes: [0],
     onEdit: mockOnEdit,

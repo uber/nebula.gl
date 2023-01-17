@@ -1,5 +1,3 @@
-/* eslint-env jest */
-
 import { DrawPolygonMode } from '../../src/lib/draw-polygon-mode';
 import { createFeatureCollectionProps, createClickEvent, createKeyboardEvent } from '../test-utils';
 

@@ -84,9 +84,10 @@ export class DrawPolygonHandler extends ModeHandler {
     return editAction;
   }
 
-  handlePointerMove({
-    groundCoords,
-  }: PointerMoveEvent): { editAction: EditAction | null | undefined; cancelMapPan: boolean } {
+  handlePointerMove({ groundCoords }: PointerMoveEvent): {
+    editAction: EditAction | null | undefined;
+    cancelMapPan: boolean;
+  } {
     const clickSequence = this.getClickSequence();
     const result = { editAction: null, cancelMapPan: false };
 

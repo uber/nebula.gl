@@ -1,5 +1,3 @@
-/* eslint-env jest */
-
 import { ModifyMode } from '../../src/lib/modify-mode';
 import { Pick, ModeProps } from '../../src/types';
 import {
@@ -164,7 +162,7 @@ const mockMove = (mode, picks: Pick[], props: ModeProps<FeatureCollection>) => {
 };
 
 test('Rectangular polygon feature preserves shape', () => {
-  const mockOnEdit = jest.fn();
+  const mockOnEdit = vi.fn();
   const props = createFeatureCollectionProps({
     data: {
       type: 'FeatureCollection',
@@ -340,7 +338,7 @@ describe('getGuides()', () => {
         picks: [pick],
         mapCoords,
         screenCoords: [42, 42],
-        cancelPan: jest.fn(),
+        cancelPan: vi.fn(),
         sourceEvent: null,
       },
     });
@@ -396,7 +394,7 @@ describe('getGuides()', () => {
         ],
         mapCoords,
         screenCoords: [42, 42],
-        cancelPan: jest.fn(),
+        cancelPan: vi.fn(),
         sourceEvent: null,
       },
     });
@@ -446,7 +444,7 @@ describe('getGuides()', () => {
         ],
         mapCoords,
         screenCoords: [42, 42],
-        cancelPan: jest.fn(),
+        cancelPan: vi.fn(),
         sourceEvent: null,
       },
     });

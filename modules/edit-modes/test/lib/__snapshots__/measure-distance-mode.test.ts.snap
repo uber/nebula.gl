@@ -1,40 +1,40 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1
 
-exports[`one click + pointer move guides are two points + line string 1`] = `
-Object {
-  "features": Array [
-    Object {
-      "geometry": Object {
-        "coordinates": Array [
-          Array [
+exports[`one click + pointer move > guides are two points + line string 1`] = `
+{
+  "features": [
+    {
+      "geometry": {
+        "coordinates": [
+          [
             1,
             2,
           ],
-          Array [
+          [
             3,
             4,
           ],
         ],
         "type": "LineString",
       },
-      "properties": Object {
+      "properties": {
         "guideType": "tentative",
       },
       "type": "Feature",
     },
-    Object {
-      "geometry": Object {
-        "coordinates": Array [
+    {
+      "geometry": {
+        "coordinates": [
           1,
           2,
         ],
         "type": "Point",
       },
-      "properties": Object {
+      "properties": {
         "editHandleType": "existing",
         "featureIndex": -1,
         "guideType": "editHandle",
-        "positionIndexes": Array [
+        "positionIndexes": [
           0,
         ],
       },
@@ -45,10 +45,10 @@ Object {
 }
 `;
 
-exports[`one click + pointer move tooltip contains distance 1`] = `
-Array [
-  Object {
-    "position": Array [
+exports[`one click + pointer move > tooltip contains distance 1`] = `
+[
+  {
+    "position": [
       3,
       4,
     ],
@@ -57,41 +57,41 @@ Array [
 ]
 `;
 
-exports[`one click guides are a single point 1`] = `
-Object {
-  "features": Array [
-    Object {
-      "geometry": Object {
-        "coordinates": Array [
-          Array [
+exports[`one click > guides are a single point 1`] = `
+{
+  "features": [
+    {
+      "geometry": {
+        "coordinates": [
+          [
             1,
             2,
           ],
-          Array [
+          [
             1,
             2,
           ],
         ],
         "type": "LineString",
       },
-      "properties": Object {
+      "properties": {
         "guideType": "tentative",
       },
       "type": "Feature",
     },
-    Object {
-      "geometry": Object {
-        "coordinates": Array [
+    {
+      "geometry": {
+        "coordinates": [
           1,
           2,
         ],
         "type": "Point",
       },
-      "properties": Object {
+      "properties": {
         "editHandleType": "existing",
         "featureIndex": -1,
         "guideType": "editHandle",
-        "positionIndexes": Array [
+        "positionIndexes": [
           0,
         ],
       },
@@ -102,24 +102,24 @@ Object {
 }
 `;
 
-exports[`three clicks + pointer move + press Enter tooltip contains distance 1`] = `
-Array [
-  Object {
-    "position": Array [
+exports[`three clicks + pointer move + press Enter > tooltip contains distance 1`] = `
+[
+  {
+    "position": [
       3,
       4,
     ],
     "text": "314.28 kilometers",
   },
-  Object {
-    "position": Array [
+  {
+    "position": [
       4,
       5,
     ],
     "text": "471.29 kilometers",
   },
-  Object {
-    "position": Array [
+  {
+    "position": [
       6,
       7,
     ],
@@ -128,17 +128,17 @@ Array [
 ]
 `;
 
-exports[`three clicks + pointer move + press Escape tooltip contains distance 1`] = `
-Array [
-  Object {
-    "position": Array [
+exports[`three clicks + pointer move + press Escape > tooltip contains distance 1`] = `
+[
+  {
+    "position": [
       3,
       4,
     ],
     "text": "314.28 kilometers",
   },
-  Object {
-    "position": Array [
+  {
+    "position": [
       4,
       5,
     ],
@@ -147,24 +147,24 @@ Array [
 ]
 `;
 
-exports[`three clicks + pointer move tooltip contains distance 1`] = `
-Array [
-  Object {
-    "position": Array [
+exports[`three clicks + pointer move > tooltip contains distance 1`] = `
+[
+  {
+    "position": [
       3,
       4,
     ],
     "text": "314.28 kilometers",
   },
-  Object {
-    "position": Array [
+  {
+    "position": [
       4,
       5,
     ],
     "text": "471.29 kilometers",
   },
-  Object {
-    "position": Array [
+  {
+    "position": [
       6,
       7,
     ],
@@ -173,17 +173,17 @@ Array [
 ]
 `;
 
-exports[`two clicks + pointer move tooltip contains distance 1`] = `
-Array [
-  Object {
-    "position": Array [
+exports[`two clicks + pointer move > tooltip contains distance 1`] = `
+[
+  {
+    "position": [
       3,
       4,
     ],
     "text": "314.28 kilometers",
   },
-  Object {
-    "position": Array [
+  {
+    "position": [
       4,
       5,
     ],
@@ -192,63 +192,63 @@ Array [
 ]
 `;
 
-exports[`two clicks guides are two points + line string 1`] = `
-Object {
-  "features": Array [
-    Object {
-      "geometry": Object {
-        "coordinates": Array [
-          Array [
+exports[`two clicks > guides are two points + line string 1`] = `
+{
+  "features": [
+    {
+      "geometry": {
+        "coordinates": [
+          [
             1,
             2,
           ],
-          Array [
+          [
             3,
             4,
           ],
-          Array [
+          [
             3,
             4,
           ],
         ],
         "type": "LineString",
       },
-      "properties": Object {
+      "properties": {
         "guideType": "tentative",
       },
       "type": "Feature",
     },
-    Object {
-      "geometry": Object {
-        "coordinates": Array [
+    {
+      "geometry": {
+        "coordinates": [
           1,
           2,
         ],
         "type": "Point",
       },
-      "properties": Object {
+      "properties": {
         "editHandleType": "existing",
         "featureIndex": -1,
         "guideType": "editHandle",
-        "positionIndexes": Array [
+        "positionIndexes": [
           0,
         ],
       },
       "type": "Feature",
     },
-    Object {
-      "geometry": Object {
-        "coordinates": Array [
+    {
+      "geometry": {
+        "coordinates": [
           3,
           4,
         ],
         "type": "Point",
       },
-      "properties": Object {
+      "properties": {
         "editHandleType": "existing",
         "featureIndex": -1,
         "guideType": "editHandle",
-        "positionIndexes": Array [
+        "positionIndexes": [
           1,
         ],
       },
@@ -259,17 +259,17 @@ Object {
 }
 `;
 
-exports[`two clicks tooltip contains distance 1`] = `
-Array [
-  Object {
-    "position": Array [
+exports[`two clicks > tooltip contains distance 1`] = `
+[
+  {
+    "position": [
       3,
       4,
     ],
     "text": "314.28 kilometers",
   },
-  Object {
-    "position": Array [
+  {
+    "position": [
       3,
       4,
     ],

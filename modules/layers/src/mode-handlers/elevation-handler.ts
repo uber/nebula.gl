@@ -46,9 +46,10 @@ export class ElevationHandler extends ModifyHandler {
     });
   }
 
-  handlePointerMove(
-    event: PointerMoveEvent
-  ): { editAction: EditAction | null | undefined; cancelMapPan: boolean } {
+  handlePointerMove(event: PointerMoveEvent): {
+    editAction: EditAction | null | undefined;
+    cancelMapPan: boolean;
+  } {
     const editHandle = getPickedEditHandle(event.pointerDownPicks);
     const position = editHandle ? editHandle.position : event.groundCoords;
     // @ts-expect-error narrow event type

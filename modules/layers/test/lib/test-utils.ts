@@ -1,5 +1,3 @@
-/* eslint-env jest */
-
 import { Position, FeatureCollection } from '@nebula.gl/edit-modes';
 import { ClickEvent, PointerMoveEvent, StopDraggingEvent } from '../../src/event-types';
 

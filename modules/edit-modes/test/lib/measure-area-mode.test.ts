@@ -1,5 +1,3 @@
-/* eslint-env jest */
-
 import { MeasureAreaMode } from '../../src/lib/measure-area-mode';
 import {
   createFeatureCollectionProps,

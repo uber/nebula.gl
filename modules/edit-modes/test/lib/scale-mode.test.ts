@@ -37,7 +37,7 @@ const mockScale = (picks: Pick[], props: ModeProps<FeatureCollection>) => {
 };
 
 test('Selected polygon feature can be scaled', () => {
-  const mockOnEdit = jest.fn();
+  const mockOnEdit = vi.fn();
   const props = createFeatureCollectionProps({
     selectedIndexes: [2],
     onEdit: mockOnEdit,
@@ -62,7 +62,7 @@ test('Selected polygon feature can be scaled', () => {
 });
 
 test('Selected polygon feature without edit handle picks cannot be scaled', () => {
-  const mockOnEdit = jest.fn();
+  const mockOnEdit = vi.fn();
   const props = createFeatureCollectionProps({
     selectedIndexes: [2],
     onEdit: mockOnEdit,

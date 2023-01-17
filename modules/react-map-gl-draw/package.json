@@ -34,7 +34,7 @@
     "prepublish": "yarn build",
     "publish-prod": "yarn build && yarn test && yarn test-dist && npm publish",
     "publish-beta": "yarn build && yarn test && yarn test-dist && npm publish --tag beta",
-    "test": "yarn lint && yarn build && yarn types-check && yarn jest"
+    "test": "yarn lint && yarn build && yarn types-check && yarn vitest"
   },
   "dependencies": {
     "@math.gl/web-mercator": "^3.6.3",

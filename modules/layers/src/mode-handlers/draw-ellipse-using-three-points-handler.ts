@@ -8,9 +8,10 @@ import { ThreeClickPolygonHandler } from './three-click-polygon-handler';
 
 // TODO edit-modes: delete handlers once EditMode fully implemented
 export class DrawEllipseUsingThreePointsHandler extends ThreeClickPolygonHandler {
-  handlePointerMove(
-    event: PointerMoveEvent
-  ): { editAction: EditAction | null | undefined; cancelMapPan: boolean } {
+  handlePointerMove(event: PointerMoveEvent): {
+    editAction: EditAction | null | undefined;
+    cancelMapPan: boolean;
+  } {
     const result = { editAction: null, cancelMapPan: false };
     const clickSequence = this.getClickSequence();
 

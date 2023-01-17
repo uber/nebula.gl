@@ -1,5 +1,3 @@
-/* eslint-env jest */
-
 import { DrawCircleByDiameterMode } from '../../src/lib/draw-circle-by-diameter-mode';
 import {
   createFeatureCollectionProps,

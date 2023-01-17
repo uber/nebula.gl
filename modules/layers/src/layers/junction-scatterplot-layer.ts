@@ -9,9 +9,7 @@ interface JunctionScatterplotLayerProps extends CompositeLayerProps<any> {
   getInnerRadius?: number | ((d) => number);
 }
 
-export default class JunctionScatterplotLayer extends CompositeLayer<
-  JunctionScatterplotLayerProps
-> {
+export default class JunctionScatterplotLayer extends CompositeLayer<JunctionScatterplotLayerProps> {
   static layerName = 'JunctionScatterplotLayer';
   static defaultProps: DefaultProps<JunctionScatterplotLayerProps> = {
     ...ScatterplotLayer.defaultProps,

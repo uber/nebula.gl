@@ -1,5 +1,3 @@
-/* eslint-env jest */
-
 import { findClosestPointOnLineSegment, isNumeric } from '../src/edit-modes/utils';
 import { Position } from '@nebula.gl/edit-modes';
 

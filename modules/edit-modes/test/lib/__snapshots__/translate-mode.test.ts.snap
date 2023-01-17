@@ -1,49 +1,49 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1
 
 exports[`Selected polygon feature can be translated 1`] = `
-Object {
-  "geometry": Object {
-    "coordinates": Array [
-      Array [
-        Array [
+{
+  "geometry": {
+    "coordinates": [
+      [
+        [
           1.9989310451833262,
           3.000457327224949,
         ],
-        Array [
+        [
           4.002593287805212,
           3.000457327224949,
         ],
-        Array [
+        [
           4.003816956249125,
           5.0004573272249475,
         ],
-        Array [
+        [
           1.9977073767394131,
           5.0004573272249475,
         ],
-        Array [
+        [
           1.9989310451833262,
           3.000457327224949,
         ],
       ],
-      Array [
-        Array [
+      [
+        [
           2.4996938251848633,
           3.500457327224949,
         ],
-        Array [
+        [
           2.4993879257185654,
           4.500457327224948,
         ],
-        Array [
+        [
           3.5021364072699726,
           4.500457327224948,
         ],
-        Array [
+        [
           3.5018305078036747,
           3.500457327224949,
         ],
-        Array [
+        [
           2.4996938251848633,
           3.500457327224949,
         ],
@@ -51,55 +51,55 @@ Object {
     ],
     "type": "Polygon",
   },
-  "properties": Object {},
+  "properties": {},
   "type": "Feature",
 }
 `;
 
 exports[`Selected polygon feature can be translated in screen space 1`] = `
-Object {
-  "geometry": Object {
-    "coordinates": Array [
-      Array [
-        Array [
+{
+  "geometry": {
+    "coordinates": [
+      [
+        [
           1.9999999999987053,
           3.000000000000399,
         ],
-        Array [
+        [
           3.999999999999344,
           3.000000000000399,
         ],
-        Array [
+        [
           3.999999999999344,
           4.995133531205008,
         ],
-        Array [
+        [
           1.9999999999987053,
           4.995133531205008,
         ],
-        Array [
+        [
           1.9999999999987053,
           3.000000000000399,
         ],
       ],
-      Array [
-        Array [
+      [
+        [
           2.499999999999081,
           3.4992387897458626,
         ],
-        Array [
+        [
           2.499999999999081,
           4.496805186050961,
         ],
-        Array [
+        [
           3.4999999999989426,
           4.496805186050961,
         ],
-        Array [
+        [
           3.4999999999989426,
           3.4992387897458626,
         ],
-        Array [
+        [
           2.499999999999081,
           3.4992387897458626,
         ],
@@ -107,7 +107,7 @@ Object {
     ],
     "type": "Polygon",
   },
-  "properties": Object {},
+  "properties": {},
   "type": "Feature",
 }
 `;

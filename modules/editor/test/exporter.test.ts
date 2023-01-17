@@ -1,5 +1,3 @@
-/* eslint-env jest */
-
 import { Feature, FeatureCollection } from '@nebula.gl/edit-modes';
 import { toGeoJson, toKml, toWkt, toStats } from '../src/lib/exporter';
 import { createRandomFeature } from './utils/test-features';

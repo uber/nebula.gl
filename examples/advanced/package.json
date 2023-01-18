@@ -4,6 +4,7 @@
   "version": "1.0.4",
   "scripts": {
     "start": "vite",
+    "start-local": "vite --mode localdev",
     "build": "tsc && vite build",
     "serve": "vite preview",
     "types-check": "tsc --noEmit"

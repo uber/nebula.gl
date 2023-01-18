@@ -1,7 +1,12 @@
 {
   "compilerOptions": {
     "strict": false,
-    "lib": ["dom", "dom.iterable", "esnext", "es6"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext",
+      "es6"
+    ],
     "outDir": "./lib",
     "allowSyntheticDefaultImports": true,
     "downlevelIteration": true,
@@ -23,8 +28,11 @@
     "target": "es6",
     "sourceMap": true,
     "importHelpers": true,
-    "types": ["vitest/globals"]
+    "types": [
+      "vitest/globals"
+    ]
   },
-  "exclude": ["node_modules"]
-  
+  "exclude": [
+    "node_modules"
+  ]
 }

@@ -1,14 +1,24 @@
-import { defineConfig } from 'vite';
+import { defineConfig, mergeConfig } from 'vite';
 import { makeLocalDevConfig } from '../vite.config.local';
 const { alias } = makeLocalDevConfig(__dirname);
 
 // https://vitejs.dev/config/
-export default defineConfig({
-  resolve: { alias },
-  root: 'src',
-  server: { open: true },
+export default defineConfig((env) => {
+  return {
+    resolve: env.mode == 'localdev' ? { alias } : {},
+    root: 'src',
+    server: { open: true },
+  };
 });
 
+mergeConfig(
+  {},
+  defineConfig({
+    resolve: { alias },
+    root: 'src',
+    server: { open: true },
+  })
+);
 // NOTE: To use this example standalone (e.g. outside of deck.gl repo)
 // delete the local development overrides at the bottom of this file
 

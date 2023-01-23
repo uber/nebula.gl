@@ -11,3 +11,5 @@ if (document.body) {
   document.body.appendChild(root);
   ReactDOM.render(<Example />, root);
 }
+
+console.info('MapboxAccessToken', process.env.MapboxAccessToken);

@@ -24,10 +24,6 @@
   "typings": "dist/index.d.ts",
   "scripts": {
     "build": "vite build -c ../../vite.config.js",
-    "build-es6": "babel src --delete-dir-on-start --config-file ../../babel.config.js --env-name es6 --out-dir dist-es6 --source-maps inline --extensions .ts,.tsx",
-    "build-es5": "babel src --delete-dir-on-start --config-file ../../babel.config.js --env-name es5 --out-dir dist --source-maps inline --extensions .ts,.tsx",
-    "build:babel": "yarn build-es6 && yarn run emitDeclarations && yarn build-es5 && cp ../../README.md . ",
-    "emitDeclarations": "rm -fr dist-types && tsc --emitDeclarationOnly",
     "types-check": "tsc --noEmit",
     "lint": "(cd ../.. && yarn lint)",
     "prepublish": "yarn build",

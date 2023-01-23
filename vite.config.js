@@ -1,6 +1,8 @@
 import { defineConfig } from 'vite';
 import dts from 'vite-plugin-dts';
 
+// https://vitejs.dev/config/
+// vite config for building nebula slib modules
 export default defineConfig({
   build: {
     emptyOutDir: true,

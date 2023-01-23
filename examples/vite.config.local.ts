@@ -54,35 +54,3 @@ export function makeLocalDevConfig(EXAMPLE_DIR = LIB_DIR) {
     },
   };
 }
-// Optional: Enables reading mapbox token from environment variable
-// plugins: [new webpack.EnvironmentPlugin(['MapboxAccessToken'])],
-
-/*
-function addLocalDevSettings(config, exampleDir) {
-  const LOCAL_DEV_CONFIG = makeLocalDevConfig(exampleDir);
-  config = Object.assign({}, LOCAL_DEV_CONFIG, config);
-  config.resolve = config.resolve || {};
-  config.resolve.alias = config.resolve.alias || {};
-  Object.assign(config.resolve.alias, LOCAL_DEV_CONFIG.resolve.alias);
-
-  config.module = config.module || {};
-  Object.assign(config.module, {
-    rules: (config.module.rules || []).concat(LOCAL_DEV_CONFIG.module.rules),
-  });
-  return config;
-}
-
-module.exports = (config, exampleDir) => (env) => {
-  // npm run start-local now transpiles the lib
-  if (env && env.local) {
-    config = addLocalDevSettings(config, exampleDir);
-  }
-
-  // npm run start-es6 does not transpile the lib
-  if (env && env.es6) {
-    config = addLocalDevSettings(config, exampleDir);
-  }
-
-  return config;
-};
-/** */

@@ -17,7 +17,7 @@ export const Toolbox = styled.div`
   height: 100%;
   font-family: Arial, Helvetica, sans-serif;
   font-size: 16px;
-  overflow: scroll;
+  overflow: auto;
   z-index: 999;
 `;
 

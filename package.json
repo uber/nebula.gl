@@ -29,12 +29,12 @@
     "types-check": "lerna run types-check --stream",
     "prepublish": "yarn run build",
     "publish-prod": "yarn run bootstrap && yarn run build && yarn run test && lerna publish --force-publish --exact && ./scripts/changelog.sh",
-    "test": "yarn run lint && yarn run build && yarn run types-check && yarn run test:unit",
+    "test": "yarn run lint && yarn run build && yarn run types-check && yarn run test-unit --run",
     "test-r": "yarn run lint && yarn run build",
     "test-fast": "yarn run test-node",
     "test-ci": "yarn run lint && yarn run prettier-diff && yarn run build && yarn run types-check && yarn run test-cover",
-    "test:unit": "vitest",
-    "test-cover": "vitest --coverage",
+    "test-unit": "vitest",
+    "test-cover": "vitest --coverage --run",
     "publish-docs": "./publish-docs.sh"
   },
   "devDependencies": {
@@ -57,7 +57,7 @@
     "@types/react": "17.0.53",
     "@types/react-dom": "17.0.18",
     "@types/react-test-renderer": "^17.0.2",
-    "@types/styled-components": "4.4.3",
+    "@types/styled-components": "^4.4.3",
     "@types/uuid": "9.0.0",
     "@types/viewport-mercator-project": "6.1.2",
     "@typescript-eslint/eslint-plugin": "^5.49.0",
@@ -110,9 +110,9 @@
   },
   "resolutions_notes": [
     "Note: tape 4.12 and higher no longer compares 0 and -0 equally...",
-    "Note: rollup >3.9 treeshakking issue"
+    "Note: rollup treeshaking issue fixed in 3.10.1"
   ],
   "resolutions": {
-    "rollup": "3.9"
+    "rollup": "^3.10.1"
   }
 }

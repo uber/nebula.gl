@@ -43,8 +43,8 @@
     "react-map-gl": "^5.3.21"
   },
   "peerDependencies": {
-    "react": "^16.x",
-    "react-dom": "^16.x",
+    "react": "^16.14 || ^17",
+    "react-dom": "^16.14 || ^17",
     "react-map-gl": "^5.x"
   },
   "resolutions": {

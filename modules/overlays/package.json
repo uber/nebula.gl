@@ -29,13 +29,13 @@
     "prepublish": "yarn build",
     "publish-prod": "yarn build && yarn test && yarn test-dist && npm publish",
     "publish-beta": "yarn build && yarn test && yarn test-dist && npm publish --tag beta",
-    "test": "yarn lint && yarn build && yarn types-check && yarn vitest",
+    "test": "yarn lint && yarn build && yarn types-check && yarn test-unit",
     "test-r": "yarn lint && yarn build && yarn test-node && (cd test/rendering-test && node node-rendering.js)",
     "test-fast": "yarn test-node",
     "test-ci": "yarn lint && node test/node-ci.js",
     "test-cover": "NODE_ENV=test tape -r babel-register test/node.js && nyc report",
     "test-browser": "webpack-dev-server --env.test --progress --hot --open",
-    "vitest": "(cd ../.. && vitest)",
+    "test-unit": "(cd ../.. && vitest)",
     "bench": "node test/bench/node.js",
     "bench-browser": "webpack-dev-server --env.bench --progress --hot --open",
     "test-rendering": "(cd test/rendering-test && webpack-dev-server --config webpack.config.test-rendering.js --progress --hot --open)"
@@ -46,8 +46,8 @@
     "supercluster": "^6.0.2"
   },
   "peerDependencies": {
-    "react": ">=16.x",
-    "react-dom": ">=16.x"
+    "react": "^16.14 || ^17",
+    "react-dom": "^16.14 || ^17"
   },
   "gitHead": "8374ab0ac62a52ae8a6b14276694cabced43de35"
 }

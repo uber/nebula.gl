@@ -48,7 +48,7 @@ import {
   GeoJsonEditMode,
   Color,
 } from 'nebula.gl';
-type RGBAColor = Color; //[number, number, number, number];
+
 import sampleGeoJson from '../../data/sample-geojson.json';
 
 import iconSheet from '../../data/edit-handles.png';
@@ -62,6 +62,7 @@ import {
   ToolboxCheckbox,
 } from './toolbox';
 
+type RGBAColor = Color;
 const COMPOSITE_MODE = new CompositeMode([new DrawLineStringMode(), new ModifyMode()]);
 
 const styles = {

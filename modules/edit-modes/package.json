@@ -23,7 +23,7 @@
   "types": "dist/index.d.ts",
   "typings": "dist/index.d.ts",
   "scripts": {
-    "build": "vite build -c ../../vite.config.js",
+    "build": "vite build -c ../../vite.config.ts",
     "types-check": "tsc --noEmit",
     "lint": "(cd ../.. && yarn lint)",
     "prepublish": "yarn build",

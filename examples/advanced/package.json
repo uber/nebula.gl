@@ -5,7 +5,7 @@
   "scripts": {
     "start": "vite",
     "start-local": "vite --mode localdev",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "serve": "vite preview",
     "types-check": "tsc --noEmit"
   },

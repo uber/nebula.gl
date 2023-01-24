@@ -25,7 +25,7 @@
     "prettier": "prettier --write \"{modules,examples,test,dev-docs,docs,website}/**/*.{ts,tsx,js,md}\"",
     "prettier-diff": "prettier --list-different \"{modules,examples,test,dev-docs,docs,website,}/**/*.{ts,tsx,js,md}\"",
     "lint": "yarn run lint-yarn && eslint modules/**/src/**/* --ext ts,tsx,js",
-    "lint-yarn": "!(grep -q unpm.u yarn.lock) && echo 'Lockfile valid.' || (echo 'Please rebuild yarn file using public npmrc' && false)",
+    "lint-yarn": "node ./scripts/lint-yarn.js",
     "types-check": "lerna run types-check --stream",
     "prepublish": "yarn run build",
     "publish-prod": "yarn run bootstrap && yarn run build && yarn run test && lerna publish --force-publish --exact && ./scripts/changelog.sh",
@@ -60,10 +60,9 @@
     "@types/styled-components": "4.4.3",
     "@types/uuid": "9.0.0",
     "@types/viewport-mercator-project": "6.1.2",
-    "@typescript-eslint/eslint-plugin": "^5.48.2",
-    "@typescript-eslint/parser": "^5.48.2",
-    "@vitest/coverage-c8": "^0.27.3",
-    "babel-eslint": "10.1.0",
+    "@typescript-eslint/eslint-plugin": "^5.49.0",
+    "@typescript-eslint/parser": "^5.49.0",
+    "@vitest/coverage-c8": "^0.28.1",
     "babel-loader": "9.1.2",
     "babel-plugin-istanbul": "6.1.1",
     "babel-plugin-version-inline": "^1.0.0",
@@ -72,7 +71,6 @@
     "eslint-config-prettier": "8.6.0",
     "eslint-config-uber-es2015": "3.1.2",
     "eslint-config-uber-jsx": "3.3.3",
-    "eslint-plugin-babel": "5.3.1",
     "eslint-plugin-import": "2.27.5",
     "eslint-plugin-prettier": "4.2.1",
     "eslint-plugin-react": "7.32.1",
@@ -92,6 +90,7 @@
     "react-test-renderer": "^17.0.2",
     "regenerator-runtime": "^0.13.11",
     "reify": "0.22.2",
+    "rollup-plugin-node-externals": "^5.1.0",
     "source-map-loader": "^0.2.4",
     "tap-browser-color": "^0.1.2",
     "tape": "4.11",
@@ -102,13 +101,17 @@
     "vite": "^4.0.4",
     "vite-plugin-cp": "^1.0.0",
     "vite-plugin-dts": "^1.7.1",
-    "vitest": "^0.27.3"
+    "vitest": "^0.28.1"
   },
   "husky": {
     "hooks": {
       "pre-commit": "pretty-quick --staged"
     }
   },
+  "resolutions_notes": [
+    "Note: tape 4.12 and higher no longer compares 0 and -0 equally...",
+    "Note: rollup >3.9 treeshakking issue"
+  ],
   "resolutions": {
     "rollup": "3.9"
   }

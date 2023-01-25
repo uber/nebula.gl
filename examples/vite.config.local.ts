@@ -1,12 +1,9 @@
-// This file contains webpack configuration settings that allow
+// This file contains configuration settings that allow
 // examples to be built against the nebula.gl source code in this repo instead
 // of building against their installed version of nebula.gl.
 //
 // This enables using the examples to debug the main nebula.gl library source
 // without publishing or npm linking, with conveniences such hot reloading etc.
-
-// avoid destructuring for older Node version support
-// test
 const resolve = require('path').resolve;
 
 const LIB_DIR = resolve(__dirname, '..');

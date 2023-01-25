@@ -1,4 +1,3 @@
-//
 
 import { readFileSync, readdirSync, existsSync } from 'fs';
 

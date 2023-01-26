@@ -62,7 +62,7 @@
     "@types/viewport-mercator-project": "6.1.2",
     "@typescript-eslint/eslint-plugin": "^5.49.0",
     "@typescript-eslint/parser": "^5.49.0",
-    "@vitest/coverage-c8": "^0.28.1",
+    "@vitest/coverage-c8": "^0.28.2",
     "babel-loader": "9.1.2",
     "babel-plugin-istanbul": "6.1.1",
     "babel-plugin-version-inline": "^1.0.0",
@@ -101,7 +101,7 @@
     "vite": "^4.0.4",
     "vite-plugin-cp": "^1.0.0",
     "vite-plugin-dts": "^1.7.1",
-    "vitest": "^0.28.1"
+    "vitest": "^0.28.2"
   },
   "husky": {
     "hooks": {

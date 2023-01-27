@@ -15,33 +15,27 @@
     "layer"
   ],
   "main": "dist/index.js",
-  "module": "dist-es6/index.js",
+  "module": "dist/index.mjs",
   "files": [
     "dist",
-    "dist-es6",
-    "dist-types",
     "src"
   ],
-  "types": "dist-types/index.d.ts",
-  "typings": "dist-types/index.d.ts",
+  "types": "dist/index.d.ts",
+  "typings": "dist/index.d.ts",
   "scripts": {
-    "build-clean": "rm -fr dist dist-es6 && mkdir -p dist dist-es6",
-    "build-es6": "rm -fr dist-es6 && BABEL_ENV=es6 babel src --config-file ../../babel.config.js --out-dir dist-es6 --source-maps inline --extensions .ts,.tsx",
-    "build-es5": "rm -fr dist && BABEL_ENV=es5 babel src --config-file ../../babel.config.js --out-dir dist --source-maps inline --extensions .ts,.tsx",
-    "build": "yarn build-clean && yarn build-es6 && yarn run emitDeclarations && yarn build-es5",
-    "emitDeclarations": "rm -fr  dist-types && tsc --emitDeclarationOnly",
+    "build": "vite build -c ../../vite.config.ts",
     "types-check": "tsc --noEmit",
     "lint": "(cd ../.. && yarn lint)",
     "prepublish": "yarn build",
     "publish-prod": "yarn build && yarn test && yarn test-dist && npm publish",
     "publish-beta": "yarn build && yarn test && yarn test-dist && npm publish --tag beta",
-    "test": "yarn lint && yarn build && yarn types-check && yarn jest",
+    "test": "yarn lint && yarn build && yarn types-check && yarn test-unit",
     "test-r": "yarn lint && yarn build && yarn test-node && (cd test/rendering-test && node node-rendering.js)",
     "test-fast": "yarn test-node",
     "test-ci": "yarn lint && node test/node-ci.js",
     "test-cover": "NODE_ENV=test tape -r babel-register test/node.js && nyc report",
     "test-browser": "webpack-dev-server --env.test --progress --hot --open",
-    "jest": "(cd ../.. && jest)",
+    "test-unit": "(cd ../.. && vitest)",
     "bench": "node test/bench/node.js",
     "bench-browser": "webpack-dev-server --env.bench --progress --hot --open",
     "test-rendering": "(cd test/rendering-test && webpack-dev-server --config webpack.config.test-rendering.js --progress --hot --open)"
@@ -52,8 +46,8 @@
     "supercluster": "^6.0.2"
   },
   "peerDependencies": {
-    "react": "0.14.x - 16.x",
-    "react-dom": "0.14.x - 16.x"
+    "react": "^16.14 || ^17",
+    "react-dom": "^16.14 || ^17"
   },
   "gitHead": "8374ab0ac62a52ae8a6b14276694cabced43de35"
 }

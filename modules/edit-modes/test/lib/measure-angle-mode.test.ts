@@ -1,5 +1,3 @@
-/* eslint-env jest */
-
 import { MeasureAngleMode } from '../../src/lib/measure-angle-mode';
 import {
   createFeatureCollectionProps,

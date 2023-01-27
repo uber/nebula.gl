@@ -1,4 +1,3 @@
-import document from 'global/document';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
@@ -12,3 +11,5 @@ if (document.body) {
   document.body.appendChild(root);
   ReactDOM.render(<Example />, root);
 }
+
+console.info('MapboxAccessToken', process.env.MapboxAccessToken);

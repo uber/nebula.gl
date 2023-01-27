@@ -159,11 +159,8 @@ export default abstract class EditableLayer<
     const screenCoords = this.getScreenCoords(srcEvent) as [number, number];
     const mapCoords = this.getMapCoords(screenCoords);
 
-    const {
-      pointerDownPicks,
-      pointerDownScreenCoords,
-      pointerDownMapCoords,
-    } = this.state._editableLayerState;
+    const { pointerDownPicks, pointerDownScreenCoords, pointerDownMapCoords } =
+      this.state._editableLayerState;
 
     const picks = this.getPicks(screenCoords);
 
@@ -188,11 +185,8 @@ export default abstract class EditableLayer<
     const screenCoords = this.getScreenCoords(srcEvent) as [number, number];
     const mapCoords = this.getMapCoords(screenCoords);
 
-    const {
-      pointerDownPicks,
-      pointerDownScreenCoords,
-      pointerDownMapCoords,
-    } = this.state._editableLayerState;
+    const { pointerDownPicks, pointerDownScreenCoords, pointerDownMapCoords } =
+      this.state._editableLayerState;
 
     const picks = this.getPicks(screenCoords);
 
@@ -221,11 +215,8 @@ export default abstract class EditableLayer<
     const screenCoords = this.getScreenCoords(srcEvent) as [number, number];
     const mapCoords = this.getMapCoords(screenCoords);
 
-    const {
-      pointerDownPicks,
-      pointerDownScreenCoords,
-      pointerDownMapCoords,
-    } = this.state._editableLayerState;
+    const { pointerDownPicks, pointerDownScreenCoords, pointerDownMapCoords } =
+      this.state._editableLayerState;
 
     const picks = this.getPicks(screenCoords);
 

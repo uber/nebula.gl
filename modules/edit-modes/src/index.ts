@@ -1,3 +1,7 @@
+import * as utils from './utils';
+
+export { utils };
+
 export type { EditMode } from './lib/edit-mode';
 export type { GeoJsonEditModeType } from './lib/geojson-edit-mode';
 export type { GeoJsonEditModeConstructor } from './lib/geojson-edit-mode';
@@ -84,7 +88,3 @@ export type {
   FeatureCollection,
   AnyGeoJson,
 } from './geojson-types';
-
-// Utils
-import * as utils from './utils';
-export { utils };

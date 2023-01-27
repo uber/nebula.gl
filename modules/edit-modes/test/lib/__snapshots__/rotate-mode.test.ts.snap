@@ -1,49 +1,49 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1
 
 exports[`Selected polygon feature can be rotated 1`] = `
-Object {
-  "geometry": Object {
-    "coordinates": Array [
-      Array [
-        Array [
+{
+  "geometry": {
+    "coordinates": [
+      [
+        [
           0.7839526552529605,
           1.177031499163895,
         ],
-        Array [
+        [
           -1.1770284241941908,
           0.7839572723738235,
         ],
-        Array [
+        [
           -0.7839526552529605,
           -1.177031499163893,
         ],
-        Array [
+        [
           1.1770284241941908,
           -0.783957272373826,
         ],
-        Array [
+        [
           0.7839526552529605,
           1.177031499163895,
         ],
       ],
-      Array [
-        Array [
+      [
+        [
           0.3919743169615231,
           0.5885194916799502,
         ],
-        Array [
+        [
           0.5885191073002716,
           -0.39197489408891184,
         ],
-        Array [
+        [
           -0.3919743169615231,
           -0.5885194916799487,
         ],
-        Array [
+        [
           -0.5885191073002716,
           0.39197489408890945,
         ],
-        Array [
+        [
           0.3919743169615231,
           0.5885194916799502,
         ],
@@ -51,7 +51,7 @@ Object {
     ],
     "type": "Polygon",
   },
-  "properties": Object {},
+  "properties": {},
   "type": "Feature",
 }
 `;

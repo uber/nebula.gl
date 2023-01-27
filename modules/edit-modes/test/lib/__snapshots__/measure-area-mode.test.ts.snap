@@ -1,9 +1,9 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1
 
-exports[`three clicks + pointer move tooltip contains area 1`] = `
-Array [
-  Object {
-    "position": Array [
+exports[`three clicks + pointer move > tooltip contains area 1`] = `
+[
+  {
+    "position": [
       0,
       0,
     ],

@@ -1,9 +1,9 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1
 
 exports[`HtmlOverlay is able to handle a null child with other valid children 1`] = `
 <div
   style={
-    Object {
+    {
       "height": "100%",
       "overflow": "hidden",
       "pointerEvents": "none",
@@ -15,7 +15,7 @@ exports[`HtmlOverlay is able to handle a null child with other valid children 1`
 >
   <HtmlOverlayItem
     coordinates={
-      Array [
+      [
         0,
         0,
         0,
@@ -28,7 +28,7 @@ exports[`HtmlOverlay is able to handle a null child with other valid children 1`
   </HtmlOverlayItem>
   <HtmlOverlayItem
     coordinates={
-      Array [
+      [
         0,
         0,
         50000,
@@ -45,7 +45,7 @@ exports[`HtmlOverlay is able to handle a null child with other valid children 1`
 exports[`HtmlOverlay is able to handle a single null child 1`] = `
 <div
   style={
-    Object {
+    {
       "height": "100%",
       "overflow": "hidden",
       "pointerEvents": "none",
@@ -60,7 +60,7 @@ exports[`HtmlOverlay is able to handle a single null child 1`] = `
 exports[`HtmlOverlay is able to handle no children 1`] = `
 <div
   style={
-    Object {
+    {
       "height": "100%",
       "overflow": "hidden",
       "pointerEvents": "none",

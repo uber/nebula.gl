@@ -8,9 +8,10 @@ import { ModifyHandler } from './modify-handler';
 // TODO edit-modes: delete handlers once EditMode fully implemented
 export class ExtrudeHandler extends ModifyHandler {
   isPointAdded = false;
-  handlePointerMove(
-    event: PointerMoveEvent
-  ): { editAction: EditAction | null | undefined; cancelMapPan: boolean } {
+  handlePointerMove(event: PointerMoveEvent): {
+    editAction: EditAction | null | undefined;
+    cancelMapPan: boolean;
+  } {
     this._lastPointerMovePicks = event.picks;
 
     let editAction: EditAction | null | undefined = null;

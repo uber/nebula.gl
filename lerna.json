@@ -1,8 +1,6 @@
 {
-  "packages": [
-    "modules/*",
-    "examples/advanced"
-  ],
+  "$schema": "node_modules/lerna/schemas/lerna-schema.json",
+  "packages": ["modules/*", "examples/advanced"],
   "npmClient": "yarn",
   "useWorkspaces": true,
   "version": "1.0.4"

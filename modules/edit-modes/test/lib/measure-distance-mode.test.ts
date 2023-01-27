@@ -1,5 +1,3 @@
-/* eslint-env jest */
-
 import { MeasureDistanceMode } from '../../src/lib/measure-distance-mode';
 import {
   createFeatureCollectionProps,

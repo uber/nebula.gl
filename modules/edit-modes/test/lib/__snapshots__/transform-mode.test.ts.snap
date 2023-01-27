@@ -1,70 +1,70 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1
 
 exports[`Transform mode correctly renders composited guides 1`] = `
-Array [
-  Object {
-    "geometry": Object {
-      "coordinates": Array [
+[
+  {
+    "geometry": {
+      "coordinates": [
         -1,
         -1,
       ],
       "type": "Point",
     },
-    "properties": Object {
+    "properties": {
       "editHandleType": "scale",
       "guideType": "editHandle",
-      "positionIndexes": Array [
+      "positionIndexes": [
         0,
       ],
     },
     "type": "Feature",
   },
-  Object {
-    "geometry": Object {
-      "coordinates": Array [
+  {
+    "geometry": {
+      "coordinates": [
         1,
         -1,
       ],
       "type": "Point",
     },
-    "properties": Object {
+    "properties": {
       "editHandleType": "scale",
       "guideType": "editHandle",
-      "positionIndexes": Array [
+      "positionIndexes": [
         1,
       ],
     },
     "type": "Feature",
   },
-  Object {
-    "geometry": Object {
-      "coordinates": Array [
+  {
+    "geometry": {
+      "coordinates": [
         1,
         1,
       ],
       "type": "Point",
     },
-    "properties": Object {
+    "properties": {
       "editHandleType": "scale",
       "guideType": "editHandle",
-      "positionIndexes": Array [
+      "positionIndexes": [
         2,
       ],
     },
     "type": "Feature",
   },
-  Object {
-    "geometry": Object {
-      "coordinates": Array [
+  {
+    "geometry": {
+      "coordinates": [
         -1,
         1,
       ],
       "type": "Point",
     },
-    "properties": Object {
+    "properties": {
       "editHandleType": "scale",
       "guideType": "editHandle",
-      "positionIndexes": Array [
+      "positionIndexes": [
         3,
       ],
     },
@@ -74,16 +74,16 @@ Array [
 `;
 
 exports[`Transform mode correctly renders composited guides 2`] = `
-Array [
-  Object {
-    "geometry": Object {
-      "coordinates": Array [
+[
+  {
+    "geometry": {
+      "coordinates": [
         0,
         1.2223901604670657,
       ],
       "type": "Point",
     },
-    "properties": Object {
+    "properties": {
       "editHandleType": "rotate",
       "guideType": "editHandle",
     },
@@ -93,51 +93,51 @@ Array [
 `;
 
 exports[`Transform mode correctly renders composited guides 3`] = `
-Array [
-  Object {
-    "geometry": Object {
-      "coordinates": Array [
-        Array [
+[
+  {
+    "geometry": {
+      "coordinates": [
+        [
           -1,
           -1,
         ],
-        Array [
+        [
           1,
           -1,
         ],
-        Array [
+        [
           1,
           1,
         ],
-        Array [
+        [
           -1,
           1,
         ],
-        Array [
+        [
           -1,
           -1,
         ],
       ],
       "type": "LineString",
     },
-    "properties": Object {},
+    "properties": {},
     "type": "Feature",
   },
-  Object {
-    "geometry": Object {
-      "coordinates": Array [
-        Array [
+  {
+    "geometry": {
+      "coordinates": [
+        [
           0,
           1,
         ],
-        Array [
+        [
           0,
           1.2223901604670657,
         ],
       ],
       "type": "LineString",
     },
-    "properties": Object {},
+    "properties": {},
     "type": "Feature",
   },
 ]

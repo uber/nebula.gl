@@ -17,7 +17,7 @@ afterEach(() => {
 });
 
 test('onUpdateCursor is only set to null once', () => {
-  const mockOnUpdateCursor = jest.fn();
+  const mockOnUpdateCursor = vi.fn();
   const moveEvent = createPointerMoveEvent([-1, -1], []);
   const props = createFeatureCollectionProps({
     selectedIndexes: [2],

@@ -4,8 +4,8 @@
     "start-local": "webpack-dev-server --env.local --progress --hot --open"
   },
   "dependencies": {
-    "@deck.gl/core": "^8.8.22",
-    "@deck.gl/react": "^8.8.22",
+    "@deck.gl/core": "^8.8.23",
+    "@deck.gl/react": "^8.8.23",
     "nebula.gl": "^0.23.8",
     "nebula.gl-react": "^0.10.5",
     "react": "^16.14.0",

@@ -1,5 +1,3 @@
-/* eslint-env jest */
-
 import { DrawLineStringMode } from '../../src/lib/draw-line-string-mode';
 import { createFeatureCollectionProps, createClickEvent, createKeyboardEvent } from '../test-utils';
 

@@ -14,27 +14,21 @@
     "editing"
   ],
   "main": "dist/index.js",
-  "module": "dist-es6/index.js",
+  "module": "dist/index.mjs",
   "files": [
     "dist",
-    "dist-es6",
-    "dist-types",
     "src"
   ],
-  "types": "dist-types/index.d.ts",
-  "typings": "dist-types/index.d.ts",
+  "types": "dist/index.d.ts",
+  "typings": "dist/index.d.ts",
   "scripts": {
-    "build-clean": "rm -fr dist dist-es6 && mkdir -p dist dist-es6",
-    "build-es6": "rm -fr dist-es6 && BABEL_ENV=es6 babel src --config-file ../../babel.config.js --out-dir dist-es6 --source-maps inline --extensions .ts,.tsx",
-    "build-es5": "rm -fr dist && BABEL_ENV=es5 babel src --config-file ../../babel.config.js --out-dir dist --source-maps inline --extensions .ts,.tsx",
-    "build": "yarn build-clean && yarn build-es6 && yarn run emitDeclarations && yarn build-es5",
-    "emitDeclarations": "rm -fr  dist-types && tsc --emitDeclarationOnly",
+    "build": "vite build -c ../../vite.config.ts",
     "types-check": "tsc --noEmit",
     "lint": "(cd ../.. && yarn lint)",
     "prepublish": "yarn build",
     "publish-prod": "yarn build && yarn test && yarn test-dist && npm publish",
     "publish-beta": "yarn build && yarn test && yarn test-dist && npm publish --tag beta",
-    "test": "yarn lint && yarn build && yarn types-check && yarn jest"
+    "test": "yarn lint && yarn build && yarn types-check && yarn vitest"
   },
   "dependencies": {
     "@math.gl/web-mercator": "^3.6.3",
@@ -49,8 +43,8 @@
     "react-map-gl": "^5.3.21"
   },
   "peerDependencies": {
-    "react": "^16.x",
-    "react-dom": "^16.x",
+    "react": "^16.14 || ^17",
+    "react-dom": "^16.14 || ^17",
     "react-map-gl": "^5.x"
   },
   "resolutions": {

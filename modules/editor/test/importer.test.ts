@@ -1,5 +1,4 @@
 /* eslint-disable max-nested-callbacks */
-/* eslint-env jest, browser */
 
 import sinon from 'sinon';
 import { Feature, FeatureCollection } from '@nebula.gl/edit-modes';

@@ -1,10 +1,8 @@
 /* eslint-env browser */
-
-import window from 'global/window';
 import * as React from 'react';
-import DeckGL from '@deck.gl/react';
-import { MapView, MapController, RGBAColor } from '@deck.gl/core';
-import { StaticMap } from 'react-map-gl';
+import DeckGL from '@deck.gl/react/typed';
+import { MapView, MapController } from '@deck.gl/core/typed';
+import StaticMap from 'react-map-gl';
 import GL from '@luma.gl/constants';
 import circle from '@turf/circle';
 
@@ -46,6 +44,7 @@ import {
   PathMarkerLayer,
   SELECTION_TYPE,
   GeoJsonEditMode,
+  Color,
 } from 'nebula.gl';
 
 import sampleGeoJson from '../../data/sample-geojson.json';
@@ -61,6 +60,7 @@ import {
   ToolboxCheckbox,
 } from './toolbox';
 
+type RGBAColor = Color;
 const COMPOSITE_MODE = new CompositeMode([new DrawLineStringMode(), new ModifyMode()]);
 
 const styles = {
@@ -827,10 +827,7 @@ export default class Example extends React.Component<
   }
 
   renderStaticMap(viewport: Record<string, any>) {
-    return (
-      // @ts-ignore
-      <StaticMap {...viewport} mapStyle={'mapbox://styles/mapbox/dark-v10'} />
-    );
+    return <StaticMap {...viewport} mapStyle={'mapbox://styles/mapbox/dark-v10'} />;
   }
 
   _featureMenuClick(action: string) {
@@ -1111,7 +1108,6 @@ export default class Example extends React.Component<
 
     return (
       <div style={styles.mapContainer}>
-        <link href="https://api.mapbox.com/mapbox-gl-js/v0.44.0/mapbox-gl.css" rel="stylesheet" />
         <DeckGL
           viewState={viewport}
           getCursor={editableGeoJsonLayer.getCursor.bind(editableGeoJsonLayer)}
@@ -1125,7 +1121,6 @@ export default class Example extends React.Component<
                 type: MapController,
                 doubleClickZoom: false,
               },
-              legacyMeterSizes: true,
             }),
           ]}
           onClick={this._onLayerClick}

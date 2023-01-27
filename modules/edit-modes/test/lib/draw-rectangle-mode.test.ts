@@ -1,5 +1,3 @@
-/* eslint-env jest */
-
 import turfArea from '@turf/area';
 import { Feature, FeatureCollection } from '@nebula.gl/edit-modes';
 import { DrawRectangleMode } from '../../src/lib/draw-rectangle-mode';
@@ -67,7 +65,7 @@ describe('dragToDraw=false', () => {
     });
   });
 
-  it('adds a new feature after two clicks', () => {
+  it('rectangle: adds a new feature after two clicks', () => {
     const mode = new DrawRectangleMode();
 
     const props = createFeatureCollectionProps();

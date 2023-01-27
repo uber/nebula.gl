@@ -163,9 +163,10 @@ export class SnappableHandler extends ModeHandler {
     return this._handler.getCursor(event);
   }
 
-  handlePointerMove(
-    event: PointerMoveEvent
-  ): { editAction: EditAction | null | undefined; cancelMapPan: boolean } {
+  handlePointerMove(event: PointerMoveEvent): {
+    editAction: EditAction | null | undefined;
+    cancelMapPan: boolean;
+  } {
     const { enableSnapping } = this._handler.getModeConfig() || {};
 
     if (enableSnapping) {

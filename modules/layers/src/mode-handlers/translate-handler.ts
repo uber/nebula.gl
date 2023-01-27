@@ -11,9 +11,10 @@ export class TranslateHandler extends ModeHandler {
   _geometryBeforeTranslate: FeatureCollection | null | undefined;
   _isTranslatable: boolean;
 
-  handlePointerMove(
-    event: PointerMoveEvent
-  ): { editAction: EditAction | null | undefined; cancelMapPan: boolean } {
+  handlePointerMove(event: PointerMoveEvent): {
+    editAction: EditAction | null | undefined;
+    cancelMapPan: boolean;
+  } {
     let editAction: EditAction | null | undefined = null;
 
     this._isTranslatable =

@@ -1,6 +1,4 @@
 /* eslint-env browser */
-
-// import window from 'global/window';
 import * as React from 'react';
 import DeckGL from '@deck.gl/react/typed';
 import { MapView, MapController } from '@deck.gl/core/typed';
@@ -829,10 +827,7 @@ export default class Example extends React.Component<
   }
 
   renderStaticMap(viewport: Record<string, any>) {
-    return (
-      // @ ts-ignore
-      <StaticMap {...viewport} mapStyle={'mapbox://styles/mapbox/dark-v10'} />
-    );
+    return <StaticMap {...viewport} mapStyle={'mapbox://styles/mapbox/dark-v10'} />;
   }
 
   _featureMenuClick(action: string) {
@@ -1113,7 +1108,6 @@ export default class Example extends React.Component<
 
     return (
       <div style={styles.mapContainer}>
-        <link href="https://api.mapbox.com/mapbox-gl-js/v0.44.0/mapbox-gl.css" rel="stylesheet" />
         <DeckGL
           viewState={viewport}
           getCursor={editableGeoJsonLayer.getCursor.bind(editableGeoJsonLayer)}
@@ -1127,7 +1121,6 @@ export default class Example extends React.Component<
                 type: MapController,
                 doubleClickZoom: false,
               },
-              // legacyMeterSizes: true,
             }),
           ]}
           onClick={this._onLayerClick}

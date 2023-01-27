@@ -1,7 +1,8 @@
-import { builtinModules } from 'module';
 import { defineConfig, UserConfig } from 'vite';
 import dts from 'vite-plugin-dts';
 import cp from 'vite-plugin-cp';
+import nodeExternals from 'rollup-plugin-node-externals';
+import { visualizer } from 'rollup-plugin-visualizer';
 
 // vite config for building nebula lib modules https://vitejs.dev/config/
 export default defineConfig((env) => {
@@ -16,12 +17,16 @@ export default defineConfig((env) => {
         formats: ['es', 'cjs'],
         fileName: 'index',
       },
-      // TODO: Rollup warns about builins https://github.com/visgl/loaders.gl/issues/2000
-      rollupOptions: {
-        external: builtinModules,
-      },
     },
     plugins: [
+      // do not bundle npm dependencies, peerDependencies and optionalDependencies
+      {
+        ...nodeExternals({
+          peerDeps: true,
+          include: /^@nebula\.gl/,
+        }),
+        enforce: 'pre',
+      },
       // generate types
       dts({ rollupTypes: true }),
     ],
@@ -32,6 +37,19 @@ export default defineConfig((env) => {
     process.cwd().endsWith('react-map-gl-draw') || process.cwd().endsWith('overlays');
   if (!hasOwnReadme) {
     viteBuildConfig.plugins.push(cp({ targets: [{ src: '../../README.md', dest: './' }] }));
+  }
+
+  // Visualize and analyze your Rollup bundle to see which modules are taking up space
+  // set ROLLUP_VISUALIZER=1 env var to enable generating rollup_stats.html
+  if (process.env['ROLLUP_VISUALIZER']) {
+    viteBuildConfig.plugins.push(
+      visualizer({
+        filename: 'rollup_stats.html',
+        // template: 'list',
+        gzipSize: true,
+        sourcemap: true,
+      })
+    );
   }
 
   return viteBuildConfig;

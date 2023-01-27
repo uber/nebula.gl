@@ -1,6 +1,5 @@
 import * as utils from './utils';
 
-// Utils
 export { utils };
 
 export type { EditMode } from './lib/edit-mode';

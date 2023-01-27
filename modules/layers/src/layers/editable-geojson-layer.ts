@@ -397,6 +397,7 @@ export default class EditableGeoJsonLayer extends EditableLayer<
     ) {
       // TODO: needs improved testing, i.e. checking for duplicates, NaNs, out of range numbers, ...
       const propsData = props.data;
+      // @ts-ignore error TS2339: Property 'features' does not exist on type 'never'
       selectedFeatures = props.selectedFeatureIndexes.map((elem) => propsData.features[elem]);
     }
 

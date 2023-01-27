@@ -23,3 +23,6 @@ modules/main/README.md
 modules/edit-modes/README.md
 modules/editor/README.md
 modules/layers/README.md
+
+# bundle visualizer output
+rollup_stats.html

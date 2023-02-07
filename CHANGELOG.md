@@ -4,6 +4,29 @@ _All notable changes to this project will be documented in this file. This proje
 
 <!-- INSERT HERE -->
 
+## 1.1.0-alpha.1
+
+- Migrate to vite and vitest (#862)
+- Updated lockfiles and examples build fixes (#859)
+- Upgrade all deps to last minor version (#854)
+- [fix] fix import (#856)
+- add missing import for ts (#855)
+- feat: add tooltip info to circle and linestring mode (#508)
+- fix isFeatureSelected performance (#775)
+- remove obsolete types package (#809)
+- [chore]: deck bump; remove external deck types; adjust typings (#822)
+- feat: allow billboard in points-circle guides layer (#835)
+- fix: Fix to fire the finishMovePosition state at the end of a feature editing (#828)
+- Make DrawPolygonByDraggingMode fire addTentativePosition events (#791)
+- [fix] fix world-heritage example link; fix publish-docs script (#827)
+- [fix] revert default esc keyup handling; fix ts error (#826)
+- [fix] Handle escape hotkey in linestring and polygon modes (#774)
+- [fix] prevent creation of features on MeasureAreaMode enter keyup (#792)
+- [fix] SelectionLayer: Intermittent error when releasing mouse quickly (#825)
+- All dependabot suggestions on one MR (#811)
+- Fix feature geometry translation (#808)
+- Update changelog for v1.0.4
+
 ## [1.0.4](https://github.com/uber/nebula.gl/compare/v1.0.2...v1.0.4) - 2022-10-04
 
 ### Changes

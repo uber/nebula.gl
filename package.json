@@ -28,6 +28,7 @@
     "lint-yarn": "node ./scripts/lint-yarn.js",
     "types-check": "lerna run types-check --stream",
     "prepublish": "yarn run build",
+    "publish-beta": "yarn run bootstrap && yarn run build && yarn run test && lerna publish --no-private --force-publish --exact --npm-tag beta && ./scripts/changelog.sh",
     "publish-prod": "yarn run bootstrap && yarn run build && yarn run test && lerna publish --no-private --force-publish --exact && ./scripts/changelog.sh",
     "test": "yarn run lint && yarn run build && yarn run types-check && yarn run test-unit --run",
     "test-r": "yarn run lint && yarn run build",

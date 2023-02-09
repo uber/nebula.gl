@@ -2,7 +2,7 @@
   "name": "react-map-gl-draw",
   "description": "A lite version editing layer with react",
   "license": "MIT",
-  "version": "1.0.4",
+  "version": "1.1.0-alpha.1",
   "author": "Xintong Xia <xintong@uber.com>",
   "repository": {
     "type": "git",
@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "@math.gl/web-mercator": "^3.6.3",
-    "@nebula.gl/edit-modes": "1.0.4",
+    "@nebula.gl/edit-modes": "1.1.0-alpha.1",
     "@turf/helpers": "^6.5.0",
     "@types/react-map-gl": "5.2.11",
     "mjolnir.js": "^2.7.1",

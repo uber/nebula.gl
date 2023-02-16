@@ -2,7 +2,7 @@
   "name": "nebula.gl",
   "description": "A suite of 3D-enabled data editing overlays, suitable for deck.gl",
   "license": "MIT",
-  "version": "1.1.0-alpha.2",
+  "version": "1.1.0-alpha.3",
   "author": "Georgios Karnas <georgios@uber.com>",
   "repository": {
     "type": "git",
@@ -42,7 +42,7 @@
   },
   "dependencies": {
     "@luma.gl/constants": "^8.5.18",
-    "@nebula.gl/layers": "1.1.0-alpha.2",
+    "@nebula.gl/layers": "1.1.0-alpha.3",
     "@turf/bbox": "^6.5.0",
     "@turf/bbox-polygon": "^6.5.0",
     "@turf/bearing": "^6.5.0",
@@ -79,5 +79,5 @@
     "@luma.gl/constants": "^8.5.18",
     "@luma.gl/core": "^8.5.18"
   },
-  "gitHead": "8374ab0ac62a52ae8a6b14276694cabced43de35"
+  "gitHead": "dda1f741d005b490bc46177b9dacc262d3f8acd1"
 }

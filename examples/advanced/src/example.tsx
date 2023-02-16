@@ -1111,6 +1111,7 @@ export default class Example extends React.Component<
         <DeckGL
           viewState={viewport}
           getCursor={editableGeoJsonLayer.getCursor.bind(editableGeoJsonLayer)}
+          /** @ts-expect-error new deck gl api have more methods */
           layers={layers}
           height="100%"
           width="100%"

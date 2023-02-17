@@ -71,13 +71,13 @@
     "viewport-mercator-project": ">=6.2.3"
   },
   "peerDependencies": {
-    "@deck.gl/core": "8.8.23",
-    "@deck.gl/extensions": "8.8.23",
-    "@deck.gl/geo-layers": "8.8.23",
-    "@deck.gl/layers": "8.8.23",
-    "@deck.gl/mesh-layers": "8.8.23",
-    "@luma.gl/constants": "8.5.18",
-    "@luma.gl/core": "8.5.18"
+    "@deck.gl/core": "^8.8.23",
+    "@deck.gl/extensions": "^8.8.23",
+    "@deck.gl/geo-layers": "^8.8.23",
+    "@deck.gl/layers": "^8.8.23",
+    "@deck.gl/mesh-layers": "^8.8.23",
+    "@luma.gl/constants": "^8.5.18",
+    "@luma.gl/core": "^8.5.18"
   },
   "gitHead": "dda1f741d005b490bc46177b9dacc262d3f8acd1"
 }

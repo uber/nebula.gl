@@ -62,6 +62,11 @@ export type {
   GuideFeatureCollection,
   Viewport,
   Tooltip,
+  GuideFeature,
+  TentativeFeature,
+  BasePointerEvent,
+  EditHandleFeature,
+  EditHandleType,
 } from './types';
 
 export type {

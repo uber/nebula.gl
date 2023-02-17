@@ -35,7 +35,8 @@ module.exports = {
     'import/newline-after-import': 'error',
 
     // Those are rules for typescript migration
-    '@typescript-eslint/consistent-type-imports': 'warn',
+    // TODO: run --fix for all modules
+    '@typescript-eslint/consistent-type-imports': 'off',
     '@typescript-eslint/no-empty-function': 0,
     '@typescript-eslint/explicit-function-return-type': 0,
     'no-inline-comments': 0,
@@ -66,7 +67,7 @@ module.exports = {
 
     // try to improve tree shaking
     'tree-shaking/no-side-effects-in-initialization': [
-      'warn',
+      'off',
       {
         noSideEffectsWhenCalled: [
           { function: 'Object.freeze' },

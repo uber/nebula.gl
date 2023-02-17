@@ -1,4 +1,4 @@
-import { Position, Point, Geometry, FeatureWithProps } from './geojson-types';
+import type { Position, Point, Geometry, FeatureWithProps } from './geojson-types';
 
 export type ScreenCoordinates = [number, number];
 
@@ -106,7 +106,7 @@ export type GuideFeature = EditHandleFeature | TentativeFeature;
 export type GuideFeatureCollection = {
   type: 'FeatureCollection';
   features: Readonly<GuideFeature>[];
-  properties?: {};
+  properties?: object;
 };
 
 export type ModeProps<TData> = {

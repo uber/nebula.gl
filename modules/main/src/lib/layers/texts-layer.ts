@@ -3,7 +3,7 @@ import NebulaLayer from '../nebula-layer';
 import { toDeckColor } from '../utils';
 import { PROJECTED_PIXEL_SIZE_MULTIPLIER } from '../constants';
 import DeckCache from '../deck-renderer/deck-cache';
-import { Color } from '../../types';
+import type { Color } from '../../types';
 
 export default class TextsLayer extends NebulaLayer {
   deckCache: DeckCache<any, any>;

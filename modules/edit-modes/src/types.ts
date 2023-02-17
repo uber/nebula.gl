@@ -106,7 +106,7 @@ export type GuideFeature = EditHandleFeature | TentativeFeature;
 export type GuideFeatureCollection = {
   type: 'FeatureCollection';
   features: Readonly<GuideFeature>[];
-  properties?: object;
+  properties?: Record<string, unknown>;
 };
 
 export type ModeProps<TData> = {

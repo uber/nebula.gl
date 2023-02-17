@@ -81,7 +81,7 @@ export type Feature =
 export type FeatureCollection = {
   type: 'FeatureCollection';
   features: Feature[];
-  properties?: object;
+  properties?: Record<string, unknown>;
   id?: string | number;
   bbox?: BoundingBoxArray;
 };

@@ -2,7 +2,7 @@
   "name": "@nebula.gl/editor",
   "description": "A suite of 3D-enabled data editing layers, suitable for deck.gl",
   "license": "MIT",
-  "version": "1.1.0-alpha.3",
+  "version": "1.1.0-alpha.4",
   "author": "Georgios Karnas <georgios@uber.com>",
   "repository": {
     "type": "git",
@@ -44,7 +44,7 @@
     "@loaders.gl/core": "^3.2.13",
     "@loaders.gl/wkt": "^3.2.13",
     "@maphubs/tokml": "^0.6.1",
-    "@nebula.gl/edit-modes": "1.1.0-alpha.3",
+    "@nebula.gl/edit-modes": "1.1.0-alpha.4",
     "@tmcw/togeojson": "^3.2.0",
     "@types/downloadjs": "1.4.3",
     "@types/styled-react-modal": "1.2.2",
@@ -61,5 +61,5 @@
   "devDependencies": {
     "sinon": "^15.0.1"
   },
-  "gitHead": "dda1f741d005b490bc46177b9dacc262d3f8acd1"
+  "gitHead": "1fde52990b7c6de0109368bda49ef088d0027cea"
 }

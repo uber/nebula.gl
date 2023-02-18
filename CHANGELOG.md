@@ -4,6 +4,12 @@ _All notable changes to this project will be documented in this file. This proje
 
 <!-- INSERT HERE -->
 
+## [1.1.0](https://github.com/uber/nebula.gl/compare/v1.1.0...v1.1.0) - 2023-02-18
+
+### Changes
+
+
+
 ## 1.1.0-alpha.1
 
 - Migrate to vite and vitest (#862)

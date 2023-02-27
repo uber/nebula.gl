@@ -3,6 +3,7 @@
   "license": "MIT",
   "private": true,
   "author": "Georgios Karnas <georgios@uber.com>",
+  "packageManager": "yarn@1.22.19",
   "keywords": [
     "webgl",
     "visualization",
@@ -28,6 +29,7 @@
     "lint-yarn": "node ./scripts/lint-yarn.js",
     "types-check": "lerna run types-check --stream",
     "prepublish": "yarn run build",
+    "publish-beta": "yarn run bootstrap && yarn run build && yarn run test && lerna publish --no-private --force-publish --exact --npm-tag beta && ./scripts/changelog.sh",
     "publish-prod": "yarn run bootstrap && yarn run build && yarn run test && lerna publish --no-private --force-publish --exact && ./scripts/changelog.sh",
     "test": "yarn run lint && yarn run build && yarn run types-check && yarn run test-unit --run",
     "test-r": "yarn run lint && yarn run build",
@@ -75,6 +77,7 @@
     "eslint-plugin-prettier": "4.2.1",
     "eslint-plugin-react": "7.32.1",
     "eslint-plugin-react-hooks": "4.6.0",
+    "eslint-plugin-tree-shaking": "^1.10.0",
     "husky": "^8.0.3",
     "jsdom": "^21.1.0",
     "lerna": "6.4.1",

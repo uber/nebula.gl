@@ -2,7 +2,7 @@
   "name": "nebula.gl",
   "description": "A suite of 3D-enabled data editing overlays, suitable for deck.gl",
   "license": "MIT",
-  "version": "1.0.4",
+  "version": "1.1.0-alpha.5",
   "author": "Georgios Karnas <georgios@uber.com>",
   "repository": {
     "type": "git",
@@ -41,8 +41,7 @@
     "test-rendering": "(cd test/rendering-test && webpack-dev-server --config webpack.config.test-rendering.js --progress --hot --open)"
   },
   "dependencies": {
-    "@luma.gl/constants": "^8.5.18",
-    "@nebula.gl/layers": "1.0.4",
+    "@nebula.gl/layers": "1.1.0-alpha.5",
     "@turf/bbox": "^6.5.0",
     "@turf/bbox-polygon": "^6.5.0",
     "@turf/bearing": "^6.5.0",
@@ -66,8 +65,8 @@
     "@turf/transform-translate": "^6.5.0",
     "@turf/union": "^6.5.0",
     "cubic-hermite-spline": "^1.0.1",
-    "geojson-types": "^2.0.1",
     "eventemitter3": "^5.0.0",
+    "geojson-types": "^2.0.1",
     "uuid": "9.0.0",
     "viewport-mercator-project": ">=6.2.3"
   },
@@ -79,5 +78,5 @@
     "@luma.gl/constants": "^8.5.18",
     "@luma.gl/core": "^8.5.18"
   },
-  "gitHead": "8374ab0ac62a52ae8a6b14276694cabced43de35"
+  "gitHead": "1fde52990b7c6de0109368bda49ef088d0027cea"
 }

@@ -1,6 +1,6 @@
 module.exports = {
   parser: '@typescript-eslint/parser',
-  plugins: ['prettier', 'import', '@typescript-eslint', 'react', 'react-hooks'],
+  plugins: ['prettier', 'import', '@typescript-eslint', 'react', 'react-hooks', 'tree-shaking'],
   extends: [
     'eslint-config-uber-jsx',
     'eslint-config-uber-es2015',
@@ -35,13 +35,27 @@ module.exports = {
     'import/newline-after-import': 'error',
 
     // Those are rules for typescript migration
+    // TODO: run --fix for all modules
+    '@typescript-eslint/consistent-type-imports': 'off',
     '@typescript-eslint/no-empty-function': 0,
     '@typescript-eslint/explicit-function-return-type': 0,
     'no-inline-comments': 0,
     // TODO: Please remove these rules and fix eslint error when possible
-    '@typescript-eslint/no-use-before-define': 'warn',
+    'no-use-before-define': 'off',
+    '@typescript-eslint/no-use-before-define': [
+      'warn',
+      {
+        functions: false,
+        classes: true,
+        variables: true,
+        allowNamedExports: false,
+      },
+    ],
     '@typescript-eslint/ban-ts-comment': 0,
     '@typescript-eslint/ban-types': 'warn',
+
+    // produces too much noise ATM
+    '@typescript-eslint/no-explicit-any': 'off',
 
     'no-unused-vars': 'off',
     '@typescript-eslint/no-unused-vars': ['warn', { args: 'none', ignoreRestSiblings: true }],
@@ -50,6 +64,20 @@ module.exports = {
 
     /* Use the 'query-string' module instead */
     'no-restricted-imports': ['error', 'querystring'],
+
+    // try to improve tree shaking
+    'tree-shaking/no-side-effects-in-initialization': [
+      'off',
+      {
+        noSideEffectsWhenCalled: [
+          { function: 'Object.freeze' },
+          {
+            module: 'react',
+            functions: ['createContext', 'createRef'],
+          },
+        ],
+      },
+    ],
   },
   globals: {
     vi: true,

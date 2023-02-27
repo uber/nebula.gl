@@ -1,7 +1,5 @@
 import { EventEmitter } from 'eventemitter3';
 
-import document from 'global/document';
-import window from 'global/window';
 import { WebMercatorViewport } from '@deck.gl/core/typed';
 
 import DeckDrawer from './deck-renderer/deck-drawer';
@@ -105,7 +103,7 @@ export default class Nebula {
     );
   }
 
-  _onMouseEvent = (event: window.MouseEvent) => {
+  _onMouseEvent = (event: MouseEvent) => {
     if (!this._isNebulaEvent(event)) {
       return;
     }

@@ -104,6 +104,7 @@ function parseImportString(data: string): Promise<ImportData> {
   data = data.trim();
   let validData: ValidImportData | null | undefined;
   const validationErrors: string[] = [];
+  // eslint-disable-next-line no-debugger
   if (shouldTryGeoJson(data)) {
     // Parse as GeoJSON
     try {

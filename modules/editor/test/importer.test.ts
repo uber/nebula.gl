@@ -1,3 +1,4 @@
+// @vitest-environment happy-dom
 /* eslint-disable max-nested-callbacks */
 
 import sinon from 'sinon';
@@ -302,7 +303,7 @@ describe('parseImport()', () => {
 
       test('reports error', () => {
         expect(importData.valid).toEqual(false);
-        // expect(importData.validationErrors).toEqual(['Invalid WKT']);
+        expect(importData.validationErrors).toEqual(['Invalid WKT']);
       });
     });
 

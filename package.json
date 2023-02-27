@@ -3,6 +3,7 @@
   "license": "MIT",
   "private": true,
   "author": "Georgios Karnas <georgios@uber.com>",
+  "packageManager": "yarn@1.22.19",
   "keywords": [
     "webgl",
     "visualization",

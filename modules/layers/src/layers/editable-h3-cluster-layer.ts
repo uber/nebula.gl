@@ -2,7 +2,7 @@
 
 import { H3ClusterLayer } from '@deck.gl/geo-layers';
 import { DefaultProps } from '@deck.gl/core/typed';
-import { ViewMode } from '@nebula.gl/edit-modes';
+import { EditAction, ViewMode } from '@nebula.gl/edit-modes';
 import { polyfill, geoToH3 } from 'h3-js';
 import { PROJECTED_PIXEL_SIZE_MULTIPLIER } from '../constants';
 import EditableGeoJsonLayer from './editable-geojson-layer';
@@ -22,7 +22,7 @@ export type EditableH3ClusterLayerProps<DataT> = EditableLayerProps<DataT> & {
   selectedIndexes?: number[];
   getEditedCluster?: (updatedHexagons: any[], existingCluster: any) => any;
   getHexagons?: (d) => number[];
-  onEdit?: (updatedData?, editType?: string, featureIndexes?: number[], editContext?) => void;
+  onEdit?: (editAction: EditAction<DataT>) => void;
   filled?: boolean;
   stroked?: boolean;
   lineWidthScale?: number;

@@ -111,7 +111,7 @@ export type EditableGeojsonLayerProps<DataT = any> = EditableLayerProps<DataT> &
   mode?: any;
   modeConfig?: any;
   selectedFeatureIndexes?: number[];
-  onEdit?: (updatedData?, editType?: string, featureIndexes?: number[], editContext?) => void;
+  onEdit?: (editAction: EditAction<DataT>) => void;
 
   pickable?: boolean;
   pickingRadius?: number;

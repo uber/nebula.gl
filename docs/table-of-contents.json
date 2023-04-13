@@ -11,6 +11,9 @@
           "entry": "docs/whats-new"
         },
         {
+          "entry": "docs/upgrade-guide"
+        },
+        {
           "entry": "docs/roadmap"
         },
         {
@@ -37,9 +40,6 @@
       "entries": [
         {
           "entry": "docs/interactive-examples/world-heritage"
-        },
-        {
-          "entry": "docs/interactive-examples/react-map-gl-draw-example"
         }
       ]
     },
@@ -82,14 +82,6 @@
         },
         {
           "entry": "docs/api-reference/overlays/html-overlay-item"
-        }
-      ]
-    },
-    {
-      "title": "API Reference (Map GL Draw)",
-      "entries": [
-        {
-          "entry": "docs/api-reference/react-map-gl-draw/react-map-gl-draw"
         }
       ]
     }

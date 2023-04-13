@@ -33,8 +33,7 @@ export default defineConfig((env) => {
   };
 
   // copy /README.md into module dir if necessary
-  const hasOwnReadme =
-    process.cwd().endsWith('react-map-gl-draw') || process.cwd().endsWith('overlays');
+  const hasOwnReadme = process.cwd().endsWith('overlays');
   if (!hasOwnReadme) {
     viteBuildConfig.plugins.push(cp({ targets: [{ src: '../../README.md', dest: './' }] }));
   }

@@ -6,8 +6,6 @@
 
 Create a generic `EditMode` interface that will serve as the core interface for handling user interaction and manipulating data. It will not be dependent on deck.gl, react-map-gl, or GeoJSON. This generic class will then be integrated into `EditableGeoJsonLayer` as well as the [upcoming DrawControl feature for react-map-gl](https://github.com/uber/react-map-gl/issues/734)
 
-We will also refactor all the existing `ModeHandler` implementations of nebula to implement this interface instead so that they can be used seamlessly between `nebula.gl` and `react-map-gl-draw`.
-
 ## Motivation
 
 There are two limitations with nebula's `ModeHandler` interface.
@@ -125,7 +123,6 @@ We will need a `@nebula.gl/edit-modes` module separate from the `nebula.gl` modu
   - contains all the modes for editing GeoJSON (e.g. `DrawPolygonMode`)
   - contains `EditMode` interface
   - contains other general purpose types and classes (e.g. event types like `ClickEvent`)
-  - this module will be reused by `react-map-gl-draw`
 - `@nebula.gl/layers`
   - depends on `@nebula.gl/edit-modes` and `deck.gl`
   - contains `EditableGeoJsonLayer`, a deck.gl `CompositeLayer`
@@ -134,10 +131,6 @@ We will need a `@nebula.gl/edit-modes` module separate from the `nebula.gl` modu
 ### Breaking changes
 
 There will be breaking changes to refactor nebula's `ModeHandler` interface to adhere to `EditMode`'s interface. Specifics will be listed in the changelog and possibly a migration guide.
-
-## Integration to react-map-gl-draw
-
-`react-map-gl-draw` will follow a similar approach as `EditableGeoJsonLayer` and be responsible for the same things.
 
 ## GeoJSON
 

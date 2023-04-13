@@ -12,7 +12,6 @@ const EDIT_MODES_SRC_DIR = resolve(LIB_DIR, './modules/edit-modes/src/');
 const LAYERS_SRC_DIR = resolve(LIB_DIR, './modules/layers/src/');
 const OVERLAYS_SRC_DIR = resolve(LIB_DIR, './modules/overlays/src/');
 const EDITOR_SRC_DIR = resolve(LIB_DIR, './modules/editor/src/');
-const REACT_EDITOR_LITE_SRC_DIR = resolve(LIB_DIR, './modules/react-map-gl-draw/src');
 
 // Support for hot reloading changes to the nebula.gl library:
 export function makeLocalDevConfig(EXAMPLE_DIR = LIB_DIR) {
@@ -32,9 +31,6 @@ export function makeLocalDevConfig(EXAMPLE_DIR = LIB_DIR) {
 
       '@nebula.gl/editor/dist': EDITOR_SRC_DIR,
       '@nebula.gl/editor': EDITOR_SRC_DIR,
-
-      'react-map-gl-draw/dist': REACT_EDITOR_LITE_SRC_DIR,
-      'react-map-gl-draw': REACT_EDITOR_LITE_SRC_DIR,
 
       'react-map-gl': resolve(LIB_DIR, './node_modules/react-map-gl'),
 

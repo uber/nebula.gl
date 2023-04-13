@@ -2,9 +2,6 @@
   <a href="https://npmjs.org/package/nebula.gl">
     <img src="https://img.shields.io/npm/v/nebula.gl.svg?label=nebula.gl" alt="version" />
   </a>
-  <a href="https://npmjs.org/package/react-map-gl-draw">
-    <img src="https://img.shields.io/npm/v/react-map-gl-draw.svg?label=react-map-gl-draw" alt="version" />
-  </a>
 </p>
 <p align="right">
   <a href="https://npmjs.org/package/@nebula.gl/edit-modes">

@@ -6,6 +6,12 @@ This page contains highlights of each nebula.gl release.
 
 Release date: TBD
 
+
+### Breaking Changes
+
+- The `react-map-gl-draw` module has been removed, as it is no longer supported by the latest `react-map-gl`. See our [Upgrade Guide](./upgrade-guide) for more information.
+
+
 ### Draw Rectangle From Center Mode
 
 - new `DrawRectangleFromCenterMode`. User can draw a new rectangular `Polygon` feature by clicking the center, then along a corner of the rectangle.

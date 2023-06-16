@@ -1,0 +1,35 @@
+{
+  "name": "nextjs-react18-editor-sample",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@deck.gl/core": "^8.9.19",
+    "@deck.gl/layers": "^8.9.19",
+    "@deck.gl/react": "^8.9.19",
+    "@nebula.gl/edit-modes": "^1.0.4",
+    "@nebula.gl/editor": "^1.0.4",
+    "@nebula.gl/layers": "^1.0.4",
+    "@types/node": "20.1.1",
+    "@types/react": "18.2.6",
+    "@types/react-dom": "18.2.4",
+    "autoprefixer": "10.4.14",
+    "deck.gl": "^8.9.19",
+    "eslint": "8.40.0",
+    "eslint-config-next": "13.4.1",
+    "lucide-react": "^0.214.0",
+    "nebula.gl": "^1.0.4",
+    "next": "13.3.0",
+    "postcss": "8.4.23",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-map-gl": "^7.0.23",
+    "tailwindcss": "3.3.2",
+    "typescript": "5.0.4"
+  }
+}

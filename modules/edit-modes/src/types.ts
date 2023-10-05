@@ -14,6 +14,7 @@ export type Pick = {
   index: number;
   object?: any;
   isGuide?: boolean;
+  featureType?: string;
   featureIndex?: number;
   type?: string;
 };

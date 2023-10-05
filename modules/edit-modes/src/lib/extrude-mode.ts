@@ -3,6 +3,7 @@ import {
   generatePointsParallelToLinePoints,
   getPickedEditHandle,
   getPickedIntermediateEditHandle,
+  shouldCancelPan,
 } from '../utils';
 import { FeatureCollection } from '../geojson-types';
 import { ModeProps, StartDraggingEvent, StopDraggingEvent, DraggingEvent } from '../types';
@@ -57,8 +58,11 @@ export class ExtrudeMode extends ModifyMode {
   }
 
   handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollection>) {
-    const selectedFeatureIndexes = props.selectedIndexes;
+    if (shouldCancelPan(event)) {
+      event.cancelPan();
+    }
 
+    const selectedFeatureIndexes = props.selectedIndexes;
     const editHandle = getPickedIntermediateEditHandle(event.picks);
     if (selectedFeatureIndexes.length && editHandle) {
       const { positionIndexes, featureIndex } = editHandle.properties;

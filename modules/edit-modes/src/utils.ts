@@ -5,7 +5,7 @@ import { flattenEach } from '@turf/meta';
 import { point, MultiLineString } from '@turf/helpers';
 import { getCoords } from '@turf/invariant';
 import WebMercatorViewport from 'viewport-mercator-project';
-import { Viewport, Pick, EditHandleFeature, EditHandleType } from './types';
+import { Viewport, Pick, EditHandleFeature, EditHandleType, StartDraggingEvent } from './types';
 import {
   Geometry,
   Position,
@@ -510,4 +510,8 @@ export function mapCoords(
       return mapCoords(coord, callback) as Position;
     })
     .filter(Boolean);
+}
+
+export function shouldCancelPan(event: StartDraggingEvent) {
+  return event.picks.length && event.picks.find((p) => p.featureType === 'points');
 }

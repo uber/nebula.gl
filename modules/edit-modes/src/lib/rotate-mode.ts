@@ -125,6 +125,7 @@ export class RotateMode extends GeoJsonEditMode {
 
   handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollection>) {
     if (this._selectedEditHandle) {
+      event.cancelPan();
       this._isRotating = true;
       this._geometryBeingRotated = this.getSelectedFeaturesAsFeatureCollection(props);
     }

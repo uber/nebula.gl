@@ -55,6 +55,7 @@ export class TranslateMode extends GeoJsonEditMode {
       return;
     }
 
+    event.cancelPan();
     this._geometryBeforeTranslate = this.getSelectedFeaturesAsFeatureCollection(props);
   }
 

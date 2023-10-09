@@ -145,6 +145,10 @@ The `onEdit` event is the core event provided by this layer and must be handled 
 
 * `editContext` (Object): `null` or an object containing additional context about the edit. This is populated by the active mode, see [modes overview](../modes/overview.md).
 
+#### `onCancelPan` (Function, optional)
+
+The `onCancelPan` event is called when map panning should be cancelled to enable feature dragging interactions while editing.
+
 ### Guide style properties and data getters
 
 #### `editHandleType`: (String, optional)

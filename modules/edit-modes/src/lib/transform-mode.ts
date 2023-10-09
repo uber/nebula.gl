@@ -28,6 +28,10 @@ export class TransformMode extends CompositeMode {
     let translateMode = null;
     const filteredModes = [];
 
+    if (event.picks.length) {
+      event.cancelPan();
+    }
+
     // If the user selects a scaling edit handle that overlaps with part of the selected feature,
     // it is possible for both scale and translate actions to be triggered. This logic prevents
     // this simultaneous action trigger from happening by putting a higher priority on scaling

@@ -147,6 +147,7 @@ export class ScaleMode extends GeoJsonEditMode {
 
   handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollection>) {
     if (this._selectedEditHandle) {
+      event.cancelPan();
       this._isScaling = true;
       this._geometryBeingScaled = this.getSelectedFeaturesAsFeatureCollection(props);
     }

@@ -15,6 +15,7 @@ const EVENT_TYPES = ['anyclick', 'pointermove', 'panstart', 'panmove', 'panend',
 export type EditableLayerProps<DataType = any> = CompositeLayerProps<DataType> & {
   pickingRadius?: number;
   pickingDepth?: number;
+  onCancelPan?: () => void;
 };
 
 export default abstract class EditableLayer<
@@ -149,7 +150,13 @@ export default abstract class EditableLayer<
       mapCoords,
       pointerDownScreenCoords: screenCoords,
       pointerDownMapCoords: mapCoords,
-      cancelPan: event.stopImmediatePropagation,
+      cancelPan: () => {
+        if (this.props.onCancelPan) {
+          this.props.onCancelPan();
+        }
+
+        event.stopImmediatePropagation();
+      },
       sourceEvent: event.srcEvent,
     });
   }

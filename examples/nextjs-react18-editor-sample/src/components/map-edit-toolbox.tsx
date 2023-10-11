@@ -190,7 +190,13 @@ function ModeGroupButtons({ modeGroup, mode, onSetMode }: any) {
     </SubToolsContainer>
   );
 }
-
+/**
+ * @type all the time its FeatureCollection
+ * @features  features set as array
+ * 
+ * the BlackJson is the default value of geoJson
+ * And it is passed to the internal component for modification features
+ */
 const BlackJson = { type: "FeatureCollection", features: [] };
 var history: any[] = [];
 export default function Toolbox({

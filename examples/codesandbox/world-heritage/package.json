@@ -8,6 +8,6 @@
     "react": "16.14.0",
     "react-dom": "16.14.0",
     "react-map-gl": "4.1.16",
-    "react-scripts": "2.1.8"
+    "react-scripts": "5.0.0"
   }
 }

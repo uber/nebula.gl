@@ -18,12 +18,12 @@
     "fix-mjs-bug": "find ../node_modules -name '*.mjs' | xargs rm"
   },
   "dependencies": {
-    "@deck.gl/core": "^8.8.23",
-    "@deck.gl/layers": "^8.8.23",
-    "@deck.gl/react": "^8.8.23",
-    "@luma.gl/constants": "^8.5.18",
-    "@luma.gl/core": "^8.5.18",
-    "@luma.gl/webgl": "^8.5.18",
+    "@deck.gl/core": "^9.0.0-beta",
+    "@deck.gl/layers": "^9.0.0-beta",
+    "@deck.gl/react": "^9.0.0-beta",
+    "@luma.gl/constants": "^9.0.0-beta",
+    "@luma.gl/core": "^9.0.0-beta",
+    "@luma.gl/webgl": "^9.0.0-beta",
     "@probe.gl/stats-widget": "^3.6.0",
     "gl": "^6.0.2",
     "react": "^16.14.0",

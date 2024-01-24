@@ -1,9 +1,9 @@
 /* eslint-env browser */
 import * as React from 'react';
-import DeckGL from '@deck.gl/react/typed';
-import { MapView, MapController } from '@deck.gl/core/typed';
+import DeckGL from '@deck.gl/react';
+import { MapView, MapController } from '@deck.gl/core';
 import StaticMap from 'react-map-gl';
-import GL from '@luma.gl/constants';
+import { GL } from '@luma.gl/constants';
 import circle from '@turf/circle';
 
 import {

@@ -1,6 +1,6 @@
 /* eslint-env browser */
 
-import { CompositeLayer, CompositeLayerProps, DefaultProps } from '@deck.gl/core/typed';
+import { CompositeLayer, CompositeLayerProps, DefaultProps } from '@deck.gl/core';
 import { PolygonLayer } from '@deck.gl/layers';
 import { polygon } from '@turf/helpers';
 import turfBuffer from '@turf/buffer';

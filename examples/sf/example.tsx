@@ -3,9 +3,9 @@ import * as React from 'react';
 import { StaticMap } from 'react-map-gl';
 import CSS from 'csstype';
 
-import DeckGL from '@deck.gl/react/typed';
-import { WebMercatorViewport } from '@deck.gl/core/typed';
-import { TextLayer } from '@deck.gl/layers/typed';
+import DeckGL from '@deck.gl/react';
+import { WebMercatorViewport } from '@deck.gl/core';
+import { TextLayer } from '@deck.gl/layers';
 
 import {
   NebulaCore,

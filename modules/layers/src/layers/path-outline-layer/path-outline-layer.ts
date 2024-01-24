@@ -1,5 +1,5 @@
-import { PathLayer, PathLayerProps } from '@deck.gl/layers/typed';
-import type { DefaultProps, LayerContext } from '@deck.gl/core/typed';
+import { PathLayer, PathLayerProps } from '@deck.gl/layers';
+import type { DefaultProps, LayerContext } from '@deck.gl/core';
 import { GL } from '@luma.gl/constants';
 import { Framebuffer, Texture } from '@luma.gl/core';
 import outline from '../../shaderlib/outline/outline';

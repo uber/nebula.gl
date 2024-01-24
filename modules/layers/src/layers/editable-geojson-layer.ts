@@ -1,7 +1,7 @@
 /* eslint-env browser */
 
-import type { UpdateParameters, DefaultProps } from '@deck.gl/core/typed';
-import { GeoJsonLayer, ScatterplotLayer, IconLayer, TextLayer } from '@deck.gl/layers/typed';
+import type { UpdateParameters, DefaultProps } from '@deck.gl/core';
+import { GeoJsonLayer, ScatterplotLayer, IconLayer, TextLayer } from '@deck.gl/layers';
 import {
   ViewMode,
   ModifyMode,

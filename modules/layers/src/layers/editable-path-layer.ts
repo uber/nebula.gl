@@ -1,4 +1,4 @@
-import { PathLayer, PathLayerProps } from '@deck.gl/layers/typed';
+import { PathLayer, PathLayerProps } from '@deck.gl/layers';
 
 import { insertBefore } from '../utils';
 

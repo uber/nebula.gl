@@ -1,7 +1,7 @@
 /* eslint-env browser */
 
 import { H3ClusterLayer } from '@deck.gl/geo-layers';
-import { DefaultProps } from '@deck.gl/core/typed';
+import { DefaultProps } from '@deck.gl/core';
 import { ViewMode } from '@nebula.gl/edit-modes';
 import { polyfill, geoToH3 } from 'h3-js';
 import { PROJECTED_PIXEL_SIZE_MULTIPLIER } from '../constants';

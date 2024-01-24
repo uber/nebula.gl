@@ -1,4 +1,4 @@
-import { CompositeLayer, COORDINATE_SYSTEM, DefaultProps } from '@deck.gl/core/typed';
+import { CompositeLayer, COORDINATE_SYSTEM, DefaultProps } from '@deck.gl/core';
 import { ScatterplotLayer } from '@deck.gl/layers';
 import { SimpleMeshLayer } from '@deck.gl/mesh-layers';
 import PathOutlineLayer, { PathOutlineLayerProps } from '../path-outline-layer/path-outline-layer';

@@ -1,7 +1,7 @@
 /* eslint-env browser */
 
-import { CompositeLayer } from '@deck.gl/core/typed';
-import { ScatterplotLayer, LineLayer } from '@deck.gl/layers/typed';
+import { CompositeLayer } from '@deck.gl/core';
+import { ScatterplotLayer, LineLayer } from '@deck.gl/layers';
 
 const defaultProps = {};
 

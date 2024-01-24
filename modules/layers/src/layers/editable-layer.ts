@@ -1,6 +1,6 @@
 /* eslint-env browser */
 
-import { CompositeLayer, CompositeLayerProps } from '@deck.gl/core/typed';
+import { CompositeLayer, CompositeLayerProps } from '@deck.gl/core';
 import {
   ClickEvent,
   StartDraggingEvent,

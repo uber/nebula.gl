@@ -1,5 +1,5 @@
-import { CompositeLayer, CompositeLayerProps, DefaultProps } from '@deck.gl/core/typed';
-import { ScatterplotLayer, ScatterplotLayerProps } from '@deck.gl/layers/typed';
+import { CompositeLayer, CompositeLayerProps, DefaultProps } from '@deck.gl/core';
+import { ScatterplotLayer, ScatterplotLayerProps } from '@deck.gl/layers';
 
 import { Color } from '../types';
 

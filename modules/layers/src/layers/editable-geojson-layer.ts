@@ -264,15 +264,6 @@ const modeNameMapping = {
   drawPolygonByDragging: DrawPolygonByDraggingMode,
 };
 
-type State = {
-  cursor?: string | null;
-  mode: GeoJsonEditModeType;
-  lastPointerMoveEvent: PointerMoveEvent;
-  tentativeFeature?: Feature;
-  editHandles: any[];
-  selectedFeatures: Feature[];
-};
-
 export default class EditableGeoJsonLayer extends EditableLayer<
   FeatureCollection,
   EditableGeojsonLayerProps<FeatureCollection>
@@ -280,9 +271,14 @@ export default class EditableGeoJsonLayer extends EditableLayer<
   static layerName = 'EditableGeoJsonLayer';
   static defaultProps = defaultProps;
 
-  state!: {
-    _editableLayerState: any;
-  } & State;
+  state!: EditableLayer['state'] & {
+    cursor?: string | null;
+    mode: GeoJsonEditModeType;
+    lastPointerMoveEvent: PointerMoveEvent;
+    tentativeFeature?: Feature;
+    editHandles: any[];
+    selectedFeatures: Feature[];
+  };
 
   // setState: ($Shape<State>) => void;
   renderLayers() {

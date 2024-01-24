@@ -73,9 +73,10 @@ export default class EditableH3ClusterLayer extends EditableLayer<
   static layerName = 'EditableH3ClusterLayer';
   static defaultProps = defaultProps;
 
-  state!: {
-    _editableLayerState: any;
-  } & State;
+  state!: EditableLayer['state'] & {
+    cursor?: string | null;
+    tentativeHexagonIDs: string[];
+  };
 
   initializeState() {
     super.initializeState();

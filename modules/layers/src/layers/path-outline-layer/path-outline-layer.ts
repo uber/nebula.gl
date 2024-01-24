@@ -1,7 +1,7 @@
 import { PathLayer, PathLayerProps } from '@deck.gl/layers/typed';
 import type { DefaultProps, LayerContext } from '@deck.gl/core/typed';
-import GL from '@luma.gl/constants';
-import { Framebuffer, Texture2D } from '@luma.gl/core';
+import { GL } from '@luma.gl/constants';
+import { Framebuffer, Texture } from '@luma.gl/core';
 import outline from '../../shaderlib/outline/outline';
 import { UNIT } from '../../constants';
 
@@ -41,7 +41,7 @@ export default class PathOutlineLayer<
     model?: any;
     pathTesselator: any;
     outlineFramebuffer: Framebuffer;
-    dummyTexture: Texture2D;
+    dummyTexture: Texture;
   };
 
   // Override getShaders to inject the outline module
@@ -57,12 +57,13 @@ export default class PathOutlineLayer<
   // @ts-expect-error PathLayer is missing LayerContext arg
   initializeState(context: LayerContext) {
     super.initializeState();
+    const { device } = context;
 
     // Create an outline "shadow" map
     // TODO - we should create a single outlineMap for all layers
     this.setState({
-      outlineFramebuffer: new Framebuffer(context.gl),
-      dummyTexture: new Texture2D(context.gl),
+      outlineFramebuffer: device.createFramebuffer({}),
+      dummyTexture: device.createTexture({}),
     });
 
     // Create an attribute manager
@@ -104,7 +105,8 @@ export default class PathOutlineLayer<
     // Render the outline shadowmap (based on segment z orders)
     const { outlineFramebuffer, dummyTexture } = this.state;
     outlineFramebuffer.resize();
-    outlineFramebuffer.clear({ color: true, depth: true, stencil: true });
+    // TODO(v9) clear FBO
+    // outlineFramebuffer.clear({ color: true, depth: true, stencil: true });
 
     this.state.model.updateModuleSettings({
       outlineEnabled: true,

@@ -1,5 +1,5 @@
 import { PathMarkerLayer } from '@nebula.gl/layers';
-import GL from '@luma.gl/constants';
+import { GL } from '@luma.gl/constants';
 
 import { ArrowStyles, DEFAULT_STYLE, MAX_ARROWS } from '../style';
 import NebulaLayer from '../nebula-layer';
@@ -112,7 +112,8 @@ export default class SegmentsLayer extends NebulaLayer {
         this.markerLayerProps ||
         (PathMarkerLayer as Record<string, any>).defaultProps.markerLayerProps,
 
-      nebulaLayer: this,
+      // @ts-ignore
+      nebulaLayer: this as NebulaLayer,
     });
   }
 }

@@ -24,7 +24,7 @@ const MODE_CONFIG_MAP = {
   [SELECTION_TYPE.RECTANGLE]: { dragToDraw: true },
 };
 
-interface SelectionLayerProps<DataT> extends CompositeLayerProps<DataT> {
+interface SelectionLayerProps<DataT> extends CompositeLayerProps {
   layerIds: any[];
   onSelect: (info: any) => any;
   selectionType: string | null;
@@ -72,6 +72,12 @@ export default class SelectionLayer<DataT, ExtraPropsT> extends CompositeLayer<
 > {
   static layerName = 'SelectionLayer';
   static defaultProps = defaultProps;
+
+  state!: {
+    pendingPolygonSelection: {
+      bigPolygon: ReturnType<typeof turfDifference>;
+    };
+  };
 
   _selectRectangleObjects(coordinates: any) {
     const { layerIds, onSelect } = this.props;

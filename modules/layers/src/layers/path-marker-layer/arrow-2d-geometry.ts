@@ -1,10 +1,11 @@
-import { Geometry } from '@luma.gl/core';
+import { Geometry } from '@luma.gl/engine';
 
 export default class Arrow2DGeometry extends Geometry {
   constructor(opts = {}) {
     super(
       Object.assign({}, opts, {
         attributes: getArrowAttributes(opts),
+        topology: 'triangle-strip' as const,
       })
     );
   }

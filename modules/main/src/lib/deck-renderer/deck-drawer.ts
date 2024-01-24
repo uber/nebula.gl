@@ -11,7 +11,7 @@ import { Color } from '../../types';
 const POLYGON_LINE_COLOR = [0, 255, 0, 255];
 const POLYGON_FILL_COLOR = [255, 255, 255, 90];
 const POLYGON_LINE_WIDTH = 2;
-const POLYGON_DASHES = [20, 20];
+// const POLYGON_DASHES = [20, 20];
 const POLYGON_THRESHOLD = 0.01;
 const EXPANSION_KM = 10;
 const LAYER_ID_VIEW = 'DeckDrawerView';
@@ -239,7 +239,8 @@ export default class DeckDrawer {
         lineWidthMinPixels: POLYGON_LINE_WIDTH,
         lineWidthMaxPixels: POLYGON_LINE_WIDTH,
         lineDashJustified: true,
-        getLineDashArray: (x) => POLYGON_DASHES,
+        // TODO(v9) Add extension
+        // getLineDashArray: (x) => POLYGON_DASHES,
         getLineColor: (obj: { lineColor?: Color }) => obj.lineColor || [0, 0, 0, 255],
         getFillColor: (obj: { fillColor?: Color }) => obj.fillColor || [0, 0, 0, 255],
         getPolygon: (o: { polygon?: any }) => o.polygon,

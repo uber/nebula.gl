@@ -1,4 +1,4 @@
-import { Vector3, clamp } from 'math.gl';
+import { Vector3, clamp } from '@math.gl/core';
 
 // Return the closest point on a line segment
 export function getClosestPointOnLine({ p, p1, p2, clampToLine = true }) {

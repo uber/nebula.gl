@@ -20,15 +20,13 @@ export default class JunctionsLayer extends NebulaLayer {
       id: `junctions-${this.id}`,
       data: objects,
       opacity: 1,
-      // @ts-expect-error check deck types
-      fp64: false,
       pickable: true,
-      getPosition: (nf) => nf.geoJson.geometry.coordinates,
-      getFillColor: (nf) => toDeckColor(nf.style.fillColor) || defaultColor,
-      getStrokeColor: (nf) =>
+      getPosition: (nf: any) => nf.geoJson.geometry.coordinates,
+      getFillColor: (nf: any) => toDeckColor(nf.style.fillColor) || defaultColor,
+      getStrokeColor: (nf: any) =>
         toDeckColor(nf.style.outlineColor) || toDeckColor(nf.style.fillColor) || defaultColor,
-      getRadius: (nf) => nf.style.pointRadiusMeters + nf.style.outlineRadiusMeters || 1,
-      getInnerRadius: (nf) => nf.style.pointRadiusMeters || 0.5,
+      getRadius: (nf: any) => nf.style.pointRadiusMeters + nf.style.outlineRadiusMeters || 1,
+      getInnerRadius: (nf: any) => nf.style.pointRadiusMeters || 0.5,
       parameters: {
         depthTest: false,
         blend: false,
@@ -36,7 +34,8 @@ export default class JunctionsLayer extends NebulaLayer {
 
       updateTriggers: { all: updateTrigger },
 
-      nebulaLayer: this,
+      // @ts-ignore
+      nebulaLayer: this as NebulaLayer,
     });
   }
 }

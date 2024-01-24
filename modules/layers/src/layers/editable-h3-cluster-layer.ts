@@ -15,7 +15,13 @@ const EMPTY_FEATURE_COLLECTION = {
   features: [],
 };
 
+type State = {
+  cursor?: string | null;
+  tentativeHexagonIDs: string[];
+};
+
 export type EditableH3ClusterLayerProps<DataT> = EditableLayerProps<DataT> & {
+  data: any[];
   resolution?: number;
   mode?: any;
   modeConfig?: any;
@@ -67,6 +73,10 @@ export default class EditableH3ClusterLayer extends EditableLayer<
   static layerName = 'EditableH3ClusterLayer';
   static defaultProps = defaultProps;
 
+  state!: {
+    _editableLayerState: any;
+  } & State;
+
   initializeState() {
     super.initializeState();
 
@@ -114,7 +124,6 @@ export default class EditableH3ClusterLayer extends EditableLayer<
                 }
                 break;
               case 'addFeature':
-                // @ts-expect-error accessing resolved data
                 const updatedData = [...this.props.data];
                 const { modeConfig } = this.props;
 

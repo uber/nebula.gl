@@ -38,7 +38,8 @@ export default class TextsLayer extends NebulaLayer {
 
       updateTriggers: { all: updateTrigger },
 
-      nebulaLayer: this,
+      // @ts-ignore
+      nebulaLayer: this as NebulaLayer,
     });
   }
 }

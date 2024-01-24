@@ -12,7 +12,8 @@ import {
 
 const EVENT_TYPES = ['anyclick', 'pointermove', 'panstart', 'panmove', 'panend', 'keyup'];
 
-export type EditableLayerProps<DataType = any> = CompositeLayerProps<DataType> & {
+// TODO(v9) remove generic parameter
+export type EditableLayerProps<DataType = any> = CompositeLayerProps & {
   pickingRadius?: number;
   pickingDepth?: number;
 };
@@ -22,6 +23,10 @@ export default abstract class EditableLayer<
   ExtraPropsT = Record<string, unknown>
 > extends CompositeLayer<ExtraPropsT & Required<EditableLayerProps<DataT>>> {
   static layerName = 'EditableLayer';
+
+  state!: {
+    _editableLayerState: any;
+  };
 
   // Overridable interaction event handlers
   onLayerClick(event: ClickEvent) {

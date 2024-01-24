@@ -19,7 +19,7 @@ export default class EditablePathLayer extends PathLayer<any, EditablePathLayerP
       shaders.vs,
       'vec3 width;',
       `
-       if(picking_uActive){
+       if(bool(picking.isActive)){
         widthPixels.xy += pickingLineWidthExtraPixels;
        }
       `

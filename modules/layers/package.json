@@ -77,7 +77,9 @@
     "@deck.gl/layers": "^9.0.0-beta",
     "@deck.gl/mesh-layers": "^9.0.0-beta",
     "@luma.gl/constants": "^9.0.0-beta",
-    "@luma.gl/core": "^9.0.0-beta"
+    "@luma.gl/core": "^9.0.0-beta",
+    "@luma.gl/engine": "^9.0.0-beta",
+    "@math.gl/core": "^4.0.0"
   },
   "gitHead": "8374ab0ac62a52ae8a6b14276694cabced43de35"
 }

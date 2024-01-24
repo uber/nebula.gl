@@ -15,7 +15,7 @@ export function getClosestPointOnLine({ p, p1, p2, clampToLine = true }) {
 // Return the closest point on a line segment
 export function getClosestPointOnPolyline({ p, points }) {
   p = new Vector3(p);
-  let pClosest = null;
+  let pClosest: Vector3 = null;
   let distanceSquared = Infinity;
   let index = -1;
   for (let i = 0; i < points.length - 1; ++i) {

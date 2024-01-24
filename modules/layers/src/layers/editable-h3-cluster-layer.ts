@@ -15,13 +15,8 @@ const EMPTY_FEATURE_COLLECTION = {
   features: [],
 };
 
-type State = {
-  cursor?: string | null;
-  tentativeHexagonIDs: string[];
-};
-
-export type EditableH3ClusterLayerProps<DataT> = EditableLayerProps<DataT> & {
-  data: any[];
+export type EditableH3ClusterLayerProps<DataT> = EditableLayerProps & {
+  data: DataT;
   resolution?: number;
   mode?: any;
   modeConfig?: any;

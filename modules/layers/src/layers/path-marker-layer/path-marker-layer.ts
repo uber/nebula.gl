@@ -1,3 +1,4 @@
+import { Vector3 } from '@math.gl/core';
 import { CompositeLayer, COORDINATE_SYSTEM, DefaultProps } from '@deck.gl/core';
 import { ScatterplotLayer } from '@deck.gl/layers';
 import { SimpleMeshLayer } from '@deck.gl/mesh-layers';
@@ -61,8 +62,8 @@ export default class PathMarkerLayer<
   static defaultProps = defaultProps;
 
   state!: {
-    closestPoint: any | null;
-    closestPoints?: any[];
+    closestPoint: Vector3;
+    closestPoints?: { position: Vector3 }[];
     markers: any[];
     mesh: Arrow2DGeometry;
   };
@@ -72,6 +73,7 @@ export default class PathMarkerLayer<
       markers: [],
       mesh: new Arrow2DGeometry({ headSize: ARROW_HEAD_SIZE, tailWidth: ARROW_TAIL_WIDTH }),
       closestPoint: null,
+      closestPoints: [],
     };
   }
 

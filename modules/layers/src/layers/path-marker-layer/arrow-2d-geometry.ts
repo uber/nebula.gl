@@ -5,7 +5,7 @@ export default class Arrow2DGeometry extends Geometry {
     super(
       Object.assign({}, opts, {
         attributes: getArrowAttributes(opts),
-        topology: 'triangle-strip' as const,
+        topology: 'triangle-list' as const,
       })
     );
   }

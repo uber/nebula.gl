@@ -108,8 +108,8 @@ function getEditHandleRadius(handle) {
   }
 }
 
-export type EditableGeojsonLayerProps<DataT = any> = EditableLayerProps<DataT> & {
-  data: any;
+export type EditableGeojsonLayerProps<DataT = any> = EditableLayerProps & {
+  data: DataT;
   mode?: any;
   modeConfig?: any;
   selectedFeatureIndexes?: number[];

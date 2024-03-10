@@ -14,6 +14,7 @@ export {
   DrawPolygonMode,
   DrawRectangleMode,
   DrawPolygonByDraggingMode,
+  DrawLineStringByDraggingMode,
   MeasureDistanceMode,
   MeasureAreaMode,
   MeasureAngleMode,

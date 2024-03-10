@@ -113,6 +113,10 @@ User can draw a new `Polygon` feature with 90 degree corners (right angle) by cl
 
 User can draw a new `Polygon` feature by dragging (similar to the lasso tool commonly found in photo editing software).
 
+## [DrawLineStringByDraggingMode](https://github.com/uber/nebula.gl/blob/master/modules/edit-modes/src/lib/draw-line-string-by-dragging-mode.ts)
+
+User can draw a new `LineString` feature by dragging (similar to the pencil tool commonly found in sketching software).
+
 ### ModeConfig
 
 The following options can be provided in the `modeConfig` object:

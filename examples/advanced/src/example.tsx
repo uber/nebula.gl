@@ -34,6 +34,7 @@ import {
   DrawRectangleUsingThreePointsMode,
   Draw90DegreePolygonMode,
   DrawPolygonByDraggingMode,
+  DrawLineStringByDraggingMode,
   MeasureDistanceMode,
   MeasureAreaMode,
   MeasureAngleMode,
@@ -105,6 +106,7 @@ const ALL_MODES: any = [
       { label: 'Draw Polygon', mode: DrawPolygonMode },
       { label: 'Draw 90° Polygon', mode: Draw90DegreePolygonMode },
       { label: 'Draw Polygon By Dragging', mode: DrawPolygonByDraggingMode },
+      { label: 'Draw LineString By Dragging', mode: DrawLineStringByDraggingMode },
       { label: 'Draw Rectangle', mode: DrawRectangleMode },
       { label: 'Draw Rectangle From Center', mode: DrawRectangleFromCenterMode },
       { label: 'Draw Rectangle Using 3 Points', mode: DrawRectangleUsingThreePointsMode },
@@ -962,6 +964,11 @@ export default class Example extends React.Component<
         };
       }
     } else if (mode === DrawPolygonByDraggingMode) {
+      modeConfig = {
+        ...modeConfig,
+        throttleMs: 100,
+      };
+    } else if (mode === DrawLineStringByDraggingMode) {
       modeConfig = {
         ...modeConfig,
         throttleMs: 100,

@@ -1,4 +1,4 @@
-import { Position, FeatureCollection } from '@nebula.gl/edit-modes';
+import { Position, FeatureCollection, DraggingEvent } from '@nebula.gl/edit-modes';
 import {
   ModeProps,
   ClickEvent,
@@ -285,7 +285,7 @@ export function getFeatureCollectionFeatures(options?: { [K: string]: any }) {
   ];
 }
 
-export function createFeatureCollection(options?: { [K: string]: any }) {
+export function createFeatureCollection(options?: { [K: string]: any }): FeatureCollection {
   return {
     type: 'FeatureCollection',
     features: getFeatureCollectionFeatures(options),
@@ -324,6 +324,25 @@ export function createStartDraggingEvent(
   pointerDownMapCoords: Position,
   picks: Pick[] = []
 ): StartDraggingEvent {
+  lastCoords = mapCoords;
+
+  return {
+    screenCoords: [-1, -1],
+    mapCoords,
+    picks,
+    pointerDownPicks: null,
+    pointerDownScreenCoords: [-1, -1],
+    pointerDownMapCoords,
+    cancelPan: vi.fn(),
+    sourceEvent: null,
+  };
+}
+
+export function createDraggingEvent(
+  mapCoords: Position,
+  pointerDownMapCoords: Position,
+  picks: Pick[] = []
+): DraggingEvent {
   lastCoords = mapCoords;
 
   return {
@@ -379,14 +398,13 @@ export function createFeatureCollectionProps(
   overrides: Partial<ModeProps<FeatureCollection>> = {}
 ): ModeProps<FeatureCollection> {
   return {
-    // @ts-ignore
     data: createFeatureCollection(),
     selectedIndexes: [],
-    // @ts-ignore
     lastPointerMoveEvent: createPointerMoveEvent(),
     modeConfig: null,
     onEdit: vi.fn(),
     onUpdateCursor: vi.fn(),
+    cursor: undefined,
     ...overrides,
   };
 }

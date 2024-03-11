@@ -36,6 +36,7 @@ export { DrawEllipseUsingThreePointsMode } from './lib/draw-ellipse-using-three-
 export { DrawRectangleUsingThreePointsMode } from './lib/draw-rectangle-using-three-points-mode';
 export { Draw90DegreePolygonMode } from './lib/draw-90degree-polygon-mode';
 export { DrawPolygonByDraggingMode } from './lib/draw-polygon-by-dragging-mode';
+export { DrawLineStringByDraggingMode } from './lib/draw-line-string-by-dragging-mode';
 export { ImmutableFeatureCollection } from './lib/immutable-feature-collection';
 
 // Other modes

@@ -26,6 +26,7 @@ import {
   DrawEllipseUsingThreePointsMode,
   Draw90DegreePolygonMode,
   DrawPolygonByDraggingMode,
+  DrawLineStringByDraggingMode,
   SnappableMode,
   TransformMode,
   EditAction,
@@ -260,6 +261,7 @@ const modeNameMapping = {
   drawEllipseUsing3Points: DrawEllipseUsingThreePointsMode,
   draw90DegreePolygon: Draw90DegreePolygonMode,
   drawPolygonByDragging: DrawPolygonByDraggingMode,
+  drawLineStringByDragging: DrawLineStringByDraggingMode,
 };
 
 // type State = {

@@ -10,6 +10,10 @@ Release date: TBD
 
 - new `DrawRectangleFromCenterMode`. User can draw a new rectangular `Polygon` feature by clicking the center, then along a corner of the rectangle.
 
+### Draw LineString by Dragging Mode
+
+- new `DrawLineStringByDraggingMode`. User can draw a `LineString` feature by dragging on the map, and releasing their cursor.
+
 ### Translate mode
 
 - `screenSpace` option can be provided in the `modeConfig` of Translate mode so the features will be translated without distortion in screen space.

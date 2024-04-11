@@ -1,32 +1,34 @@
 import { point, lineString as toLineString } from '@turf/helpers';
+import { FeatureCollection, FeatureOf, LineString, Point, Polygon } from '../geojson-types';
 import {
-  recursivelyTraverseNestedArrays,
-  nearestPointOnProjectedLine,
-  nearestPointOnLine,
-  getEditHandlesForGeometry,
-  getPickedEditHandles,
-  getPickedEditHandle,
-  getPickedExistingEditHandle,
-  getPickedIntermediateEditHandle,
-  updateRectanglePosition,
-  NearestPointType,
-} from '../utils';
-import { LineString, Point, Polygon, FeatureCollection, FeatureOf } from '../geojson-types';
-import {
-  ModeProps,
   ClickEvent,
+  DraggingEvent,
+  EditHandleFeature,
+  GuideFeatureCollection,
+  ModeProps,
   PointerMoveEvent,
   StartDraggingEvent,
   StopDraggingEvent,
-  DraggingEvent,
   Viewport,
-  GuideFeatureCollection,
-  EditHandleFeature,
 } from '../types';
+import {
+  NearestPointType,
+  getEditHandlesForGeometry,
+  getPickedEditHandle,
+  getPickedEditHandles,
+  getPickedExistingEditHandle,
+  getPickedIntermediateEditHandle,
+  hasPolygonCrossingLines,
+  nearestPointOnLine,
+  nearestPointOnProjectedLine,
+  recursivelyTraverseNestedArrays,
+  updateRectanglePosition,
+} from '../utils';
 import { GeoJsonEditMode } from './geojson-edit-mode';
 import { ImmutableFeatureCollection } from './immutable-feature-collection';
 
 export class ModifyMode extends GeoJsonEditMode {
+  private _featureCollectionBeforeDrag: FeatureCollection;
   getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
     const handles = [];
 
@@ -207,7 +209,7 @@ export class ModifyMode extends GeoJsonEditMode {
     const editHandleProperties = editHandle.properties;
     const editedFeature = props.data.features[editHandleProperties.featureIndex];
 
-    let updatedData;
+    let updatedData: FeatureCollection;
     if (props.modeConfig?.lockRectangles && editedFeature.properties.shape === 'Rectangle') {
       const coordinates = updateRectanglePosition(
         editedFeature as FeatureOf<Polygon>,
@@ -245,8 +247,12 @@ export class ModifyMode extends GeoJsonEditMode {
   }
 
   handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollection>) {
-    const selectedFeatureIndexes = props.selectedIndexes;
+    // Stores previous state to revert to if drag ends with overlappingLines
+    if (props?.modeConfig?.preventOverlappingLines) {
+      this._featureCollectionBeforeDrag = new ImmutableFeatureCollection(props.data).getObject();
+    }
 
+    const selectedFeatureIndexes = props.selectedIndexes;
     const editHandle = getPickedIntermediateEditHandle(event.picks);
     if (selectedFeatureIndexes.length && editHandle) {
       const editHandleProperties = editHandle.properties;
@@ -274,11 +280,32 @@ export class ModifyMode extends GeoJsonEditMode {
   handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollection>) {
     const selectedFeatureIndexes = props.selectedIndexes;
     const editHandle = getPickedEditHandle(event.picks);
-    if (selectedFeatureIndexes.length && editHandle) {
-      this._dragEditHandle('finishMovePosition', props, editHandle, event);
-    }
-  }
 
+    if (!editHandle || !selectedFeatureIndexes.length) {
+      return;
+    }
+
+    if (
+      this._featureCollectionBeforeDrag &&
+      hasPolygonCrossingLines(
+        (props.data.features[editHandle.properties.featureIndex].geometry as Polygon).coordinates[0]
+      )
+    ) {
+      props.onEdit({
+        updatedData: this._featureCollectionBeforeDrag,
+        editType: 'finishMovePosition',
+        editContext: {
+          featureIndexes: [editHandle.properties.featureIndex],
+          positionIndexes: editHandle.properties.positionIndexes,
+          position: event.mapCoords,
+        },
+      });
+
+      return;
+    }
+
+    this._dragEditHandle('finishMovePosition', props, editHandle, event);
+  }
   getCursor(event: PointerMoveEvent): string | null | undefined {
     const picks = (event && event.picks) || [];
 

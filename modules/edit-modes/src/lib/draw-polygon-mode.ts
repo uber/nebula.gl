@@ -8,8 +8,8 @@ import {
   TentativeFeature,
   GuideFeature,
 } from '../types';
-import { Polygon, FeatureCollection } from '../geojson-types';
-import { getPickedEditHandle } from '../utils';
+import { Polygon, FeatureCollection, Position } from '../geojson-types';
+import { getPickedEditHandle, hasPolygonCrossingLines } from '../utils';
 import { GeoJsonEditMode } from './geojson-edit-mode';
 
 export class DrawPolygonMode extends GeoJsonEditMode {
@@ -119,9 +119,21 @@ export class DrawPolygonMode extends GeoJsonEditMode {
         coordinates: [[...clickSequence, clickSequence[0]]],
       };
 
+      const editAction = this.getAddFeatureOrBooleanPolygonAction(polygonToAdd, props);
+
+      if (
+        props.modeConfig?.preventOverlappingLines &&
+        editAction.updatedData &&
+        hasPolygonCrossingLines(
+          editAction.updatedData.features[editAction.editContext.featureIndexes[0]].geometry
+            .coordinates[0] as Position[]
+        )
+      ) {
+        return;
+      }
+
       this.resetClickSequence();
 
-      const editAction = this.getAddFeatureOrBooleanPolygonAction(polygonToAdd, props);
       if (editAction) {
         props.onEdit(editAction);
       }

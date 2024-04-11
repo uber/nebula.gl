@@ -511,3 +511,105 @@ export function mapCoords(
     })
     .filter(Boolean);
 }
+
+/**
+ * Checks if two line segments intersect.
+ *
+ * @param {number} Ax - x-coordinate of the start point of the first line segment.
+ * @param {number} Ay - y-coordinate of the start point of the first line segment.
+ * @param {number} Bx - x-coordinate of the end point of the first line segment.
+ * @param {number} By - y-coordinate of the end point of the first line segment.
+ * @param {number} Cx - x-coordinate of the start point of the second line segment.
+ * @param {number} Cy - y-coordinate of the start point of the second line segment.
+ * @param {number} Dx - x-coordinate of the end point of the second line segment.
+ * @param {number} Dy - y-coordinate of the end point of the second line segment.
+ * @return {boolean} true if the line segments intersect, false otherwise.
+ */
+// eslint-disable-next-line max-params
+function lineSegmentIntersection(
+  Ax: number,
+  Ay: number,
+  Bx: number,
+  By: number,
+  Cx: number,
+  Cy: number,
+  Dx: number,
+  Dy: number
+): boolean {
+  let newX: number;
+
+  if ((Ax === Bx && Ay === By) || (Cx === Dx && Cy === Dy)) {
+    return false;
+  }
+
+  if (
+    (Ax === Cx && Ay === Cy) ||
+    (Bx === Cx && By === Cy) ||
+    (Ax === Dx && Ay === Dy) ||
+    (Bx === Dx && By === Dy)
+  ) {
+    return false;
+  }
+
+  Bx -= Ax;
+  By -= Ay;
+  Cx -= Ax;
+  Cy -= Ay;
+  Dx -= Ax;
+  Dy -= Ay;
+
+  const distAB = Math.sqrt(Bx * Bx + By * By);
+
+  const theCos = Bx / distAB;
+  const theSin = By / distAB;
+  newX = Cx * theCos + Cy * theSin;
+  Cy = Cy * theCos - Cx * theSin;
+  Cx = newX;
+  newX = Dx * theCos + Dy * theSin;
+  Dy = Dy * theCos - Dx * theSin;
+  Dx = newX;
+
+  if ((Cy < 0.0 && Dy < 0.0) || (Cy >= 0.0 && Dy >= 0.0)) {
+    return false;
+  }
+
+  const ABpos = Dx + ((Cx - Dx) * Dy) / (Dy - Cy);
+
+  if (ABpos < 0.0 || ABpos > distAB) {
+    return false;
+  }
+
+  return true;
+}
+
+/**
+ * Checks if a polygon defined by the coordinates has any crossing lines.
+ *
+ * @param {Position[]} coordinates - Array of coordinates defining the polygon.
+ * @return {boolean} True if the polygon has crossing lines, false otherwise.
+ */
+export function hasPolygonCrossingLines(coordinates: Position[]): boolean {
+  for (let i = 0; i < coordinates.length - 2; i++) {
+    const point1 = coordinates[i];
+    const point2 = coordinates[i + 1];
+    for (let j = i + 1; j < coordinates.length - 1; j++) {
+      const point3 = coordinates[j];
+      const point4 = coordinates[j + 1];
+      if (
+        lineSegmentIntersection(
+          point1[0],
+          point1[1],
+          point2[0],
+          point2[1],
+          point3[0],
+          point3[1],
+          point4[0],
+          point4[1]
+        )
+      ) {
+        return true;
+      }
+    }
+  }
+  return false;
+}

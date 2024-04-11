@@ -1,50 +1,50 @@
 /* eslint-env browser */
-import * as React from 'react';
+import { MapController, MapView } from '@deck.gl/core/typed';
 import DeckGL from '@deck.gl/react/typed';
-import { MapView, MapController } from '@deck.gl/core/typed';
-import StaticMap from 'react-map-gl';
 import GL from '@luma.gl/constants';
 import circle from '@turf/circle';
+import * as React from 'react';
+import StaticMap from 'react-map-gl';
 
 import {
-  EditableGeoJsonLayer,
-  SelectionLayer,
-  ModifyMode,
-  ResizeCircleMode,
-  TranslateMode,
-  TransformMode,
-  ScaleMode,
-  RotateMode,
-  DuplicateMode,
-  ExtendLineStringMode,
-  SplitPolygonMode,
-  ExtrudeMode,
-  ElevationMode,
-  DrawPointMode,
-  DrawLineStringMode,
-  DrawPolygonMode,
-  DrawRectangleMode,
-  DrawSquareMode,
-  DrawRectangleFromCenterMode,
-  DrawSquareFromCenterMode,
+  Color,
+  CompositeMode,
+  Draw90DegreePolygonMode,
   DrawCircleByDiameterMode,
   DrawCircleFromCenterMode,
   DrawEllipseByBoundingBoxMode,
   DrawEllipseUsingThreePointsMode,
-  DrawRectangleUsingThreePointsMode,
-  Draw90DegreePolygonMode,
+  DrawLineStringMode,
+  DrawPointMode,
   DrawPolygonByDraggingMode,
-  MeasureDistanceMode,
-  MeasureAreaMode,
-  MeasureAngleMode,
-  ViewMode,
-  CompositeMode,
-  SnappableMode,
+  DrawPolygonMode,
+  DrawRectangleFromCenterMode,
+  DrawRectangleMode,
+  DrawRectangleUsingThreePointsMode,
+  DrawSquareFromCenterMode,
+  DrawSquareMode,
+  DuplicateMode,
+  EditableGeoJsonLayer,
   ElevatedEditHandleLayer,
-  PathMarkerLayer,
-  SELECTION_TYPE,
+  ElevationMode,
+  ExtendLineStringMode,
+  ExtrudeMode,
   GeoJsonEditMode,
-  Color,
+  MeasureAngleMode,
+  MeasureAreaMode,
+  MeasureDistanceMode,
+  ModifyMode,
+  PathMarkerLayer,
+  ResizeCircleMode,
+  RotateMode,
+  SELECTION_TYPE,
+  ScaleMode,
+  SelectionLayer,
+  SnappableMode,
+  SplitPolygonMode,
+  TransformMode,
+  TranslateMode,
+  ViewMode,
 } from 'nebula.gl';
 
 import sampleGeoJson from '../../data/sample-geojson.json';
@@ -53,11 +53,11 @@ import iconSheet from '../../data/edit-handles.png';
 
 import {
   Toolbox,
-  ToolboxControl,
-  ToolboxTitle,
-  ToolboxRow,
   ToolboxButton,
   ToolboxCheckbox,
+  ToolboxControl,
+  ToolboxRow,
+  ToolboxTitle,
 } from './toolbox';
 
 type RGBAColor = Color;
@@ -525,16 +525,37 @@ export default class Example extends React.Component<
 
   _renderModifyModeControls() {
     return (
-      <ToolboxRow key="modify">
-        <ToolboxTitle>Allow removing points</ToolboxTitle>
-        <ToolboxControl>
-          <input
-            type="checkbox"
-            checked={this.state.pointsRemovable}
-            onChange={() => this.setState({ pointsRemovable: !this.state.pointsRemovable })}
-          />
-        </ToolboxControl>
-      </ToolboxRow>
+      <>
+        <ToolboxRow key="modify">
+          <ToolboxTitle>Allow removing points</ToolboxTitle>
+          <ToolboxControl>
+            <input
+              type="checkbox"
+              checked={this.state.pointsRemovable}
+              onChange={() => this.setState({ pointsRemovable: !this.state.pointsRemovable })}
+            />
+          </ToolboxControl>
+        </ToolboxRow>
+        <ToolboxRow key="modfiy-2">
+          <ToolboxTitle>Prevent overlapping lines</ToolboxTitle>
+          <ToolboxControl>
+            <input
+              type="checkbox"
+              checked={Boolean(
+                this.state.modeConfig && this.state.modeConfig.preventOverlappingLines
+              )}
+              onChange={(event) =>
+                this.setState({
+                  modeConfig: {
+                    ...(this.state.modeConfig || {}),
+                    preventOverlappingLines: Boolean(event.target.checked),
+                  },
+                })
+              }
+            />
+          </ToolboxControl>
+        </ToolboxRow>
+      </>
     );
   }
 

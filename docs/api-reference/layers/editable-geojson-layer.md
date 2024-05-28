@@ -67,7 +67,7 @@ _Note: passing a single `Feature` is not supported. However, you can pass a `Fea
 
 The `mode` property defines the mode used to handle user interaction events (e.g. pointer events) in order to accomplish edits. This can either be a constructor for an `EditMode` or an instance of `EditMode`.
 
-There are a extensive number of modes that come out-of-the-box with nebula.gl. See [modes overview](../modes/overview.md).
+There are a extensive number of modes that come out-of-the-box with nebula.gl. See [modes overview](/docs/api-reference/modes/overview.md).
 
 #### `modeConfig` (Object, optional)
 
@@ -143,7 +143,7 @@ The `onEdit` event is the core event provided by this layer and must be handled 
 
 * `featureIndexes` (Array&lt;number&gt;): The indexes of the edited/added features.
 
-* `editContext` (Object): `null` or an object containing additional context about the edit. This is populated by the active mode, see [modes overview](../modes/overview.md).
+* `editContext` (Object): `null` or an object containing additional context about the edit. This is populated by the active mode, see [modes overview](/docs/api-reference/modes/overview.md).
 
 ### Guide style properties and data getters
 
